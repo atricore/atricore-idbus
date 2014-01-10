@@ -43,10 +43,14 @@ import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdent
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.resources.alfresco.AlfrescoResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.resources.blackboard.BlackBoardResourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.resources.blackboard.BlackBoardResourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.resources.coldfusion.ColdfusionResourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator;
@@ -85,8 +89,8 @@ import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.Fede
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateForm;
@@ -158,7 +162,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _salesforceCreateMediator:SalesforceCreateMediator;
     private var _googleAppsCreateMediator:GoogleAppsCreateMediator;
     private var _sugarCRMCreateMediator:SugarCRMCreateMediator;
-    private var _identityVaultCreateMediator:IdentityVaultCreateMediator;
+    private var _embeddedIdentityVaultCreateMediator:EmbeddedIdentityVaultCreateMediator;
+    private var _dbIdentityVaultCreateMediator:DbIdentityVaultCreateMediator;
     private var _dbIdentitySourceCreateMediator:DbIdentitySourceCreateMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
     private var _xmlIdentitySourceCreateMediator:XmlIdentitySourceCreateMediator;
@@ -172,6 +177,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbosseppResourceCreateMediator:JBossEPPResourceCreateMediator;
     private var _selfServicesResourceCreateMediator:SelfServicesResourceCreateMediator;
     private var _dominoResourceCreateMediator:DominoResourceCreateMediator;
+    private var _blackboardResourceCreateMediator:BlackBoardResourceCreateMediator;
     private var _wasceExecutionEnvironmentCreateMediator:WASCEExecutionEnvironmentCreateMediator;
     private var _apacheExecutionEnvironmentCreateMediator:ApacheExecutionEnvironmentCreateMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
@@ -214,7 +220,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _salesforceCreateForm:SalesforceCreateForm;
     private var _googleAppsCreateForm:GoogleAppsCreateForm;
     private var _sugarCRMCreateForm:SugarCRMCreateForm;
-    private var _identityVaultCreateForm:IdentityVaultCreateForm;
+    private var _embeddedIdentityVaultCreateForm:EmbeddedIdentityVaultCreateForm;
+    private var _dbIdentityVaultCreateForm:DbIdentityVaultCreateForm;
     private var _dbIdentitySourceCreateForm:DbIdentitySourceCreateForm;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
     private var _xmlIdentitySourceCreateForm:XmlIdentitySourceCreateForm;
@@ -228,6 +235,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbosseppResourceCreateForm:JBossEPPResourceCreateForm;
     private var _selfServicesResourceCreateForm:SelfServicesResourceCreateForm;
     private var _dominoResourceCreateForm:DominoResourceCreateForm;
+    private var _blackboardResourceCreateForm:BlackBoardResourceCreateForm;
     private var _wasceExecutionEnvironmentCreateForm:WASCEExecutionEnvironmentCreateForm;
     private var _apacheExecutionEnvironmentCreateForm:ApacheExecutionEnvironmentCreateForm;
     private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
@@ -378,12 +386,21 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _sugarCRMCreateMediator = value;
     }
 
-    public function get identityVaultCreateMediator():IdentityVaultCreateMediator {
-        return _identityVaultCreateMediator;
+    public function get embeddedIdentityVaultCreateMediator():EmbeddedIdentityVaultCreateMediator {
+        return _embeddedIdentityVaultCreateMediator;
     }
 
-    public function set identityVaultCreateMediator(value:IdentityVaultCreateMediator):void {
-        _identityVaultCreateMediator = value;
+    public function set embeddedIdentityVaultCreateMediator(value:EmbeddedIdentityVaultCreateMediator):void {
+        _embeddedIdentityVaultCreateMediator = value;
+    }
+
+
+    public function get dbIdentityVaultCreateMediator():DbIdentityVaultCreateMediator {
+        return _dbIdentityVaultCreateMediator;
+    }
+
+    public function set dbIdentityVaultCreateMediator(value:DbIdentityVaultCreateMediator):void {
+        _dbIdentityVaultCreateMediator = value;
     }
 
     public function get dbIdentitySourceCreateMediator():DbIdentitySourceCreateMediator {
@@ -512,6 +529,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set dominoResourceCreateMediator(value:DominoResourceCreateMediator):void {
         _dominoResourceCreateMediator = value;
+    }
+
+    public function get blackboardResourceCreateMediator():BlackBoardResourceCreateMediator {
+        return _blackboardResourceCreateMediator;
+    }
+
+    public function set blackboardResourceCreateMediator(value:BlackBoardResourceCreateMediator):void {
+        _blackboardResourceCreateMediator = value;
     }
 
     public function get wasceExecutionEnvironmentCreateMediator():WASCEExecutionEnvironmentCreateMediator {
@@ -744,7 +769,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createIdentityProviderCreateForm();
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.idp");
         _popup.width = 690;
-        _popup.height = 515;
+        _popup.height = 575;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_identityProviderCreateForm);
@@ -977,26 +1002,49 @@ public class ModelerPopUpManager extends BasePopUpManager {
         sugarCRMCreateMediator.handleNotification(_lastWindowNotification);
     }
 
-    public function showCreateIdentityVaultWindow(notification:INotification):void {
+    public function showCreateEmbeddedIdentityVaultWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        createIdentityVaultCreateForm();
+        createEmbeddedIdentityVaultCreateForm();
         _popup.title = "Create Identity Vault";
-        _popup.width = 410;
-        _popup.height = 140;
+        _popup.width = 640;
+        _popup.height = 320;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
-        showPopup(_identityVaultCreateForm);
+        showPopup(_embeddedIdentityVaultCreateForm);
     }
 
-    private function createIdentityVaultCreateForm():void {
-        _identityVaultCreateForm = new IdentityVaultCreateForm();
-        _identityVaultCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityVaultCreateFormCreated);
+    private function createEmbeddedIdentityVaultCreateForm():void {
+        _embeddedIdentityVaultCreateForm = new EmbeddedIdentityVaultCreateForm();
+        _embeddedIdentityVaultCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleEmbeddedIdentityVaultCreateFormCreated);
     }
 
-    private function handleIdentityVaultCreateFormCreated(event:FlexEvent):void {
-        identityVaultCreateMediator.setViewComponent(_identityVaultCreateForm);
-        identityVaultCreateMediator.handleNotification(_lastWindowNotification);
+    private function handleEmbeddedIdentityVaultCreateFormCreated(event:FlexEvent):void {
+        embeddedIdentityVaultCreateMediator.setViewComponent(_embeddedIdentityVaultCreateForm);
+        embeddedIdentityVaultCreateMediator.handleNotification(_lastWindowNotification);
     }
+
+    public function showCreateDbIdentityVaultWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createDbIdentityVaultCreateForm();
+        _popup.title = "Create Database Identity Vault";
+        _popup.width = 640;
+        _popup.height = 480;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_dbIdentityVaultCreateForm);
+    }
+
+
+    private function createDbIdentityVaultCreateForm():void {
+        _dbIdentityVaultCreateForm = new DbIdentityVaultCreateForm();
+        _dbIdentityVaultCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentityVaultCreateFormCreated);
+    }
+
+    private function handleDbIdentityVaultCreateFormCreated(event:FlexEvent):void {
+        dbIdentityVaultCreateMediator.setViewComponent(_dbIdentityVaultCreateForm);
+        dbIdentityVaultCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
 
     public function showCreateDbIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
@@ -1250,6 +1298,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleDominoResourceCreateFormCreated(event:FlexEvent):void {
         dominoResourceCreateMediator.setViewComponent(_dominoResourceCreateForm);
         dominoResourceCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateBlackBoardResourceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createBlackBoardResourceCreateForm();
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.blackboardResource");
+        _popup.width = 800;
+        _popup.height = 260;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_blackboardResourceCreateForm);
+    }
+
+    private function createBlackBoardResourceCreateForm():void {
+        _blackboardResourceCreateForm = new BlackBoardResourceCreateForm();
+        _blackboardResourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleBlackBoardResourceCreateFormCreated);
+    }
+
+    private function handleBlackBoardResourceCreateFormCreated(event:FlexEvent):void {
+        blackboardResourceCreateMediator.setViewComponent(_blackboardResourceCreateForm);
+        blackboardResourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateWASCEExecutionEnvironmentWindow(notification:INotification):void {

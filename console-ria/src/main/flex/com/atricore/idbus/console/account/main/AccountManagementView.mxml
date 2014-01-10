@@ -47,6 +47,11 @@
 
     <s:VGroup x="10" y="10" height="100%" width="100%"
               paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+
+        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName')}:" required="false">
+            <s:DropDownList id="idVault" width="200" labelField="description" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName.prompt')}"/>
+        </mx:FormItem>
+
         <s:TabBar id="accountManagementTabBar" dataProvider="{new ArrayCollection(vsAccountMng.content)}"
                   labelField="name" skinClass="com.atricore.idbus.console.skin.tabbar.IconTabBarSkin"/>
 

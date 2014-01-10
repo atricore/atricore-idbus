@@ -70,6 +70,9 @@
                             trigger="{btnOk}" triggerEvent="click" minValue="0"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ttlValidationError')}"/>
 
+        <mx:NumberValidator id="maxSessionsPerUserValidator" source="{ssoSessionTimeout}" required="false" property="text" minValue="-1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.maxSessionsPerUserValidationError')}"/>
+
         <s:RadioButtonGroup id="certificateManagementType"/>
     </fx:Declarations>
 
@@ -107,6 +110,36 @@
                     <s:TextInput id="idpLocationPath" width="130"/>
                 </mx:FormItem>
 
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.branding')}:">
+                    <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:">
+                    <s:TextInput id="dashboardUrl" width="230"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeout')}:"
+                             required="true">
+                    <s:TextInput id="ssoSessionTimeout" />
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.maxSessionsPerUser')}:"
+                             required="true">
+                    <s:TextInput id="maxSessionsPerUser" />
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.destroyPreviousSession')}:">
+                    <s:CheckBox id="destroyPreviousSession" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
+                    <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
+                    <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
+                </mx:FormItem>
+
                 <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
                     <s:DropDownList id="authContract" labelField="name" selectedIndex="0" width="200">
                         <s:dataProvider>
@@ -136,27 +169,6 @@
                             </mx:ArrayCollection>
                         </s:dataProvider>
                     </s:DropDownList>
-                </mx:FormItem>
-
-                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.branding')}:">
-                    <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
-                </mx:FormItem>
-
-                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
-                    <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
-                </mx:FormItem>
-
-                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeout')}:"
-                             required="true">
-                    <s:TextInput id="ssoSessionTimeout" />
-                </mx:FormItem>
-
-                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:">
-                    <s:TextInput id="dashboardUrl" width="230"/>
-                </mx:FormItem>
-
-                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
-                    <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
                 </mx:FormItem>
 
             </s:VGroup>

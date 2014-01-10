@@ -45,14 +45,11 @@ public abstract class Provider implements Serializable {
 
     private ProviderConfig config;
 
-    // RFU TODO : Push donw to federated provider, this is SAML specific!
     private Set<Binding> activeBindings = new HashSet<Binding>();
 
-    // RFU TODO : Push donw to federated provider, this is SAML specific!
     private Set<Profile> activeProfiles = new HashSet<Profile>();
 
-    // TODO : Push donw to federated provider
-    private IdentityLookup identityLookup;
+    private Set<IdentityLookup> identityLookups = new HashSet<IdentityLookup>();;
 
     private Resource metadata;
 
@@ -141,12 +138,12 @@ public abstract class Provider implements Serializable {
         this.activeProfiles = activeProfiles;
     }
 
-    public IdentityLookup getIdentityLookup() {
-        return identityLookup;
+    public Set<IdentityLookup> getIdentityLookups() {
+        return identityLookups;
     }
 
-    public void setIdentityLookup(IdentityLookup identityLookup) {
-        this.identityLookup = identityLookup;
+    public void setIdentityLookups(Set<IdentityLookup> identityLookups) {
+        this.identityLookups = identityLookups;
     }
 
     public Resource getMetadata() {

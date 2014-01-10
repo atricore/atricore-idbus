@@ -173,17 +173,11 @@ public class DiagramUtil {
 
     public static function nodesCanBeLinkedWithIdentityLookup(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
-        if (node1 != null && node2 != null && node1.id != node2.id) {
+        if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node) && !nodeLinkExists(node2.node, node1.node)) {
             if (node1.data is Provider && node2.data is IdentitySource){
-                var prov1:Provider = node1.data as Provider;
-                if(prov1.identityLookup == null){
-                    canBeLinked = true;
-                }
+                canBeLinked = true;
             } else if (node1.data is IdentitySource && node2.data is Provider) {
-                var prov2:Provider = node2.data as Provider;
-                if(prov2.identityLookup == null){
-                    canBeLinked = true;
-                }
+                canBeLinked = true;
             }
         }
         return canBeLinked;
@@ -242,6 +236,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.clientAuthenticationServiceMiniCertIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
+            case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
+                return EmbeddedIcons.dbVaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.dbIdentitySourceMiniIcon;
             case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
@@ -278,6 +274,8 @@ public class DiagramUtil {
                 return EmbeddedIcons.selfServicesResourceMiniIcon;
             case DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE:
                 return EmbeddedIcons.dominoResourceMiniIcon;
+            case DiagramElementTypes.BLACKBOARD_RESOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.blackboardResourceMiniIcon;
             case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                 return EmbeddedIcons.websphereEnvironmentMiniIcon;
             case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:

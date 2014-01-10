@@ -57,6 +57,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWikidElem
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDominoElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveClientCertElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveWindowsIntegratedAuthnElementRequest;
+import com.atricore.idbus.console.modeling.main.controller.EmbeddedIdentityVaultsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
@@ -358,6 +359,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT,
             ApplicationFacade.CREATE_SUGAR_CRM_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
+            ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
@@ -375,6 +377,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.CREATE_JBOSSEPP_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_SELFSERVICES_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT,
+            ApplicationFacade.CREATE_BLACKBOARD_RESOURCE_ELEMENT,
             ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT,
@@ -433,7 +436,8 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             IdentityApplianceUpdateCommand.FAILURE,
             IdentityApplianceImportCommand.SUCCESS,
             IdentityApplianceImportCommand.FAILURE,
-            JDBCDriversListCommand.FAILURE];
+            JDBCDriversListCommand.FAILURE,
+            EmbeddedIdentityVaultsListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -561,7 +565,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 sendNotification(ApplicationFacade.EXTERNAL_SAML2_SERVICE_PROVIDER_REMOVE, rscrm.sugarCRMProvider);
                 break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
-                popupManager.showCreateIdentityVaultWindow(notification);
+                popupManager.showCreateEmbeddedIdentityVaultWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT:
+                popupManager.showCreateDbIdentityVaultWindow(notification);
                 break;
             case ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT:
                 popupManager.showCreateDbIdentitySourceWindow(notification);
@@ -633,6 +640,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT:
                 popupManager.showCreateDominoResourceWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_BLACKBOARD_RESOURCE_ELEMENT:
+                popupManager.showCreateBlackBoardResourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWASCEExecutionEnvironmentWindow(notification);
@@ -837,6 +847,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case JDBCDriversListCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.loading.jdbc.error"));
+                break;
+            case EmbeddedIdentityVaultsListCommand.FAILURE:
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.loading.embeddedidvault.error"));
                 break;
             case ApplicationFacade.EXPORT_IDENTITY_APPLIANCE:
                 if (projectProxy.currentIdentityAppliance != null) {

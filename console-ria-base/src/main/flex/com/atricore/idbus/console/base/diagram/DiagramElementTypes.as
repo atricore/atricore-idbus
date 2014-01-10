@@ -42,6 +42,7 @@ public class DiagramElementTypes {
     public static const WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 18;
     public static const WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:int = 19;
     public static const IDENTITY_VAULT_ELEMENT_TYPE:int = 20;
+    public static const DB_IDENTITY_VAULT_ELEMENT_TYPE:int = 201;
     public static const XML_IDENTITY_SOURCE_ELEMENT_TYPE:int = 21;
     public static const JBOSS_PORTAL_RESOURCE_ELEMENT_TYPE:int = 22;
     public static const IDENTITY_SOURCE_ELEMENT_TYPE:int = 23;
@@ -74,6 +75,7 @@ public class DiagramElementTypes {
     public static const JBOSSEPP_RESOURCE_ELEMENT_TYPE:int = 50;
     public static const SELFSERVICES_RESOURCE_ELEMENT_TYPE:int = 51;
     public static const DOMINO_RESOURCE_ELEMENT_TYPE:int = 52;
+    public static const BLACKBOARD_RESOURCE_ELEMENT_TYPE:int = 53;
 
 }
 }

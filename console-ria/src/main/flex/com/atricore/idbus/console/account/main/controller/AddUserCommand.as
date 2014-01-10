@@ -106,6 +106,8 @@ public class AddUserCommand extends IocSimpleCommand implements IResponder {
         req.telephoneNumber = user.telephoneNumber;
         req.userCertificate = user.userCertificate;
         req.extraAttributes = user.extraAttributes;
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.addUser(req);

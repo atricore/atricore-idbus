@@ -71,7 +71,8 @@
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
         <property name="sugarCRMCreateMediator" ref="sugarCRMCreateMediator"/>
-        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
+        <property name="embeddedIdentityVaultCreateMediator" ref="embeddedIdentityVaultCreateMediator"/>
+        <property name="dbIdentityVaultCreateMediator" ref="dbIdentityVaultCreateMediator"/>
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
@@ -85,6 +86,7 @@
         <property name="jbosseppResourceCreateMediator" ref="jbosseppResourceCreateMediator" />
         <property name="selfServicesResourceCreateMediator" ref="selfServicesResourceCreateMediator" />
         <property name="dominoResourceCreateMediator" ref="dominoResourceCreateMediator" />
+        <property name="blackboardResourceCreateMediator" ref="blackboardResourceCreateMediator"/>
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
@@ -136,6 +138,7 @@
         <property name="liferayResourceRemoveCommand" ref="liferayResourceRemoveCommand"/>
         <property name="selfServicesResourceRemoveCommand" ref="selfServicesResourceRemoveCommand"/>
         <property name="dominoResourceRemoveCommand" ref="dominoResourceRemoveCommand"/>
+        <property name="blackboardResourceRemoveCommand" ref="blackboardResourceRemoveCommand"/>
         <property name="createActivationCommand" ref="createActivationCommand" />
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
@@ -150,6 +153,7 @@
         <property name="folderExistsCommand" ref="folderExistsCommand" />
         <property name="foldersExistsCommand" ref="foldersExistsCommand" />
         <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
+        <property name="embeddedIdentityVaultsListCommand" ref="embeddedIdentityVaultsListCommand" />
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
         <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
         <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
@@ -210,6 +214,7 @@
         <property name="editUserCommand" ref="editUserCommand"/>
         <property name="listGroupsCommand" ref="listGroupsCommand"/>
         <property name="listUsersCommand" ref="listUsersCommand"/>
+        <property name="listIdentityVaultsCommand" ref="listIdentityVaultsCommand" />
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
         <property name="listSchemaAttributesCommand" ref="listSchemaAttributesCommand"/>
@@ -405,6 +410,10 @@
             class="com.atricore.idbus.console.modeling.main.controller.DominoResourceRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="blackboardResourceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.BlackBoardResourceRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="activationRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.ActivationRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
@@ -477,6 +486,13 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
+
+    <object id="listIdentityVaultsCommand"
+            class="com.atricore.idbus.console.account.main.controller.ListIdentityVaultsCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+
     <object id="searchGroupsCommand"
             class="com.atricore.idbus.console.account.main.controller.SearchGroupsCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -491,18 +507,22 @@
             class="com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="addAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.AddAttributeCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="editAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.EditAttributeCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="deleteAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.DeleteAttributeCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
     <object id="activateExecEnvironmentCommand"
@@ -541,6 +561,11 @@
     </object>
     <object id="jdbcDriversListCommand"
             class="com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="embeddedIdentityVaultsListCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.EmbeddedIdentityVaultsListCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -739,8 +764,12 @@
             class="com.atricore.idbus.console.modeling.diagram.view.oauth2.sp.OAuth2ServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="identityVaultCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator">
+    <object id="embeddedIdentityVaultCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="dbIdentityVaultCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="dbIdentitySourceCreateMediator"
@@ -794,6 +823,11 @@
 
     <object id="dominoResourceCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.resources.domino.DominoResourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
+    <object id="blackboardResourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.resources.blackboard.BlackBoardResourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
@@ -1023,6 +1057,7 @@
         <property name="usersMediator" ref="usersMediator"/>
         <property name="schemasMediator" ref="schemasMediator"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
 
         <property name="viewFactory" ref="accountManagementViewFactory"/>
         <property name="viewPriority" value="30"/>
@@ -1118,7 +1153,8 @@
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
-        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
+        <property name="embeddedIdentityVaultCreateMediator" ref="embeddedIdentityVaultCreateMediator"/>
+        <property name="dbIdentityVaultCreateMediator" ref="dbIdentityVaultCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
         <property name="josso1ResourceCreateMediator" ref="josso1ResourceCreateMediator"/>
@@ -1131,6 +1167,7 @@
         <property name="jbosseppResourceCreateMediator" ref="jbosseppResourceCreateMediator"/>
         <property name="selfServicesResourceCreateMediator" ref="selfServicesResourceCreateMediator"/>
         <property name="dominoResourceCreateMediator" ref="dominoResourceCreateMediator"/>
+        <property name="blackboardResourceCreateMediator" ref="blackboardResourceCreateMediator"/>
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator"/>
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator"/>
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator"/>

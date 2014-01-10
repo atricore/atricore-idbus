@@ -16,7 +16,7 @@
     <groupId>$module.getGroup()</groupId>
 	<artifactId>$module.getName()</artifactId>
     <version>$module.getVersion()</version>
-    <name>$applianceDef.getDescription() :: Identity Appliance : $module.getId()</name>
+    <name>$applianceDef.getDisplayName() :: $module.getId() : Features</name>
 	<packaging>jar</packaging>
 
 	<build>

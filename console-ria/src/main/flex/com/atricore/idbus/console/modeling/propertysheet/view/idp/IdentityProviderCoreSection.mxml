@@ -22,117 +22,132 @@
 
 
 <s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:fx="http://ns.adobe.com/mxml/2009"
-         xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
-         paddingRight="5" paddingTop="5" paddingBottom="5">
+          xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
+          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
         <mx:ArrayCollection id="authMechanismColl">
-            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.simple')}" data="basic"/>
-            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.2factor')}" data="2factor"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.simple')}"
+                       data="basic"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.2factor')}"
+                       data="2factor"/>
             <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.bind')}" data="bind"/>
-            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.windows')}" data="windows"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.mechanism.windows')}"
+                       data="windows"/>
             <!--fx:Object label="Strong (Digital Sertificate)" data="strong"/>
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
             <fx:Object label="Remember Me" data="rememberme"/-->
         </mx:ArrayCollection>
         <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text"/>
-        <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
-                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text" minValue="1"
+                            maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
 
-        <mx:NumberValidator id="ssoSessionTimeoutValidator" source="{ssoSessionTimeout}" required="false" property="text" minValue="1" maxValue="65535"
-                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeoutValidationError')}"/>
+        <mx:NumberValidator id="ssoSessionTimeoutValidator" source="{ssoSessionTimeout}" required="false"
+                            property="text" minValue="1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeoutValidationError')}"/>
 
-        <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text" />
+        <mx:NumberValidator id="maxSessionsPerUserValidator" source="{ssoSessionTimeout}" required="false"
+                            property="text" minValue="-1" maxValue="65535"
+                            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.maxSessionsPerUserValidationError')}"/>
+
+        <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text"/>
         <utils:URLPartValidator id="contextValidator" source="{idpLocationContext}" required="true" property="text"/>
         <utils:URLMultipartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"/>
     </fx:Declarations>
-    
-    <utils:TitledBorderBox title="Endpoint" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
-                           paddingBottom="5">
-        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
-                 verticalGap="8">
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:"
-                         required="true">
-                <s:TextInput id="identityProviderName"/>
-            </mx:FormItem>
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8">
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.description')}:">
-                <s:TextInput id="identityProvDescription"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:"
+                     required="true">
+            <s:TextInput id="identityProviderName"/>
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeout')}:"
-                         required="true">
-                <s:TextInput id="ssoSessionTimeout"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.description')}:">
+            <s:TextInput id="identityProvDescription"/>
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:">
-                <s:TextInput id="dashboardUrl" width="230"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"
+                     direction="horizontal">
+            <s:DropDownList id="idpLocationProtocol" width="70" selectedIndex="0">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="http" data="http"/>
+                        <fx:Object label="https" data="https"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+            <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="idpLocationDomain" width="130"/>
+            <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="idpLocationPort" width="40"/>
+            <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="idpLocationContext" width="100"/>
+            <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+            <s:TextInput id="idpLocationPath" width="130"/>
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"
-                         direction="horizontal">
-                <s:DropDownList id="idpLocationProtocol" width="70" selectedIndex="0">
-                    <s:dataProvider>
-                        <mx:ArrayCollection>
-                            <fx:Object label="http" data="http"/>
-                            <fx:Object label="https" data="https"/>
-                        </mx:ArrayCollection>
-                    </s:dataProvider>
-                </s:DropDownList>
-                <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
-                <s:TextInput id="idpLocationDomain" width="130"/>
-                <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
-                <s:TextInput id="idpLocationPort" width="40"/>
-                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
-                <s:TextInput id="idpLocationContext" width="100"/>
-                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
-                <s:TextInput id="idpLocationPath" width="130"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.branding')}:">
+            <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0"
+                            requireSelection="true"/>
+        </mx:FormItem>
 
-        </mx:Form>
-    </utils:TitledBorderBox>
-    <utils:TitledBorderBox title="User Information Lookup and Authentication" height="100%" width="50%" paddingLeft="5"
-                           paddingRight="5"
-                           paddingTop="5" paddingBottom="5">
-        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5" width="100%" height="100%"
-                 verticalGap="8">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.dashboardUrl')}:">
+            <s:TextInput id="dashboardUrl" width="230"/>
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.branding')}:">
-                <s:DropDownList id="userDashboardBrandingCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true" />
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.ssoSessionTimeout')}:"
+                     required="true">
+            <s:TextInput id="ssoSessionTimeout"/>
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
-                <s:DropDownList id="authContractCombo" labelField="name" width="200" selectedIndex="0">
-                    <s:dataProvider>
-                        <mx:ArrayCollection>
-                            <fx:Object name="Default" data="default"/>
-                        </mx:ArrayCollection>
-                    </s:dataProvider>
-                </s:DropDownList>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.maxSessionsPerUser')}:"
+                     required="true">
+            <s:TextInput id="maxSessionsPerUser"/>
+        </mx:FormItem>
 
-            <mx:FormItem
-                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
-                <s:DropDownList id="authAssertionEmissionPolicyCombo" labelField="name" width="200" selectedIndex="0">
-                    <s:dataProvider>
-                        <mx:ArrayCollection>
-                            <fx:Object name="Default" data="default"/>
-                        </mx:ArrayCollection>
-                    </s:dataProvider>
-                </s:DropDownList>
-            </mx:FormItem>
+        <mx:FormItem
+                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.destroyPreviousSession')}:">
+            <s:CheckBox id="destroyPreviousSession" selected="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem
+                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
+            <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0"
+                            requireSelection="true"/>
+        </mx:FormItem>
+
+        <mx:FormItem
+                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
+            <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
+        </mx:FormItem>
 
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.subjectNameIDPolicy')}:">
-                <s:DropDownList id="subjectNameIdPolicyCombo" width="200" labelField="name" selectedIndex="0" requireSelection="true"/>
-            </mx:FormItem>
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.subject.ignoreRequestedNameIDPolicy')}:">
-                <s:CheckBox id="ignoreRequestedNameIDPolicy" selected="true"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
+            <s:DropDownList id="authContractCombo" labelField="name" width="200" selectedIndex="0">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object name="Default" data="default"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+        </mx:FormItem>
 
-        </mx:Form>
-    </utils:TitledBorderBox>
+        <mx:FormItem
+                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
+            <s:DropDownList id="authAssertionEmissionPolicyCombo" labelField="name" width="200" selectedIndex="0">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object name="Default" data="default"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+        </mx:FormItem>
+
+
+    </mx:Form>
+
 </s:HGroup>

@@ -1333,7 +1333,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    public void arrive(EmbeddedIdentitySource node) {
+    public void arrive(EmbeddedIdentityVault node) {
         arrive(contextHolder.get(), node);
     }
 
@@ -1351,7 +1351,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    public Object[] leave(EmbeddedIdentitySource node, Object[] results) {
+    public Object[] leave(EmbeddedIdentityVault node, Object[] results) {
         return leave(contextHolder.get(), node, results);
     }
 
@@ -1374,7 +1374,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more children should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(EmbeddedIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(EmbeddedIdentityVault node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 

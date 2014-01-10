@@ -37,6 +37,10 @@ public class IdentityProvider extends FederatedProvider {
 
     private int ssoSessionTimeout = 30; //
 
+    private int maxSessionsPerUser = -1;
+
+    private boolean destroyPreviousSession = false;
+
     private String dashboardUrl;
 
     // Do we need something abstract, not bound to oauth2 ?
@@ -133,6 +137,22 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setSsoSessionTimeout(int ssoSessionTimeout) {
         this.ssoSessionTimeout = ssoSessionTimeout;
+    }
+
+    public int getMaxSessionsPerUser() {
+        return maxSessionsPerUser;
+    }
+
+    public void setMaxSessionsPerUser(int maxSessionsPerUser) {
+        this.maxSessionsPerUser = maxSessionsPerUser;
+    }
+
+    public boolean isDestroyPreviousSession() {
+        return destroyPreviousSession;
+    }
+
+    public void setDestroyPreviousSession(boolean destroyPreviousSession) {
+        this.destroyPreviousSession = destroyPreviousSession;
     }
 
     public AttributeProfile getAttributeProfile() {

@@ -95,7 +95,7 @@
             <field name="driver" default-fetch-group="true"/>
         </class>
 
-        <class name="EmbeddedIdentitySource" detachable="true">
+        <class name="EmbeddedIdentityVault" detachable="true">
             <inheritance strategy="new-table"/>
         </class>
 

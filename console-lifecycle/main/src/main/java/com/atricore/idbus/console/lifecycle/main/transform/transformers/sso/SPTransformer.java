@@ -43,6 +43,7 @@ import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.main.transform.transformers.util.ProxyUtil.isIdPProxyRequired;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
@@ -217,7 +218,12 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" +
                 (execEnv != null ? execEnv.getName().toUpperCase() : svcResource.getName().toUpperCase());
 
+        setPropertyRef(spMediator, "monitoringServer", "monitoring-server");
         setPropertyValue(spMediator, "metricsPrefix", appliance.getName() + "/" + sp.getName());
+
+        setPropertyRef(spMediator, "auditingServer", "auditing-server");
+        setPropertyValue(spMediator, "auditCategory",
+                appliance.getNamespace().toLowerCase() + ".audit." + sp.getName().toLowerCase());
 
         String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
 
@@ -243,7 +249,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         Bean spLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         spLogger.setName(sp.getName() + "-mediation-logger");
-        setPropertyValue(spLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + sp.getName());
+        setPropertyValue(spLogger, "category", appliance.getNamespace() + ".wire." + sp.getName());
         setPropertyAsBeans(spLogger, "messageBuilders", spLogBuilders);
         setPropertyBean(spMediator, "logger", spLogger);
 
@@ -253,6 +259,11 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         // warningUrl
         setPropertyValue(spMediator, "warningUrl", resolveUiWarningLocation(appliance));
 
+        // ------------------------------------------------------------
+        // ID Registry service
+        // ------------------------------------------------------------
+        setPropertyValue(spMediator, "verifyUniqueIDs", "true"); // TODO : provider.isVerifyUniqueIDs());
+        setPropertyRef(spMediator, "idRegistry", normalizeBeanName(appliance.getIdApplianceDefinition().getName() + "-samlr2-idregistry"));
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) internalSaml2ServiceProvider.getConfig();
 
@@ -357,7 +368,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
-        if (internalSaml2ServiceProvider.getIdentityLookup() != null) {
+        if (internalSaml2ServiceProvider.getIdentityLookups() != null && internalSaml2ServiceProvider.getIdentityLookups().size() > 0) {
             setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
         }
 
@@ -393,7 +404,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // Properties (take from config!)
         // FOR SPs, the session timeout should be long enough ...
-        setPropertyValue(sessionManager, "maxInactiveInterval", "500");
+        setPropertyValue(sessionManager, "maxInactiveInterval", "30");
         setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
         setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");
         setPropertyValue(sessionManager, "sessionMonitorInterval", "10000");
@@ -404,17 +415,38 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // Session Store
         //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
+        String cacheName = internalSaml2ServiceProvider.getIdentityAppliance().getName() + "-" + sp.getName() + "-sessionsCache";
+
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
         setPropertyRef(sessionStore, "cacheManager", internalSaml2ServiceProvider.getIdentityAppliance().getName() + "-cache-manager");
-        setPropertyValue(sessionStore, "cacheName", internalSaml2ServiceProvider.getIdentityAppliance().getName() +
-                "-" + sp.getName() + "-sessionsCache");
+        setPropertyValue(sessionStore, "cacheName", cacheName);
 
-        setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + sp.getName());
+        // Session Monitor
+        Bean sessionMonitor = newBean(spBeans, sessionManager.getName() + "-monitor", "org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionMonitor");
+        setPropertyValue(sessionMonitor, "cacheName", cacheName);
+        setPropertyRef(sessionMonitor, "manager", sessionManager.getName());
+
+        // Session statistics
+        Bean sessionStats = newBean(spBeans, sessionManager.getName() + "-stats", "org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStatistics");
+        setPropertyValue(sessionStats, "cacheName", cacheName);
+        setPropertyValue(sessionStats, "metricsPrefix", appliance.getName() + "/" + sp.getName());
+        setPropertyRef(sessionStats, "monitoringServer", "monitoring-server");
+
+        List<Bean> cacheListeners = new ArrayList<Bean>();
+        cacheListeners.add(sessionMonitor);
+        cacheListeners.add(sessionStats);
+        setPropertyAsRefs(sessionStore, "listeners", cacheListeners);
+
+        setPropertyRef(sessionManager, "auditingServer", "auditing-server");
+        setPropertyValue(sessionManager, "auditCategory", appliance.getNamespace().toLowerCase() + ".audit." + sp.getName().toLowerCase());
         
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
+        setPropertyRef(sessionManager, "stats", sessionStats.getName());
+        setPropertyRef(sessionManager, "monitor", sessionMonitor.getName());
+
     }
 
     @Override

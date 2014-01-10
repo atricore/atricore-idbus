@@ -149,7 +149,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         initLocation();
         view.focusManager.setFocus(view.identityProviderName);
         view.ssoSessionTimeout.text = "30";
-    }
+        view.maxSessionsPerUser.text="-1";
+        view.destroyPreviousSession.selected=false;
+   }
 
     private function resetForm():void {
         view.identityProviderName.text = "";
@@ -161,6 +163,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.idpLocationContext.text = "";
         view.idpLocationPath.text = "";
         view.ssoSessionTimeout.text = "30";
+        view.maxSessionsPerUser.text="-1";
+        view.destroyPreviousSession.selected=false;
         view.wantAuthnRequestsSignedCheck.selected = false;
         view.signRequestsCheck.selected = false;
         view.wantSignedRequestsCheck.selected = false;
@@ -242,6 +246,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.name = view.identityProviderName.text;
         identityProvider.description = view.identityProvDescription.text;
         identityProvider.ssoSessionTimeout = parseInt(view.ssoSessionTimeout.text);
+        identityProvider.maxSessionsPerUser = parseInt(view.maxSessionsPerUser.text);
+        identityProvider.destroyPreviousSession = view.destroyPreviousSession.selected;
         identityProvider.dashboardUrl = view.dashboardUrl.text;
 
         var loc:Location = new Location();
@@ -375,6 +381,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             idpSamlConfig.encrypter = keystore;
         }
         identityProvider.config = idpSamlConfig;
+
+        identityProvider.identityLookups = new ArrayCollection();
 
         _newIdentityProvider = identityProvider;
     }
@@ -516,6 +524,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _validators.push(view.ssoSessionTimeoutValidator);
         _validators.push(view.messageTtlValidator);
         _validators.push(view.messageTtlToleranceValidator);
+        _validators.push(view.maxSessionsPerUserValidator);
         if (view.uploadKeystore.selected) {
             _validators.push(view.certificateAliasValidator);
             _validators.push(view.keyAliasValidator);

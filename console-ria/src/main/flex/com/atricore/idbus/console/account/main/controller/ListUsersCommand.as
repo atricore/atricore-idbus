@@ -24,6 +24,7 @@ package com.atricore.idbus.console.account.main.controller
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
+import com.atricore.idbus.console.services.spi.request.FindUsersRequest;
 import com.atricore.idbus.console.services.spi.response.ListUserResponse;
 
 import mx.rpc.Fault;
@@ -63,7 +64,10 @@ public class ListUsersCommand extends IocSimpleCommand implements IResponder {
 
     override public function execute(notification:INotification):void {
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
-        var call:Object = service.getUsers();
+        var req:FindUsersRequest = new FindUsersRequest ();
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
+        var call:Object = service.getUsers(req);
         call.addResponder(this);
     }
 

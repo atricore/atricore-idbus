@@ -66,6 +66,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LIFERAY_RESOURCE_REMOVE:String = "liferayResourceRemove";
     public static const SELFSERVICES_RESOURCE_REMOVE:String = "selfServicesResourceRemove";
     public static const DOMINO_RESOURCE_REMOVE:String = "dominoResourceRemove";
+    public static const BLACKBOARD_RESOURCE_REMOVE:String = "blackboardResourceRemove";
 
 //    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
 //    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
@@ -112,6 +113,8 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CHECK_INSTALL_FOLDER_EXISTENCE:String = "checkInstallFolderExistence";
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
+    public static const LIST_EMBEDDED_IDVAUTLS:String = "listEmbeddedIdentityVaults";
+    public static const LIST_IDVAUTLS:String = "listIdentityVaults";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
     public static const ACTIVATE_LICENSE:String = "activateLicense";
@@ -215,11 +218,13 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const REMOVE_LIFERAY_RESOURCE_ELEMENT:String = "removeLiferayResourceElement";
     public static const REMOVE_SELFSERVICES_RESOURCE_ELEMENT:String = "removeSelfServicesResourceElement";
     public static const REMOVE_DOMINO_RESOURCE_ELEMENT:String = "removeDominoResourceElement";
+    public static const REMOVE_BLACKBOARD_RESOURCE_ELEMENT:String = "removeBlackboardResourceElement";
     public static const CREATE_DB_IDENTITY_SOURCE_ELEMENT:String = "createDbIdentitySourceElement";
     public static const REMOVE_IDENTITY_SOURCE_ELEMENT:String = "removeIdentitySourceElement";
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
     public static const CREATE_XML_IDENTITY_SOURCE_ELEMENT:String = "createXmlIdentitySourceElement";
     public static const CREATE_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
+    public static const CREATE_DB_IDENTITY_VAULT_ELEMENT:String = "createDbIdentityVaultElement";
     public static const REMOVE_SAML2_SERVICE_PROVIDER_ELEMENT:String = "removeSaml2ServiceProviderElement";
     public static const REMOVE_EXTERNAL_SAML2_SERVICE_PROVIDER_ELEMENT:String = "removeExternalServiceProviderElement";
     public static const REMOVE_SALESFORCE_ELEMENT:String = "removeSalesforceElement";
@@ -241,6 +246,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CREATE_JBOSSEPP_RESOURCE_ELEMENT:String = "createJBossEPPResourceElement";
     public static const CREATE_SELFSERVICES_RESOURCE_ELEMENT:String = "createSelfServicesResourceElement"
     public static const CREATE_DOMINO_RESOURCE_ELEMENT:String = "createDominoResourceElement"
+    public static const CREATE_BLACKBOARD_RESOURCE_ELEMENT:String = "createBlackBoardResourceElement"
     public static const CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebsphereExecutionEnvironmentElement";
     public static const CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createApacheExecutionEnvironmentElement";
     public static const CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWindowsIISExecutionEnvironmentElement";

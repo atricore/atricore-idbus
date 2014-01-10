@@ -71,6 +71,7 @@
         <idbus.idojo.ehcachesessionstore.version>1.4.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
 
         <idbus.idojo.strongauthscheme.version>1.4.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.virtualidentitystore.version>1.4.0-SNAPSHOT</idbus.idojo.virtualidentitystore.version>
 
         <!-- 3rd party -->
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
@@ -117,7 +118,7 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <jaxws.api.version>2.1</jaxws.api.version>
-        <josso1.version>1.8.8-SNAPSHOT</josso1.version>
+        <josso1.version>1.8.8</josso1.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
@@ -1111,8 +1112,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3</version>
                     <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
+                        <source>1.6</source>
+                        <target>1.6</target>
                         <maxmem>256M</maxmem>
                         <fork>${compiler.fork}</fork>
                     </configuration>

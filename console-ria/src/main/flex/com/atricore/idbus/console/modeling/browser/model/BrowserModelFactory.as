@@ -26,11 +26,13 @@ import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.AlfrescoResource;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
+import com.atricore.idbus.console.services.dto.BlackBoardResource;
 import com.atricore.idbus.console.services.dto.ColdfusionResource;
 import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.ClientCertAuthnService;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.DbIdentityVault;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.DominoAuthenticationService;
@@ -202,6 +204,8 @@ public class BrowserModelFactory {
                 identityVaultNode.icon = EmbeddedIcons.ldapIdentitySourceMiniIcon;
             } else if(identitySource is XmlIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.xmlIdentitySourceMiniIcon;
+            } else if(identitySource is DbIdentityVault){
+                identityVaultNode.icon = EmbeddedIcons.dbVaultMiniIcon;
             } else {
                 identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;
             }
@@ -222,6 +226,8 @@ public class BrowserModelFactory {
                 resourceNode.icon = EmbeddedIcons.selfServicesResourceMiniIcon;
             } else if (serviceResource is DominoResource) {
                 resourceNode.icon = EmbeddedIcons.dominoResourceMiniIcon;
+            } else if (serviceResource is BlackBoardResource) {
+                resourceNode.icon = EmbeddedIcons.blackboardResourceMiniIcon;
             } else if (serviceResource is JOSSO2Resource) {
                 resourceNode.icon = EmbeddedIcons.josso2ResourceMiniIcon;
             } else if (serviceResource is MicroStrategyResource) {

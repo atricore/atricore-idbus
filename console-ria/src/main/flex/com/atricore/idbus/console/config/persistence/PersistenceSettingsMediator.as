@@ -29,6 +29,8 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
+import com.atricore.idbus.console.modeling.main.controller.EmbeddedIdentityVaultsListCommand;
+import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.services.dto.settings.PersistenceServiceConfiguration;
 import com.atricore.idbus.console.services.dto.settings.ServiceType;
 import com.atricore.idbus.console.services.spi.response.ConfigureServiceResponse;

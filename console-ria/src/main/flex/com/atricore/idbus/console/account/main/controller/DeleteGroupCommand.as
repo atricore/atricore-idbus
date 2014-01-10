@@ -68,6 +68,8 @@ public class DeleteGroupCommand extends IocSimpleCommand implements IResponder {
         var group:Group = notification.getBody() as Group;
         var req:RemoveGroupRequest = new RemoveGroupRequest();
         req.id = group.id;
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.removeGroup(req);

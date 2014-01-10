@@ -24,6 +24,7 @@ package com.atricore.idbus.console.account.main.controller
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
+import com.atricore.idbus.console.services.spi.request.FindGroupsRequest;
 import com.atricore.idbus.console.services.spi.response.ListGroupResponse;
 
 import mx.rpc.Fault;
@@ -64,7 +65,10 @@ public class ListGroupsCommand extends IocSimpleCommand implements IResponder {
 
     override public function execute(notification:INotification):void {
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
-        var call:Object = service.getGroups();
+        var req:FindGroupsRequest = new FindGroupsRequest();
+        if (_accountManagementProxy.currentIdentityVault != null)
+            req.pspTargetId = _accountManagementProxy.currentIdentityVault.pstName;
+        var call:Object = service.getGroups(req);
         call.addResponder(this);
     }
 

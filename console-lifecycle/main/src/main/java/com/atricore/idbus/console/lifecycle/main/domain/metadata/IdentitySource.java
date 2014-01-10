@@ -8,6 +8,8 @@ import java.io.Serializable;
  */
 public class IdentitySource implements Serializable {
 
+    private static final long serialVersionUID = -1499654004861436370L;
+
     private long id;
 
     private String name;
@@ -18,8 +20,6 @@ public class IdentitySource implements Serializable {
 
     private double x;
     private double y;
-    
-    private static final long serialVersionUID = -1499654004861436370L;
 
     public long getId() {
         return id;

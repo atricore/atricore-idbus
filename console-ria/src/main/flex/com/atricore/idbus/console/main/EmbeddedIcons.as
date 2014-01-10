@@ -283,6 +283,11 @@ public class EmbeddedIcons {
     public static var vaultMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/db_identity_vault.png")]
+    public static var dbVaultMiniIcon:Class;
+
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/40x40/ldap_identity_source.png")]
     public static var ldapIdentitySourceMiniIcon:Class;
 
@@ -350,6 +355,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/40x40/domino_resource.png")]
     public static var dominoResourceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/40x40/blackboard_resource.png")]
+    public static var blackboardResourceMiniIcon:Class;
 
    // Connections
     [Bindable]
@@ -486,6 +495,11 @@ public class EmbeddedIcons {
     public static var vaultIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/db_identity_vault.png")]
+    public static var dbVaultIcon:Class;
+
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/60x60/ldap_identity_source.png")]
     public static var ldapIdentitySourceIcon:Class;
 
@@ -553,6 +567,10 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/60x60/domino_resource.png")]
     public static var dominoResourceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/60x60/blackboard_resource.png")]
+    public static var blackboardResourceIcon:Class;
 
     // Connections
     [Bindable]

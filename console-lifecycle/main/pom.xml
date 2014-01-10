@@ -94,6 +94,7 @@
         <dependency>
             <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
             <artifactId>org.atricore.idbus.capabilities.idconfirmation.main</artifactId>
+            <version>1.4.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -166,6 +167,12 @@
         <dependency>
             <groupId>com.atricore.idbus.console.activation</groupId>
             <artifactId>com.atricore.idbus.console.activation.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.settings</groupId>
+            <artifactId>com.atricore.idbus.console.settings.main</artifactId>
             <scope>provided</scope>
         </dependency>
 

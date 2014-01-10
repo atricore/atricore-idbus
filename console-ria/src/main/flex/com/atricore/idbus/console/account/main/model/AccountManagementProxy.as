@@ -22,6 +22,8 @@
 package com.atricore.idbus.console.account.main.model
 {
 import com.atricore.idbus.console.services.dto.Group;
+import com.atricore.idbus.console.services.dto.IdentityConnector;
+import com.atricore.idbus.console.services.dto.IdentityVault;
 import com.atricore.idbus.console.services.dto.User;
 
 import mx.collections.ArrayCollection;
@@ -31,6 +33,11 @@ import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class AccountManagementProxy extends IocProxy implements IDisposable
 {
+
+    private var _identityVaults:ArrayCollection;
+
+    private var _currentIdentityVault:IdentityConnector;
+
     private var _groupsList:Array;
     private var _userList:Array;
 
@@ -43,6 +50,15 @@ public class AccountManagementProxy extends IocProxy implements IDisposable
     public function AccountManagementProxy()
     {
         super(NAME);
+    }
+
+
+    public function get identityVaults():ArrayCollection {
+        return _identityVaults;
+    }
+
+    public function set identityVaults(value:ArrayCollection):void {
+        _identityVaults = value;
     }
 
     public function get groupsList():Array {
@@ -93,6 +109,15 @@ public class AccountManagementProxy extends IocProxy implements IDisposable
         _searchedUsers = value;
     }
 
+
+    public function get currentIdentityVault():IdentityConnector {
+        return _currentIdentityVault;
+    }
+
+    public function set currentIdentityVault(value:IdentityConnector):void {
+        _currentIdentityVault = value;
+    }
+
     public function dispose():void {
         _groupsList = null;
         _userList = null;
@@ -100,6 +125,7 @@ public class AccountManagementProxy extends IocProxy implements IDisposable
         _currentUser = null;
         _searchedGroups = null;
         _searchedUsers = null;
+        _identityVaults = null;
     }
 }
 }

@@ -85,7 +85,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
         // Identity Sources drawer
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
-                new PaletteEntry("Identity Vault", EmbeddedIcons.vaultMiniIcon, "Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)
+                new PaletteEntry("Embedded Identity Vault", EmbeddedIcons.vaultMiniIcon, "Embedded Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)
+        );
+        identitySourcesPaletteDrawer.add(
+                new PaletteEntry("DB Identity Vault", EmbeddedIcons.dbVaultMiniIcon, "DB Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)
         );
         identitySourcesPaletteDrawer.add(
                 new PaletteEntry("DB Identity Source", EmbeddedIcons.dbIdentitySourceMiniIcon, "DB Identity Source Entry", DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE)
@@ -139,6 +142,10 @@ public class EEPaletteItemProvider implements PaletteItemProvider {
 
         resourcesPaletteDrawer.add(
                 new PaletteEntry("Domino", EmbeddedIcons.dominoResourceMiniIcon, "Domino Resource Entry", DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE)
+        );
+
+        resourcesPaletteDrawer.add(
+                new PaletteEntry("BlackBoard Learn", EmbeddedIcons.blackboardMiniIcon, "BlackBoard Learn Resource Entry", DiagramElementTypes.BLACKBOARD_RESOURCE_ELEMENT_TYPE)
         );
 
         pr.add(resourcesPaletteDrawer);

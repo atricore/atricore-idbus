@@ -201,7 +201,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 //            addError("Identity Provider needs an Identity Lookup connection");
 
         if ( (node.getDelegatedAuthentications() != null && node.getDelegatedAuthentications().size() == 0) &&
-             (node.getIdentityLookup() == null) ) {
+             (node.getIdentityLookups() == null) ) {
           addError("Identity Provider needs at least either one Identity Verification or Lookup connection");
         }
 
@@ -368,13 +368,6 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         if (node.getProvider() == null)
             addError("Identity Lookup " + node.getName() + " Provider cannot be null");
-        else {
-            if (node.getProvider().getIdentityLookup() != node) {
-                addError("Provider Identity Lookup is not this Identity Lookup " +
-                        node.getName() +
-                        " ["+node.getProvider().getIdentityLookup()+"]");
-            }
-        }
 
         if (node.getIdentitySource() == null) {
             addError("Identity Lookup " + node.getName() + " Identity Source cannot be null");
@@ -568,7 +561,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
     @Override
-    public void arrive(EmbeddedIdentitySource node) throws Exception {
+    public void arrive(EmbeddedIdentityVault node) throws Exception {
         validateName("Embedded Identity Source name" , node.getName(), node);
         validateDisplayName("Ebmedded Identity Source display name" , node.getDisplayName());
         // TODO !

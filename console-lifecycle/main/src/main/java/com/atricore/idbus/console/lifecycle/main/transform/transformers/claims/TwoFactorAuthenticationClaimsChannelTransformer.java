@@ -9,6 +9,7 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.transformers.AbstractTransformer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory;
@@ -23,6 +24,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,7 +177,7 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
                 ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
                 Bean ccLogger = newBean(idpBeans, claimChannelBeanName + "-mediation-logger", DefaultMediationLogger.class.getName());
-                setPropertyValue(ccLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire.cc1");
+                setPropertyValue(ccLogger, "category", appliance.getNamespace() + ".wire.cc1");
                 setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
 
                 // logger
@@ -186,6 +188,16 @@ public class TwoFactorAuthenticationClaimsChannelTransformer extends AbstractTra
 
                 // warningUrl
                 setPropertyValue(ccMediator, "warningUrl", resolveUiWarningLocation(appliance, provider));
+
+                // Provisioning target (default)
+                Reference provisioningTargetOsgi = new Reference();
+                provisioningTargetOsgi.setId(ccMediator.getName() + "-provisioning-target");
+                provisioningTargetOsgi.setInterface(ProvisioningTarget.class.getName());
+                provisioningTargetOsgi.setCardinality("1..1");
+
+                idpBeans.getImportsAndAliasAndBeen().add(provisioningTargetOsgi);
+
+                setPropertyRef(ccMediator, "provisioningTarget", ccMediator.getName() + "-provisioning-target");
 
                 // identityMediator
                 setPropertyRef(claimChannelBean, "identityMediator", ccMediator.getName());

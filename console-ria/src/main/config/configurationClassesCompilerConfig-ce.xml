@@ -106,6 +106,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.EmbeddedIdentityVaultsListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand</symbol>
@@ -152,7 +153,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.phpbb.PhpBBResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.resources.selfservices.SelfServicesResourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.EmbeddedIdentityVaultCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator</symbol>
@@ -194,6 +195,7 @@
         <symbol>com.atricore.idbus.console.account.main.controller.EditUserCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.ListGroupsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.ListUsersCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.ListIdentityVaultsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchGroupsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchUsersCommand</symbol>
 

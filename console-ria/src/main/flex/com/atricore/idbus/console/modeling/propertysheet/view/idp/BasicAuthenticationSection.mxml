@@ -41,7 +41,8 @@
                     <mx:ArrayCollection>
 
                         <fx:Object label="MD5" data="MD5"/>
-                        <fx:Object label="SHA1" data="SHA1"/>
+                        <fx:Object label="SHA-1" data="SHA-1"/>
+                        <fx:Object label="SHA-256" data="SHA-256"/>
                         <fx:Object label="CRYPT (LDAP Only)" data="CRYPT"/>
                         <fx:Object label="PLain Text (none)" data="NONE"/>
                     </mx:ArrayCollection>

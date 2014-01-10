@@ -51,6 +51,17 @@
         <property name="brandManager" ref="brandManager"/>
     </bean>
 
+    <bean name="dbIdentityVaultTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.DbIdentityVaultTransformer">
+        <property name="configManager" ref="configManager"/>
+    </bean>
+
+    <bean name="embeddedIdentityVaultTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.EmbeddedIdentityVaultTransformer">
+        <property name="identityVaultManager" ref="identityVaultManager"/>
+    </bean>
+
+
     <bean name="oauth2IdpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.oauth2.OAuth2IdPTransformer">
     </bean>
@@ -242,6 +253,7 @@
                 <entry key="tc60">
                     <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
                         <property name="platformId" value="tc60"/>
+                        <property name="enableJaxws" value="true"/>
                         <property name="javaAgentClass" value="org.josso.tc60.agent.CatalinaSSOAgent"/>
                     </bean>
                 </entry>
@@ -249,6 +261,7 @@
                 <entry key="tc70">
                     <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
                         <property name="platformId" value="tc70"/>
+                        <property name="enableJaxws" value="true"/>
                         <property name="javaAgentClass" value="org.josso.tc70.agent.CatalinaSSOAgent"/>
                     </bean>
                 </entry>
@@ -275,22 +288,29 @@
                     </bean>
                 </entry>
 
-                <!-- TODO : Agent class is wrong !-->
                 <entry key="jb5">
                     <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
                         <property name="platformId" value="jb5"/>
-                        <!--<property name="javaAgentClass" value="org.josso.jb5.agent.JBossCatalinaSSOAgent"/>-->
                         <property name="javaAgentClass" value="org.josso.agent.http.JaasHttpSSOAgent"/>
                     </bean>
                 </entry>
-                <!---->
+
                 <entry key="jb6">
                     <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
                         <property name="platformId" value="jb6"/>
-                        <!--<property name="javaAgentClass" value="org.josso.jb5.agent.JBossCatalinaSSOAgent"/>-->
                         <property name="javaAgentClass" value="org.josso.agent.http.JaasHttpSSOAgent"/>
+                        <property name="enableJaxws" value="true"/>
                     </bean>
                 </entry>
+
+                <entry key="jb7">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb7"/>
+                        <property name="javaAgentClass" value="org.josso.agent.http.JaasHttpSSOAgent"/>
+                        <property name="enableJaxws" value="true"/>
+                    </bean>
+                </entry>
+
 
                 <!-- Weblogic Family -->
                 <entry key="wl81">
@@ -390,8 +410,11 @@
     <bean name="dominoSpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.domino.DominoSPTransformer"/>
 
+    <bean name="identitySourceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.IdentitySourceTransformer"/>
+
     <bean name="identityLookupTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPMetadataTransformer">
@@ -479,7 +502,12 @@
                                         <ref bean="idauBaseComponentsTransformer"/>
                                         <ref bean="idauUiTransformer"/>
 
+                                        <!-- PSP Transformers -->
+                                        <ref bean="dbIdentityVaultTransformer"/>
+                                        <ref bean="embeddedIdentityVaultTransformer"/>
+
                                         <!-- IDP Transformers -->
+
                                         <ref bean="idpLocalTransformer"/>
                                         <ref bean="idpUiLocalTransformer"/>
                                         <ref bean="oauth2IdpLocalTransformer"/>
@@ -547,13 +575,12 @@
 
                                         <ref bean="samlr2SPTransformer"/>
 
-                                        <!-- PSP Transformers -->
-
                                         <!-- Other Transformers -->
                                         <ref bean="josso1ExecEnvTransformer"/>
                                         <ref bean="mstrExecEnvTransformer"/>
                                         <ref bean="selfSvcsExecEnvTransformer"/>
                                         <ref bean="identityLookupTransformer"/>
+                                        <ref bean="identitySourceTransformer"/>
 
                                     </list>
                                 </property>

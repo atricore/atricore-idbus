@@ -38,6 +38,10 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     private int ssoSessionTimeout;
 
+    private int maxSessionsPerUser;
+
+    private boolean destroyPreviousSession;
+
     private String oauth2ClientsConfig;
 
     private String oauth2Key;
@@ -132,6 +136,22 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
 
     public void setSsoSessionTimeout(int ssoSessionTimeout) {
         this.ssoSessionTimeout = ssoSessionTimeout;
+    }
+
+    public int getMaxSessionsPerUser() {
+        return maxSessionsPerUser;
+    }
+
+    public void setMaxSessionsPerUser(int maxSessionsPerUser) {
+        this.maxSessionsPerUser = maxSessionsPerUser;
+    }
+
+    public boolean isDestroyPreviousSession() {
+        return destroyPreviousSession;
+    }
+
+    public void setDestroyPreviousSession(boolean destroyPreviousSession) {
+        this.destroyPreviousSession = destroyPreviousSession;
     }
 
     public AttributeProfileDTO getAttributeProfile() {

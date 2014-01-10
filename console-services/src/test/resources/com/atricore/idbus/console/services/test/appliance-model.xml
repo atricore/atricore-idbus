@@ -315,7 +315,7 @@
         </property>
     </bean>
 
-    <bean name="idsource1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource">
+    <bean name="idsource1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentityVault">
         <property name="name" value="idsource1"/>
         <property name="displayName" value="Identity Source One"/>
         <property name="description" value="Test Identity Source One"/>

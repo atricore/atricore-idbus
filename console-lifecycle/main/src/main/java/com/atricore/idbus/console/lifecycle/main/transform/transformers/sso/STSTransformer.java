@@ -7,12 +7,14 @@ import com.atricore.idbus.console.lifecycle.main.transform.transformers.Abstract
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.osgi.Reference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.kernel.main.authn.AuthenticatorImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -105,6 +107,7 @@ public class STSTransformer extends AbstractTransformer {
         // ----------------------------------------
         Bean sts = newBean(idpBeans, idpBean.getName() + "-sts",
                 "org.atricore.idbus.capabilities.sts.main.WSTSecurityTokenService");
+        setPropertyValue(sts, "name", sts.getName());
 
         // ----------------------------------------
         // Emitters
@@ -164,6 +167,16 @@ public class STSTransformer extends AbstractTransformer {
 
         // authenticators
         setPropertyAsBeans(sts, "authenticators", authenticators);
+
+        // Provisioning target (default)
+        Reference provisioningTargetOsgi = new Reference();
+        provisioningTargetOsgi.setId(sts.getName() + "-provisioning-target");
+        provisioningTargetOsgi.setInterface(ProvisioningTarget.class.getName());
+        provisioningTargetOsgi.setCardinality("1..1");
+
+        idpBeans.getImportsAndAliasAndBeen().add(provisioningTargetOsgi);
+
+        setPropertyRef(sts, "provisioningTarget", sts.getName() + "-provisioning-target");
 
         // Add pass-through authenticator
         Bean passThroughAuthenticator = newAnonymousBean("org.atricore.idbus.capabilities.sts.main.authenticators.PassthroughSecurityTokenAuthenticator");

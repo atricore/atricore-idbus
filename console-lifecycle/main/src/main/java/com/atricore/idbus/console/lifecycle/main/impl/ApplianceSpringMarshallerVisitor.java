@@ -118,9 +118,11 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         }
 
         // Identity Lookup
-        if (node.getIdentityLookup() != null) {
-            setPropertyRef(providerBean, "identityLookup", node.getIdentityLookup().getName());
-        }
+        if (node.getIdentityLookups() != null) {
+            for (IdentityLookup il : node.getIdentityLookups()) {
+                addPropertyRefsToSet(providerBean, "identityLookups", il.getName() );
+            }
+       }
 
         // Location
         if (node.getLocation() != null)
@@ -196,8 +198,10 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         }
 
         // Identity Lookup
-        if (node.getIdentityLookup() != null) {
-            setPropertyRef(providerBean, "identityLookup", node.getIdentityLookup().getName());
+        if (node.getIdentityLookups() != null) {
+            for (IdentityLookup il : node.getIdentityLookups()) {
+                addPropertyRefsToSet(providerBean, "identityLookups", il.getName() );
+            }
         }
 
         // Location
@@ -733,7 +737,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
     }
 
     @Override
-    public void arrive(EmbeddedIdentitySource node) throws Exception {
+    public void arrive(EmbeddedIdentityVault node) throws Exception {
         Bean idSourceBean = newBean(beans, node.getName(), node.getClass());
         setBeanDescription(idSourceBean, node.toString());
 
@@ -741,10 +745,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(idSourceBean, "name", node.getName());
         setPropertyValue(idSourceBean, "displayName", node.getDisplayName());
         setPropertyValue(idSourceBean, "description", node.getDescription());
-
-        setPropertyValue(idSourceBean, "idau", node.getIdau());
-        setPropertyValue(idSourceBean, "psp", node.getPsp());
-        setPropertyValue(idSourceBean, "pspTarget", node.getPspTarget());
+        setPropertyValue(idSourceBean, "identityConnectorName", node.getIdentityConnectorName());
 
         setPropertyValue(idSourceBean, "x", String.valueOf(node.getX()));
         setPropertyValue(idSourceBean, "y", String.valueOf(node.getY()));

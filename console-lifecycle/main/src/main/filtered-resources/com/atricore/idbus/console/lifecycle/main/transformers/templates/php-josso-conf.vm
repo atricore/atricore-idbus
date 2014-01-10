@@ -40,8 +40,8 @@
 */
 #set ($partnerappIDs = "")
 #foreach($activation in $execEnv.getActivations())
-#set ($partnerappID = $activation.getPartnerAppId())
-#set ($partnerapp = $activation.getPartnerAppLocation().getContext())
+#set ($partnerappID = $activation.getResource().getServiceConnection().getSp().getName())
+#set ($partnerapp = $activation.getResource().getPartnerAppLocation().getContext())
 #if ($partnerappIDs != "")
 #set ($partnerappIDs = $partnerappIDs + ", ")
 #end

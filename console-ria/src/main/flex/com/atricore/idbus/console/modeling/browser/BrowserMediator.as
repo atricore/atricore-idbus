@@ -33,6 +33,7 @@ import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
@@ -174,27 +175,35 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConnB, true, connectionsNode));
                             }
                         }
+
                         // add identity source to provider node and identity lookup to connections node
-                        if (locProv.identityLookup != null && locProv.identityLookup.identitySource != null) {
+                        if (locProv.identityLookups != null ) {
                             // add connections node to provider if not already added
                             if (!connectionsNodeAdded) {
                                 providerNode.addChild(connectionsNode);
                                 connectionsNodeAdded = true;
                             }
-                            var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                            var newIdentityVaultNode:BrowserNode = BrowserModelFactory.createIdentitySourceNode(idSource, true, providerNode);
-                            providerNode.addChild(newIdentityVaultNode);
-                            // add identityLookup to connections node
-                            var identityLookupNode:BrowserNode = BrowserModelFactory.createConnectionNode(locProv.identityLookup, true, connectionsNode);
-                            connectionsNode.addChild(identityLookupNode);
-                            // add identityLookup to idSourceConnections map
-                            var idLookupConnections:ArrayCollection = idSourceConnections[idSource];
-                            if (idLookupConnections == null) {
-                                idLookupConnections = new ArrayCollection();
+                            for each (var identityLookup:IdentityLookup in locProv.identityLookups) {
+                                var idSource:IdentitySource = identityLookup.identitySource;
+
+                                if (idSource == null)
+                                    continue;
+
+                                var newIdentityVaultNode:BrowserNode = BrowserModelFactory.createIdentitySourceNode(idSource, true, providerNode);
+                                providerNode.addChild(newIdentityVaultNode);
+                                // add identityLookup to connections node
+                                var identityLookupNode:BrowserNode = BrowserModelFactory.createConnectionNode(identityLookup, true, connectionsNode);
+                                connectionsNode.addChild(identityLookupNode);
+                                // add identityLookup to idSourceConnections map
+                                var idLookupConnections:ArrayCollection = idSourceConnections[idSource];
+                                if (idLookupConnections == null) {
+                                    idLookupConnections = new ArrayCollection();
+                                }
+                                idLookupConnections.addItem(identityLookup);
+                                idSourceConnections[idSource] = idLookupConnections;
                             }
-                            idLookupConnections.addItem(locProv.identityLookup);
-                            idSourceConnections[idSource] = idLookupConnections;
                         }
+
                         if (locProv is InternalSaml2ServiceProvider) {
                             var sp:InternalSaml2ServiceProvider = locProv as InternalSaml2ServiceProvider;
 

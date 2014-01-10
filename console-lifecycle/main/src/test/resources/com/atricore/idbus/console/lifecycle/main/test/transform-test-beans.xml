@@ -102,7 +102,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.josso1.JOSSO1ExecEnvransformer"/>
 
     <bean name="identityLookupTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.idsource.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.sso.IdPMetadataTransformer"/>

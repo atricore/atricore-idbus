@@ -102,7 +102,7 @@ public class OAuth2IdPTransformer extends AbstractTransformer implements Initial
 
             Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
             idpLogger.setName(idpBean.getName() + "-mediation-logger");
-            setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpBean.getName());
+            setPropertyValue(idpLogger, "category", appliance.getNamespace() + ".wire." + idpBean.getName());
             setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
             setPropertyBean(idpMediator, "logger", idpLogger);
 

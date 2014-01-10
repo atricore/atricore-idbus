@@ -694,6 +694,38 @@ public class BeanUtils {
         setPropertyAsBeans(bean, listName, beansToAdd);
     }
 
+    public static Entry buildMapEntry(String keyValue, String value) {
+        Value keyName = new Value();
+        keyName.getContent().add(keyValue);
+        Key key = new Key();
+        key.getBeenAndRevesAndIdreves().add(keyName);
+
+        Entry entry = new Entry();
+        entry.setKey(key);
+        entry.setValue(value);
+
+        return entry;
+
+    }
+
+    public static void addEntryToMap(Bean bean, String property, String key, String value) {
+
+        Value propValue = new Value();
+        propValue.getContent().add(value);
+
+        Value keyValue = new Value();
+        keyValue.getContent().add(key);
+
+        Key keyBean = new Key();
+        keyBean.getBeenAndRevesAndIdreves().add(keyValue);
+
+        Entry entry = new Entry();
+        entry.setKey(keyBean);
+        entry.getBeenAndRevesAndIdreves().add(propValue);
+
+        addEntryToMap(bean, property, entry);
+    }
+
 
     public static void addEntryToMap(Bean bean, String name, Entry entryToAdd) {
         java.util.List<Entry> entriesToAdd = new ArrayList<Entry>();

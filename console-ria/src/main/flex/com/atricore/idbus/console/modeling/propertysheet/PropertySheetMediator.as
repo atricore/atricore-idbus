@@ -30,6 +30,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFol
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSelfServicesResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.AccountLinkagePolicyListCommand;
+import com.atricore.idbus.console.modeling.main.controller.EmbeddedIdentityVaultsListCommand;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand;
@@ -53,6 +54,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.authenticationserv
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.DbIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.delegatedauthentication.DelegatedAuthenticationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.authenticationservice.jbossepp.JBossEPPAuthenticationServiceCoreSection;
@@ -123,14 +125,16 @@ import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.BindAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.BlackBoardResource;
 import com.atricore.idbus.console.services.dto.Channel;
 import com.atricore.idbus.console.services.dto.ColdfusionResource;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.DbIdentityVault;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.DominoResource;
-import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentityVault;
 import com.atricore.idbus.console.services.dto.ExecEnvType;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Extension;
@@ -258,7 +262,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _sugarCRMCoreSection:SugarCRMCoreSection;
     private var _sugarCRMContractSection:SugarCRMContractSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
-    private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
+    private var _dbIdentityVaultCoreSection:DbIdentityVaultCoreSection;
+    private var _dbIdentitySourceCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
     private var _ldapIdentitySourceLookupSection:LdapIdentitySourceLookupSection;
     private var _xmlIdentitySourceCoreSection:XmlIdentitySourceCoreSection;
@@ -273,7 +278,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _ipIdentityConfirmationSection:IdentityProviderIdentityConfirmationSection;
     //private var _spContractSection:ServiceProviderContractSection;
     private var _spSaml2Section:InternalSaml2ServiceProviderSaml2Section;
-    private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
+    private var _dbIdentitySourceLookupSection:ExternalDBIdentityVaultLookupSection;
     private var _federatedConnectionCoreSection:FederatedConnectionCoreSection;
     private var _federatedConnectionSPChannelSection:FederatedConnectionSPChannelSection;
     private var _federatedConnectionIDPChannelSection:FederatedConnectionIDPChannelSection;
@@ -325,6 +330,9 @@ public class PropertySheetMediator extends IocMediator {
 
     [Bindable]
     public var _jdbcDrivers:ArrayCollection;
+
+    [Bindable]
+    public var _embeddedIdentityVaults:ArrayCollection;
 
     // keystore
     private var _uploadedFile:ByteArray;
@@ -454,6 +462,7 @@ public class PropertySheetMediator extends IocMediator {
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
             FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
             JDBCDriversListCommand.SUCCESS,
+            EmbeddedIdentityVaultsListCommand.SUCCESS,
             GetMetadataInfoCommand.SUCCESS,
             GetCertificateInfoCommand.SUCCESS,
             AccountLinkagePolicyListCommand.SUCCESS,
@@ -524,10 +533,12 @@ public class PropertySheetMediator extends IocMediator {
                 } else if (_currentIdentityApplianceElement is WindowsIntegratedAuthentication) {
                     enableWindowsIntegratedAuthnPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
-                    if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
-                        enableIdentityVaultPropertyTabs();
+                    if (_currentIdentityApplianceElement is EmbeddedIdentityVault) {
+                        enableEmbeddedIdentityVaultPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is DbIdentityVault) {
+                        enableDbIdentityVaultPropertyTabs();
                     } else if (_currentIdentityApplianceElement is DbIdentitySource) {
-                        enableExternalDbVaultPropertyTabs();
+                        enableDbIdentitySourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is LdapIdentitySource) {
                         enableLdapIdentitySourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is XmlIdentitySource) {
@@ -541,6 +552,8 @@ public class PropertySheetMediator extends IocMediator {
                         enableSelfServicesResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is DominoResource) {
                         enableDominoResourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is BlackBoardResource) {
+                        enableBlackboardResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is JOSSO2Resource) {
                         enableJOSSO2ResourcePropertyTabs();
                     } else if (_currentIdentityApplianceElement is SharepointResource) {
@@ -639,11 +652,35 @@ public class PropertySheetMediator extends IocMediator {
                 break;
             case JDBCDriversListCommand.SUCCESS:
                 _jdbcDrivers = projectProxy.jdbcDrivers;
-                var dbIdentitySource:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
-                if (dbIdentitySource != null) {
-                    for (var i:int = 0; i < _externalDbVaultCoreSection.driver.dataProvider.length; i++) {
-                        if (_externalDbVaultCoreSection.driver.dataProvider[i].className == dbIdentitySource.driverName) {
-                            _externalDbVaultCoreSection.driver.selectedIndex = i;
+
+                if (_currentIdentityApplianceElement != null && _currentIdentityApplianceElement is DbIdentitySource) {
+                    var dbIdentitySource:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+                    for (var i:int = 0; i < _dbIdentitySourceCoreSection.driver.dataProvider.length; i++) {
+                        if (_dbIdentitySourceCoreSection.driver.dataProvider[i].className == dbIdentitySource.driverName) {
+                            _dbIdentitySourceCoreSection.driver.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (_currentIdentityApplianceElement != null && _currentIdentityApplianceElement is DbIdentityVault) {
+                    var dbIdentityVault:DbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
+                    for (var i1:int = 0; i1 < _dbIdentityVaultCoreSection.driver.dataProvider.length; i1++) {
+                        if (_dbIdentityVaultCoreSection.driver.dataProvider[i1].className == dbIdentityVault.driverName) {
+                            _dbIdentityVaultCoreSection.driver.selectedIndex = i1;
+                            break;
+                        }
+                    }
+                }
+
+                break;
+            case EmbeddedIdentityVaultsListCommand.SUCCESS:
+                _embeddedIdentityVaults = projectProxy.embeddedIdentityVaults;
+                if (_currentIdentityApplianceElement != null && _currentIdentityApplianceElement is EmbeddedIdentityVault) {
+                    var embeddedIdentityVault:EmbeddedIdentityVault = _currentIdentityApplianceElement as EmbeddedIdentityVault;
+                    for (var i2:int = 0; i2 < _embeddedDbVaultCoreSection.embeddedVault.dataProvider.length; i2++) {
+                        if (_embeddedDbVaultCoreSection.embeddedVault.dataProvider[i2].name == embeddedIdentityVault.identityConnectorName) {
+                            _embeddedDbVaultCoreSection.embeddedVault.selectedIndex = i2;
                             break;
                         }
                     }
@@ -1289,6 +1326,12 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.identityProvDescription.text = identityProvider.description;
             _ipCoreSection.ssoSessionTimeout.text =
                     identityProvider.ssoSessionTimeout > 0 ? identityProvider.ssoSessionTimeout.toString() : "30";
+
+            _ipCoreSection.maxSessionsPerUser.text =
+                    identityProvider.maxSessionsPerUser > 0 ? identityProvider.maxSessionsPerUser.toString() : "-1";
+
+            _ipCoreSection.destroyPreviousSession.selected = identityProvider.destroyPreviousSession;
+
             _ipCoreSection.dashboardUrl.text = identityProvider.dashboardUrl;
 
 
@@ -1335,6 +1378,8 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.ssoSessionTimeout.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.maxSessionsPerUser.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.destroyPreviousSession.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.dashboardUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1347,6 +1392,7 @@ public class PropertySheetMediator extends IocMediator {
             _validators = [];
             _validators.push(_ipCoreSection.nameValidator);
             _validators.push(_ipCoreSection.ssoSessionTimeoutValidator);
+            _validators.push(_ipCoreSection.maxSessionsPerUserValidator);
             _validators.push(_ipCoreSection.portValidator);
             _validators.push(_ipCoreSection.domainValidator);
             _validators.push(_ipCoreSection.contextValidator);
@@ -1366,6 +1412,8 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.name = _ipCoreSection.identityProviderName.text;
             identityProvider.description = _ipCoreSection.identityProvDescription.text;
             identityProvider.ssoSessionTimeout = parseInt(_ipCoreSection.ssoSessionTimeout.text);
+            identityProvider.maxSessionsPerUser = parseInt(_ipCoreSection.maxSessionsPerUser.text);
+            identityProvider.destroyPreviousSession = _ipCoreSection.destroyPreviousSession.selected;
             identityProvider.dashboardUrl = _ipCoreSection.dashboardUrl.text;
 
             identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.labelDisplay.text;
@@ -1777,6 +1825,13 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
 
+                for (var k:int = 0; k < _authenticationSection.simpleAuthnSaltLength.dataProvider.length; k++) {
+                    if (_authenticationSection.simpleAuthnSaltLength.dataProvider[k].data == basicAuthentication.saltLength.toString()) {
+                        _authenticationSection.simpleAuthnSaltLength.selectedIndex = k;
+                        break;
+                    }
+                }
+
                 _authenticationSection.simpleAuthnIgnoreUsernameCase.selected = basicAuthentication.ignoreUsernameCase;
                 _authenticationSection.simpleAuthnIgnorePasswordCase.selected = basicAuthentication.ignorePasswordCase;
 
@@ -1785,6 +1840,7 @@ public class PropertySheetMediator extends IocMediator {
                 _authenticationSection.simpleAuthnEnabled.addEventListener(Event.CHANGE, handleSimpleAuthnEnabledChange);
                 _authenticationSection.simpleAuthnHashAlgorithm.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnHashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
+                _authenticationSection.simpleAuthnSaltLength.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnIgnoreUsernameCase.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnIgnorePasswordCase.addEventListener(Event.CHANGE, handleSectionChange);
                 _authenticationSection.simpleAuthnImpersonateUserPoliciesCombo.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1844,6 +1900,7 @@ public class PropertySheetMediator extends IocMediator {
                 basicAuthentication.enabled = _authenticationSection.simpleAuthnEnabled.selected;
                 basicAuthentication.hashAlgorithm = _authenticationSection.simpleAuthnHashAlgorithm.selectedItem.data;
                 basicAuthentication.hashEncoding = _authenticationSection.simpleAuthnHashEncoding.selectedItem.data;
+                basicAuthentication.saltLength = parseInt(_authenticationSection.simpleAuthnSaltLength.selectedItem.data);
                 basicAuthentication.ignoreUsernameCase = _authenticationSection.simpleAuthnIgnoreUsernameCase.selected;
                 basicAuthentication.ignorePasswordCase = _authenticationSection.simpleAuthnIgnorePasswordCase.selected;
                 basicAuthentication.impersonateUserPolicy = _authenticationSection.simpleAuthnImpersonateUserPoliciesCombo.selectedItem;
@@ -4253,7 +4310,7 @@ public class PropertySheetMediator extends IocMediator {
     // Identity vault
 
 
-    protected function enableIdentityVaultPropertyTabs():void {
+    protected function enableEmbeddedIdentityVaultPropertyTabs():void {
         // Attach embedded DB identity vault editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
 
@@ -4270,47 +4327,44 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _embeddedDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityVaultCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityVaultCorePropertyTabRollOut);
+        _embeddedDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleEmbeddedIdentityVaultCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleEmbeddedIdentityVaultCorePropertyTabRollOut);
     }
 
-    private function handleIdentityVaultCorePropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:EmbeddedIdentitySource = _currentIdentityApplianceElement as EmbeddedIdentitySource;
+    private function handleEmbeddedIdentityVaultCorePropertyTabCreationComplete(event:Event):void {
+        var embeddedIdentityVault:EmbeddedIdentityVault = _currentIdentityApplianceElement as EmbeddedIdentityVault;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
-        if (dbIdentityVault != null) {
+        if (embeddedIdentityVault != null) {
             // bind view
-            _embeddedDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
-            _embeddedDbVaultCoreSection.description.text = dbIdentityVault.description;
-            _embeddedDbVaultCoreSection.idau.text = dbIdentityVault.idau
-            _embeddedDbVaultCoreSection.psp.text = dbIdentityVault.psp;
-            _embeddedDbVaultCoreSection.pspTarget.text = dbIdentityVault.pspTarget;
+            _embeddedDbVaultCoreSection.identityVaultName.text = embeddedIdentityVault.name;
+            _embeddedDbVaultCoreSection.identityVaultDescription.text = embeddedIdentityVault.description;
 
-            _embeddedDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.idau.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.psp.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.pspTarget.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.identityVaultName.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.identityVaultDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.embeddedVault.addEventListener(Event.CHANGE, handleSectionChange);
+
+
+            BindingUtils.bindProperty(_embeddedDbVaultCoreSection.embeddedVault, "dataProvider", this, "_embeddedIdentityVaults");
+            // _dbIdentityVaultCoreSection.driver.addEventListener(Event.CHANGE, handleEmbeddedIdentityVaultConnectorChange);
+            sendNotification(ApplicationFacade.LIST_EMBEDDED_IDVAUTLS);
 
             _validators = [];
             _validators.push(_embeddedDbVaultCoreSection.nameValidator);
-            _validators.push(_embeddedDbVaultCoreSection.idauValidator);
-            _validators.push(_embeddedDbVaultCoreSection.pspValidator);
-            _validators.push(_embeddedDbVaultCoreSection.pspTargetValidator);
         }
     }
 
-    private function handleIdentityVaultCorePropertyTabRollOut(e:Event):void {
+    private function handleEmbeddedIdentityVaultCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
             // bind model
-            var dbIdentityVault:EmbeddedIdentitySource;
+            var embeddedIdentityVault:EmbeddedIdentityVault;
 
-            dbIdentityVault = _currentIdentityApplianceElement as EmbeddedIdentitySource;
-            dbIdentityVault.name = _embeddedDbVaultCoreSection.userRepositoryName.text;
-            dbIdentityVault.description = _embeddedDbVaultCoreSection.description.text;
-            dbIdentityVault.idau = _embeddedDbVaultCoreSection.idau.text;
-            dbIdentityVault.psp = _embeddedDbVaultCoreSection.psp.text;
-            dbIdentityVault.pspTarget = _embeddedDbVaultCoreSection.pspTarget.text;
+            embeddedIdentityVault = _currentIdentityApplianceElement as EmbeddedIdentityVault;
+            embeddedIdentityVault.name = _embeddedDbVaultCoreSection.identityVaultName.text;
+            embeddedIdentityVault.description = _embeddedDbVaultCoreSection.identityVaultDescription.text;
+
+            if (_embeddedDbVaultCoreSection.embeddedVault.selectedItem != null)
+                embeddedIdentityVault.identityConnectorName = _embeddedDbVaultCoreSection.embeddedVault.selectedItem.name;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -4319,11 +4373,12 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    protected function enableExternalDbVaultPropertyTabs():void {
-        // Attach external DB identity vault editor form to property tabbed view
+    // DB Identity Vault
+
+    protected function enableDbIdentityVaultPropertyTabs():void {
+        // Attach DB identity vault editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
 
-        // Core Tab
         var corePropertyTab:Group = new Group();
         corePropertyTab.layoutDirection = LayoutDirection.LTR;
         corePropertyTab.id = "propertySheetCoreSection";
@@ -4332,101 +4387,98 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
-        _externalDbVaultCoreSection = new ExternalDBIdentityVaultCoreSection();
-        corePropertyTab.addElement(_externalDbVaultCoreSection);
+        _dbIdentityVaultCoreSection = new DbIdentityVaultCoreSection();
+        corePropertyTab.addElement(_dbIdentityVaultCoreSection );
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _externalDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaultCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultCorePropertyTabRollOut);
-
-        // Lookup Tab
-        var contractPropertyTab:Group = new Group();
-        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
-        contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.name = "Lookup";
-        contractPropertyTab.width = Number("100%");
-        contractPropertyTab.height = Number("100%");
-        contractPropertyTab.setStyle("borderStyle", "solid");
-
-        _externalDbVaultLookupSection = new ExternalDBIdentityVaultLookupSection();
-        contractPropertyTab.addElement(_externalDbVaultLookupSection);
-        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _externalDbVaultLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaultLookupPropertyTabCreationComplete);
-        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultLookupPropertyTabRollOut);
+        _dbIdentityVaultCoreSection .addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentityVaultCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDbIdentityVaultCorePropertyTabRollOut);
     }
 
-    private function handleExternalDbVaultCorePropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+    private function handleDbIdentityVaultCorePropertyTabCreationComplete(event:Event):void {
+        var dbIdentityVault:DbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
             // bind view
-            //resetUploadDriverFields();
+            _dbIdentityVaultCoreSection.identityVaultName.text = dbIdentityVault.name;
+            _dbIdentityVaultCoreSection.identityVaultDescription.text = dbIdentityVault.description;
+            _dbIdentityVaultCoreSection.username.text = dbIdentityVault.username;
+            _dbIdentityVaultCoreSection.password.text = dbIdentityVault.password;
+            _dbIdentityVaultCoreSection.passwordRetype.text = dbIdentityVault.password;
+            _dbIdentityVaultCoreSection.externalDB.selected = dbIdentityVault.externalDB;
+            _dbIdentityVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
 
-            _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
-            //_externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
-            /*if (_externalDbVaultCoreSection.driver.dataProvider != null) {
-             for (var i:int = 0; i < _externalDbVaultCoreSection.driver.dataProvider.length; i++) {
-             if (_externalDbVaultCoreSection.driver.dataProvider[i].className == dbIdentityVault.driverName) {
-             _externalDbVaultCoreSection.driver.selectedIndex = i;
-             break;
-             }
-             }
-             }*/
-            _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
-            _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
-            _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
-            _externalDbVaultCoreSection.dbPasswordRetype.text = dbIdentityVault.password;
+            for (var i:int = 0; i < _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.dataProvider.length; i++) {
+                if (_dbIdentityVaultCoreSection.identityVaultHashAlgorithm.dataProvider[i].data == dbIdentityVault.hashAlgorithm) {
+                    _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.selectedIndex = i;
+                    break;
+                }
+            }
 
-            _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultCoreSection.driver.addEventListener(Event.CHANGE, handleSectionChange);
-            //_externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultCoreSection.dbPasswordRetype.addEventListener(Event.CHANGE, handleSectionChange);
+            for (var j:int = 0; j < _dbIdentityVaultCoreSection.identityVaultHashEncoding.dataProvider.length; j++) {
+                if (_dbIdentityVaultCoreSection.identityVaultHashEncoding.dataProvider[j].data == dbIdentityVault.hashEncoding) {
+                    _dbIdentityVaultCoreSection.identityVaultHashEncoding.selectedIndex = j;
+                    break;
+                }
+            }
 
-            //_externalDbVaultCoreSection.driver.addEventListener(MouseEvent.CLICK, browseDriverHandler);
-            //BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_selectedDriverFiles");
+            for (var k:int = 0; k < _dbIdentityVaultCoreSection.identityVaultSaltLength.dataProvider.length; k++) {
+                if (_dbIdentityVaultCoreSection.identityVaultSaltLength.dataProvider[k].data == dbIdentityVault.saltLength.toString()) {
+                    _dbIdentityVaultCoreSection.identityVaultSaltLength.selectedIndex = k;
+                    break;
+                }
+            }
 
-            BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_jdbcDrivers");
-            _externalDbVaultCoreSection.driver.addEventListener(Event.CHANGE, handleDriverChange);
+            _dbIdentityVaultCoreSection.identityVaultName.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.identityVaultDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.username.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.password.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.passwordRetype.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.externalDB.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.driver.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.identityVaultSaltLength.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentityVaultCoreSection.identityVaultHashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
+
+            BindingUtils.bindProperty(_dbIdentityVaultCoreSection.driver, "dataProvider", this, "_jdbcDrivers");
+            _dbIdentityVaultCoreSection.driver.addEventListener(Event.CHANGE, handleDbVaultDriverChange);
             sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
 
             _validators = [];
-            _validators.push(_externalDbVaultCoreSection.nameValidator);
-            _validators.push(_externalDbVaultCoreSection.driverValidator);
-            _validators.push(_externalDbVaultCoreSection.connUrlValidator);
-            _validators.push(_externalDbVaultCoreSection.dbUsernameValidator);
-            _validators.push(_externalDbVaultCoreSection.pwvPasswords);
+            _validators.push(_dbIdentityVaultCoreSection.nameValidator);
+            _validators.push(_dbIdentityVaultCoreSection.pwvPasswords);
         }
     }
 
-    private function handleDriverChange(event:Event):void {
-        _externalDbVaultCoreSection.connectionUrl.text = _externalDbVaultCoreSection.driver.selectedItem.defaultUrl;
+    private function handleDbVaultDriverChange(event:Event):void {
+        _dbIdentityVaultCoreSection.connectionUrl.text = _dbIdentityVaultCoreSection.driver.selectedItem.defaultUrl;
     }
 
-    private function handleExternalDbVaultCorePropertyTabRollOut(e:Event):void {
+
+    private function handleDbIdentityVaultCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
-            // bind model
-            //if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
-            //    _driverFileRef.load();
-            //} else {
-            updateDbIdentitySource();
-            //}
+            updateDbIdentityVault();
         }
     }
 
-    private function updateDbIdentitySource():void {
-        var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+    private function updateDbIdentityVault():void {
+        var dbIdentityVault:DbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
 
-        dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
-        //dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
-        dbIdentityVault.driverName = _externalDbVaultCoreSection.driver.selectedItem.className;
-        dbIdentityVault.connectionUrl = _externalDbVaultCoreSection.connectionUrl.text;
-        dbIdentityVault.admin = _externalDbVaultCoreSection.dbUsername.text;
-        dbIdentityVault.password = _externalDbVaultCoreSection.dbPassword.text;
+        dbIdentityVault.name = _dbIdentityVaultCoreSection.identityVaultName.text;
+        dbIdentityVault.description = _dbIdentityVaultCoreSection.identityVaultDescription.text;
+        if (_dbIdentityVaultCoreSection.driver.selectedItem != null)
+            dbIdentityVault.driverName = _dbIdentityVaultCoreSection.driver.selectedItem.className;
+
+        dbIdentityVault.externalDB = _dbIdentityVaultCoreSection.externalDB.selected;
+        dbIdentityVault.connectionUrl = _dbIdentityVaultCoreSection.connectionUrl.text;
+        dbIdentityVault.username = _dbIdentityVaultCoreSection.username.text;
+        dbIdentityVault.password = _dbIdentityVaultCoreSection.password.text;
+        dbIdentityVault.hashAlgorithm = _dbIdentityVaultCoreSection.identityVaultHashAlgorithm.selectedItem.data;
+        dbIdentityVault.hashEncoding = _dbIdentityVaultCoreSection.identityVaultHashEncoding.selectedItem.data;
+        dbIdentityVault.saltLength = parseInt(_dbIdentityVaultCoreSection.identityVaultSaltLength.selectedItem.data);
 
         /*if (_uploadedDriver != null && _uploadedDriverName != null) {
          var driver:Resource = dbIdentityVault.driver;
@@ -4443,40 +4495,168 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
-    private function handleExternalDbVaultLookupPropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+
+
+    // DB Identity Source
+
+    protected function enableDbIdentitySourcePropertyTabs():void {
+        // Attach external DB identity vault editor form to property tabbed view
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.layoutDirection = LayoutDirection.LTR;
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _dbIdentitySourceCoreSection = new ExternalDBIdentityVaultCoreSection();
+        corePropertyTab.addElement(_dbIdentitySourceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _dbIdentitySourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentitySourceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDbIdentitySourceCorePropertyTabRollOut);
+
+        // Lookup Tab
+        var contractPropertyTab:Group = new Group();
+        contractPropertyTab.layoutDirection = LayoutDirection.LTR;
+        contractPropertyTab.id = "propertySheetContractSection";
+        contractPropertyTab.name = "Lookup";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
+
+        _dbIdentitySourceLookupSection = new ExternalDBIdentityVaultLookupSection();
+        contractPropertyTab.addElement(_dbIdentitySourceLookupSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
+        _dbIdentitySourceLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentitySourceLookupPropertyTabCreationComplete);
+        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleDbIdentitySourceLookupPropertyTabRollOut);
+    }
+
+    private function handleDbIdentitySourceCorePropertyTabCreationComplete(event:Event):void {
+        var dbIdentitySource:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
-        if (dbIdentityVault != null) {
+        if (dbIdentitySource != null) {
             // bind view
-            _externalDbVaultLookupSection.userQuery.text = dbIdentityVault.userQueryString;
-            _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.rolesQueryString;
-            _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.credentialsQueryString;
-            _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userPropertiesQueryString;
-            _externalDbVaultLookupSection.credentialsUpdate.text = dbIdentityVault.resetCredentialDml;
-            _externalDbVaultLookupSection.relayCredentialQuery.text = dbIdentityVault.relayCredentialQueryString;
+            //resetUploadDriverFields();
 
-            _externalDbVaultLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultLookupSection.rolesQuery.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultLookupSection.propertiesQuery.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultLookupSection.credentialsUpdate.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultLookupSection.relayCredentialQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceCoreSection.userRepositoryName.text = dbIdentitySource.name;
+            //_externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
+            /*if (_externalDbVaultCoreSection.driver.dataProvider != null) {
+             for (var i:int = 0; i < _externalDbVaultCoreSection.driver.dataProvider.length; i++) {
+             if (_externalDbVaultCoreSection.driver.dataProvider[i].className == dbIdentityVault.driverName) {
+             _externalDbVaultCoreSection.driver.selectedIndex = i;
+             break;
+             }
+             }
+             }*/
+            _dbIdentitySourceCoreSection.connectionUrl.text = dbIdentitySource.connectionUrl;
+            _dbIdentitySourceCoreSection.dbUsername.text = dbIdentitySource.admin;
+            _dbIdentitySourceCoreSection.dbPassword.text = dbIdentitySource.password;
+            _dbIdentitySourceCoreSection.dbPasswordRetype.text = dbIdentitySource.password;
+
+            _dbIdentitySourceCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceCoreSection.driver.addEventListener(Event.CHANGE, handleSectionChange);
+            //_externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceCoreSection.dbPasswordRetype.addEventListener(Event.CHANGE, handleSectionChange);
+
+            //_externalDbVaultCoreSection.driver.addEventListener(MouseEvent.CLICK, browseDriverHandler);
+            //BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_selectedDriverFiles");
+
+            BindingUtils.bindProperty(_dbIdentitySourceCoreSection.driver, "dataProvider", this, "_jdbcDrivers");
+            _dbIdentitySourceCoreSection.driver.addEventListener(Event.CHANGE, handleDbIdentitySourceDriverChange);
+            sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
+
+            _validators = [];
+            _validators.push(_dbIdentitySourceCoreSection.nameValidator);
+            _validators.push(_dbIdentitySourceCoreSection.driverValidator);
+            _validators.push(_dbIdentitySourceCoreSection.connUrlValidator);
+            _validators.push(_dbIdentitySourceCoreSection.dbUsernameValidator);
+            _validators.push(_dbIdentitySourceCoreSection.pwvPasswords);
         }
     }
 
-    private function handleExternalDbVaultLookupPropertyTabRollOut(e:Event):void {
+    private function handleDbIdentitySourceDriverChange(event:Event):void {
+        _dbIdentitySourceCoreSection.connectionUrl.text = _dbIdentitySourceCoreSection.driver.selectedItem.defaultUrl;
+    }
+
+    private function handleDbIdentitySourceCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
             // bind model
-            var dbIdentityVault:DbIdentitySource;
-            dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
+            //if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
+            //    _driverFileRef.load();
+            //} else {
+            updateDbIdentitySource();
+            //}
+        }
+    }
 
-            dbIdentityVault.userQueryString = _externalDbVaultLookupSection.userQuery.text;
-            dbIdentityVault.rolesQueryString = _externalDbVaultLookupSection.rolesQuery.text;
-            dbIdentityVault.credentialsQueryString = _externalDbVaultLookupSection.credentialsQuery.text;
-            dbIdentityVault.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
-            dbIdentityVault.resetCredentialDml = _externalDbVaultLookupSection.credentialsUpdate.text;
-            dbIdentityVault.relayCredentialQueryString = _externalDbVaultLookupSection.relayCredentialQuery.text;
+    private function updateDbIdentitySource():void {
+        var dbIdentitySource:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+
+        dbIdentitySource.name = _dbIdentitySourceCoreSection.userRepositoryName.text;
+        //dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
+        dbIdentitySource.driverName = _dbIdentitySourceCoreSection.driver.selectedItem.className;
+        dbIdentitySource.connectionUrl = _dbIdentitySourceCoreSection.connectionUrl.text;
+        dbIdentitySource.admin = _dbIdentitySourceCoreSection.dbUsername.text;
+        dbIdentitySource.password = _dbIdentitySourceCoreSection.dbPassword.text;
+
+        /*if (_uploadedDriver != null && _uploadedDriverName != null) {
+         var driver:Resource = dbIdentityVault.driver;
+         driver.name = _uploadedDriverName.substring(0, _uploadedDriverName.lastIndexOf("."));
+         driver.displayName = _uploadedDriverName;
+         driver.uri = _uploadedDriverName;
+         driver.value = _uploadedDriver;
+         dbIdentityVault.driver = driver;
+         }*/
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    private function handleDbIdentitySourceLookupPropertyTabCreationComplete(event:Event):void {
+        var dbIdentitySource:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+
+        // if dbIdentityVault is null that means some other element was selected before completing this
+        if (dbIdentitySource != null) {
+            // bind view
+            _dbIdentitySourceLookupSection.userQuery.text = dbIdentitySource.userQueryString;
+            _dbIdentitySourceLookupSection.rolesQuery.text = dbIdentitySource.rolesQueryString;
+            _dbIdentitySourceLookupSection.credentialsQuery.text = dbIdentitySource.credentialsQueryString;
+            _dbIdentitySourceLookupSection.propertiesQuery.text = dbIdentitySource.userPropertiesQueryString;
+            _dbIdentitySourceLookupSection.credentialsUpdate.text = dbIdentitySource.resetCredentialDml;
+            _dbIdentitySourceLookupSection.relayCredentialQuery.text = dbIdentitySource.relayCredentialQueryString;
+
+            _dbIdentitySourceLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceLookupSection.rolesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceLookupSection.propertiesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceLookupSection.credentialsUpdate.addEventListener(Event.CHANGE, handleSectionChange);
+            _dbIdentitySourceLookupSection.relayCredentialQuery.addEventListener(Event.CHANGE, handleSectionChange);
+        }
+    }
+
+    private function handleDbIdentitySourceLookupPropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var dbIdentitySource:DbIdentitySource;
+            dbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+
+            dbIdentitySource.userQueryString = _dbIdentitySourceLookupSection.userQuery.text;
+            dbIdentitySource.rolesQueryString = _dbIdentitySourceLookupSection.rolesQuery.text;
+            dbIdentitySource.credentialsQueryString = _dbIdentitySourceLookupSection.credentialsQuery.text;
+            dbIdentitySource.userPropertiesQueryString = _dbIdentitySourceLookupSection.propertiesQuery.text;
+            dbIdentitySource.resetCredentialDml = _dbIdentitySourceLookupSection.credentialsUpdate.text;
+            dbIdentitySource.relayCredentialQueryString = _dbIdentitySourceLookupSection.relayCredentialQuery.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -6506,6 +6686,10 @@ public class PropertySheetMediator extends IocMediator {
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
         _dirty = false;
+    }
+
+    private function enableBlackboardResourcePropertyTabs():void {
+        // TODO
     }
 
     private function enableWASCEExecEnvPropertyTabs():void {

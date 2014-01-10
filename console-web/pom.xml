@@ -71,8 +71,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
 
@@ -316,6 +316,7 @@
                             org.atricore.idbus.kernel.common.support.osgi,
                             org.atricore.idbus.kernel.common.support.services,
                             org.atricore.idbus.kernel.main.authn.util,
+                            org.atricore.idbus.kernel.main.provisioning.spi,
                             com.atricore.idbus.console.settings.main.spi,
                             com.atricore.idbus.console.lifecycle.main.domain,
                             com.atricore.idbus.console.lifecycle.main.domain.metadata,
@@ -582,8 +583,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
                         <configuration>
-                            <source>1.5</source>
-                            <target>1.5</target>
+                            <source>1.6</source>
+                            <target>1.6</target>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -766,6 +767,7 @@
                                     org.atricore.idbus.bundles.apache.derby,
                                     org.atricore.idbus.kernel.common.support.osgi,
                                     org.atricore.idbus.kernel.main.authn.util,
+                                    org.atricore.idbus.kernel.main.provisioning.spi,
                                     com.atricore.idbus.console.lifecycle.main.domain,
                                     com.atricore.idbus.console.lifecycle.main.domain.metadata,
                                     com.atricore.idbus.console.lifecycle.main.exception,

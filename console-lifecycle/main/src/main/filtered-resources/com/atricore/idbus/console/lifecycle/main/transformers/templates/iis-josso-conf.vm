@@ -34,8 +34,8 @@ secureTransport=false
 #set ($partnerapps = "")
 #foreach($activation in $execEnv.getActivations())
 #set ($i = $i + 1)
-#set ($partnerappID = $activation.getPartnerAppId())
-#set ($partnerapp = $activation.getPartnerAppLocation().getContext())
+#set ($partnerappID = $activation.getResource().getServiceConnection().getSp().getName())
+#set ($partnerapp = $activation.getResource().getPartnerAppLocation().getContext())
 #if ($partnerapps != "")
 #set ($partnerapps = $partnerapps + ", ")
 #end

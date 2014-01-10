@@ -29,6 +29,7 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{identityVaultName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
+
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.name')}:" required="true">
@@ -37,6 +38,10 @@
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityVault.description')}:">
         <s:TextInput id="identityVaultDescription" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName')}:" required="false">
+        <s:DropDownList id="embeddedVault" width="200" labelField="description" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'embeddedIdentityVault.connectorName.prompt')}"/>
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">

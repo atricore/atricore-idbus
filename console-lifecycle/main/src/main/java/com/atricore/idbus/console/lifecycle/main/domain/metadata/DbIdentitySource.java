@@ -6,6 +6,8 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  */
 public class DbIdentitySource extends IdentitySource {
 
+    private static final long serialVersionUID = 952431562576391535L;
+
     protected String admin;
     protected String password;
     protected String connectionUrl;
@@ -20,8 +22,6 @@ public class DbIdentitySource extends IdentitySource {
     private String relayCredentialQueryString;
 
     protected Resource driver;
-    
-    private static final long serialVersionUID = 952431562576391535L;
 
     public String getAdmin() {
         return admin;

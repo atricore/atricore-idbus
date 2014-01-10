@@ -38,7 +38,9 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateBlackBoardResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentitySourceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDominoResourceElementRequest;
@@ -52,6 +54,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateGoogleApp
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJBossEPPAuthenticationServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateJBossEPPResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSelfServicesResourceElementRequest;
@@ -70,6 +73,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateClientCer
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateWindowsIntegratedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveBlackBoardResourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDelegatedAuthnElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDirectoryServiceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveDominoResourceElementRequest;
@@ -108,13 +112,15 @@ import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.AuthenticationService;
+import com.atricore.idbus.console.services.dto.BlackBoardResource;
 import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.CaptiveExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.DbIdentityVault;
 import com.atricore.idbus.console.services.dto.DelegatedAuthentication;
 import com.atricore.idbus.console.services.dto.DirectoryAuthenticationService;
 import com.atricore.idbus.console.services.dto.DominoResource;
-import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentityVault;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalSaml2IdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalSaml2ServiceProvider;
@@ -556,6 +562,17 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         sendNotification(ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT, civ);
 
                         break;
+                    case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
+                        var idDbVaultOwnerAppliance:IdentityAppliance = _identityAppliance;
+
+                        var cdbiv:CreateDbIdentityVaultElementRequest = new CreateDbIdentityVaultElementRequest(
+                                idDbVaultOwnerAppliance, null);
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT, cdbiv);
+
+                        break;
                     case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
                         var dbIdSourceOwnerAppliance:IdentityAppliance = _identityAppliance;
 
@@ -674,6 +691,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_DOMINO_RESOURCE_ELEMENT, cdomres);
+                        break;
+                    case DiagramElementTypes.BLACKBOARD_RESOURCE_ELEMENT_TYPE:
+                        var cbbres:CreateBlackBoardResourceElementRequest = new CreateBlackBoardResourceElementRequest(
+                                _identityAppliance, null);
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_BLACKBOARD_RESOURCE_ELEMENT, cbbres);
                         break;
                     case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                         var cwseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
@@ -985,8 +1010,17 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_SUGAR_CRM_ELEMENT, rscrm);
                             break;
+                        case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
+                            var dbIdentityVault:DbIdentityVault = _currentlySelectedNode.data as DbIdentityVault;
+
+                            var rdbiv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(dbIdentityVault);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT, rdbiv);
+                            break;
                         case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
-                            var identityVault:EmbeddedIdentitySource = _currentlySelectedNode.data as EmbeddedIdentitySource;
+                            var identityVault:EmbeddedIdentityVault = _currentlySelectedNode.data as EmbeddedIdentityVault;
 
                             var riv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(identityVault);
 
@@ -1076,6 +1110,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_DOMINO_RESOURCE_ELEMENT, rdomres);
+                            break;
+
+                        case DiagramElementTypes.BLACKBOARD_RESOURCE_ELEMENT_TYPE:
+                            var blackboardResource:BlackBoardResource = _currentlySelectedNode.data as BlackBoardResource;
+
+                            var rbbres:RemoveBlackBoardResourceElementRequest = new RemoveBlackBoardResourceElementRequest(blackboardResource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_BLACKBOARD_RESOURCE_ELEMENT, rbbres);
                             break;
 
                         case DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
@@ -1327,28 +1371,33 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                     if (provider is FederatedProvider) {
                         var locProv:FederatedProvider = provider as FederatedProvider;
-                        if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
-                            var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                            //TODO add identitySource and connection towards it
-                            var vaultExists:Boolean = false;
-                            for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
-                                if(tmpVaultGraphNode.data as IdentitySource == idSource){
-                                    GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode,
-                                            locProv.identityLookup ,EmbeddedIcons.identityLookupIcon,
-                                            resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));
-                                    
-                                    vaultExists = true;
-                                }
-                            }
-                            if(!vaultExists){
-                                var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode,
-                                        locProv.identityLookup, EmbeddedIcons.identityLookupIcon,
-                                        resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"), 
-                                        true, Constants.IDENTITY_VAULT_DEEP);
-                                //if vault doesn't exist in the vaults array, add it so other providers can find it
-                                vaultNodes.addItem(newVaultNode);
-                            }
+                        if(locProv.identityLookups != null){
+                            for each (var identityLookup:IdentityLookup in locProv.identityLookups) {
+                                var idSource:IdentitySource = identityLookup.identitySource;
 
+                                if (idSource == null)
+                                    continue;
+                                //TODO add identitySource and connection towards it
+                                var vaultExists:Boolean = false;
+                                for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
+                                    if(tmpVaultGraphNode.data as IdentitySource == idSource){
+                                        GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode,
+                                                identityLookup ,EmbeddedIcons.identityLookupIcon,
+                                                resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));
+
+                                        vaultExists = true;
+                                    }
+                                }
+                                if(!vaultExists){
+                                    var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode,
+                                            identityLookup, EmbeddedIcons.identityLookupIcon,
+                                            resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"),
+                                            true, Constants.IDENTITY_VAULT_DEEP);
+                                    //if vault doesn't exist in the vaults array, add it so other providers can find it
+                                    vaultNodes.addItem(newVaultNode);
+                                }
+
+                            }
                         }
                         //                            }
                         if(locProv is InternalSaml2ServiceProvider){
@@ -1504,8 +1553,15 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     updateGraphNodeData(provider);
                     if (provider is FederatedProvider) {
                         var locProv:FederatedProvider = provider as FederatedProvider;
-                        if (locProv.identityLookup != null) {
-                            updateGraphEdgeData(locProv.identityLookup);
+                        if (locProv.identityLookups != null) {
+                            for each (var identityLookup:IdentityLookup in locProv.identityLookups) {
+                                var idSource:IdentitySource = identityLookup.identitySource;
+
+                                if (idSource == null)
+                                    continue;
+
+                                updateGraphEdgeData(identityLookup);
+                            }
                         }
                         if (locProv is InternalSaml2ServiceProvider) {
                             var sp:InternalSaml2ServiceProvider = locProv as InternalSaml2ServiceProvider;
@@ -1686,10 +1742,12 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             } else if (node.data is DirectoryAuthenticationService) {
 
                 //Identity Sources
-            }else if (node.data is DbIdentitySource) {
+            } else if (node.data is DbIdentitySource) {
                 elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
-            } else if (node.data is EmbeddedIdentitySource) {
+            } else if (node.data is EmbeddedIdentityVault) {
                 elementType = DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE;
+            } else if (node.data is DbIdentityVault) {
+                elementType = DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE;
             } else if (node.data is XmlIdentitySource) {
                 elementType = DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE;
             } else if (node.data is LdapIdentitySource) {
@@ -1705,6 +1763,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.SELFSERVICES_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is DominoResource) {
                 elementType = DiagramElementTypes.DOMINO_RESOURCE_ELEMENT_TYPE;
+            } else if (node.data is BlackBoardResource) {
+                elementType = DiagramElementTypes.BLACKBOARD_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO1Resource) {
                 elementType = DiagramElementTypes.JOSSO1_RESOURCE_ELEMENT_TYPE;
             } else if (node.data is JOSSO2Resource) {

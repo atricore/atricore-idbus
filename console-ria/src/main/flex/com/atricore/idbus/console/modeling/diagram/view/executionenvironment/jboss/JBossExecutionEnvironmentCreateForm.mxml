@@ -50,8 +50,9 @@
                     <utils:ListItemValueObject label="3.2.6" data="jb32"/>
                     <utils:ListItemValueObject label="4.0" data="jb40"/>
                     <utils:ListItemValueObject label="4.2" data="jb42"/>
-                    <utils:ListItemValueObject label="5" data="jb5"/>
-                    <utils:ListItemValueObject label="6" data="jb6"/>
+                    <utils:ListItemValueObject label="5.x" data="jb5"/>
+                    <utils:ListItemValueObject label="6.x" data="jb6"/>
+                    <utils:ListItemValueObject label="7.x" data="jb7"/>
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>

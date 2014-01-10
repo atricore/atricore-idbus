@@ -28,11 +28,13 @@ import com.atricore.idbus.console.services.dto.UserDTO;
 import com.atricore.idbus.console.services.dto.schema.AttributeValueDTO;
 import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
+import com.atricore.idbus.console.services.spi.exceptions.SpmlAjaxClientException;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.AttributeValueType;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
+import oasis.names.tc.spml._2._0.atricore.ReplacePasswordRequestType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
@@ -55,36 +57,22 @@ import java.util.List;
 /**
  * Author: Dusan Fisic
  */
-public class UserProvisioningAjaxServiceImpl implements
+public class UserProvisioningAjaxServiceImpl extends AbstractSpmlAjaxClient implements
         UserProvisioningAjaxService,
-        SpmlAjaxClient,
         InitializingBean {
 
     private static Log logger = LogFactory.getLog(UserProvisioningAjaxServiceImpl.class);
 
-    private UUIDGenerator uuidGenerator = new UUIDGenerator();
-
-    private String pspTargetId;
-
-    private SpmlR2Client spmlService;
-
     public void afterPropertiesSet() throws Exception {
-        // Work-around for JDO CLASSLOADER issues !?
-        /*
-        try {
-            logger.info("Initializing User Provisioning Ajax service (triggering JDO Classloader problems workaround)");
-            FindGroupByNameRequest req = new FindGroupByNameRequest ();
-            req.setName("Administrator");
-            findGroupByName(req);
-        } catch (Exception e) {
-            logger.warn (e.getMessage(), e);
-        } */
     }
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws UserProvisioningAjaxException {
         try{
             if (logger.isTraceEnabled())
                 logger.trace("Processing delete request for group [" + groupRequest.getId() + "]");
+
+            String pspTargetId = resolvePspTargetId(groupRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
 
             DeleteRequestType deleteRequest = new DeleteRequestType ();
             deleteRequest.setRequestID(uuidGenerator.generateId());
@@ -114,6 +102,9 @@ public class UserProvisioningAjaxServiceImpl implements
         try{
             if (logger.isTraceEnabled())
                 logger.trace("Processing adding request for group [" + groupRequest.getId() + "]");
+
+            String pspTargetId = resolvePspTargetId(groupRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
 
             AddRequestType addReq = new AddRequestType();
             addReq.setTargetID(pspTargetId);
@@ -152,6 +143,9 @@ public class UserProvisioningAjaxServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Processing find request for group [" + groupRequest.getId() + "]");
 
+            String pspTargetId = resolvePspTargetId(groupRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             PSOIdentifierType psoGroupId = new PSOIdentifierType();
             psoGroupId.setTargetID(pspTargetId);
             psoGroupId.setID(groupRequest.getId() + "");
@@ -184,6 +178,10 @@ public class UserProvisioningAjaxServiceImpl implements
         try{
             if (logger.isTraceEnabled())
                 logger.trace("Processing find request for group [" + groupRequest.getName() + "]");
+
+            String pspTargetId = resolvePspTargetId(groupRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             SearchRequestType searchRequest = new SearchRequestType();
             searchRequest.setRequestID(uuidGenerator.generateId());
             searchRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
@@ -234,8 +232,12 @@ public class UserProvisioningAjaxServiceImpl implements
         }
     }
 
-    public ListGroupResponse getGroups() throws UserProvisioningAjaxException {
+    public ListGroupResponse getGroups(FindGroupsRequest groupRequest) throws UserProvisioningAjaxException {
         try{
+
+            String pspTargetId = resolvePspTargetId(groupRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             SearchRequestType searchRequest = new SearchRequestType();
             searchRequest.setRequestID(uuidGenerator.generateId());
             searchRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
@@ -290,6 +292,10 @@ public class UserProvisioningAjaxServiceImpl implements
 
     public SearchGroupResponse searchGroups(SearchGroupRequest searchGroupsRequest) throws UserProvisioningAjaxException {
         try{
+
+            String pspTargetId = resolvePspTargetId(searchGroupsRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             SearchRequestType searchRequest = new SearchRequestType();
             searchRequest.setRequestID(uuidGenerator.generateId());
             searchRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
@@ -354,6 +360,9 @@ public class UserProvisioningAjaxServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Processing request for group [" + groupRequest.getId() + "]");
 
+            String pspTargetId = resolvePspTargetId(groupRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             ModifyRequestType modifyGroupRequest = new ModifyRequestType();
             modifyGroupRequest.setRequestID(uuidGenerator.generateId());
             modifyGroupRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
@@ -410,6 +419,9 @@ public class UserProvisioningAjaxServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Processing delete request for user [" + userRequest.getId() + "]");
 
+            String pspTargetId = resolvePspTargetId(userRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             DeleteRequestType userDelRequest = new DeleteRequestType();
             userDelRequest.setRequestID(uuidGenerator.generateId());
             userDelRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
@@ -438,6 +450,10 @@ public class UserProvisioningAjaxServiceImpl implements
         try {
             if (logger.isTraceEnabled())
                 logger.trace("Processing adding request for user [" + userRequest.getId() + "]");
+
+            String pspTargetId = resolvePspTargetId(userRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             AddRequestType addReq = new AddRequestType();
             addReq.setTargetID(pspTargetId);
             addReq.setRequestID(uuidGenerator.generateId());
@@ -447,6 +463,10 @@ public class UserProvisioningAjaxServiceImpl implements
                 spmlUser.getGroup().clear();
 
                 for (GroupDTO grp : userRequest.getGroups()) {
+
+                    if (grp == null  || grp.getName() == null)
+                        continue;
+
                     FindGroupByNameRequest fgbr = new FindGroupByNameRequest();
                     fgbr.setName(grp.getName());
                     FindGroupByNameResponse rspGroup = findGroupByName(fgbr);
@@ -478,6 +498,9 @@ public class UserProvisioningAjaxServiceImpl implements
         try{
             if (logger.isTraceEnabled())
                 logger.trace("Processing find request for user [" + userRequest.getId() + "]");
+
+            String pspTargetId = resolvePspTargetId(userRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
 
             PSOIdentifierType psoUserId = new PSOIdentifierType();
             psoUserId.setTargetID(pspTargetId);
@@ -511,6 +534,9 @@ public class UserProvisioningAjaxServiceImpl implements
         try{
             if (logger.isTraceEnabled())
                 logger.trace("Finding user with username ["+userRequest.getUsername()+"]");
+
+            String pspTargetId = resolvePspTargetId(userRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
 
             SearchRequestType searchRequest = new SearchRequestType();
             searchRequest.setRequestID(uuidGenerator.generateId());
@@ -562,8 +588,11 @@ public class UserProvisioningAjaxServiceImpl implements
         }
     }
 
-    public ListUserResponse getUsers() throws java.lang.Exception {
+    public ListUserResponse getUsers(FindUsersRequest userRequest) throws java.lang.Exception {
         try{
+            String pspTargetId = resolvePspTargetId(userRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             SearchRequestType searchRequest = new SearchRequestType();
             searchRequest.setRequestID(uuidGenerator.generateId());
             searchRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
@@ -615,6 +644,9 @@ public class UserProvisioningAjaxServiceImpl implements
 
     public SearchUserResponse searchUsers(SearchUserRequest userSearchRequest) throws java.lang.Exception {
         try{
+            String pspTargetId = resolvePspTargetId(userSearchRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             SearchRequestType searchRequest = new SearchRequestType();
             searchRequest.setRequestID(uuidGenerator.generateId());
             searchRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
@@ -681,11 +713,15 @@ public class UserProvisioningAjaxServiceImpl implements
         try{
             if (logger.isTraceEnabled())
                 logger.trace("Processing update request for user [" + userRequest.getId() + "]");
+
+            String pspTargetId = resolvePspTargetId(userRequest);
+            SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
             ModifyRequestType modifyUserRequest = new ModifyRequestType();
             modifyUserRequest.setRequestID(uuidGenerator.generateId());
             modifyUserRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
-            PSOType psoUser = lookupUser(userRequest.getId());
+            PSOType psoUser = lookupUser(pspTargetId, spmlService, userRequest.getId());
 
             UserType spmlUser = toUserType(userRequest);
             if (userRequest.getGroups() != null) {
@@ -694,6 +730,7 @@ public class UserProvisioningAjaxServiceImpl implements
                 for (GroupDTO grp : userRequest.getGroups()) {
                     FindGroupByNameRequest fgbr = new FindGroupByNameRequest();
                     fgbr.setName(grp.getName());
+                    fgbr.setPspTargetId(userRequest.getPspTargetId());
                     FindGroupByNameResponse rspGroup = findGroupByName(fgbr);
                     GroupType spmlGroup = toGroupType(rspGroup.getGroup());
                     spmlUser.getGroup().add(spmlGroup);
@@ -714,8 +751,22 @@ public class UserProvisioningAjaxServiceImpl implements
                 logger.error("SPML Status Code " + resp.getStatus() + " received while updating user " + userRequest.getId());
                 throw new UserProvisioningAjaxException("Error updating User [" + userRequest.getId() + "]");
             }
-            UpdateUserResponse response = new UpdateUserResponse();
 
+
+            if (userRequest.getUserPassword() != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Updating user password for " + psoUser.getPsoID().getTargetID());
+
+                ReplacePasswordRequestType pwdReq = new ReplacePasswordRequestType();
+                pwdReq.setPsoID(psoUser.getPsoID());
+                pwdReq.setNewPassword(userRequest.getUserPassword());
+
+                ResponseType pwdRes = spmlService.spmlReplacePasswordRequest(pwdReq);
+
+            }
+
+            UpdateUserResponse response = new UpdateUserResponse();
             return response;
         } catch (Exception e) {
             // Log the error ant throw an exception to the Ajax layer.
@@ -726,6 +777,10 @@ public class UserProvisioningAjaxServiceImpl implements
     }
 
     public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest) throws Exception {
+
+        String pspTargetId = resolvePspTargetId(usersByGroupRequest);
+        SpmlR2Client spmlService = resolveSpmlService(pspTargetId);
+
         SearchRequestType searchRequest = new SearchRequestType();
         searchRequest.setRequestID(uuidGenerator.generateId());
         searchRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
@@ -740,8 +795,6 @@ public class UserProvisioningAjaxServiceImpl implements
 
         if (usersByGroupRequest.getGroup() != null)
             qry = "/users[group='"+usersByGroupRequest.getGroup()+"']";
-
-
 
         spmlSelect.setPath(qry);
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
@@ -767,7 +820,7 @@ public class UserProvisioningAjaxServiceImpl implements
         return response;
     }
 
-    protected PSOType lookupUser(Long id) throws IdentityMediationException {
+    protected PSOType lookupUser(String pspTargetId, SpmlR2Client spmlService, Long id) throws IdentityMediationException {
 
         PSOIdentifierType psoUserId = new PSOIdentifierType();
         psoUserId.setTargetID(pspTargetId);
@@ -895,6 +948,10 @@ public class UserProvisioningAjaxServiceImpl implements
     }
 
     public GroupType toGroupType(GroupDTO grp) {
+
+        if (grp == null)
+            return null;
+
         GroupType g = new GroupType();
         g.setId(grp.getId());
         g.setName(grp.getName());
@@ -969,10 +1026,10 @@ public class UserProvisioningAjaxServiceImpl implements
         u.setPostalCode(usr.getPostalCode());
         u.setPostOfficeBox(usr.getPostOfficeBox());
         u.setLanguage(usr.getLanguage());
-        u.setAccountDisabled(usr.isAccountDisabled());
-        u.setAccountExpires(usr.isAccountExpires());
+        u.setAccountDisabled(usr.getAccountDisabled());
+        u.setAccountExpires(usr.getAccountExpires());
         //u.setAccountExpirationDate(usr.getAccountExpirationDate());
-        u.setLimitSimultaneousLogin(usr.isLimitSimultaneousLogin());
+        u.setLimitSimultaneousLogin(usr.getLimitSimultaneousLogin());
         u.setMaximunLogins(usr.getMaximunLogins());
         //u.setTerminatePreviousSession(usr.getTerminatePreviousSession());
         //u.setPreventNewSession(usr.getPreventNewSession());
@@ -1000,19 +1057,4 @@ public class UserProvisioningAjaxServiceImpl implements
         return u;
     }
 
-    public String getPspTargetId() {
-        return pspTargetId;
-    }
-
-    public void setPspTargetId(String pspTargetId) {
-        this.pspTargetId = pspTargetId;
-    }
-
-    public SpmlR2Client getSpmlService() {
-        return spmlService;
-    }
-
-    public void setSpmlService(SpmlR2Client spmlService) {
-        this.spmlService = spmlService;
-    }
 }

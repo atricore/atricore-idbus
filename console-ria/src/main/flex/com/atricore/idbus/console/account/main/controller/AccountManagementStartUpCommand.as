@@ -48,6 +48,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     private var _addAttributeCommand:IIocCommand;
     private var _editAttributeCommand:IIocCommand;
     private var _deleteAttributeCommand:IIocCommand;
+    private var _listIdentityVaultsCommand:IIocCommand;
 
 
     public function AccountManagementStartUpCommand() {
@@ -95,6 +96,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_SCHEMA_ATTRIBUTE, addAttributeCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_SCHEMA_ATTRIBUTE, editAttributeCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_SCHEMA_ATTRIBUTE, deleteAttributeCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_IDVAUTLS, listIdentityVaultsCommand.getConfigName());
     }
 
     override protected function setupServices(ctx:BaseStartupContext):void{
@@ -338,6 +340,15 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
 
     public function set deleteAttributeCommand(value:IIocCommand):void {
         _deleteAttributeCommand = value;
+    }
+
+
+    public function get listIdentityVaultsCommand():IIocCommand {
+        return _listIdentityVaultsCommand;
+    }
+
+    public function set listIdentityVaultsCommand(value:IIocCommand):void {
+        _listIdentityVaultsCommand = value;
     }
 }
 }

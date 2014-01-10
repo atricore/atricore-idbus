@@ -44,6 +44,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLo
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.EntitySelectorProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannelImpl;
+import org.atricore.idbus.kernel.main.util.EHCacheIdRegistry;
 import org.atricore.idbus.kernel.planning.IdentityPlanRegistryImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
@@ -142,7 +143,6 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         // Define Circle Of Trust Manager bean
         // -------------------------------------------------------
-
         Bean cotMgr = newBean(idauBeans, idauName + "-cot-manager", CircleOfTrustManagerImpl.class.getName());
 
         // Properties
@@ -151,9 +151,9 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         // Define Session Event Manager
         // -------------------------------------------------------
-        Bean sessionEventManager = newBean(idauBeans, "session-event-manager",
-                "org.atricore.idbus.kernel.main.session.SSOSessionEventManager");
-        sessionEventManager.setFactoryMethod("getInstance");
+        //Bean sessionEventManager = newBean(idauBeans, "session-event-manager",
+        //        "org.atricore.idbus.kernel.main.session.SSOSessionEventManager");
+        //sessionEventManager.setFactoryMethod("getInstance");
 
         // -------------------------------------------------------
         // Define Cache Manager bean
@@ -173,6 +173,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         setPropertyRef(stateManager, "cacheManager", cacheManager.getName());
         setPropertyValue(stateManager, "cacheName", module.getName() + "-psm-cache");  //cache name needs to be unique
         setPropertyValue(stateManager, "forceNonDirtyStorage", false);
+        setPropertyValue(stateManager, "namespace", appliance.getName());
 
         // -------------------------------------------------------
         // Define Entity Selector Provider
@@ -213,7 +214,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         Bean entitySelectorLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         entitySelectorLogger.setName(entitySelectorProvider.getName() + "-mediation-logger");
-        setPropertyValue(entitySelectorLogger, "category", ida.getNamespace() + "." + ida.getName() + ".wire." + entitySelectorProvider.getName());
+        setPropertyValue(entitySelectorLogger, "category", ida.getNamespace() + ".wire." + entitySelectorProvider.getName());
         setPropertyAsBeans(entitySelectorLogger, "messageBuilders", entitySelectorLogBuilders);
         setPropertyBean(ssoEntitySelectorMediator, "logger", entitySelectorLogger);
 
@@ -249,6 +250,15 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         // Wire channels to Unit Container
         addPropertyBeansAsRefs(idMediationUnit, "channels", entitySelectorChannel);
+
+        // -------------------------------------------------------
+        // Define SAML R2 ID registry bean
+        // -------------------------------------------------------
+        Bean samlr2IdRegistryBean = newBean(idauBeans,
+                normalizeBeanName(appliance.getIdApplianceDefinition().getName() + "-samlr2-idregistry"),
+                EHCacheIdRegistry.class.getName());
+        setPropertyValue(samlr2IdRegistryBean, "cacheName", samlr2IdRegistryBean.getName());
+        setPropertyRef(samlr2IdRegistryBean, "cacheManager", appliance.getName() + "-cache-manager");
 
         // -------------------------------------------------------
         // Define MBean Server Factory bean
@@ -365,6 +375,19 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         monitoringServer.setInterface("org.atricore.idbus.kernel.monitoring.core.MonitoringServer");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(monitoringServer);
+
+        // ----------------------------------------
+        // Auditing Server
+        // ----------------------------------------
+        // TODO : Support extensions
+        Reference auditingServer = new Reference();
+        auditingServer.setId("auditing-server");
+        auditingServer.setCardinality("1..1");
+        auditingServer.setTimeout(60L);
+        auditingServer.setInterface("org.atricore.idbus.kernel.auditing.core.AuditingServer");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(auditingServer);
+
 
         // ----------------------------------------
         // Container for Identity Flow Components

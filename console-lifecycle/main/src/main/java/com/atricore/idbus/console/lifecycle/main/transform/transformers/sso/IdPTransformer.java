@@ -36,8 +36,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLog
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
+import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
-import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
+//import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
+import org.atricore.idbus.kernel.main.session.SSOSessionEventListener;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.*;
@@ -146,7 +148,10 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-mediator",
                 SSOIDPMediator.class.getName());
         setPropertyValue(idpMediator, "logMessages", true);
-        setPropertyValue(idpMediator, "metricsPrefix", appliance.getName() + "." + idpBean.getName());
+        setPropertyValue(idpMediator, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
+
+        setPropertyRef(idpMediator, "auditingServer", "auditing-server");
+        setPropertyValue(idpMediator, "auditCategory", appliance.getNamespace().toLowerCase() + ".audit." + idpBean.getName().toLowerCase());
 
         // artifactQueueManager
         // setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
@@ -164,7 +169,7 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         idpLogger.setName(idpBean.getName() + "-mediation-logger");
-        setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpBean.getName());
+        setPropertyValue(idpLogger, "category", appliance.getNamespace() + ".wire." + idpBean.getName());
         setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
         setPropertyBean(idpMediator, "logger", idpLogger);
 
@@ -279,6 +284,12 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         }
 
         // ------------------------------------------------------------
+        // ID Registry service
+        // ------------------------------------------------------------
+        setPropertyValue(idpMediator, "verifyUniqueIDs", "true"); // TODO : provider.isVerifyUniqueIDs());
+        setPropertyRef(idpMediator, "idRegistry", normalizeBeanName(appliance.getIdApplianceDefinition().getName() + "-samlr2-idregistry"));
+
+        // ------------------------------------------------------------
         // Wire Identity Flow Container and Components to IdP Mediator
         // ------------------------------------------------------------
         setPropertyRef(idpMediator, "identityFlowContainer", "identity-flow-container");
@@ -323,9 +334,16 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
             logger.warn("Invalid SSO Session Timeout " + ssoSessionTimeout + ", forcing a new value");
             ssoSessionTimeout = 30;
         }
+
+        int maxSessionsPerUser = provider.getMaxSessionsPerUser();
+        if (maxSessionsPerUser <= 0)
+            maxSessionsPerUser = -1;
+
+        boolean invalidateExceedingSessions = provider.isDestroyPreviousSession();
+
         setPropertyValue(sessionManager, "maxInactiveInterval", ssoSessionTimeout + "");
-        setPropertyValue(sessionManager, "maxSessionsPerUser", "-1");
-        setPropertyValue(sessionManager, "invalidateExceedingSessions", "false");
+        setPropertyValue(sessionManager, "maxSessionsPerUser", maxSessionsPerUser + "");
+        setPropertyValue(sessionManager, "invalidateExceedingSessions", invalidateExceedingSessions);
         setPropertyValue(sessionManager, "sessionMonitorInterval", "10000");
 
         // Session ID Generator
@@ -334,18 +352,38 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
 
         // Session Store
         //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
+        String cacheName = provider.getIdentityAppliance().getName() + "-" + idpBean.getName() + "-sessionsCache";
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
         setPropertyRef(sessionStore, "cacheManager", provider.getIdentityAppliance().getName() + "-cache-manager");
-        setPropertyValue(sessionStore, "cacheName", provider.getIdentityAppliance().getName() +
-                "-" + idpBean.getName() + "-sessionsCache");
+        setPropertyValue(sessionStore, "cacheName", cacheName);
+
+        // Session Monitor
+        Bean sessionMonitor = newBean(idpBeans, sessionManager.getName() + "-monitor", "org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionMonitor");
+        setPropertyValue(sessionMonitor, "cacheName", cacheName);
+        setPropertyRef(sessionMonitor, "manager", sessionManager.getName());
+
+        // Session statistics
+        Bean sessionStats = newBean(idpBeans, sessionManager.getName() + "-stats", "org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStatistics");
+        setPropertyValue(sessionStats, "cacheName", cacheName);
+        setPropertyValue(sessionStats, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
+        setPropertyRef(sessionStats, "monitoringServer", "monitoring-server");
+
+        List<Bean> cacheListeners = new ArrayList<Bean>();
+        cacheListeners.add(sessionMonitor);
+        cacheListeners.add(sessionStats);
+        setPropertyAsRefs(sessionStore, "listeners", cacheListeners);
 
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
+        setPropertyRef(sessionManager, "stats", sessionStats.getName());
+        setPropertyRef(sessionManager, "monitor", sessionMonitor.getName());
 
-        setPropertyRef(sessionManager, "monitoringServer", "monitoring-server");
-        setPropertyValue(sessionManager, "metricsPrefix", appliance.getName() + "/" + idpBean.getName());
+        setPropertyRef(sessionManager, "auditingServer", "auditing-server");
+        setPropertyValue(sessionManager, "auditCategory",
+                appliance.getNamespace().toLowerCase() + ".audit." + idpBean.getName().toLowerCase());
+
 
         // -------------------------------------------------------------
         // Register and configure default claim selection identity flow
@@ -415,13 +453,22 @@ public class IdPTransformer extends AbstractTransformer implements InitializingB
         }
 
         // Wire session event listener
-        Collection<Bean> sessionEventManagers = getBeansOfType(baseBeans, SSOSessionEventManager.class.getName());
-        if (sessionEventManagers.size() == 1) {
-            Bean sessionEventManager = sessionEventManagers.iterator().next();
-            Bean idpListener = newAnonymousBean(IdPSessionEventListener.class);
-            setPropertyRef(idpListener, "identityProvider", idpBean.getName());
-            addPropertyBean(sessionEventManager, "listeners", idpListener);
-        }
+        Bean idpListener = newBean(idpBeans, idpBean.getName() + "-session-listener", IdPSessionEventListener.class);
+        setPropertyRef(idpListener, "identityProvider", idpBean.getName());
+
+        Service idpListenerSvc = new Service();
+        idpListenerSvc.setId(idpListener.getName() + "-exporter");
+        idpListenerSvc.setRef(idpListener.getName());
+        idpListenerSvc.setInterface(SSOSessionEventListener.class.getName());
+        idpBeans.getImportsAndAliasAndBeen().add(idpListenerSvc);
+
+        // Collection<Bean> sessionEventManagers = getBeansOfType(baseBeans, SSOSessionEventManager.class.getName());
+        //if (sessionEventManagers.size() == 1) {
+        //    Bean sessionEventManager = sessionEventManagers.iterator().next();
+        //    Bean idpListener = newAnonymousBean(IdPSessionEventListener.class);
+        //    setPropertyRef(idpListener, "identityProvider", idpBean.getName());
+        //    addPropertyBean(sessionEventManager, "listeners", idpListener);
+        //}
 
         IdProjectResource<Beans> rBeans = new IdProjectResource<Beans>(idGen.generateId(), idpBean.getName(), idpBean.getName(), "spring-beans", idpBeans);
         rBeans.setClassifier("jaxb");
