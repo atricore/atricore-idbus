@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-ws-v1_2</artifactId>
-            <version>1.8.8-SNAPSHOT</version>
+            <version>1.8.9-SNAPSHOT</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -211,6 +211,12 @@
             <id>typesaferepo</id>
             <name>typesafe repo</name>
             <url>http://repo.typesafe.com/typesafe/releases/</url>
+            <layout>default</layout>
+        </pluginRepository>
+        <pluginRepository>
+            <id>typesaferepo-snapshot</id>
+            <name>typesafe repo</name>
+            <url>http://repo.typesafe.com/typesafe/repo/</url>
             <layout>default</layout>
         </pluginRepository>
     </pluginRepositories>

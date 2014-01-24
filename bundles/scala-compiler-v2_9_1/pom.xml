@@ -26,6 +26,8 @@
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
         <version>1.4.0-SNAPSHOT</version>
+
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.scala-compiler-v2_9_1</artifactId>

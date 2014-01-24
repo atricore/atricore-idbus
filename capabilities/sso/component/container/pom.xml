@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>org.atricore.idbus.capabilities.sso</groupId>
-        <artifactId>sso</artifactId>
+        <artifactId>org.atricore.idbus.capabilities.sso.component</artifactId>
         <version>1.4.0-SNAPSHOT</version>
     </parent>
 

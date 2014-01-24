@@ -30,6 +30,8 @@
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
         <version>1.4.0-SNAPSHOT</version>
+
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     
 
