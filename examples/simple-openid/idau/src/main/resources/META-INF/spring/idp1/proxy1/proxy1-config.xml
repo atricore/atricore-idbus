@@ -21,6 +21,7 @@
         <property name="spProxyACS">
             <value>http://localhost:8081/IDBUS/SIMPLE-OPENID/IDP1/PROXY1/ACS/ARTIFACT</value>
         </property>
+
         <property name="logMessages">
             <value>true</value>
         </property>

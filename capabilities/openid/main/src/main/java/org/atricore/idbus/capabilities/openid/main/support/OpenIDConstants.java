@@ -30,4 +30,6 @@ import javax.xml.namespace.QName;
  */
 public interface OpenIDConstants {
 
+    final static QName IDPSSODescriptor_QNAME = new QName("urn:openid:2.0", "IDPDescriptor");
+
 }
