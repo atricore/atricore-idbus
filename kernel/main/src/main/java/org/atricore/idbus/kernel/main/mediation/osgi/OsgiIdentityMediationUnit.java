@@ -170,18 +170,20 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
             // start container
             container.start();
 
-            logger.info("IDBus Identity Mediation Unit '" + getName() + "' started in " + (System.currentTimeMillis() - now) + "ms");
+            logger.info("IDBus Identity Mediation Unit [" + getName() + "] started in " + (System.currentTimeMillis() - now) + "ms");
 
             // Display message in stdout, so that it's shown in command prompt
-            System.out.println("IDBus Identity Mediation Unit '" + getName() + "' started in " + (System.currentTimeMillis() - now) + "ms");
+            System.out.println("\n***>> IDBus Identity Mediation Unit [" + getName() + "] started in " + (System.currentTimeMillis() - now) + "ms\n");
+
         } catch (Exception e) {
-            System.err.println("IDBus Identity Mediation Unit '" + getName() + "' initialization error: " + e.getMessage());
-            logger.error("IDBus Identity Mediation Unit '" + getName() + "' initialization error: " + e.getMessage(), e);
+
+            System.err.println("\n***>> IDBus Identity Mediation Unit [" + getName() + "] initialization error: " + e.getMessage() + "\n");
+            logger.error("IDBus Identity Mediation Unit [" + getName() + "] initialization error: " + e.getMessage(), e);
 
             if (container != null)
                 try { container.stop(); } catch (Exception ce) { /* Ignore this */}
 
-            throw new IdentityMediationException("IDBus Identity Mediation Unit '" + getName() + "' initialization error:"  + e.getMessage(), e);
+            throw new IdentityMediationException("IDBus Identity Mediation Unit [" + getName() + "] initialization error:"  + e.getMessage(), e);
 
         }
     }
