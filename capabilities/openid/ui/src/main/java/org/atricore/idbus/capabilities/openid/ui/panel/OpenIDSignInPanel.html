@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.3-strict.dtd">
+
+<body>
+<wicket:panel>
+
+    <!-- login form head -->
+    <div class="gt-login-hd">
+        <wicket:message key="claims.title.userLogin"/>
+    </div>
+
+    <!-- login box -->
+    <div class="gt-login-box">
+
+        <div wicket:id="feedbackBox" class="gt-notice-box">
+            <span wicket:id="feedback"/>
+        </div>
+
+        <!-- login form -->
+        <form wicket:id="signInForm" class="gt-form">
+            <!-- form row -->
+            <div class="gt-form-row">
+                <label class="gt-login-label" for="openid"><wicket:message key="claims.label.openid"/></label>
+                <input type="text" class="gt-form-text" wicket:id="openid" path="openid" tabindex="10"/>
+            </div><!-- /form row -->
+
+            <!-- form row -->
+            <div class="gt-form-row">
+                <input type="submit" value="Login" class="gt-btn-gray-medium gt-btn-right" wicket:id="apply"/>
+            </div>
+            <!-- /form row -->
+
+        </form><!-- /login form -->
+    </div><!-- /login box -->
+
+</wicket:panel>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

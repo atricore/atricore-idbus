@@ -298,8 +298,6 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         return feedbackBox;
     }
 
-
-
     /**
      * Removes persisted form data for the signin panel (forget me)
      */
@@ -381,36 +379,13 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
 
-        // We want the binding factory to use a binding component to build this URL, if possible
-        Channel claimsChannel = credentialClaimsRequest.getClaimsChannel();
-        claimsChannel = getNonSerializedChannel(claimsChannel);
-
-        String claimsEndpointUrl = null;
-        if (claimsChannel != null) {
-
-            MediationBindingFactory f = claimsChannel.getIdentityMediator().getBindingFactory();
-            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), credentialClaimsRequest.getClaimsChannel());
-
-            claimsEndpointUrl = claimsEndpoint.getResponseLocation();
-            if (claimsEndpointUrl == null)
-                claimsEndpointUrl = claimsEndpoint.getLocation();
-
-            if (b instanceof AbstractMediationHttpBinding) {
-                AbstractMediationHttpBinding httpBinding = (AbstractMediationHttpBinding) b;
-                claimsEndpointUrl = claimsEndpoint.getResponseLocation();
-
-            } else {
-                logger.warn("Cannot delegate URL construction to binding, non-http binding found " + b);
-                claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
-                        claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
-            }
-        } else {
-
-            logger.warn("Cannot delegate URL construction to binding, valid definition of channel " +
-                    credentialClaimsRequest.getClaimsChannel().getName() + " not found ...");
-            claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
-                    claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
+        if (!claimsEndpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+            logger.error("Invalid endpoint binding for claims response : " + claimsEndpoint.getBinding());
+            // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
+
+        String claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
+                claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
 
         if (logger.isDebugEnabled())
             logger.debug("Using claims endpoint URL [" + claimsEndpointUrl + "]");

@@ -52,7 +52,7 @@ public interface MediationState {
     Object removeAttribute(String attrName);
 
     /**
-     * Variable available through different requests, stored locally
+     * Variable available through different requests, stored locally, must be serializable
      */
     Object getLocalVariable(String name);
 

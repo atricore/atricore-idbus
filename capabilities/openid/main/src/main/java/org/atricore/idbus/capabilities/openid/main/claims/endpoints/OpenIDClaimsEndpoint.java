@@ -1,8 +1,8 @@
-package org.atricore.idbus.capabilities.sso.main.claims.endpoints;
+package org.atricore.idbus.capabilities.openid.main.claims.endpoints;
 
 import org.apache.camel.Component;
 import org.apache.camel.Producer;
-import org.atricore.idbus.capabilities.sso.main.claims.producers.OpenIDClaimsProducer;
+import org.atricore.idbus.capabilities.openid.main.claims.producers.OpenIDClaimsProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 

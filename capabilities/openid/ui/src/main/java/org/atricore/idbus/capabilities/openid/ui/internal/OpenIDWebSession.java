@@ -22,6 +22,7 @@ package org.atricore.idbus.capabilities.openid.ui.internal;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.apache.wicket.request.Request;
 
@@ -30,7 +31,7 @@ import org.apache.wicket.request.Request;
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-public class OpenIDWebSession extends WebSession {
+public class OpenIDWebSession extends SSOWebSession {
 
     private CredentialClaimsRequest credentialClaimsRequest;
 

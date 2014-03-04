@@ -323,7 +323,7 @@
                             org.datanucleus,
                             org.apache.cxf.bundle,
                             org.apache.activemq.activemq-core,
-                            org.atricore.idbus.bundles.ehcache-v2_1_0,
+                            org.atricore.idbus.bundles.ehcache-v2_8_1,
                             org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1,
                             org.apache.servicemix.specs.jaxb-api-2.1
                         </Require-Bundle>

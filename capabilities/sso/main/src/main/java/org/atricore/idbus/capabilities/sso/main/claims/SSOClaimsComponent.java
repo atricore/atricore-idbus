@@ -68,10 +68,6 @@ public class SSOClaimsComponent extends DefaultComponent {
                 endpoint = new SpUsernamePasswordClaimsEndpoint(uri, this, parameters);
                 break;
 
-            case OPENID_AUTHN_CTX:
-                endpoint = new OpenIDClaimsEndpoint(uri, this, parameters);
-                break;
-
             case OAUTH2_AUTHN_CTX:
                 endpoint = new PreAuthenticationSecurityTokenClaimsEndpoint(uri, this, parameters);
                 break;

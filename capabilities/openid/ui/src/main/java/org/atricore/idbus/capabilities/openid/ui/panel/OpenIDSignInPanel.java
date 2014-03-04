@@ -26,6 +26,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
@@ -38,6 +39,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -62,6 +64,17 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
     private RequiredTextField<String> openid;
 
     private AjaxButton submit;
+
+    /**
+     * Error information
+     */
+    protected FeedbackPanel feedbackPanel;
+
+    /**
+     * Error information
+     */
+    protected WebMarkupContainer feedbackBox;
+
     /**
      * Sign in form.
      */
@@ -109,18 +122,24 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
      * @see org.apache.wicket.Component#Component(String)
      */
     public OpenIDSignInPanel(final String id, SSOCredentialClaimsRequest credentialClaimsRequest, MessageQueueManager artifactQueueManager,
-                             final IdentityMediationUnitRegistry idsuRegistry
-    ) {
+                             final IdentityMediationUnitRegistry idsuRegistry) {
         super(id);
 
         this.credentialClaimsRequest = credentialClaimsRequest;
         this.artifactQueueManager = artifactQueueManager;
         this.idsuRegistry = idsuRegistry;
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
         // Create feedback panel and add to page
-        final FeedbackPanel feedback = new FeedbackPanel("feedback");
-        feedback.setOutputMarkupId(true);
-        add(feedback);
+        super.onInitialize();
+
+        // 1. Feedback Panel
+        feedbackBox = buildFeedbackBox();
+        feedbackPanel = (FeedbackPanel) feedbackBox.get("feedback");
 
         // Add sign-in form to page, passing feedback panel as
         // validation error handler
@@ -135,8 +154,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form)
 			{
 				// repaint the feedback panel so that it is hidden
-				target.add(feedback);
-
+				target.add(feedbackPanel);
 
                 try {
                     String claimsConsumerUrl = signIn(getOpenid());
@@ -152,13 +170,17 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
 			protected void onError(AjaxRequestTarget target, Form<?> form)
 			{
 				// repaint the feedback panel so errors are shown
-				target.add(feedback);
+				target.add(feedbackPanel);
 			}
 		};
 
         submit.setEnabled(false);
         form.add(submit);
         add(form);
+
+        // If the form does not provide a feedbackBox, we should do it !
+        if (form.get("feedbackBox") == null)
+            add(feedbackBox);
 
     }
 
@@ -199,7 +221,7 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
 
         UUIDGenerator idGenerator = new UUIDGenerator();
 
-        logger.info("Claims Request = " + credentialClaimsRequest);
+        if (logger.isDebugEnabled()) logger.debug("Claims Request = " + credentialClaimsRequest);
 
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new CredentialClaimImpl("openid", openid));
@@ -217,36 +239,13 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
             // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
 
-        // We want the binding factory to use a binding component to build this URL, if possible
-        Channel claimsChannel = credentialClaimsRequest.getClaimsChannel();
-        claimsChannel = getNonSerializedChannel(claimsChannel);
-
-        String claimsEndpointUrl = null;
-        if (claimsChannel != null) {
-
-            MediationBindingFactory f = claimsChannel.getIdentityMediator().getBindingFactory();
-            MediationBinding b = f.createBinding(SSOBinding.SSO_ARTIFACT.getValue(), credentialClaimsRequest.getClaimsChannel());
-
-            claimsEndpointUrl = claimsEndpoint.getResponseLocation();
-            if (claimsEndpointUrl == null)
-                claimsEndpointUrl = claimsEndpoint.getLocation();
-
-            if (b instanceof AbstractMediationHttpBinding) {
-                AbstractMediationHttpBinding httpBinding = (AbstractMediationHttpBinding) b;
-                claimsEndpointUrl = claimsEndpoint.getResponseLocation();
-
-            } else {
-                logger.warn("Cannot delegate URL construction to binding, non-http binding found " + b);
-                claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
-                        claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
-            }
-        } else {
-
-            logger.warn("Cannot delegate URL construction to binding, valid definition of channel " +
-                    credentialClaimsRequest.getClaimsChannel().getName() + " not found ...");
-            claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
-                    claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
+        if (!claimsEndpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+            logger.error("Invalid endpoint binding for claims response : " + claimsEndpoint.getBinding());
+            // TODO : Create error and redirect to error view using 'IDBusErrArt'
         }
+
+        String claimsEndpointUrl = claimsEndpoint.getResponseLocation() != null ?
+                claimsEndpoint.getResponseLocation() : claimsEndpoint.getLocation();
 
         if (logger.isDebugEnabled())
             logger.debug("Using claims endpoint URL [" + claimsEndpointUrl + "]");
@@ -270,6 +269,20 @@ public class OpenIDSignInPanel extends BaseSignInPanel {
         getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
     }
 
+    /**
+     * Build the container for error messages
+     */
+    protected WebMarkupContainer buildFeedbackBox() {
+
+        // Create feedback panel and add it to page
+        feedbackBox = new WebMarkupContainer("feedbackBox");
+
+        feedbackPanel = new GtFeedbackPanel("feedback");
+        feedbackPanel.setOutputMarkupId(true);
+        feedbackBox.add(feedbackPanel);
+
+        return feedbackBox;
+    }
 
 
 }

@@ -136,7 +136,7 @@
         <idbus.bundle.javax-jstl-v1_2.version>1.4.0-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
         <idbus.bundle.josso-ws-v1_2.version>1.4.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         <idbus.bundle.apache-maven-v3_0.version>1.4.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
-        <idbus.bundle.ehcache-v2_1_0.version>1.4.0-SNAPSHOT</idbus.bundle.ehcache-v2_1_0.version>
+        <idbus.bundle.ehcache-v2_8_1.version>1.4.0-SNAPSHOT</idbus.bundle.ehcache-v2_8_1.version>
         <idbus.bundle.pax-web-jetty-v0_7_2.version>1.4.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
         <idbus.bundle.pax-web-runtime-v0_7_2.version>1.4.0-SNAPSHOT</idbus.bundle.pax-web-runtime-v0_7_2.version>
         <idbus.bundle.wadi-v2_1_2.version>1.4.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
@@ -194,7 +194,8 @@
         <commons-vfs.version>1.0_1</commons-vfs.version>
         <cxf.version>2.2.2</cxf.version>
         <dom4j.version>1.6.1_3</dom4j.version>
-        <ehcache.version>2.1.0</ehcache.version>
+        <ehcache.version>2.8.1</ehcache.version>
+        <ehcache-core.version>2.6.8</ehcache-core.version>
         <scalate.version>1.6.1</scalate.version>
         <fastinfoset.version>1.2.2_1</fastinfoset.version>
         <geronimo.annotation.version>1.1.1</geronimo.annotation.version>
@@ -1515,13 +1516,13 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
-            <version>${idbus.bundle.ehcache-v2_1_0.version}</version>
+            <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
+            <version>${idbus.bundle.ehcache-v2_8_1.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
-            <version>${idbus.bundle.ehcache-v2_1_0.version}</version>
+            <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
+            <version>${idbus.bundle.ehcache-v2_8_1.version}</version>
             <type>pom</type>
         </dependency>
 

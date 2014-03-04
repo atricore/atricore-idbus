@@ -69,7 +69,6 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
@@ -93,7 +92,6 @@
             <artifactId>org.atricore.idbus.kernel.common.sso</artifactId>
             <scope>provided</scope>
         </dependency>
-
 
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>

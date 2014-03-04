@@ -29,6 +29,16 @@
       http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
       >
 
+    <bean name="consumer-asoc-store" class="org.openid4java.consumer.InMemoryConsumerAssociationStore"/>
+    <bean name="nonce-verifier" class="org.openid4java.consumer.InMemoryNonceVerifier">
+        <constructor-arg value="5000"/>
+    </bean>
 
+    <bean name="consumer-manager" class="org.openid4java.consumer.ConsumerManager">
+        <property name="associations" ref="consumer-asoc-store"/>
+        <property name="nonceVerifier" ref="nonce-verifier"/>
+    </bean>
+
+    <osgi:service id="consumer-manager-osgi" interface="org.openid4java.consumer.ConsumerManager" ref="consumer-manager"/>
 
 </s:beans>

@@ -1,17 +1,15 @@
-package org.atricore.idbus.capabilities.sso.main.claims.producers;
+package org.atricore.idbus.capabilities.openid.main.claims.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.openid.main.binding.OpenIDBinding;
+import org.atricore.idbus.capabilities.openid.main.claims.OpenIDClaimsMediator;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOClaimsMediator;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
-import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -21,6 +19,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
@@ -35,6 +34,8 @@ public class OpenIDClaimsProducer extends SSOProducer
         implements SAMLR2Constants, SAMLR2MessagingConstants, SSOPlanningConstants {
 
     private static final Log logger = LogFactory.getLog(OpenIDClaimsProducer.class);
+
+    private static final UUIDGenerator uuidGeneartor = new UUIDGenerator();
 
     public OpenIDClaimsProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super( endpoint );
@@ -53,11 +54,12 @@ public class OpenIDClaimsProducer extends SSOProducer
         // -------------------------------------------------------------------------
         if (logger.isDebugEnabled())
             logger.debug("Starting to collect OpenID claim");
-        SSOCredentialClaimsRequest claimsRequest = (SSOCredentialClaimsRequest) in.getMessage().getContent();
+        CredentialClaimsRequest claimsRequest = (CredentialClaimsRequest) in.getMessage().getContent();
 
         if (logger.isDebugEnabled())
             logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
         in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:credential-claims-request", claimsRequest);
+
         doProcessClaimsRequest(exchange, claimsRequest);
 
     }
@@ -86,13 +88,13 @@ public class OpenIDClaimsProducer extends SSOProducer
 
     protected void doProcessClaimsRequest(CamelMediationExchange exchange, CredentialClaimsRequest credentialClaimsRequest) throws IOException {
 
-        SSOClaimsMediator mediator = (SSOClaimsMediator)channel.getIdentityMediator();
+        OpenIDClaimsMediator mediator = (OpenIDClaimsMediator)channel.getIdentityMediator();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         EndpointDescriptor ed = new EndpointDescriptorImpl(
                 "OpenIDAuthnLoginForm",
                 "OpenIDAuthnLoginForm",
-                SSOBinding.SSO_ARTIFACT.getValue(),
+                OpenIDBinding.SSO_ARTIFACT.getValue(),
                 mediator.getOpenIDUILocation(),
                 null);
 
@@ -116,10 +118,10 @@ public class OpenIDClaimsProducer extends SSOProducer
                                            ClaimSet receivedClaims) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
+        OpenIDClaimsMediator mediator = ((OpenIDClaimsMediator) channel.getIdentityMediator());
 
         // This is the binding we're using to send the response
-        SSOBinding binding = SSOBinding.SSO_ARTIFACT;
+        OpenIDBinding binding = OpenIDBinding.SSO_ARTIFACT;
         Channel issuer = credentialClaimsRequest.getIssuerChannel();
 
         IdentityMediationEndpoint claimsProcessingEndpoint = null;
@@ -162,7 +164,7 @@ public class OpenIDClaimsProducer extends SSOProducer
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(credentialClaim);
 
-        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(credentialClaimsRequest.getId() /* TODO : Generate new ID !*/,
+        CredentialClaimsResponseImpl claimsResponse = new CredentialClaimsResponseImpl(uuidGeneartor.generateId(),
                 channel, credentialClaimsRequest.getId(), claims, credentialClaimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();

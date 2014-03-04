@@ -3,13 +3,13 @@ package org.atricore.idbus.capabilities.sso.main.idp.producers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedLogoutRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -23,6 +23,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 /**
+ *
  */
 public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
 
@@ -36,7 +37,16 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-        logger.debug("Processing IDP Initiated Single SingOn on HTTP Redirect");
+
+        if (logger.isDebugEnabled())
+            logger.debug("Processing IDP Initiated Single SingOn on " + endpoint.getBinding());
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        doProcessIdPInitiatedSLO(exchange);
+
+    }
+
+    protected void doProcessIdPInitiatedSLO(CamelMediationExchange exchange) throws IdentityMediationException {
 
         try {
 
@@ -51,7 +61,7 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
                 triggerIdPInitiatedSLO(idp, secCtx);
             }
 
-            // Send user to some URL ?!
+            // We'll send the user to the dashboard URL
             String destinationLocation = ((SSOIDPMediator) channel.getIdentityMediator()).getDashboardUrl();
 
             EndpointDescriptor destination =
@@ -60,7 +70,8 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
                             SSOBinding.SSO_REDIRECT.getValue(),
                             destinationLocation, null);
 
-            logger.debug("Sending IdP-init SLO Response to " + destination);
+            if (logger.isDebugEnabled())
+                logger.debug("Sending IdP-init SLO Response to " + destination);
 
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),

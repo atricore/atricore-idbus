@@ -141,8 +141,6 @@ public class SingleLogoutProducer extends SSOProducer {
     protected void doProcessLogoutRequest(CamelMediationExchange exchange, LogoutRequestType sloRequest)
             throws Exception {
 
-
-        
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SPSecurityContext secCtx =
                 (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");

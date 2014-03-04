@@ -51,7 +51,7 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
+            <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
         </dependency>
 
         <dependency>

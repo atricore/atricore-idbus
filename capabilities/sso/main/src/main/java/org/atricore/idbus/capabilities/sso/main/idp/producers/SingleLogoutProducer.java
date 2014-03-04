@@ -67,6 +67,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
 
@@ -82,6 +83,8 @@ import java.security.Principal;
 public class SingleLogoutProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog( SingleLogoutProducer.class );
+
+    private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     private static SSOBinding[] sloSpBindings = new SSOBinding[] { SSOBinding.SAMLR2_ARTIFACT, SSOBinding.SAMLR2_POST, SSOBinding.SAMLR2_REDIRECT};
 
@@ -632,7 +635,7 @@ public class SingleLogoutProducer extends SSOProducer {
         // TODO : Use Planning planning to build SSO Response  !!!
         SSOResponseType response = new SSOResponseType();
 
-        response.setID(request.getID());
+        response.setID(uuidGenerator.generateId());
         response.setInReplayTo(request.getID());
         response.setIssuer(getProvider().getName());
 

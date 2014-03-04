@@ -89,7 +89,7 @@ public abstract class LoginPage extends BasePage {
             }
         } else {
             // Once used, remove the request from session ...(TODO: CHECK)
-            credentialClaimsRequest = ((SSOWebSession)getSession()).getCredentialClaimsRequest();
+            credentialClaimsRequest = (SSOCredentialClaimsRequest) ((SSOWebSession)getSession()).getCredentialClaimsRequest();
         }
 
         if (logger.isDebugEnabled())

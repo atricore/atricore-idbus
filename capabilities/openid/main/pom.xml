@@ -356,7 +356,9 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.capabilities.openid.main.*;version=${project.version}
+                        <Export-Package>
+                            org.atricore.idbus.capabilities.openid.main.*;version=${project.version},
+                            org.openid4java.consumer
                         </Export-Package>
                         <Import-Package>
                             com.google.inject.internal.asm.util; resolution:=optional,

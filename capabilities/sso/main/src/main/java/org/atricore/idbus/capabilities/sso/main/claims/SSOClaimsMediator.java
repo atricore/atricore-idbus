@@ -52,9 +52,6 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     private ProvisioningTarget provisioningTarget;
 
-    @Deprecated //TODO : EACH CAPABILITY SHOULD HAVE ITS OWN CLAIMS MEDIATOR !!!
-    private String openIDUILocation;
-
     public String getBasicAuthnUILocation() {
         return basicAuthnUILocation;
     }
@@ -69,14 +66,6 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     public void setTwoFactorAuthnUILocation(String twoFactorAuthnUILocation) {
         this.twoFactorAuthnUILocation = twoFactorAuthnUILocation;
-    }
-
-    public String getOpenIDUILocation() {
-        return openIDUILocation;
-    }
-
-    public void setOpenIDUILocation(String openIDUILocation) {
-        this.openIDUILocation = openIDUILocation;
     }
 
     public ProvisioningTarget getProvisioningTarget() {

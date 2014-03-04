@@ -195,7 +195,8 @@
     </feature>
 
     <feature name="ehcache" version="${ehcache.version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ehcache-v2_1_0/${idbus.bundle.ehcache-v2_1_0.version}</bundle>
+        <!--bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ehcache-v2_1_0/${idbus.bundle.ehcache-v2_1_0.version}</bundle-->
+        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ehcache-v2_8_1/${idbus.bundle.ehcache-v2_8_1.version}</bundle>
     </feature>
 
     <feature name="maven-v3" version="${idbus.bundle.apache-maven-v3_0.version}">

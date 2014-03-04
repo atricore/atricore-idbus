@@ -1,8 +1,7 @@
 package org.atricore.idbus.kernel.main.mediation.state;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import net.sf.ehcache.*;
+import net.sf.ehcache.event.CacheEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
@@ -138,6 +137,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             }
 
             cache = cacheManager.getCache(cacheName);
+            cache.getCacheEventNotificationService().registerListener(new CacheStateListener());
 
             if (cache == null) {
                 logger.error("No chache definition found with name '" + cacheName + "'");
@@ -176,7 +176,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
             synchronized(s) {
 
-                Element element = new Element(ctx.getProvider().getName() + ":PK:" + state.getId(), state);
+                String key = ctx.getProvider().getName() + ":PK:" + state.getId();
+                Element element = new Element(key, state);
                 cache.put(element);
                 if (logger.isTraceEnabled())
                     logger.trace("LocalState instance stored for key " + element.getKey());
@@ -186,7 +187,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     String alternativeKey = ctx.getProvider().getName() + ":" +
                             state.getAlternativeKey(alternativeKeyName);
 
-                    Element alternativeElement = new Element(alternativeKey, state);
+                    Element alternativeElement = new Element(alternativeKey, key);
                     cache.put(alternativeElement);
                     if (logger.isTraceEnabled())
                         logger.trace("LocalState instance stored for alternative key " + alternativeElement.getKey());
@@ -217,26 +218,47 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             String elementKey = ctx.getProvider().getName() + ":" + keyName + ":" + key;
-            Element e = cache.get(elementKey);
-            if (e == null) {
 
-                int retry = 0;
-                while (e == null && retry <= receiveRetries) {
-                    // Wait and try again, maybe state is on the road :)
-                    if (logger.isTraceEnabled())
-                        logger.trace("Cache miss, wait for " + 500 + " ms");
 
-                    try { Thread.sleep(500); } catch (InterruptedException ie ) { /* Ignore this */ }
-                    e = cache.get(ctx.getProvider().getName() + ":" + keyName + ":" + key);
-                    retry ++;
-                }
-            }
+            Element e = retrieveElement(elementKey);
 
             if (e != null) {
-                if (logger.isTraceEnabled())
-                    logger.trace("LocalState instance found for key " + elementKey);
+                Object v = e.getObjectValue();
 
-                return (LocalState) e.getValue();
+                // Is this a state instance, or an alternative key ?
+                if (v instanceof LocalState) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("LocalState instance found for key [" + elementKey +
+                                "] TTL:[" + e.getTimeToLive() + "]" +
+                                " TTI:[" + e.getTimeToIdle() + "]" +
+                                " LAT:[" + e.getLastAccessTime() + "]");
+
+                    LocalState state = (LocalState) v;
+                    refreshState(ctx, (EHCacheLocalStateImpl) state);
+                    return (LocalState) v;
+                }
+
+                // This is probably an alternate key, the value is the primary key
+                String pKey = (String) v;
+                if (logger.isTraceEnabled())
+                    logger.trace("LocalState alternative key found for key [" + elementKey +
+                            "/alt:" + pKey + "] TTL:[" + e.getTimeToLive() + "]" +
+                            " TTI:[" + e.getTimeToIdle() + "]" +
+                            " LAT:[" + e.getLastAccessTime() + "]");
+
+                e = retrieveElement(pKey);
+                if (e != null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("LocalState instance found for key [" + pKey +
+                                "] TTL:[" + e.getTimeToLive() + "]" +
+                                " TTI:[" + e.getTimeToIdle() + "]" +
+                                " LAT:[" + e.getLastAccessTime() + "]");
+
+                    LocalState state = (LocalState) e.getObjectValue();
+                    refreshState(ctx, (EHCacheLocalStateImpl) state);
+                    return state;
+                }
+
             }
 
             if (logger.isTraceEnabled())
@@ -248,13 +270,46 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         }
     }
 
+    protected Element retrieveElement(String key) {
+        Element e = cache.get(key);
+        if (e == null) {
+
+            int retry = 0;
+            while (e == null && retry <= receiveRetries) {
+                // Wait and try again, maybe state is on the road :)
+                if (logger.isTraceEnabled())
+                    logger.trace("Cache miss, wait for " + 500 + " ms");
+
+                try { Thread.sleep(500); } catch (InterruptedException ie ) { /* Ignore this */ }
+                e = cache.get(key);
+                retry ++;
+            }
+        }
+
+        return e;
+    }
+
+    /**
+     * This will refresh all the alternate elements
+     */
+    protected void refreshState(ProviderStateContext ctx, EHCacheLocalStateImpl state) {
+        for (String alternativeIdName : state.getAlternativeIdNames()) {
+            String alternativeKey = ctx.getProvider().getName() + ":" + state.getAlternativeKey(alternativeIdName);
+            // Just to refresh the access time ...
+            cache.get(alternativeKey);
+            if (logger.isTraceEnabled())
+                logger.trace("Accessed LocalState alternative key " + alternativeKey);
+        }
+    }
+
     public void remove(ProviderStateContext ctx, String key) {
 
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
-            Element e = cache.get(ctx.getProvider().getName() + ":PK:" + key);
+            String pKey = ctx.getProvider().getName() + ":PK:" + key;
+            Element e = cache.get(pKey);
             if (e != null) {
                 EHCacheLocalStateImpl state = (EHCacheLocalStateImpl) e.getValue();
                 cache.remove(ctx.getProvider().getName() + ":" + key);
@@ -262,8 +317,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     logger.trace("Removed LocalState instance for key " + key);
 
                 for (String alternativeIdName : state.getAlternativeIdNames()) {
-                    String alternativeKey = state.getAlternativeKey(alternativeIdName);
-                    cache.remove(ctx.getProvider().getName() + ":" + alternativeKey);
+                    String alternativeKey = ctx.getProvider().getName() + ":" + state.getAlternativeKey(alternativeIdName);
+                    cache.remove(alternativeKey);
                     if (logger.isTraceEnabled())
                         logger.trace("Removed LocalState instance for alternative key " + alternativeKey);
                 }
@@ -293,7 +348,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     continue;
 
                 Element element = cache.get(key);
-                if (element.getValue() instanceof LocalState) {
+                if (element.getObjectValue() instanceof LocalState) {
                     EHCacheLocalStateImpl s = (EHCacheLocalStateImpl) element.getValue();
                     s.setNew(false);
                     states.add(s);
@@ -319,5 +374,48 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         return state;
     }
 
+
+    class CacheStateListener implements CacheEventListener {
+
+        @Override
+        public void notifyElementRemoved(Ehcache ehcache, Element element) throws CacheException {
+            logger.trace("notifyElementRemoved:" + ehcache.getName() + "/" +  element.getKey());
+        }
+
+        @Override
+        public void notifyElementPut(Ehcache ehcache, Element element) throws CacheException {
+            logger.trace("notifyElementPut:" + ehcache.getName() + "/" + element.getKey());
+        }
+
+        @Override
+        public void notifyElementUpdated(Ehcache ehcache, Element element) throws CacheException {
+            logger.trace("notifyElementUpdated:" + ehcache.getName() + "/" + element.getKey());
+        }
+
+        @Override
+        public void notifyElementExpired(Ehcache ehcache, Element element) {
+            logger.trace("notifyElementExpired:" + ehcache.getName() + "/" + element.getKey());
+        }
+
+        @Override
+        public void notifyElementEvicted(Ehcache ehcache, Element element) {
+            logger.trace("notifyElementEvicted:" + ehcache.getName() + "/" + element.getKey());
+        }
+
+        @Override
+        public void notifyRemoveAll(Ehcache ehcache) {
+            logger.trace("notifyRemoveAll:" + ehcache.getName() );
+        }
+
+        @Override
+        public void dispose() {
+
+        }
+
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
+    }
 
 }

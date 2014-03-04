@@ -65,7 +65,7 @@ public class SSOSPMediator extends AbstractSSOMediator {
 
     // Send IdP Heart Beat every 7 minutes by default
 
-    private long idpSessionHeartBeatInterval = 7L * 60L;
+    private long idpSessionHeartBeatInterval = 1L * 60L;
 
     @Override
     protected RouteBuilder createSPRoutes(final IdPChannel idpChannel) throws Exception {

@@ -379,46 +379,42 @@ public class IdentityProviderMBeanImpl extends AbstractProviderMBean
         // User default channel to signal SLO
         Channel defaultChannel = idp.getChannel();
 
-        IdentityMediationEndpoint soapEndpoint = null;
+        IdentityMediationEndpoint e = null;
         for (IdentityMediationEndpoint endpoint : defaultChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SSOService.IDPInitiatedSingleLogoutService.toString())) {
-                // We need to build an endpoint descriptor descriptor now ...
+            if (endpoint.getType().equals(SSOService.SingleLogoutService.toString())) {
 
-                if (endpoint.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
-                    soapEndpoint = endpoint;
-                } else if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+                if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+                    // We need to build an endpoint descriptor descriptor now ...
 
                     String location = endpoint.getLocation().startsWith("/") ?
                             defaultChannel.getLocation() + endpoint.getLocation() :
                             endpoint.getLocation();
 
-                    return new EndpointDescriptorImpl(endpoint.getName(),
-                            SSOService.IDPInitiatedSingleLogoutService.toString(),
+                    return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-local",
+                            SSOService.SingleLogoutService.toString(),
                             SSOBinding.SSO_LOCAL.toString(),
                             location,
                             null);
-
+                } else if (endpoint.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
+                    e = endpoint;
                 }
-
             }
         }
 
-        if (soapEndpoint != null) {
+        if (e != null) {
+            String location = e.getLocation().startsWith("/") ?
+                    defaultChannel.getLocation() + e.getLocation() :
+                    e.getLocation();
 
-            String location = soapEndpoint.getLocation().startsWith("/") ?
-                    defaultChannel.getLocation() + soapEndpoint.getLocation() :
-                    soapEndpoint.getLocation();
-
-            return new EndpointDescriptorImpl(soapEndpoint.getName(),
-                    SSOService.IDPInitiatedSingleLogoutService.toString(),
-                    SSOBinding.SSO_SOAP.toString(),
+            return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-soap",
+                    SSOService.SingleLogoutService.toString(),
+                    e.getBinding(),
                     location,
                     null);
-
         }
 
-        throw new SSOException("No IDP Initiated SLO endpoint using SOAP binding found!");
+        throw new SSOException("No IDP SLO endpoint using LOCAL/SOAP binding found!");
     }
 }
 

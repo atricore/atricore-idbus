@@ -202,8 +202,8 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                 if (value instanceof BaseSession) {
 
                     BaseSession s = (BaseSession) value;
-                    // Refresh user sessions when ever a session is accessed.
-                    cache.getQuiet(s.getUsername());
+                    // Refresh user sessions access time
+                    cache.get(s.getUsername());
 
                     return s;
                 }

@@ -26,8 +26,10 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.openid.main.claims.endpoints.OpenIDClaimsEndpoint;
 import org.atricore.idbus.capabilities.openid.main.proxy.endpoints.*;
 import org.atricore.idbus.capabilities.openid.main.support.OpenIDService;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
 import java.util.Map;
@@ -60,6 +62,7 @@ public class OpenIDProxyComponent extends DefaultComponent {
             case SPInitiatedSingleSignOnServiceProxy:
                 endpoint = new OpenIDSingleSignOnProxyEndpoint(uri, this, parameters);
                 break;
+
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID endpoint " + remaining );
         }

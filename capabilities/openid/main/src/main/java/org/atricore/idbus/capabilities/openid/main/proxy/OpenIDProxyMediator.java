@@ -48,7 +48,10 @@ public class OpenIDProxyMediator extends AbstractOpenIDMediator {
     private static final Log logger = LogFactory.getLog(OpenIDProxyMediator.class);
 
     private ConsumerManager consumerManager;
+
     private String spProxyACS;
+
+    private String idpLocation;
 
     @Override
     protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
@@ -195,5 +198,13 @@ public class OpenIDProxyMediator extends AbstractOpenIDMediator {
 
     public void setSpProxyACS(String spBindingACS) {
         this.spProxyACS = spBindingACS;
+    }
+
+    public String getIdpLocation() {
+        return idpLocation;
+    }
+
+    public void setIdpLocation(String idpLocation) {
+        this.idpLocation = idpLocation;
     }
 }
