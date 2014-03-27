@@ -7,18 +7,22 @@ import org.apache.camel.component.http.HttpExchange;
 import org.apache.camel.component.jetty.CamelContinuationServlet;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.spi.Registry;
+import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.RequestAddCookies;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
@@ -67,11 +71,15 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
     private boolean followRedirects;
 
+    private boolean reuseHttpClient = false;
+
     private String localTargetBaseUrl;
 
     private ConfigurationContext kernelConfig;
 
     private InternalProcessingPolicy internalProcessingPolicy;
+
+    private HttpClient httpClient;
 
     public OsgiIDBusServlet2() {
         super();
@@ -105,16 +113,21 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                     throw new ServletException("No Kernel Configuration Context found!");
                 }
 
-                followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects"));
+                followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "true"));
+                reuseHttpClient = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.reuseHttpClient", "false"));
                 localTargetBaseUrl = kernelConfig.getProperty("binding.http.localTargetBaseUrl");
 
                 logger.info("Following Redirects internally : " + followRedirects);
+
+                if (reuseHttpClient)
+                    logger.info("Reuse HTTP client option is ON (EXPERIMENTAL)");
+
             }
 
             if (internalProcessingPolicy == null) {
                 org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
-                    (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
-                            WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+                        (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
+                                WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
                 internalProcessingPolicy = (InternalProcessingPolicy) wac.getBean("internal-processing-policy");
             }
@@ -161,37 +174,17 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         String cookieDomain = reqUri.getHost();
 
         // Create HTTP Client
-        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpClient httpClient = getHttpClient();
 
         // Create an HTTP Context to publish resources for our client components
         HttpContext httpContext = new BasicHttpContext();
 
         // Publish the original request, it will be removed from the context later, on the first internal redirect.
         httpContext.setAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest", req);
-
-        // Tailor client, we need to send the cookies received from the browser on all requests.
-        // Replace default request cookie handling interceptor
-        int intIdx = 0;
-        for (int i = 0 ; i < httpClient.getRequestInterceptorCount(); i++) {
-            if (httpClient.getRequestInterceptor(i) instanceof RequestAddCookies) {
-                intIdx = i;
-                break;
-            }
-        }
-
-        IDBusRequestAddCookies interceptor = new IDBusRequestAddCookies(cookieDomain);
-        httpClient.removeRequestInterceptorByClass(RequestAddCookies.class);
-        httpClient.addRequestInterceptor(interceptor, intIdx);
-
-        // Configure client, disable following redirects, we want to be in control of redirecting
-        httpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
-        httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-
+        httpContext.setAttribute("org.atricorel.idbus.kernel.main.binding.http.CookieDomain", cookieDomain);
 
         if (logger.isTraceEnabled())
             logger.trace("Staring to follow redirects for " + req.getPathInfo());
-
-        HttpResponse proxyRes = null;
 
         // Store received headers and send them back to the browser
         List<Header> storedHeaders = new ArrayList<Header>(40);
@@ -203,107 +196,176 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             if (logger.isTraceEnabled())
                 logger.trace("Sending internal request " + proxyReq);
 
-            // Actually execute the request
-            proxyRes = httpClient.execute(proxyReq, httpContext);
+            // ----------------------------------------------------
+            // Execute the request internally:
+            // ----------------------------------------------------
+            HttpResponse proxyRes = httpClient.execute(proxyReq, httpContext);
             String targetUrl = null;
+            Header[] headers = null;
+            try {
 
-            // Store some of the received HTTP headers, Set-Cookie are the most important ones
-            Header[] headers = proxyRes.getAllHeaders();
+                // ----------------------------------------------------
+                // Store some of the received HTTP headers, skip others
+                // Set-Cookie headers are the most important
+                // ----------------------------------------------------
+                headers = proxyRes.getAllHeaders();
 
-            for (Header header : headers) {
-                // Ignored headers
-                if (header.getName().equals("Server")) continue;
-                if (header.getName().equals("Transfer-Encoding")) continue;
-                if (header.getName().equals("Location")) continue;
-                if (header.getName().equals("Expires")) continue;
-                if (header.getName().equals("Content-Length")) continue;
-                if (header.getName().equals("Content-Type")) continue;
+                for (Header header : headers) {
+                    // Ignored headers
+                    if (header.getName().equals("Server")) continue;
+                    if (header.getName().equals("Transfer-Encoding")) continue;
+                    if (header.getName().equals("Location")) continue;
+                    if (header.getName().equals("Expires")) continue;
+                    if (header.getName().equals("Content-Length")) continue;
+                    if (header.getName().equals("Content-Type")) continue;
 
-                // The sender of the response has explicitly ask no to follow this redirect.
-                if (header.getName().equals("FollowRedirect")) {
-                    // Set 'followTargetUrl' to false
-                    followTargetUrl = false;
-                    continue;
-                }
-
-                if (header.getName().equals("X-IdBus-FollowRedirect")) {
-                    // Set 'followTargetUrl' to false
-                    followTargetUrl = false;
-                    continue;
-                }
-
-                storedHeaders.add(header);
-
-            }
-
-            if (logger.isTraceEnabled())
-                logger.trace("HTTP/STATUS:" + proxyRes.getStatusLine().getStatusCode() + "["+proxyReq+"]");
-
-            // Based on the status, we may need to follow redirects
-            // We could convert this into HTTP Client components (req/res interceptors, etc)
-            switch (proxyRes.getStatusLine().getStatusCode()) {
-                case 200:
-                    followTargetUrl = false;
-                    break;
-                case 302:
-                    // See if we have to proxy the response
-                    Header location = proxyRes.getFirstHeader("Location");
-                    targetUrl = location.getValue();
-
-                    // Just in case the value was already set to false
-                    if (!followTargetUrl || !internalProcessingPolicy.match(req, targetUrl)) {
-
-                        // This is outside our scope, send the response to the browser ...
-                        if (logger.isTraceEnabled())
-                            logger.trace("Do not follow HTTP 302 to ["+location.getValue()+"]");
-
-                        Collections.addAll(storedHeaders, proxyRes.getHeaders("Location"));
+                    // The sender of the response has explicitly ask no to follow this redirect.
+                    if (header.getName().equals("FollowRedirect")) {
+                        // Set 'followTargetUrl' to false
                         followTargetUrl = false;
-                    } else {
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Do follow HTTP 302 to ["+location.getValue()+"]");
-
-                        followTargetUrl = true;
-
+                        continue;
                     }
 
-                    break;
-                case 401:
-                    followTargetUrl = false;
-                    break;
-                case 404:
-                    followTargetUrl = false;
-                    break;
-                case 500:
-                    followTargetUrl = false;
-                    break;
-                default:
-                    followTargetUrl = false;
-                    break;
-            }
+                    if (header.getName().equals("X-IdBus-FollowRedirect")) {
+                        // Set 'followTargetUrl' to false
+                        followTargetUrl = false;
+                        continue;
+                    }
 
-            // Get hold of the response entity
-            HttpEntity entity = proxyRes.getEntity();
+                    storedHeaders.add(header);
 
-            // If the response does not enclose an entity, there is no need
-            // to bother about connection release
+                }
 
-            if (entity != null) {
-                InputStream instream = entity.getContent();
-                try {
+                if (logger.isTraceEnabled())
+                    logger.trace("HTTP/STATUS:" + proxyRes.getStatusLine().getStatusCode() + "["+proxyReq+"]");
+
+                // ----------------------------------------------------
+                // Based on the status, we may need to follow redirects
+                // ----------------------------------------------------
+                switch (proxyRes.getStatusLine().getStatusCode()) {
+                    case 302:
+                        // This is a redirect, but is it to an IDBUS local URL ?
+                        // See if we have to proxy the response
+                        Header location = proxyRes.getFirstHeader("Location");
+                        targetUrl = location.getValue();
+
+                        // Check if the target URL is an IDBUS endpoint
+                        if (!followTargetUrl || !internalProcessingPolicy.match(req, targetUrl)) {
+
+                            // This is outside our scope, send the response to the browser ...
+                            if (logger.isTraceEnabled())
+                                logger.trace("Do not follow HTTP 302 to ["+location.getValue()+"]");
+
+                            Collections.addAll(storedHeaders, proxyRes.getHeaders("Location"));
+                            followTargetUrl = false;
+                        } else {
+
+                            // The redirect can be handled by our HTTP client, no need to send it to the browser
+                            if (logger.isTraceEnabled())
+                                logger.trace("Do follow HTTP 302 to ["+location.getValue()+"]");
+
+                            followTargetUrl = true;
+
+                        }
+
+                        break;
+                    default:
+                        // All non 302 codes are sent to the browser
+                        followTargetUrl = false;
+                        break;
+                }
+
+            } finally {
+
+                // Clean the client connection
+
+                // Get hold of the response entity
+                HttpEntity entity = proxyRes.getEntity();
+
+                // If the response does not enclose an entity, there is no need
+                // to bother about connection release
+
+                if (entity != null) {
+
+                    // Release the connection, read all available content.
+                    InputStream instream = entity.getContent();
+                    try {
+
+                        if (!followTargetUrl) {
+                            // If we're not following the target URL, send all to the browser
+
+                            // Last received headers
+                            if (headers != null) {
+                                for (Header header : headers) {
+                                    if (header.getName().equals("Content-Type"))
+                                        res.setHeader(header.getName(), header.getValue());
+                                    if (header.getName().equals("Content-Length"))
+                                        res.setHeader(header.getName(), header.getValue());
+                                }
+                            }
+
+                            // Previously stored headers
+                            res.setStatus(proxyRes.getStatusLine().getStatusCode());
+                            for (Header header : storedHeaders) {
+                                if (header.getName().startsWith("Set-Cookie"))
+                                    res.addHeader(header.getName(), header.getValue());
+                                else
+                                    res.setHeader(header.getName(), header.getValue());
+                            }
+
+                            // Send content to browser
+                            IOUtils.copy(instream, res.getOutputStream());
+                            res.getOutputStream().flush();
+
+                        } else {
+
+                            // Just ignore the content ...
+                            // should we do something with this ?!
+                            int r = instream.read(buff);
+                            int total = r;
+                            while (r > 0) {
+                                r = instream.read(buff);
+                                total += r;
+                            }
+
+                            if (total > 0)
+                                logger.warn("Ignoring response content size : " + total);
+
+
+                        }
+
+                    } catch (IOException ex) {
+                        // In case of an IOException the connection will be released
+                        // back to the connection manager automatically
+                        throw ex;
+                    } catch (RuntimeException ex) {
+                        // In case of an unexpected exception you may want to abort
+                        // the HTTP request in order to shut down the underlying
+                        // connection immediately.
+                        proxyReq.abort();
+                        throw ex;
+                    } finally {
+                        // Closing the input stream will trigger connection release
+                        try { instream.close(); } catch (Exception ignore) {}
+                    }
+
+                } else {
 
                     if (!followTargetUrl) {
                         // If we're not following the target URL, send all to the browser
-                        // Last received headers
-                        for (Header header : headers) {
-                            if (header.getName().equals("Content-Type"))
-                                res.setHeader(header.getName(), header.getValue());
-                            if (header.getName().equals("Content-Length"))
-                                res.setHeader(header.getName(), header.getValue());
+                        res.setStatus(proxyRes.getStatusLine().getStatusCode());
+
+                        if (headers != null) {
+                            // Latest headers
+                            for (Header header : headers) {
+                                if (header.getName().equals("Content-Type"))
+                                    res.setHeader(header.getName(), header.getValue());
+                                if (header.getName().equals("Content-Length"))
+                                    res.setHeader(header.getName(), header.getValue());
+
+                            }
                         }
 
-                        res.setStatus(proxyRes.getStatusLine().getStatusCode());
                         for (Header header : storedHeaders) {
                             if (header.getName().startsWith("Set-Cookie"))
                                 res.addHeader(header.getName(), header.getValue());
@@ -311,65 +373,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                                 res.setHeader(header.getName(), header.getValue());
                         }
 
-                        // Send content to browser
-                        IOUtils.copy(instream, res.getOutputStream());
-                        res.getOutputStream().flush();
-
-                    } else {
-
-                        // Just ignore the content ...
-                        // should we do something with this ?!
-                        int r = instream.read(buff);
-                        int total = r;
-                        while (r > 0) {
-                            r = instream.read(buff);
-                            total += r;
-                        }
-
-                        if (total > 0)
-                            logger.warn("Ignoring response content size : " + total);
-
-
-                    }
-
-                } catch (IOException ex) {
-                    // In case of an IOException the connection will be released
-                    // back to the connection manager automatically
-                    throw ex;
-                } catch (RuntimeException ex) {
-                    // In case of an unexpected exception you may want to abort
-                    // the HTTP request in order to shut down the underlying
-                    // connection immediately.
-                    proxyReq.abort();
-                    throw ex;
-                } finally {
-                    // Closing the input stream will trigger connection release
-                    try { instream.close(); } catch (Exception ignore) {}
-                }
-
-            } else {
-
-                if (!followTargetUrl) {
-                    // If we're not following the target URL, send all to the browser
-                    res.setStatus(proxyRes.getStatusLine().getStatusCode());
-
-                    for (Header header : headers) {
-                        if (header.getName().equals("Content-Type"))
-                            res.setHeader(header.getName(), header.getValue());
-                        if (header.getName().equals("Content-Length"))
-                            res.setHeader(header.getName(), header.getValue());
-
-                    }
-
-                    for (Header header : storedHeaders) {
-                        if (header.getName().startsWith("Set-Cookie"))
-                            res.addHeader(header.getName(), header.getValue());
-                        else
-                            res.setHeader(header.getName(), header.getValue());
                     }
 
                 }
-
             }
 
             if (followTargetUrl) {
@@ -409,6 +415,51 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         proxyReq.addHeader("X-IdBusProxiedRequest", "TRUE");
 
         return proxyReq;
+    }
+
+    protected HttpClient getHttpClient() {
+
+        if (!reuseHttpClient)
+            return buildHttpClient(false);
+
+        if (logger.isTraceEnabled())
+            logger.trace("Reusing HTTP client instance (experimental)");
+
+        if (httpClient == null)
+            httpClient = buildHttpClient(true);
+
+        return httpClient;
+
+    }
+
+    protected HttpClient buildHttpClient(boolean multiThreaded) {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Building HttpClient instance: [multithreaded:" + multiThreaded + "]");
+
+        DefaultHttpClient newHttpClient = multiThreaded ? new DefaultHttpClient(new ThreadSafeClientConnManager()) : new DefaultHttpClient();
+
+        // Tailor client, we need to send the cookies received from the browser on all requests.
+        // Replace default request cookie handling interceptor
+        int intIdx = 0;
+        for (int i = 0 ; i < newHttpClient.getRequestInterceptorCount(); i++) {
+            if (newHttpClient.getRequestInterceptor(i) instanceof RequestAddCookies) {
+                intIdx = i;
+                break;
+            }
+        }
+
+        IDBusRequestAddCookies interceptor = new IDBusRequestAddCookies();
+        newHttpClient.removeRequestInterceptorByClass(RequestAddCookies.class);
+        newHttpClient.addRequestInterceptor(interceptor, intIdx);
+
+        // Configure client, disable following redirects, we want to be in control of redirecting
+        newHttpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
+        newHttpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
+
+        httpClient = newHttpClient;
+
+        return httpClient;
     }
 
     protected HttpRequestBase buildProxyRequest(HttpServletRequest req, String remoteAddr, String remoteHost) throws ServletException {

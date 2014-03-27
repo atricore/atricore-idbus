@@ -40,9 +40,19 @@
         <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusServlet2</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>OsgiIDBusDumpServlet</servlet-name>
+        <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusDumpServlet</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>OsgiIDBusServlet</servlet-name>
         <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>OsgiIDBusDumpServlet</servlet-name>
+        <url-pattern>/DUMP</url-pattern>
     </servlet-mapping>
 
 </web-app>

@@ -18,6 +18,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+/*
+ * Atricore IDBus
+ *
+ * Copyright (c) 2009, Atricore Inc.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 
 package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
@@ -1076,7 +1096,7 @@ public class SingleSignOnProducer extends SSOProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
-        // TODO : On IDP Initiated, there is no AuthnRequest
+        // TODO : On IdP Initiated, there is no AuthnRequest
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
 
@@ -1179,15 +1199,23 @@ public class SingleSignOnProducer extends SSOProducer {
                         usernameString.setValue(nameId.getName());
                         usernameToken.setUsername(usernameString);
                         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), nameId.getName());
+
+                        // TODO : This is not accurate
+                        // TODO : We should honor the provided authn. context if any
                         usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+
+                        // Also update authentication state
+                        authnState.setAuthnCtxClass(AuthnCtxClass.PASSWORD_AUTHN_CTX);
+
                         usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
 
-                        // TODO : We should honor the provided authn. context if any
                         CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
                         claims.addClaim(credentialClaim);
                     }
 
                 }
+
+
 
                 SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                         securityTokenEmissionCtx,
@@ -1757,14 +1785,16 @@ public class SingleSignOnProducer extends SSOProducer {
         assert ssoSessionId.equals(st.getId()) : "SSO Session Manager MUST use security token ID as session ID";
 
         boolean rememberMe = false;
-        for (Claim c : claims.getClaims()) {
-            if (c instanceof CredentialClaim) {
-                CredentialClaim cc = (CredentialClaim) c;
-                if (cc.getValue() instanceof UsernameTokenType) {
-                    UsernameTokenType ut = (UsernameTokenType) cc.getValue();
-                    String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
-                    if (rememberMeStr != null)
-                        rememberMe = Boolean.parseBoolean(rememberMeStr);
+        if (claims != null) {
+            for (Claim c : claims.getClaims()) {
+                if (c instanceof CredentialClaim) {
+                    CredentialClaim cc = (CredentialClaim) c;
+                    if (cc.getValue() instanceof UsernameTokenType) {
+                        UsernameTokenType ut = (UsernameTokenType) cc.getValue();
+                        String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                        if (rememberMeStr != null)
+                            rememberMe = Boolean.parseBoolean(rememberMeStr);
+                    }
                 }
             }
         }

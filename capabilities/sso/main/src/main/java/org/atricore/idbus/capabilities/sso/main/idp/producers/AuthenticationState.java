@@ -61,6 +61,8 @@ public class AuthenticationState implements java.io.Serializable {
 
     private int ssoAttepmts;
 
+    private AuthnCtxClass authnCtxClass;
+
     // The last authn request
     private AuthnRequestType authnRequest;
 
@@ -104,7 +106,8 @@ public class AuthenticationState implements java.io.Serializable {
         if (currentClaimsEndpoint != null)
             return AuthnCtxClass.asEnum(currentClaimsEndpoint.getType());
 
-        return null;
+        // Return default authn context class
+        return getAuthnCtxClass();
     }
 
     public IdentityMediationEndpoint getCurrentIdConfirmationEndpoint() {
@@ -153,5 +156,13 @@ public class AuthenticationState implements java.io.Serializable {
 
     public void setSsoAttepmts(int ssoAttepmts) {
         this.ssoAttepmts = ssoAttepmts;
+    }
+
+    public AuthnCtxClass getAuthnCtxClass() {
+        return authnCtxClass;
+    }
+
+    public void setAuthnCtxClass(AuthnCtxClass authnCtxClass) {
+        this.authnCtxClass = authnCtxClass;
     }
 }

@@ -243,7 +243,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     protected MediationState createMediationState(Exchange exchange) {
 
         if (logger.isDebugEnabled())
-            logger.debug("Cre3ating Mediation State from Exchange " + exchange.getExchangeId());
+            logger.debug("Creating Mediation State from Exchange " + exchange.getExchangeId());
 
         StatefulProvider p = getProvider();
         MediationStateImpl state = null;

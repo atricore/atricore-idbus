@@ -44,6 +44,16 @@ public class EndpointDescriptorImpl implements EndpointDescriptor {
 
     }
 
+    public EndpointDescriptorImpl(String baseUrl, IdentityMediationEndpoint idEndpoint) {
+        this.name = idEndpoint.getName();
+        this.type = idEndpoint.getType();
+        this.binding = idEndpoint.getBinding();
+        this.location = baseUrl + idEndpoint.getLocation();
+        this.responseLocation = idEndpoint.getResponseLocation();
+
+    }
+
+
     public EndpointDescriptorImpl(String name, String type, String binding, String location, String responseLocation) {
         this.name = name;
         this.type = type;

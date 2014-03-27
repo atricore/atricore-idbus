@@ -22,17 +22,16 @@ import java.io.IOException;
  */
 public class IDBusRequestAddCookies extends RequestAddCookies {
 
-    private String cookieDomain;
-
     private static final Log logger = LogFactory.getLog(IDBusRequestAddCookies.class);
 
-    public IDBusRequestAddCookies(String cookieDomain) {
-        this.cookieDomain = cookieDomain;
+    public IDBusRequestAddCookies() {
+
     }
 
     public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
 
         HttpServletRequest originalRequest = (HttpServletRequest) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest");
+        String cookieDomain = (String) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.CookieDomain");
 
         if (originalRequest != null) {
 
@@ -47,7 +46,7 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
             // Convert received servlet cookies to HTTP client cookies
             if (originalRequest.getCookies() != null) {
                 for (javax.servlet.http.Cookie svltCookie : originalRequest.getCookies()) {
-                    Cookie clientCookie = toClientCookie(context, svltCookie);
+                    Cookie clientCookie = toClientCookie(context, svltCookie, cookieDomain);
                     cookieStore.addCookie(clientCookie);
                 }
             }
@@ -58,7 +57,7 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
 
     }
 
-    protected Cookie toClientCookie(HttpContext context, javax.servlet.http.Cookie svltCookie) {
+    protected Cookie toClientCookie(HttpContext context, javax.servlet.http.Cookie svltCookie, String cookieDomain) {
 
         BasicClientCookie cookie = new BasicClientCookie(svltCookie.getName(), svltCookie.getValue());
 

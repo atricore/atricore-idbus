@@ -116,6 +116,9 @@ public enum AuthnCtxClass {
     /** URI for OpenID authentication context. */
     OPENID_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OpenID", true),
 
+    /** URI for OpenID authentication context. */
+    OPENIDCONNECT_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OpenIDConnect", true),
+
     /** URI for Preauthentication (OAuth2) authentication context. */
     OAUTH2_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OAuth2", true);
 

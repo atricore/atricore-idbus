@@ -221,7 +221,10 @@
 
                 <sequence>
                     <element name="Subject" type="ssop:SubjectType"/>
+                    <element name="SubjectAttributes" type="ssop:SubjectAttributeType" maxOccurs="unbounded"/>
+                    <element name="SubjectRoles" type="ssop:SubjectRoleType" maxOccurs="unbounded"/>
                 </sequence>
+
                 <attribute name="SessionIndex" type="string" use="required"/>
                 <attribute name="Failed" type="boolean" use="required"/>
 
