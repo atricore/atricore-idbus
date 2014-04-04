@@ -379,21 +379,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.xbean</groupId>
-                <artifactId>maven-xbean-plugin</artifactId>
-                <version>${xbean.version}</version>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <namespace>urn:org:atricore:idbus:capabilities:openid</namespace>
-                        </configuration>
-                        <goals>
-                            <goal>mapping</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
