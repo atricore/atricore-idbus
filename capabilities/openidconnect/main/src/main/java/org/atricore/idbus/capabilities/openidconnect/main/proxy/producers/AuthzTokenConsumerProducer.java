@@ -27,6 +27,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.io.IOException;
@@ -143,24 +144,7 @@ public class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
                 mediator.getClientSecret());
 
         request.setRedirectUri(accessTokenConsumerLocation.getLocation());
-
         // request.setClientAuthentication(new BasicAuthentication(mediator.getClientId(), mediator.getClientSecret()));
-
-        /*
-        EndpointDescriptor accessTokenServiceLocation = new EndpointDescriptorImpl("google-oauth2-accesstoken",
-                "AccessTokenService",
-                OpenIDConnectBinding.OPENID_HTTP_POST.getValue(),
-                mediator.getAccessTokenServiceLocation(), null);
-
-        out.setMessage(new MediationMessageImpl(relayState,
-                request,
-                "OpenIDAuthenticationRequest",
-                relayState,
-                accessTokenServiceLocation,
-                in.getMessage().getState()));
-
-        exchange.setOut(out);
-        */
 
         IdTokenResponse idTokenResponse = IdTokenResponse.execute(request);
         IdToken idToken = idTokenResponse.parseIdToken();
@@ -186,6 +170,7 @@ public class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
         // ------------------------------------------------------------------------------
         // Send SP Authentication response
         // ------------------------------------------------------------------------------
+        SPInitiatedAuthnRequestType authnRequest = (SPInitiatedAuthnRequestType) mediationState.getLocalVariable("urn:OPENID-CONNECT:1.0:authnRequest");
         SPAuthnResponseType resp = null;
 
         SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
@@ -229,7 +214,7 @@ public class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
         ssoResponse.getSubjectAttributes().add(openIdSubjectAttr);
 
         // Send response back
-        String destinationLocation = resolveSpProxyACS();
+        String destinationLocation = resolveSpProxyACS(authnRequest);
 
         if (logger.isTraceEnabled())
             logger.trace("Sending response to " + destinationLocation);
@@ -387,7 +372,24 @@ public class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
         }
     }
 
-    protected String resolveSpProxyACS() {
+    protected String resolveSpProxyACS(SPInitiatedAuthnRequestType authnRequest) {
+
+        FederatedProvider issuerProvider = null;
+        String issuer = authnRequest.getIssuer();
+        if (logger.isDebugEnabled())
+            logger.debug("Resolving issuer ["+issuer+"]");
+
+        FederatedProvider provider = getFederatedProvider();
+        for (FederatedProvider p : provider.getCircleOfTrust().getProviders()) {
+            if (p.getName().equals(issuer)) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Found issuer : " + p.getName());
+                issuerProvider = p;
+                break;
+            }
+        }
+
+        // Look-up response endpoint for original issuer, this is not SAML, so we asume this is a local provider
         return ((OpenIDConnectProxyMediator) channel.getIdentityMediator()).getSpProxyACS();
     }
 

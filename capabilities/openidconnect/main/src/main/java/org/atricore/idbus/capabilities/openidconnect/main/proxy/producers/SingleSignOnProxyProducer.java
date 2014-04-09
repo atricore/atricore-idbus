@@ -38,11 +38,9 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
         // Process an authn request,
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-
         SPInitiatedAuthnRequestType authnRequest = (SPInitiatedAuthnRequestType) in.getMessage().getContent();
 
         doProcessSPInitiatedSSO(exchange, authnRequest);
-
     }
 
 
@@ -68,8 +66,6 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         MediationState mediationState = in.getMessage().getState();
         OpenIDConnectProxyMediator mediator = (OpenIDConnectProxyMediator) channel.getIdentityMediator();
 
-        // TODO : Refresh token
-
         // redirect to the authorization flow
         String relayState = uuidGenerator.generateId();
 
@@ -82,6 +78,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         authorizationUrl.setScopes(Collections.singleton("openid email"));
 
         mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:relayState", relayState);
+        mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:authnRequest", authnRequest);
 
         // Resolve authz token service endpoint
         EndpointDescriptor responseLocation = resolveAuthzTokenServiceEndpoint();
