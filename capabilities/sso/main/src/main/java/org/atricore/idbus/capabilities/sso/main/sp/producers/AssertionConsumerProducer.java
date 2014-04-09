@@ -150,8 +150,9 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ------------------------------------------------------
 
         validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
+        //
         if (mediator.isVerifyUniqueIDs())
-            mediator.getIdRegistry().register(authnRequest.getID());
+            mediator.getIdRegistry().register(response.getID());
 
         String issuerAlias = response.getIssuer().getValue();
         FederatedProvider issuer = getCotManager().lookupFederatedProviderByAlias(issuerAlias);

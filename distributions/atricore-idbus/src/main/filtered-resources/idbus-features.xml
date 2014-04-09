@@ -15,6 +15,7 @@
         <feature version="${version}">atricore-josso</feature>
         <feature version="${version}">atricore-spnego</feature>
         <feature version="${version}">atricore-openid</feature>
+        <feature version="${version}">atricore-openidconnect</feature>
         <feature version="${version}">atricore-oauth2</feature>
         <feature version="${version}">atricore-idconfirmation</feature>
         <feature version="${version}">atricore-idbus-ui</feature>
@@ -149,6 +150,11 @@
         <bundle>mvn:org.atricore.idbus.capabilities.openid/org.atricore.idbus.capabilities.openid.main/${idbus.cap.openid.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.openid/org.atricore.idbus.capabilities.openid.ui/${idbus.cap.openid.version}</bundle>
     </feature>
+
+    <feature name="atricore-openidconnect" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.openidconnect/org.atricore.idbus.capabilities.openidconnect.main/${idbus.cap.openidconnect.version}</bundle>
+    </feature>
+
 
     <feature name="atricore-oauth2" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.common/${idbus.cap.oauth2.version}</bundle>

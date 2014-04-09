@@ -124,6 +124,7 @@
         <idbus.cap.spnego.version>1.4.0-SNAPSHOT</idbus.cap.spnego.version>
         <idbus.cap.oauth2.version>1.4.0-SNAPSHOT</idbus.cap.oauth2.version>
         <idbus.cap.openid.version>1.4.0-SNAPSHOT</idbus.cap.openid.version>
+        <idbus.cap.openidconnect.version>1.4.0-SNAPSHOT</idbus.cap.openidconnect.version>
         <idbus.cap.idconfirmation.version>1.4.0-SNAPSHOT</idbus.cap.idconfirmation.version>
 
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.4.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
