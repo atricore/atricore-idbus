@@ -1,7 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.binding;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeTokenRequest;
-import com.google.api.client.auth.oauth2.TokenRequest;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
@@ -10,10 +9,8 @@ import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectPro
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.w3._1999.xhtml.*;
 

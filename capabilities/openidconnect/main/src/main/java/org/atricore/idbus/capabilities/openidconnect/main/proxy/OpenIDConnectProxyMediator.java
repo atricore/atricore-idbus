@@ -1,10 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.proxy;
 
-import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
-import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.BasicAuthentication;
-import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.jackson.JacksonFactory;
@@ -23,7 +19,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -46,7 +41,7 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private String clientSecret;
 
-    private String spProxyACS;
+    private String idpProxyAlias;
 
     /** Lock on the flow and credential. */
     private final Lock lock = new ReentrantLock();
@@ -194,14 +189,6 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
                 responseLocation);
     }
 
-    public String getSpProxyACS() {
-        return spProxyACS;
-    }
-
-    public void setSpProxyACS(String spBindingACS) {
-        this.spProxyACS = spBindingACS;
-    }
-
     public JacksonFactory getJacksonFactory() {
         return jacksonFactory;
     }
@@ -236,6 +223,14 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public Lock getLock() {
         return lock;
+    }
+
+    public String getIdpProxyAlias() {
+        return idpProxyAlias;
+    }
+
+    public void setIdpProxyAlias(String idpProxyAlias) {
+        this.idpProxyAlias = idpProxyAlias;
     }
 
     public Credential getCredential() {
