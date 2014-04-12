@@ -22,8 +22,11 @@
 package org.atricore.idbus.capabilities.sso.main.emitter.plans;
 
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
@@ -33,9 +36,7 @@ import org.atricore.idbus.kernel.planning.IdentityPlanningException;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This plan will transform an input token (UsernameToken, etc) into a SAMLR2 Authentication Assertion.
@@ -56,6 +57,8 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
             ex.setTransientProperty(SSOPlanningConstants.VAR_IGNORE_REQUESTED_NAMEID_POLICY, new Boolean(this.isIgnoreRequestedNameIDPolicy()));
             ex.setTransientProperty(SSOPlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
             ex.setTransientProperty(SSOPlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
+
+            SamlR2SecurityTokenEmissionContext ctx = (SamlR2SecurityTokenEmissionContext) ex.getProperty(WSTConstants.RST_CTX);
 
             if (logger.isTraceEnabled())
                 logger.trace("Using default SubjectNameID builder : " + getDefaultNameIDBuilder());
@@ -80,9 +83,6 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                 if (logger.isDebugEnabled())
                     logger.debug("Emitting token for Subject with SSOUser");
 
-                // Build Subject
-                // s = new Subject(true, s.getPrincipals(), s.getPrivateCredentials(), s.getPublicCredentials());
-
             } else if (simplePrincipals != null && simplePrincipals.size() > 0) {
 
                 if (logger.isDebugEnabled())
@@ -94,22 +94,67 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                 // All principals that will be added to the subject
                 Set<Principal> principals = new HashSet<Principal>();
                 SSOIdentityManager idMgr = getIdentityManager();
-                if (idMgr == null)
-                    logger.trace("Moving forward with token issuance without identity manager");
-                    
-                if (logger.isTraceEnabled())
-                    logger.trace("Resolving SSOUser for " + username);
 
                 // Obtain SSOUser principal
                 SSOUser ssoUser = null;
                 SSORole[] ssoRoles = null;
                 if (idMgr != null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Resolving SSOUser for " + username);
+
                     ssoUser = idMgr.findUser(username);
                     ssoRoles = idMgr.findRolesByUsername(username);
                 } else {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Moving forward with token issuance without identity manager");
                     ssoUser = new BaseUserImpl(username);
                     ssoRoles = new BaseRoleImpl[0];
 
+                }
+
+                // Additional information
+                if (ctx.getProxyResponse() != null) {
+
+                    // Proxied requests may provide additional information:
+                    SPAuthnResponseType proxyResponse = ctx.getProxyResponse();
+
+                    List<SSONameValuePair> proxyProps = new ArrayList();
+                    List<SSORole> proxyRoles = new ArrayList();
+
+                    for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
+                        proxyProps.add(new SSONameValuePair(attr.getName(), attr.getValue()));
+                    }
+
+                    for (SubjectRoleType p : proxyResponse.getSubjectRoles()) {
+                        proxyRoles.add(new BaseRoleImpl(p.getName()));
+                    }
+
+                    if (proxyProps.size() > 0) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Merging proxy properties with SSO user " + proxyProps.size());
+
+                        for (int i = 0 ; i < ssoUser.getProperties().length ; i ++) {
+                            proxyProps.add(ssoUser.getProperties()[i]);
+                        }
+
+                        BaseUserImpl proxySsoUser = new BaseUserImpl(ssoUser.getName());
+                        proxySsoUser.setProperties(proxyProps.toArray(new SSONameValuePair[proxyProps.size()]));
+                        ssoUser = proxySsoUser;
+
+                    }
+
+
+                    if (proxyRoles.size() > 0) {
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Merging proxy roles with SSO roles " + proxyRoles.size());
+
+                        // Add non-proxy roles
+                        for (int i = 0; i < ssoRoles.length; i++) {
+                            proxyRoles.add(ssoRoles[i]);
+                        }
+                        ssoRoles = proxyRoles.toArray(new SSORole[proxyRoles.size()]);
+                    }
                 }
 
                 principals.add(ssoUser);

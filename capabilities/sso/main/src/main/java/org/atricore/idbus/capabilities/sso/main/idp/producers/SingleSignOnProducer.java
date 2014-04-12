@@ -1090,13 +1090,12 @@ public class SingleSignOnProducer extends SSOProducer {
                                           SPAuthnResponseType proxyResponse) throws Exception {
 
         //------------------------------------------------------------
-        // Process a claims response
+        // Process a proxy response
         //------------------------------------------------------------
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
-        // TODO : On IdP Initiated, there is no AuthnRequest
         AuthenticationState authnState = getAuthnState(exchange);
         AuthnRequestType authnRequest = authnState.getAuthnRequest();
 
@@ -1107,8 +1106,6 @@ public class SingleSignOnProducer extends SSOProducer {
             SPChannel spChannel = (SPChannel) channel;
             sp = resolveProviderDescriptor(spChannel.getTargetProvider());
 
-            // TODO : Either build an authn request, or deal with the fact that we don't have one.
-
             CircleOfTrustMemberDescriptor idpProxy = spChannel.getMember();
             EndpointDescriptor destination = new EndpointDescriptorImpl(endpoint);
 
@@ -1116,8 +1113,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
             idpInitReq.setID(uuidGenerator.generateId());
             idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
-
-            //idpInitReq.setIssuer(sp.getId());
 
             RequestAttributeType a = new RequestAttributeType();
             a.setName("atricore_sp_alias");
@@ -1180,6 +1175,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 securityTokenEmissionCtx.setAuthnState(authnState);
                 securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
                 securityTokenEmissionCtx.setSpAcs(ed);
+                securityTokenEmissionCtx.setProxyResponse(proxyResponse);
 
                 // in order to request a security token we need to map the claims sent by the proxy to
                 // STS claims
@@ -1214,8 +1210,6 @@ public class SingleSignOnProducer extends SSOProducer {
                     }
 
                 }
-
-
 
                 SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
                         securityTokenEmissionCtx,
@@ -1976,7 +1970,6 @@ public class SingleSignOnProducer extends SSOProducer {
             throw new SecurityTokenEmissionException("Plan Exchange OUT must not be null!");
 
         return (PreAuthenticatedAuthnRequestType) idPlanExchange.getOut().getContent();
-
     }
 
     protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(FederatedProvider sp) {
@@ -2000,8 +1993,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         // Use default channel
         return spl.getChannel().getMember();
-
-
     }
 
     protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(NameIDType issuer) {

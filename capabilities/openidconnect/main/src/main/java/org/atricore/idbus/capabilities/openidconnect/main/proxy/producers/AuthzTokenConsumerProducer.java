@@ -238,12 +238,14 @@ public class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
      */
     public class AuthorizationcodeTokenIdRequest extends AuthorizationCodeTokenRequest {
 
-
         @Key("client_id")
         private String clientId;
 
         @Key("client_secret")
         private String clientSecret;
+
+        @Key("hd")
+        private String hd;
 
         public AuthorizationcodeTokenIdRequest(HttpTransport transport,
                                                JsonFactory jsonFactory,
@@ -271,6 +273,15 @@ public class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
 
         public AuthorizationcodeTokenIdRequest setClientSecret(String clientSecret) {
             this.clientSecret = Preconditions.checkNotNull(clientSecret);
+            return this;
+        }
+
+        public String getHd() {
+            return hd;
+        }
+
+        public AuthorizationcodeTokenIdRequest setHd(String hd) {
+            this.hd = Preconditions.checkNotNull(hd);
             return this;
         }
 
@@ -318,47 +329,7 @@ public class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
     }
 
 
-    public class AccessTokenRequestUrl extends GenericUrl {
-
-        @Key("client_id")
-        private String clientId;
-
-        @Key("client_secret")
-        private String clientSecret;
-
-        public AccessTokenRequestUrl(String authorizationServerEncodedUrl,
-                                     String clientId,
-                                     String clientSecret) {
-
-            super(authorizationServerEncodedUrl);
-            this.clientId = clientId;
-            this.clientSecret = clientSecret;
-        }
-
-        public String getClientSecret() {
-            return clientSecret;
-        }
-
-        public void setClientSecret(String clientSecret) {
-            this.clientSecret = clientSecret;
-        }
-
-        public String getClientId() {
-            return clientId;
-        }
-
-        public void setClientId(String clientId) {
-            this.clientId = clientId;
-        }
-    }
-
     protected String resolveSpProxyACS(SPInitiatedAuthnRequestType authnRequest) throws OpenIDConnectException {
-
-
-
-        String issuer = authnRequest.getIssuer();
-        if (logger.isDebugEnabled())
-            logger.debug("Resolving issuer ["+issuer+"]");
 
         CircleOfTrustManager cotMgr = this.getFederatedProvider().getCotManager();
         OpenIDConnectProxyMediator mediator = (OpenIDConnectProxyMediator) channel.getIdentityMediator();

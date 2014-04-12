@@ -74,9 +74,22 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
         // Keep track of state
         authorizationUrl.setState(relayState);
-        // Request the proper scopes
-        authorizationUrl.setScopes(Collections.singleton("openid email"));
 
+        // Set google apps domain, if available
+        if (mediator.getGoogleAppsDomain() != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Setting hd URL parameter to ["+mediator.getGoogleAppsDomain()+"]");
+            authorizationUrl.set("hd", mediator.getGoogleAppsDomain());
+        }
+
+        // Request the proper scopes
+        String scopes = "openid email " + (mediator.getScopes() != null ? mediator.getScopes () : "");
+        if (logger.isDebugEnabled())
+            logger.debug("Setting scopes URL parameter to [" + scopes + "]");
+
+        authorizationUrl.setScopes(Collections.singleton(scopes));
+
+        // Keep track of state
         mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:relayState", relayState);
         mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:authnRequest", authnRequest);
 
@@ -123,7 +136,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         }
 
         logger.warn("No endpoint found for service/binding " +
-                svc +  "/" +
+                svc + "/" +
                 binding);
 
         return null;

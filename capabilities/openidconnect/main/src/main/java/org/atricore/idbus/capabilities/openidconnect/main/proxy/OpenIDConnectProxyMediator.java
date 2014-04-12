@@ -43,6 +43,10 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private String idpProxyAlias;
 
+    private String scopes;
+
+    private String googleAppsDomain;
+
     /** Lock on the flow and credential. */
     private final Lock lock = new ReentrantLock();
 
@@ -255,5 +259,21 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public void setAccessTokenServiceLocation(String accessTokenServiceLocation) {
         this.accessTokenServiceLocation = accessTokenServiceLocation;
+    }
+
+    public String getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(String scopes) {
+        this.scopes = scopes;
+    }
+
+    public String getGoogleAppsDomain() {
+        return googleAppsDomain;
+    }
+
+    public void setGoogleAppsDomain(String googleAppsDomain) {
+        this.googleAppsDomain = googleAppsDomain;
     }
 }

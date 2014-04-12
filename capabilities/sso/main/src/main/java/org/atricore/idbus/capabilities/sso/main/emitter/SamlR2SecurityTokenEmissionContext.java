@@ -24,6 +24,7 @@ package org.atricore.idbus.capabilities.sso.main.emitter;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
+import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
@@ -39,6 +40,8 @@ import java.io.Serializable;
 public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     private Subject subject;
+
+    private SPAuthnResponseType proxyResponse;
 
     private String sessionIndex;
 
@@ -99,6 +102,14 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public SPAuthnResponseType getProxyResponse() {
+        return proxyResponse;
+    }
+
+    public void setProxyResponse(SPAuthnResponseType proxyResponse) {
+        this.proxyResponse = proxyResponse;
     }
 
     public AssertionType getAssertion() {
