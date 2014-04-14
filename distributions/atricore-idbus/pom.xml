@@ -1901,6 +1901,23 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.openidconnect</groupId>
+            <artifactId>openidconnect</artifactId>
+            <type>pom</type>
+            <version>${idbus.cap.openidconnect.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openidconnect</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openidconnect.main</artifactId>
+            <version>${idbus.cap.openidconnect.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.openidconnect</groupId>
+            <artifactId>org.atricore.idbus.capabilities.openidconnect.main</artifactId>
+            <version>${idbus.cap.openidconnect.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
             <version>${idbus.idojo.dbidentitystore.version}</version>
