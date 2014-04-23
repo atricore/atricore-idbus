@@ -26,6 +26,7 @@ public enum AppResource {
     UNKNOWN("UNKNONW", "images/sso/josso2_resource.png"),
     SAML2_IDP_LOCAL("SAML2IDPLocal", "images/sso/identity_provider.png"),
     SAML2_IDP_REMOTE("SAML2IDPRemote", "images/sso/external_saml_identity_provider.png"),
+    GOOGLE_IDP_REMOTE("GoogleIDPRemote", "images/sso/google_external_identity_provider.png"),
     ;
 
     private String resourceType;

@@ -5,5 +5,6 @@ package org.atricore.idbus.kernel.main.mediation.provider;
  * @version $Id$
  */
 public interface BindingProvider extends FederatedLocalProvider {
-    
+
+    FederatedRemoteProvider getProxy();
 }

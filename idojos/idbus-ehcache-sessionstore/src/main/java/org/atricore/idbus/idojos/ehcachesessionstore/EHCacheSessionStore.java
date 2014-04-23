@@ -14,9 +14,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * TODO : We can have a local map of sessions and only laod/save sessions when they are stale.
@@ -197,7 +196,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
 
             Element e = cache.get(id);
             if (e != null) {
-                Object value = e.getValue();
+                Object value = e.getObjectValue();
                 // We have different type of entries,
                 if (value instanceof BaseSession) {
 
@@ -224,10 +223,10 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             Element e = cache.get(name);
             if (e != null) {
 
-                Object value = e.getValue();
+                Object value = e.getObjectValue();
 
                 if (value instanceof List ) {
-                    List<BaseSession> userSessions = (List<BaseSession>) e.getValue();
+                    Set<BaseSession> userSessions = (Set<BaseSession>) e.getObjectValue();
                     return userSessions.toArray(new BaseSession[userSessions.size()]);
                 }
             }
@@ -241,11 +240,12 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
 
     public BaseSession[] loadByLastAccessTime(Date time) throws SSOSessionException {
         // TODO : Optimize this !!!
+        logger.warn("UNOPTIMIZED Method loadByLastAccessTime");
         return loadAll();
     }
 
     public BaseSession[] loadByValid(boolean valid) throws SSOSessionException {
-        // TODO : Optimize this !!!
+        logger.warn("UNOPTIMIZED Method loadByValid");
         List<BaseSession> byValid = new ArrayList<BaseSession>();
 
         BaseSession[] all = loadAll();
@@ -290,18 +290,24 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             s.setTimeToIdle(session.getMaxInactiveInterval());
             s.setTimeToLive(0);
 
+
+
+            // Update user sessions table
             Element u = cache.get(session.getUsername());
             if (u == null) {
-                u = new Element(session.getUsername(), new ArrayList<BaseSession>());
+                // Concurrent HashMap backing a Set
+                Set<BaseSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<BaseSession, Boolean>());
+                u = new Element(session.getUsername(), sessions);
             }
 
-            ((List<BaseSession>)u.getValue()).add(session);
-
+            Set<BaseSession> sessions = (Set<BaseSession>) u.getObjectValue();
+            sessions.add(session);
             if (s.getTimeToIdle() > u.getTimeToIdle())
                 u.setTimeToIdle(s.getTimeToIdle());
 
             cache.put(s);
             cache.put(u);
+
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
         }
