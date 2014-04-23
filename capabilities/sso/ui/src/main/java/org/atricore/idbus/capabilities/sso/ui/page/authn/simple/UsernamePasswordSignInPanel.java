@@ -349,7 +349,8 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
         UUIDGenerator idGenerator = new UUIDGenerator();
 
-        logger.info("Claims Request = " + credentialClaimsRequest);
+        if (logger.isDebugEnabled())
+            logger.debug("Claims Request = " + credentialClaimsRequest);
 
         SSOWebSession session = (SSOWebSession) getSession();
 

@@ -101,6 +101,8 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
         final Continuation continuation = ContinuationSupport.getContinuation(req, null);
         if (continuation.isNew()) {
 
+            logger.trace("New Continuation");
+
             // Have camel process the HTTP exchange.
             final HttpExchange exchange = new HttpExchange(endpoint, req, res);
 
@@ -118,6 +120,9 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
                 // Wait for the exchange to get processed.
                 // This might block until it completes or it might return via an exception and
                 // then this method is re-invoked once the the exchange has finished processing
+
+                logger.trace("New Continuation suspended");
+
                 continuation.suspend(0);
             }
 
@@ -126,11 +131,15 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
             // Camels more message oriented protocol exchanges.
 
             // now lets output to the response
+            logger.trace("Writing response");
             consumer.getBinding().writeResponse(exchange, res);
             return;
         }
 
         if (continuation.isResumed()) {
+
+            logger.trace("Resumed Continuation");
+
             HttpExchange exchange = (HttpExchange) continuation.getObject();
             // now lets output to the response
             consumer.getBinding().writeResponse(exchange, res);
