@@ -84,9 +84,12 @@ public class IdentityProviderProducer extends AbstractJossoProducer {
             m.decreaseUnresolvedAssertionsCount();
 
         } else if (request instanceof AssertIdentityWithSimpleAuthenticationRequestType) {
+            throw new UnsupportedOperationException("Unknown request type " + request);
+            /* DEPRECATED !!! USE OTHER MECHANISMS INSTEAD
             response = assertIdentityWithSimpleAuthentication(in, (AssertIdentityWithSimpleAuthenticationRequestType) request);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     response, "AssertIdentityWithSimpleAuthenticationResponse", null, destination, in.getMessage().getState()));
+            */
 
         } else if (request instanceof GlobalSignoffRequestType) {
             response = globalSignoff(in, (GlobalSignoffRequestType)request);

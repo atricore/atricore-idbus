@@ -90,10 +90,12 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
                     response, "FindRolesBySSOSessionIdResponse", null, destination, in.getMessage().getState()));
 
         } else if (request instanceof UserExistsRequestType) {
+            throw new UnsupportedOperationException("Unknown request type " + request);
+            /*
             response = userExists(in, (UserExistsRequestType)request);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     response, "UserExistsResponse", null, destination, in.getMessage().getState()));
-
+            */
         } else {
             throw new UnsupportedOperationException("Unknown request type " + request);
         }
