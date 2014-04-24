@@ -70,6 +70,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             factory-method="getCacheManager"
             class="net.sf.ehcache.CacheManager" />
 
+    <bean id="cacheManagerMBean" scope="singleton"
+          class="org.atricore.idbus.bundles.ehcache.CacheManagerMBean">
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
 
     <osgi:service id="cacheManagerFactoryExporter" ref="cacheManagerFactory"
                   interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>

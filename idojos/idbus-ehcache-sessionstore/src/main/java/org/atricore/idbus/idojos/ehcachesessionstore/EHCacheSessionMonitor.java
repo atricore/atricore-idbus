@@ -60,7 +60,7 @@ public class EHCacheSessionMonitor implements SSOSessionMonitor, CacheEventListe
 
     public void notifyElementExpired(Ehcache ehcache, Element e) {
 
-        if (!(e.getValue() instanceof BaseSession))
+        if (!(e.getObjectValue() instanceof BaseSession))
             return;
 
         BaseSession session = (BaseSession) e.getValue();

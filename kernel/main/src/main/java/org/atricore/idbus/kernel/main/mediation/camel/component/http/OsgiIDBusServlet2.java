@@ -23,6 +23,7 @@ import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.client.protocol.RequestAddCookies;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
@@ -200,6 +201,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             // Execute the request internally:
             // ----------------------------------------------------
             HttpResponse proxyRes = httpClient.execute(proxyReq, httpContext);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Sending internal request " + proxyReq + " DONE!");
+
             String targetUrl = null;
             Header[] headers = null;
             try {
@@ -271,6 +276,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                         break;
                     default:
                         // All non 302 codes are sent to the browser
+                        if (logger.isTraceEnabled())
+                            logger.trace("Do not follow HTTP " + proxyRes.getStatusLine().getStatusCode());
+
                         followTargetUrl = false;
                         break;
                 }
@@ -287,12 +295,18 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
                 if (entity != null) {
 
+                    if (logger.isTraceEnabled())
+                        logger.trace("Reading HTTP entity content " + entity.getContentType());
+
                     // Release the connection, read all available content.
                     InputStream instream = entity.getContent();
                     try {
 
                         if (!followTargetUrl) {
                             // If we're not following the target URL, send all to the browser
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Sending entity content " + entity.getContentType() + " to browser");
 
                             // Last received headers
                             if (headers != null) {
@@ -319,6 +333,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
                         } else {
 
+                            if (logger.isTraceEnabled())
+                                logger.trace("Ignoring entity content " + entity.getContentType());
+
                             // Just ignore the content ...
                             // should we do something with this ?!
                             int r = instream.read(buff);
@@ -329,8 +346,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                             }
 
                             if (total > 0)
-                                logger.warn("Ignoring response content size : " + total);
-
+                                logger.warn("Ignoring entity content size : " + total);
 
                         }
 
@@ -352,6 +368,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 } else {
 
                     if (!followTargetUrl) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Sending response to the browser, HTTP Status " + proxyRes.getStatusLine().getReasonPhrase());
+
                         // If we're not following the target URL, send all to the browser
                         res.setStatus(proxyRes.getStatusLine().getStatusCode());
 
@@ -379,8 +399,13 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
 
             if (followTargetUrl) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Building new proxy HTTP Request for " + targetUrl);
+
                 proxyReq = buildProxyRequest(targetUrl, remoteAddr, remoteHost);
                 // Clear context, we many need a new instance
+
                 httpContext = null;
             }
 
@@ -419,8 +444,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
     protected HttpClient getHttpClient() {
 
-        if (!reuseHttpClient)
+        if (!reuseHttpClient) {
+            logger.trace("Building HTTP client instance");
             return buildHttpClient(false);
+        }
 
         if (logger.isTraceEnabled())
             logger.trace("Reusing HTTP client instance (experimental)");
@@ -456,6 +483,13 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         // Configure client, disable following redirects, we want to be in control of redirecting
         newHttpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
         newHttpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
+
+        int connectionTimeoutMillis = 5000;
+        int socketTimeoutMillis = 30000;
+
+        HttpConnectionParams.setConnectionTimeout(newHttpClient.getParams(), connectionTimeoutMillis);
+        HttpConnectionParams.setSoTimeout(newHttpClient.getParams(), socketTimeoutMillis);
+
 
         httpClient = newHttpClient;
 
@@ -553,76 +587,25 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         /** Synchrony version : TODO: use this instead of the old one with continuations! */
         try {
             final HttpExchange exchange = new HttpExchange(endpoint, req, res);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Triggering camel processors for consumer " + consumer.getPath());
+
             consumer.getProcessor().process(exchange);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Writing exchange to binding " + exchange.getExchangeId());
+
             consumer.getBinding().writeResponse(exchange, res);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Processed 'doService' ");
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
 
-        /* Asynchronous version with continuations (TODO : deprecated!!!!)
-        boolean wroteResponse = false;
 
-        final Continuation continuation = ContinuationSupport.getContinuation(req, null);
-        if (continuation.isNew()) {
-
-            if (logger.isTraceEnabled())
-                logger.trace("Continuation is NEW");
-
-            // Have camel process the HTTP exchange.
-            final HttpExchange exchange = new HttpExchange(endpoint, req, res);
-
-            boolean sync = consumer.getAsyncProcessor().process(exchange, new AsyncCallback() {
-                public void done(boolean sync) {
-                    if (sync) {
-                        return;
-                    }
-                    continuation.setObject(exchange);
-                    continuation.resume();
-                }
-            });
-
-            if (!sync) {
-                // Wait for the exchange to get processed.
-                // This might block until it completes or it might return via an exception and
-                // then this method is re-invoked once the the exchange has finished processing
-                continuation.suspend(0);
-            }
-
-            // HC: The getBinding() is interesting because it illustrates the
-            // impedance miss-match between HTTP's stream oriented protocol, and
-            // Camels more message oriented protocol exchanges.
-
-            // now lets output to the response
-            wroteResponse  = true;
-            consumer.getBinding().writeResponse(exchange, res);
-            return;
-        } else {
-            if (logger.isTraceEnabled())
-                logger.trace("Continuation is NOT NEW");
-
-        }
-
-        if (continuation.isResumed()) {
-            HttpExchange exchange = (HttpExchange) continuation.getObject();
-            // now lets output to the response
-            wroteResponse = true;
-            consumer.getBinding().writeResponse(exchange, res);
-
-            if (logger.isTraceEnabled())
-                logger.trace("Continuation is RESUMED");
-
-        } else {
-            if (logger.isTraceEnabled())
-                logger.trace("Continuation is NOT RESUMED");
-
-        }
-
-        if (!wroteResponse) {
-
-            logger.error("Not Writting response !!!...");
-        }
-
-        */
 
     }
 

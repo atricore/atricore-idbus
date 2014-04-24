@@ -413,7 +413,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
             try {
 
                 // Ignore valid sessions, they have not expired yet.
-                BaseSession session = (BaseSession) sessions[i];
+                BaseSession session = sessions[i];
 
                 // Only expire sessions handled by this node
                 if (_node != null) {

@@ -976,9 +976,17 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Sending SAML 1.1 Response");
+
                 out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
                         saml11Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
             } else {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Sending SAML 2.0 Response");
+
                 // SAML R2 is used by default
                 out.setMessage(new MediationMessageImpl(saml2Response.getID(),
                         saml2Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));

@@ -101,6 +101,13 @@
             </action>
         </command>
 
+        <command name="spml/usradd-batch">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserAddBatchCommand">
+                <property name="cmdPrinter" ref="userPrinter"/>
+            </action>
+        </command>
+
+
     </command-bundle>
 
     <bean id="targetPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.TargetPrinter"/>

@@ -79,7 +79,7 @@
             timeToLiveSeconds="37000"
             overflowToDisk="true"
             memoryStoreEvictionPolicy="LRU"
-            diskPersistent="true"/>
+            diskPersistent="false"/>
 
     <!--Predefined caches.  Add your cache configuration settings here.
             If you do not have a configuration for your cache a WARNING will be issued when the
