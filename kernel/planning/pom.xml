@@ -165,7 +165,7 @@
                             !*
                         </Import-Package>
                         <Embed-Dependency>
-                            *;artifactId=!xml-apis|xbean-spring|spring-aop|spring-asm|spring-expression|spring-beans|spring-context|spring-core|xercesImpl|commons-logging|org.springframework.*|org.osgi.*|spring-osgi-*|com.springsource.*|org.atricore.*
+                            *;artifactId=!xml-apis|spring-aop|spring-asm|spring-expression|spring-beans|spring-context|spring-core|xercesImpl|commons-logging|org.springframework.*|org.osgi.*|spring-osgi-*|com.springsource.*|org.atricore.*
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
