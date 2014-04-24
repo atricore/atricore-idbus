@@ -299,8 +299,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                         logger.trace("Reading HTTP entity content " + entity.getContentType());
 
                     // Release the connection, read all available content.
-                    InputStream instream = entity.getContent();
+                    InputStream instream = null;
                     try {
+
+                        instream = entity.getContent();
 
                         if (!followTargetUrl) {
                             // If we're not following the target URL, send all to the browser
@@ -361,47 +363,68 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                         proxyReq.abort();
                         throw ex;
                     } finally {
-                        // Closing the input stream will trigger connection release
-                        try { instream.close(); } catch (Exception ignore) {}
+
+                        try {
+
+                            // Closing the input stream will trigger connection release
+                            if (instream != null)
+                                instream.close();
+
+                            proxyReq.releaseConnection();
+                        } catch (Exception ignore) {
+                            // Ignore this
+                        }
                     }
 
                 } else {
 
-                    if (!followTargetUrl) {
+                    try {
+                        if (!followTargetUrl) {
 
-                        if (logger.isTraceEnabled())
-                            logger.trace("Sending response to the browser, HTTP Status " + proxyRes.getStatusLine().getReasonPhrase());
+                            if (logger.isTraceEnabled())
+                                logger.trace("Sending response to the browser, HTTP Status " + proxyRes.getStatusLine().getReasonPhrase());
 
-                        // If we're not following the target URL, send all to the browser
-                        res.setStatus(proxyRes.getStatusLine().getStatusCode());
+                            // If we're not following the target URL, send all to the browser
+                            res.setStatus(proxyRes.getStatusLine().getStatusCode());
 
-                        if (headers != null) {
-                            // Latest headers
-                            for (Header header : headers) {
-                                if (header.getName().equals("Content-Type"))
-                                    res.setHeader(header.getName(), header.getValue());
-                                if (header.getName().equals("Content-Length"))
-                                    res.setHeader(header.getName(), header.getValue());
+                            if (headers != null) {
+                                // Latest headers
+                                for (Header header : headers) {
+                                    if (header.getName().equals("Content-Type"))
+                                        res.setHeader(header.getName(), header.getValue());
+                                    if (header.getName().equals("Content-Length"))
+                                        res.setHeader(header.getName(), header.getValue());
 
+                                }
                             }
-                        }
 
-                        for (Header header : storedHeaders) {
-                            if (header.getName().startsWith("Set-Cookie"))
-                                res.addHeader(header.getName(), header.getValue());
-                            else
-                                res.setHeader(header.getName(), header.getValue());
-                        }
+                            for (Header header : storedHeaders) {
+                                if (header.getName().startsWith("Set-Cookie"))
+                                    res.addHeader(header.getName(), header.getValue());
+                                else
+                                    res.setHeader(header.getName(), header.getValue());
+                            }
 
+                        }
+                    } finally {
+
+                        if (proxyReq != null) {
+                            proxyReq.releaseConnection();
+                        }
                     }
 
+
                 }
+
             }
+
 
             if (followTargetUrl) {
 
                 if (logger.isTraceEnabled())
                     logger.trace("Building new proxy HTTP Request for " + targetUrl);
+
+
 
                 proxyReq = buildProxyRequest(targetUrl, remoteAddr, remoteHost);
                 // Clear context, we many need a new instance
