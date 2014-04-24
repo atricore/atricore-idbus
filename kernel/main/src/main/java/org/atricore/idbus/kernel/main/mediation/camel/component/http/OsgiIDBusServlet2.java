@@ -207,6 +207,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
             String targetUrl = null;
             Header[] headers = null;
+
             try {
 
                 // ----------------------------------------------------
@@ -360,6 +361,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                         // In case of an unexpected exception you may want to abort
                         // the HTTP request in order to shut down the underlying
                         // connection immediately.
+                        logger.warn("Aborting HTTP Connection " + proxyReq.getURI());
                         proxyReq.abort();
                         throw ex;
                     } finally {
@@ -370,6 +372,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                             if (instream != null)
                                 instream.close();
 
+                            if (logger.isTraceEnabled())
+                                logger.trace("Releasing HTTP Connection " + proxyReq.getURI());
                             proxyReq.releaseConnection();
                         } catch (Exception ignore) {
                             // Ignore this
@@ -406,9 +410,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                             }
 
                         }
+
                     } finally {
 
                         if (proxyReq != null) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Releasing HTTP Connection " + proxyReq.getURI());
+
                             proxyReq.releaseConnection();
                         }
                     }
@@ -423,8 +432,6 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
                 if (logger.isTraceEnabled())
                     logger.trace("Building new proxy HTTP Request for " + targetUrl);
-
-
 
                 proxyReq = buildProxyRequest(targetUrl, remoteAddr, remoteHost);
                 // Clear context, we many need a new instance
