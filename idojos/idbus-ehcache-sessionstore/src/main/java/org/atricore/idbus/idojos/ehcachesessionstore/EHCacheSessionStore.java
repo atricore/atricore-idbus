@@ -157,15 +157,15 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         }
     }
 
-    public /*synchronized*/ int getSize() throws SSOSessionException {
+    public int getSize() throws SSOSessionException {
         return cache.getSize();
     }
 
-    public /*synchronized*/ String[] keys() throws SSOSessionException {
+    public String[] keys() throws SSOSessionException {
         return (String[]) cache.getKeys().toArray(new String[cache.getSize()]);
     }
 
-    public /*synchronized*/ BaseSession[] loadAll() throws SSOSessionException {
+    public BaseSession[] loadAll() throws SSOSessionException {
 
         List<BaseSession> allSessions = new ArrayList<BaseSession>();
         
@@ -189,7 +189,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         return allSessions.toArray(new BaseSession[allSessions.size()]);
     }
 
-    public /*synchronized*/ BaseSession load(String id) throws SSOSessionException {
+    public BaseSession load(String id) throws SSOSessionException {
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -215,7 +215,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         }
     }
 
-    public /*synchronized*/ BaseSession[] loadByUsername(String name) throws SSOSessionException {
+    public BaseSession[] loadByUsername(String name) throws SSOSessionException {
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -238,13 +238,13 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         }
     }
 
-    public /*synchronized*/ BaseSession[] loadByLastAccessTime(Date time) throws SSOSessionException {
+    public BaseSession[] loadByLastAccessTime(Date time) throws SSOSessionException {
         // TODO : Optimize this !!!
         logger.warn("UNOPTIMIZED Method loadByLastAccessTime");
         return loadAll();
     }
 
-    public /*synchronized*/ BaseSession[] loadByValid(boolean valid) throws SSOSessionException {
+    public BaseSession[] loadByValid(boolean valid) throws SSOSessionException {
         logger.warn("UNOPTIMIZED Method loadByValid");
         List<BaseSession> byValid = new ArrayList<BaseSession>();
 
@@ -257,7 +257,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         return byValid.toArray(new BaseSession[byValid.size()]);
     }
 
-    public /*synchronized*/ void remove(String id) throws SSOSessionException {
+    public void remove(String id) throws SSOSessionException {
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -271,7 +271,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         }
     }
 
-    public /*synchronized*/ void clear() throws SSOSessionException {
+    public void clear() throws SSOSessionException {
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -281,7 +281,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         }
     }
 
-    public /*synchronized*/ void save(BaseSession session) throws SSOSessionException {
+    public void save(BaseSession session) throws SSOSessionException {
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -289,8 +289,6 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             Element s = new Element(session.getId(), session);
             s.setTimeToIdle(session.getMaxInactiveInterval());
             s.setTimeToLive(0);
-
-
 
             // Update user sessions table
             Element u = cache.get(session.getUsername());

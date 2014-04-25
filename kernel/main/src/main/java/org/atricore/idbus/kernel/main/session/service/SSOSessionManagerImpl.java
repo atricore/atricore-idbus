@@ -448,6 +448,11 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         _store = ss;
     }
 
+    @Override
+    public SessionStore getSessionStore() {
+        return _store;
+    }
+
     /**
      * Dependency Injection of Session Id Generator.
      *

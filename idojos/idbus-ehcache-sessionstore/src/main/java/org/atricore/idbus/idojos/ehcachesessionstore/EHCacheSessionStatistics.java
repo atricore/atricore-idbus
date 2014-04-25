@@ -72,7 +72,7 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
 
     public void notifyElementRemoved(Ehcache ehcache, Element element) throws CacheException {
 
-        if (!(element.getValue() instanceof BaseSession))
+        if (!(element.getObjectValue() instanceof BaseSession))
             return;
 
         // Update statistics:
@@ -80,9 +80,9 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
         destroyedSessions ++;
 
         // Number of valid sessions (should match the store count!)
-        currentSessions --;
+        long c = currentSessions --;
 
-        mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", currentSessions);
+        mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", c);
         mServer.incrementCounter(metricsPrefix + "/SsoSessions/Destroyed");
 
         if (logger.isTraceEnabled())
@@ -92,28 +92,27 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
 
     public void notifyElementPut(Ehcache ehcache, Element element) throws CacheException {
 
-        if (!(element.getValue() instanceof BaseSession))
+        if (!(element.getObjectValue() instanceof BaseSession))
             return;
 
         // Number of created sessions
         createdSessions ++;
 
         // Number of valid sessions (should match the store count!)
-        currentSessions ++;
+        long c = currentSessions ++;
+        long m = maxSessions;
 
         // Max number of concurrent sessions
-        if (maxSessions < currentSessions) {
-            maxSessions = currentSessions;
-
-            logger.info("Max concurrent SSO Sessions ["+ cacheName +"] " + maxSessions);
+        if (m < c) {
+            maxSessions = c;
+            logger.info("Max concurrent SSO Sessions ["+ cacheName +"] " + m);
         }
 
-        mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", currentSessions);
+        mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", c);
         mServer.incrementCounter(metricsPrefix + "/SsoSessions/Created");
 
         if (logger.isTraceEnabled())
-            logger.trace("Total sessions [" + cacheName + "] " + currentSessions);
-
+            logger.trace("Total sessions [" + cacheName + "] " + c);
 
     }
 
@@ -123,7 +122,7 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
 
     public void notifyElementExpired(Ehcache ehcache, Element element) {
 
-        if (!(element.getValue() instanceof BaseSession))
+        if (!(element.getObjectValue() instanceof BaseSession))
             return;
 
         // Update statistics:
@@ -131,13 +130,13 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
         destroyedSessions ++;
 
         // Number of valid sessions (should match the store count!)
-        currentSessions --;
+        long c = currentSessions --;
 
-        mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", currentSessions);
+        mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", c);
         mServer.incrementCounter(metricsPrefix + "/SsoSessions/Destroyed");
 
         if (logger.isTraceEnabled())
-            logger.trace("Total sessions [" + cacheName + "] " + currentSessions);
+            logger.trace("Total sessions [" + cacheName + "] " + c);
 
     }
 

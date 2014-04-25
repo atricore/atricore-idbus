@@ -145,6 +145,12 @@ public interface SSOSessionManager extends java.io.Serializable {
     void setSessionStore(SessionStore ss);
 
     /**
+     * SessionStore instance is injected before initializing the manager.
+     */
+    SessionStore getSessionStore();
+
+
+    /**
      * SessionIdGenerator instance is injected before initializing the manager.
      */
     void setSessionIdGenerator(SessionIdGenerator g);

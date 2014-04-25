@@ -15,6 +15,8 @@ import org.springframework.context.ApplicationContextAware;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -47,6 +49,11 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
     private ApplicationContext applicationContext;
 
     private String namespace;
+
+    private Monitor monitor;
+
+    private ScheduledThreadPoolExecutor stpe;
+
 
     public EHCacheProviderStateManagerImpl() {
     }
@@ -115,6 +122,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         if (init) {
             cacheManager.removeCache(cacheName);
             init = false;
+            stpe.shutdown();
         }
     }
 
@@ -151,6 +159,11 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     logger.trace("Cache Event Notification service " + cache.getCacheEventNotificationService());
                 }
             }
+
+            monitor = new Monitor(cache, 30);
+            stpe = new ScheduledThreadPoolExecutor(3);
+            // Run the thread every 30 seconds, and start it in 10
+            stpe.scheduleAtFixedRate(monitor, 10, 30, TimeUnit.SECONDS);
 
             logger.info("Initialized EHCache Provider State Manager using cache " + cacheName + ". Size: " + cache.getSize());
 
@@ -415,6 +428,51 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         @Override
         public Object clone() throws CloneNotSupportedException {
             return super.clone();
+        }
+    }
+
+    public class Monitor implements Runnable {
+
+        private Cache cache;
+
+        private long lastRun = 0;
+
+        private long sessionMonitorInterval;
+
+        public Monitor(Cache cache, long sessionMonitorInterval) {
+            this.cache = cache;
+            this.sessionMonitorInterval = sessionMonitorInterval;
+        }
+
+        public Cache getCache() {
+            return cache;
+        }
+
+        public void setCache(Cache cache) {
+            this.cache = cache;
+        }
+
+        public long getSessionMonitorInterval() {
+            return sessionMonitorInterval;
+        }
+
+        public void setSessionMonitorInterval(long sessionMonitorInterval) {
+            this.sessionMonitorInterval = sessionMonitorInterval;
+        }
+
+        @Override
+        public void run() {
+            long now = System.currentTimeMillis();
+
+            // Still not needed to run ...
+            if (lastRun  + sessionMonitorInterval > now)
+                return;
+
+            try {
+                cache.evictExpiredElements();
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
