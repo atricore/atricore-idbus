@@ -158,7 +158,13 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
     }
 
     public int getSize() throws SSOSessionException {
-        return cache.getSize();
+        int size = cache.getSize();
+        int mod = size / 2;
+
+        if (mod != 0)
+            size ++;
+
+        return size / 2;
     }
 
     public String[] keys() throws SSOSessionException {
@@ -168,8 +174,8 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
     public BaseSession[] loadAll() throws SSOSessionException {
 
         List<BaseSession> allSessions = new ArrayList<BaseSession>();
-        
-        List keys = cache.getKeys();
+        // Only load keys for non-expired elements ?!
+        List keys = cache.getKeysWithExpiryCheck();
         if (keys == null)
             return new BaseSession[0];
 
@@ -201,8 +207,12 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                 if (value instanceof BaseSession) {
 
                     BaseSession s = (BaseSession) value;
+
                     // Refresh user sessions access time
                     cache.get(s.getUsername());
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Loaded session " + s.getId() + " for user " + s.getUsername());
 
                     return s;
                 }
@@ -221,13 +231,28 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             Element e = cache.get(name);
+
             if (e != null) {
 
                 Object value = e.getObjectValue();
 
-                if (value instanceof List ) {
-                    Set<BaseSession> userSessions = (Set<BaseSession>) e.getObjectValue();
-                    return userSessions.toArray(new BaseSession[userSessions.size()]);
+                if (value instanceof Set ) {
+
+                    Set<String> sessionKeys = (Set<String>) e.getObjectValue();
+                    List<BaseSession> userSessions = new ArrayList<BaseSession>();
+
+                    if (sessionKeys != null) {
+                        for (String key : sessionKeys) {
+                            BaseSession session = load(key);
+                            if (session != null)
+                                userSessions.add(session);
+                        }
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Loaded sessions " + userSessions.size() + " for user " + name);
+
+                        return userSessions.toArray(new BaseSession[userSessions.size()]);
+                    }
                 }
             }
 
@@ -263,8 +288,19 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
             BaseSession s = load(id);
             if (s != null) {
-                cache.remove(s.getUsername());
+
+                // Remove this session
                 cache.remove(id);
+
+                // Update user sessions list
+                Element e = cache.get(s.getUsername());
+                Set<String> sessionKeys = (Set<String>) e.getObjectValue();
+                sessionKeys.remove(id);
+                cache.put(e);
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Removed session " + s.getId() + " for user " + s.getUsername());
+
             }
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
@@ -275,6 +311,10 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
+
+            if (logger.isTraceEnabled())
+                logger.trace("Removing all session (clear)");
+
             cache.removeAll();
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
@@ -291,20 +331,25 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             s.setTimeToLive(0);
 
             // Update user sessions table
+            // Concurrency should be low, a user normally does not have that many sessions
             Element u = cache.get(session.getUsername());
             if (u == null) {
                 // Concurrent HashMap backing a Set
-                Set<BaseSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<BaseSession, Boolean>());
+                Set<String> sessions = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
                 u = new Element(session.getUsername(), sessions);
             }
 
-            Set<BaseSession> sessions = (Set<BaseSession>) u.getObjectValue();
-            sessions.add(session);
+            Set<String> sessions = (Set<String>) u.getObjectValue();
+            sessions.add(session.getId());
+
             if (s.getTimeToIdle() > u.getTimeToIdle())
                 u.setTimeToIdle(s.getTimeToIdle());
 
             cache.put(s);
             cache.put(u);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Saved session " + session.getId() + " for user " + session.getUsername());
 
         } finally {
             Thread.currentThread().setContextClassLoader(orig);

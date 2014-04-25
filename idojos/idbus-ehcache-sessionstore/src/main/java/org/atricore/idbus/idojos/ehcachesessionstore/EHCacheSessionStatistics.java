@@ -80,7 +80,8 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
         destroyedSessions ++;
 
         // Number of valid sessions (should match the store count!)
-        long c = currentSessions --;
+        currentSessions --;
+        long c = currentSessions;
 
         mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", c);
         mServer.incrementCounter(metricsPrefix + "/SsoSessions/Destroyed");
@@ -99,13 +100,14 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
         createdSessions ++;
 
         // Number of valid sessions (should match the store count!)
-        long c = currentSessions ++;
+        currentSessions ++;
+        long c = currentSessions;
         long m = maxSessions;
 
         // Max number of concurrent sessions
         if (m < c) {
             maxSessions = c;
-            logger.info("Max concurrent SSO Sessions ["+ cacheName +"] " + m);
+            logger.info("Max concurrent SSO Sessions ["+ cacheName +"] " + c);
         }
 
         mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", c);
@@ -130,7 +132,8 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
         destroyedSessions ++;
 
         // Number of valid sessions (should match the store count!)
-        long c = currentSessions --;
+        currentSessions --;
+        long c = currentSessions;
 
         mServer.recordMetric(metricsPrefix + "/SsoSessions/Total", c);
         mServer.incrementCounter(metricsPrefix + "/SsoSessions/Destroyed");

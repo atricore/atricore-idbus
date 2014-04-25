@@ -20,7 +20,7 @@
 ################################################################################
 #
 # NOTE !!! Use this when you want your artifacts to be taken from your local
-# repository ($HOME/.m2/repository) and from public ones (Internet)   
+# repository ($HOME/.m2/repository) and from public ones (Internet)
 #
 ################################################################################
 
@@ -62,7 +62,10 @@
 #
 # The following property value will add the system folder as a repo.
 #
-org.ops4j.pax.url.mvn.defaultRepositories=file:${karaf.base}/features@snapshots,file:${karaf.base}/appliances@snapshots,file:${karaf.base}/extensions@snapshots
+org.ops4j.pax.url.mvn.defaultRepositories=\
+    file:${karaf.base}/features@snapshots,\
+    file:${karaf.base}/appliances@snapshots,\
+    file:${karaf.base}/extensions@snapshots
 
 #
 # Comma separated list of repositories scanned when resolving an artifact.
@@ -84,4 +87,5 @@ org.ops4j.pax.url.mvn.repositories= \
     http://svn.apache.org/repos/asf/servicemix/m2-repo, \
     http://repository.springsource.com/maven/bundles/release, \
     http://repository.springsource.com/maven/bundles/external, \
-    http://repository.josso.org
+    http://repository.josso.org/m2-release-repository,\
+    http://repository.atricore.org/m2-release-repository

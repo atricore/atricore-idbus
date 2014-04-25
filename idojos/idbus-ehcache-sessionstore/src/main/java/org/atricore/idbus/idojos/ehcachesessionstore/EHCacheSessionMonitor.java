@@ -31,7 +31,8 @@ public class EHCacheSessionMonitor implements SSOSessionMonitor, CacheEventListe
 
     private ScheduledThreadPoolExecutor stpe;
 
-    private long monitorInterval = 10000;
+    // Monitor interval (ms), Run once per-minute by default
+    private long monitorInterval = 60000;
 
     public EHCacheSessionMonitor() {
 
@@ -50,7 +51,7 @@ public class EHCacheSessionMonitor implements SSOSessionMonitor, CacheEventListe
         monitor = new Monitor(store.getCache(), monitorInterval);
         stpe = new ScheduledThreadPoolExecutor(3);
         // Run the thread every 30 seconds, and start it in 10
-        stpe.scheduleAtFixedRate(monitor, 10, 30, TimeUnit.SECONDS);
+        stpe.scheduleAtFixedRate(monitor, 10, monitorInterval, TimeUnit.MILLISECONDS);
     }
 
     public void stop() {
@@ -66,17 +67,25 @@ public class EHCacheSessionMonitor implements SSOSessionMonitor, CacheEventListe
     }
 
     public void notifyElementRemoved(Ehcache ehcache, Element e) throws CacheException {
-
+        if (logger.isTraceEnabled())
+            logger.trace("Removed " + e.getObjectKey());
     }
 
     public void notifyElementPut(Ehcache ehcache, Element e) throws CacheException {
+        if (logger.isTraceEnabled())
+            logger.trace("Put " + e.getObjectKey());
     }
 
     public void notifyElementUpdated(Ehcache ehcache, Element e) throws CacheException {
-
+        if (logger.isTraceEnabled())
+            logger.trace("Updated " + e.getObjectKey());
     }
 
     public void notifyElementExpired(Ehcache ehcache, Element e) {
+
+        if (logger.isTraceEnabled())
+            logger.trace("Expired " + e.getObjectKey());
+
 
         if (!(e.getObjectValue() instanceof BaseSession))
             return;
@@ -90,10 +99,13 @@ public class EHCacheSessionMonitor implements SSOSessionMonitor, CacheEventListe
     }
 
     public void notifyElementEvicted(Ehcache ehcache, Element e) {
-
+        if (logger.isTraceEnabled())
+            logger.trace("Evicted " + e.getObjectKey());
     }
 
     public void notifyRemoveAll(Ehcache ehcache) {
+        if (logger.isTraceEnabled())
+            logger.trace("removeAll ");
 
     }
 
@@ -165,7 +177,32 @@ public class EHCacheSessionMonitor implements SSOSessionMonitor, CacheEventListe
                 return;
 
             try {
-                cache.evictExpiredElements();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Checking expired elements for " + cache.getName());
+
+                lastRun = now;
+                long size = cache.getSize();
+
+                // -------------------------------------------------
+                // The time taken is O(n).
+                // On a single cpu 1.8Ghz P4, approximately 8ms is required for each 1000 entries.
+                // -------------------------------------------------
+                // List allKeys = cache.getKeys();
+
+                // -------------------------------------------------
+                // Very expensive call when caches are large ...
+                // This will trigger the expired event !
+                // -------------------------------------------------
+                cache.getKeysWithExpiryCheck();
+                long execTime = now - System.currentTimeMillis();
+
+                if (execTime > 1000)
+                    logger.warn("SSO Session cache [" + cache.getName() + "] needs tuning. getKeysWithExpiryCheck(): exec=" + execTime + "ms");
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Evicted (aprox) " + (size - cache.getSize()) + " elements from " + cache.getName());
+
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }

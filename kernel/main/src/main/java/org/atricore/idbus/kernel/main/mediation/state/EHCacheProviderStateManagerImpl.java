@@ -52,6 +52,9 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     private Monitor monitor;
 
+    // Monitor interval (ms)
+    private long monitorInterval = 60000;
+
     private ScheduledThreadPoolExecutor stpe;
 
 
@@ -72,6 +75,14 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public void setCacheName(String cacheName) {
         this.cacheName = cacheName;
+    }
+
+    public long getMonitorInterval() {
+        return monitorInterval;
+    }
+
+    public void setMonitorInterval(long monitorInterval) {
+        this.monitorInterval = monitorInterval;
     }
 
     public CacheManager getCacheManager() {
@@ -160,10 +171,10 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 }
             }
 
-            monitor = new Monitor(cache, 30);
+            monitor = new Monitor(cache, monitorInterval);
             stpe = new ScheduledThreadPoolExecutor(3);
             // Run the thread every 30 seconds, and start it in 10
-            stpe.scheduleAtFixedRate(monitor, 10, 30, TimeUnit.SECONDS);
+            stpe.scheduleAtFixedRate(monitor, 10, monitorInterval, TimeUnit.MILLISECONDS);
 
             logger.info("Initialized EHCache Provider State Manager using cache " + cacheName + ". Size: " + cache.getSize());
 
@@ -231,8 +242,6 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             String elementKey = ctx.getProvider().getName() + ":" + keyName + ":" + key;
-
-
             Element e = retrieveElement(elementKey);
 
             if (e != null) {
@@ -251,7 +260,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     return (LocalState) v;
                 }
 
-                // This is probably an alternate key, the value is the primary key
+                // This is probably an alternate key, the element's value is the primary key
                 String pKey = (String) v;
                 if (logger.isTraceEnabled())
                     logger.trace("LocalState alternative key found for key [" + elementKey +
@@ -260,7 +269,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                             " LAT:[" + e.getLastAccessTime() + "]");
 
                 e = retrieveElement(pKey);
-                if (e != null) {
+                if (e != null && e.getObjectValue() instanceof LocalState) {
                     if (logger.isTraceEnabled())
                         logger.trace("LocalState instance found for key [" + pKey +
                                 "] TTL:[" + e.getTimeToLive() + "]" +
@@ -271,6 +280,8 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     refreshState(ctx, (EHCacheLocalStateImpl) state);
                     return state;
                 }
+
+                // bad ...
 
             }
 
@@ -324,7 +335,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             String pKey = ctx.getProvider().getName() + ":PK:" + key;
             Element e = cache.get(pKey);
             if (e != null) {
-                EHCacheLocalStateImpl state = (EHCacheLocalStateImpl) e.getValue();
+                EHCacheLocalStateImpl state = (EHCacheLocalStateImpl) e.getObjectValue();
                 cache.remove(ctx.getProvider().getName() + ":" + key);
                 if (logger.isTraceEnabled())
                     logger.trace("Removed LocalState instance for key " + key);
@@ -362,7 +373,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
                 Element element = cache.get(key);
                 if (element.getObjectValue() instanceof LocalState) {
-                    EHCacheLocalStateImpl s = (EHCacheLocalStateImpl) element.getValue();
+                    EHCacheLocalStateImpl s = (EHCacheLocalStateImpl) element.getObjectValue();
                     s.setNew(false);
                     states.add(s);
                 }
@@ -392,27 +403,59 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
         @Override
         public void notifyElementRemoved(Ehcache ehcache, Element element) throws CacheException {
-            logger.trace("notifyElementRemoved:" + ehcache.getName() + "/" +  element.getKey());
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementRemoved:" + ehcache.getName() + "/" +  element.getObjectKey());
         }
 
         @Override
         public void notifyElementPut(Ehcache ehcache, Element element) throws CacheException {
-            logger.trace("notifyElementPut:" + ehcache.getName() + "/" + element.getKey());
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementPut:" + ehcache.getName() + "/" + element.getObjectKey());
         }
 
         @Override
         public void notifyElementUpdated(Ehcache ehcache, Element element) throws CacheException {
-            logger.trace("notifyElementUpdated:" + ehcache.getName() + "/" + element.getKey());
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementUpdated:" + ehcache.getName() + "/" + element.getObjectKey());
         }
 
         @Override
         public void notifyElementExpired(Ehcache ehcache, Element element) {
-            logger.trace("notifyElementExpired:" + ehcache.getName() + "/" + element.getKey());
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementExpired:" + ehcache.getName() + "/" + element.getObjectKey());
+
+            if (element.getObjectValue() instanceof LocalState) {
+
+                LocalState state = (LocalState) element.getObjectValue();
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Removed provider state" + state.getId());
+
+                cache.remove(element.getObjectKey());
+
+                for (String altKey : state.getAlternativeIdNames()) {
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Removed provider alt-key (from state) " + altKey);
+
+                    cache.remove(altKey);
+                }
+
+            } else {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Removed provider alt-key " + element.getObjectKey());
+
+                cache.remove(element.getObjectKey());
+            }
+
+
         }
 
         @Override
         public void notifyElementEvicted(Ehcache ehcache, Element element) {
-            logger.trace("notifyElementEvicted:" + ehcache.getName() + "/" + element.getKey());
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementEvicted:" + ehcache.getName() + "/" + element.getObjectKey());
         }
 
         @Override
@@ -469,7 +512,30 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 return;
 
             try {
-                cache.evictExpiredElements();
+                if (logger.isTraceEnabled())
+                    logger.trace("Checking expired elements for " + cache.getName());
+
+                lastRun = now;
+                long size = cache.getSize();
+                // -------------------------------------------------
+                // The time taken is O(n).
+                // On a single cpu 1.8Ghz P4, approximately 8ms is required for each 1000 entries.
+                // -------------------------------------------------
+                // List allKeys = cache.getKeys();
+
+                // -------------------------------------------------
+                // Very expensive call when caches are large ...
+                // This will trigger the expired event !
+                // -------------------------------------------------
+                cache.getKeysWithExpiryCheck();
+                long execTime = now - System.currentTimeMillis();
+
+                if (execTime > 1000)
+                    logger.warn("Provider state manager cache [" + cache.getName() + "] needs tuning. getKeysWithExpiryCheck(): exec=" + execTime + "ms");
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Evicted (aprox) " + (size - cache.getSize()) + " elements from " + cache.getName());
+
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
