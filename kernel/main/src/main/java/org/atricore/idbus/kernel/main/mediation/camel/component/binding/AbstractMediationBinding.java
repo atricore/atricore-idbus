@@ -130,22 +130,14 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
                 state.setRemoteVariable(localStateVarName, pState.getId());
             }
 
+            if (logger.isTraceEnabled())
+                logger.trace("Storing binding channel local state : " + lState.getId());
 
-            if (lState.getAlternativeIdNames().size() > 0) {
-                if (logger.isTraceEnabled())
-                    logger.trace("Storing binding channel local state : " + lState.getId());
-                // Store this state
-                ProviderStateContext ctx = createProviderStateContext();
-                ctx.store(pState);
-            } else {
-                for (String key : lState.getKeys()) {
-                    logger.warn("Local State does not have alternative keys! Local variable will not be updated nor added : " + key);
-                }
-            }
-
+            // Store this state
+            ProviderStateContext ctx = createProviderStateContext();
+            ctx.store(pState);
 
         } else {
-
             for (String key : lState.getKeys()) {
                 logger.warn("No local state manager support available! Local variable will be lost "  + key);
             }

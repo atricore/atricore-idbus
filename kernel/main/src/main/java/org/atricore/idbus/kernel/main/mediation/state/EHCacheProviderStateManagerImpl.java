@@ -527,6 +527,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 // Very expensive call when caches are large ...
                 // This will trigger the expired event !
                 // -------------------------------------------------
+                cache.evictExpiredElements();
                 cache.getKeysWithExpiryCheck();
                 long execTime = now - System.currentTimeMillis();
 

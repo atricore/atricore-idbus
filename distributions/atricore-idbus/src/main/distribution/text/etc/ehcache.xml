@@ -73,11 +73,11 @@
     -->
 
     <defaultCache
-            maxElementsInMemory="100000"
+            maxElementsInMemory="250000"
             eternal="false"
             timeToIdleSeconds="3700"
             timeToLiveSeconds="37000"
-            overflowToDisk="true"
+            overflowToDisk="false"
             memoryStoreEvictionPolicy="LRU"
             diskPersistent="false"/>
 
