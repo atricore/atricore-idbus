@@ -448,7 +448,7 @@ class AuthorizationEngine(var sourceDirectories: Traversable[File] = None, var m
         Array(
           bytecodeDirectory.toURI.toURL
           //new File(System.getProperty("karaf.home") + "/system/org/scala-lang/scala-library/2.9.1/scala-library-2.9.1.jar").toURI.toURL,
-          //new File(System.getProperty("karaf.home") + "/system/org/atricore/idbus/kernel/authz/org.atricore.idbus.kernel.authz.core/1.4.0-SNAPSHOT/org.atricore.idbus.kernel.authz.core-1.4.0-SNAPSHOT.jar").toURI.toURL
+          //new File(System.getProperty("karaf.home") + "/system/org/atricore/idbus/kernel/authz/org.atricore.idbus.kernel.authz.core/1.4.0/org.atricore.idbus.kernel.authz.core-1.4.0.jar").toURI.toURL
         ), Thread.currentThread.getContextClassLoader)
     } else {
       classLoader
