@@ -45,7 +45,24 @@ log4j.appender.sift.appender.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %-1
 log4j.appender.sift.appender.file=${karaf.data}/log/$\\{bundle.name\\}.log
 log4j.appender.sift.appender.append=true
 
+# File appender for default auditing module
+log4j.appender.audit=org.apache.log4j.RollingFileAppender
+log4j.appender.audit.layout=org.apache.log4j.PatternLayout
+log4j.appender.audit.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %m%n
+
+log4j.appender.audit.file=${karaf.base}/data/log/audit.log
+log4j.appender.audit.append=true
+log4j.appender.audit.maxFileSize=512MB
+log4j.appender.audit.maxBackupIndex=99
+
 # DO NOT CHANGE THIS, IT'S FOR MANAGEMENT PURPOSES ONLY
 org.atricore.idbus.log.mode=PRODUCTION
-~
-~
+
+### ---------------------------------------------
+# Add appliances that should output audit information
+# to audit log
+### ---------------------------------------------
+#
+# log4j.category.<appliance-namespace>.audit=TRACE, audit
+
+
