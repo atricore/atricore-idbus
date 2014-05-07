@@ -163,7 +163,26 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         String remoteHost = null;
         String parentThread = req.getHeader("X-IdBusProxiedRequest");
         if (parentThread == null) {
-            remoteAddr = req.getRemoteAddr();
+
+            if (req.getHeader("X-Forwarded-For") != null) {
+                // This means that we're probably behind a proxy
+
+                /**
+                The general format of the field is:
+                X-Forwarded-For: client, proxy1, proxy2
+                where the value is a comma+space separated list of IP addresses, the left-most being the original client, and each successive proxy
+                 */
+                String addresses = req.getHeader("X-Forwarded-For");
+                StringTokenizer st = new StringTokenizer(addresses, ",", false);
+                remoteAddr = st.nextToken();
+                if (remoteAddr != null)
+                    remoteAddr = remoteAddr.trim();
+            }
+
+            // Take default request remote address
+            if (remoteAddr  == null) {
+                remoteAddr = req.getRemoteAddr();
+            }
             remoteHost = req.getRemoteHost();
         } else {
             remoteAddr = req.getHeader("X-IdBusRemoteAddress");
