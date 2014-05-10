@@ -440,6 +440,22 @@
     <pluginRepositories>
 
         <pluginRepository>
+            <id>atricore-m2-snapshot-repo</id>
+            <name>Atricore Maven2 SanpshotsRepository</name>
+            <url>http://repository.atricore.org/m2-snapshot-repository</url>
+
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>false</enabled>
+            </releases>
+
+            <snapshots>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+
+        <pluginRepository>
             <id>repo1</id>
             <url>http://repo1.maven.org/maven2</url>
             <snapshots>
