@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-
 /**
  * @author <a href="mailto:sshah@redhat.com">Sohil Shah</a>
  * @org.apache.xbean.XBean element="gatein-store"
@@ -111,7 +110,10 @@ public class GateInBindIdentityStore implements BindableCredentialStore {
                             "/" + new String(Base64.encodeBase64(password.getBytes()));
             StringBuilder urlBuffer = new StringBuilder();
 
-            urlBuffer.append("http://" + gateInHost + ":" + gateInPort + authnPath);
+            // TODO : This is a hack, allow the console to specify secure transport option
+            String protocol = gateInPort.endsWith("443") ? "https" : "http";
+
+            urlBuffer.append(protocol).append("://" + gateInHost + ":" + gateInPort + authnPath);
 
             boolean success = this.executeRemoteCall(urlBuffer.toString());
 
