@@ -191,7 +191,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
             for (int i = 0; i < sessions.length; i++) {
 
-                if (invalidate <= 0)
+                if (invalidate < 0)
                     break;
 
                 BaseSession session = sessions[i];
