@@ -77,7 +77,10 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
             });
             loginContext.login();
             Subject kerberosSubject = loginContext.getSubject();
-            clientName = new SecurityContextEstablisher().acceptKerberosServiceTicket(
+
+            SecurityContextEstablisher secCtxEst = new SecurityContextEstablisher();
+
+            clientName = secCtxEst.acceptKerberosServiceTicket(
                     binarySpnegoToken,
                     kerberosSubject,
                     principalName
