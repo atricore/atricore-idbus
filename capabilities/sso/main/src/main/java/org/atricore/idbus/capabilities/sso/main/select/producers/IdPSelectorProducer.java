@@ -66,6 +66,10 @@ public class IdPSelectorProducer extends SSOProducer {
                 doProcessSelectEntityRequest(exchange, state, request);
 
             } else if (content instanceof UserClaimsResponse) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing claims response for " + endpointRef);
+
                 // Claims collected from the user, to make a selection decision.
                 doProcessUserClaimsResponse(exchange, state, (UserClaimsResponse) content);
 
@@ -146,7 +150,7 @@ public class IdPSelectorProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Processing Selector: " + selector);
 
-            // This will process the next selector endpoint, if it returs true, it means that an endpoint was used
+            // This will process the next selector endpoint, if it returns true, it means that a claims endpoint was used and we'll wait for a response
             if (processNextSelectorEndpoint(exchange, selector, ctx))
                 return;
 
@@ -213,7 +217,6 @@ public class IdPSelectorProducer extends SSOProducer {
 
             selector = processNextSelector(exchange, selectors, ctx);
         }
-
 
         if (logger.isDebugEnabled())
             logger.debug("Selected IdP " + (entity != null ? entity.getAlias() : "NULL"));

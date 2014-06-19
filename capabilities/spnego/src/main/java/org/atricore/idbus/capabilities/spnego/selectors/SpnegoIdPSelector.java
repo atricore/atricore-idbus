@@ -6,7 +6,6 @@ import org.atricore.idbus.capabilities.spnego.SpnegoAuthenticationScheme;
 import org.atricore.idbus.capabilities.spnego.SpnegoBinding;
 import org.atricore.idbus.capabilities.spnego.authenticators.SpnegoSecurityTokenAuthenticator;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.select.internal.EntitySelectionState;
 import org.atricore.idbus.capabilities.sso.main.select.spi.AbstractEntitySelector;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectionContext;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
@@ -27,13 +26,13 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
 import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
@@ -51,12 +50,11 @@ public class SpnegoIdPSelector extends AbstractEntitySelector implements Applica
     @Override
     public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel) {
 
-        CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
-
+        Set<FederatedProvider> idps = findTrustedIdPs(ctx, channel);
         List<EndpointDescriptor> endpoints = new ArrayList<EndpointDescriptor>();
 
         // Get IdP claim channel and look for service: urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos
-        for (FederatedProvider fp : cotMgr.getCot().getProviders()) {
+        for (FederatedProvider fp : idps) {
 
             if (fp instanceof IdentityProvider) {
                 IdentityProvider idp = (IdentityProvider) fp;
@@ -101,28 +99,38 @@ public class SpnegoIdPSelector extends AbstractEntitySelector implements Applica
         if (binaryToken == null)
             return null;
 
-        CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
+        String spnegoSecurityToken = binaryToken.getOtherAttributes().get( new QName( SpnegoSecurityTokenAuthenticator.SPNEGO_NS) );
+        String idpName = binaryToken.getOtherAttributes().get( new QName( SpnegoSecurityTokenAuthenticator.SPNEGO_NS, "idp") );
 
-        List<EndpointDescriptor> endpoints = new ArrayList<EndpointDescriptor>();
+        if (logger.isDebugEnabled())
+            logger.debug("Validating SPNEGO token issued by IdP " + idpName);
 
+        Set<FederatedProvider> idps = findTrustedIdPs(ctx, channel);
 
         // This goes a little too deep into the dependencies tree
         // Get IdP claim channel and look for service: urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos
-        for (FederatedProvider fp : cotMgr.getCot().getProviders()) {
+        for (FederatedProvider fp : idps) {
 
             if (fp instanceof IdentityProvider) {
+
                 IdentityProvider idp = (IdentityProvider) fp;
+
+                if (!idp.getName().equals(idpName))
+                    continue;
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Trying WIA on IdP " + idp.getName());
 
                 // We assume we have a WST STS .
                 WSTSecurityTokenService sts = (WSTSecurityTokenService) ((SPChannel) idp.getChannel()).getSecurityTokenService();
                 // Maybe we can navigate the beans instead.
                 Collection<SecurityTokenAuthenticator> authenticators = sts.getAuthenticators();
+
                 for (SecurityTokenAuthenticator authenticator : authenticators) {
 
                     if (authenticator instanceof SpnegoSecurityTokenAuthenticator) {
 
                         SpnegoSecurityTokenAuthenticator spnegoAuthn = (SpnegoSecurityTokenAuthenticator) authenticator;
-
                         Authenticator legacyAuthenticator = spnegoAuthn.getAuthenticator();
 
                         for (AuthenticationScheme scheme : legacyAuthenticator.getAuthenticationSchemes()) {
@@ -131,15 +139,28 @@ public class SpnegoIdPSelector extends AbstractEntitySelector implements Applica
 
                                 try {
 
+                                    // This will create a copy of the scheme !
+
+                                    if (logger.isTraceEnabled())
+                                        logger.trace("Trying WIA on authentication scheme " + scheme.getName());
+
                                     Subject s = new Subject();
 
-                                    String spnegoSecurityToken = binaryToken.getOtherAttributes().get( new QName( SpnegoSecurityTokenAuthenticator.SPNEGO_NS) );
 
                                     Credential spnegoCredential = legacyAuthenticator.newCredential(scheme.getName(), "spnegoSecurityToken", spnegoSecurityToken);
-                                    SpnegoAuthenticationScheme spnegoAuthnScheme = (SpnegoAuthenticationScheme) scheme.clone();
+
+                                    // This will CLONE the scheme, very important
+                                    SpnegoAuthenticationScheme spnegoAuthnScheme = (SpnegoAuthenticationScheme) legacyAuthenticator.getAuthenticationScheme(scheme.getName());
+
                                     spnegoAuthnScheme.initialize(new Credential[]{spnegoCredential}, s);
 
                                     if (spnegoAuthnScheme.authenticate()) {
+
+                                        if (logger.isDebugEnabled())
+                                            logger.debug("Spnego authentication success");
+
+                                        spnegoAuthnScheme.confirm();
+
                                         UserClaim sp = ctx.getUserClaim(EntitySelectorConstants.ISSUER_SP_ATTR);
                                         String spId = sp != null ? (String) sp.getValue() : null;
                                         if (spId != null) {
@@ -178,5 +199,63 @@ public class SpnegoIdPSelector extends AbstractEntitySelector implements Applica
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    protected Set<FederatedProvider> findTrustedIdPs(EntitySelectionContext ctx, SelectorChannel channel) {
+
+        CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
+
+        // If we have a request issuer, look for trusted providers for it
+        String spId = ctx.getRequest().getIssuer();
+        Set<FederatedProvider> idps = null;
+
+        if (spId != null) {
+
+            FederatedProvider sp = null;
+            for (FederatedProvider fp : cotMgr.getCot().getProviders()) {
+                if (fp.getName().equals(spId)) {
+                    sp = fp;
+                    break;
+                }
+            }
+
+            // Look for providers associated to this SP
+            if (sp != null) {
+
+                idps = new HashSet<FederatedProvider>();
+
+                Set<FederatedProvider> trustedProviders = sp.getDefaultFederationService().getChannel().getTrustedProviders();
+
+                // Adding default providers
+                if (trustedProviders != null) {
+                    for (FederatedProvider fp : trustedProviders) {
+                        if (fp instanceof IdentityProvider)
+                            idps.add(fp);
+                    }
+                }
+
+                // Adding service specific providers
+                for (FederationService fs  : sp.getFederationServices()) {
+                    trustedProviders = fs.getChannel().getTrustedProviders();
+                    if (trustedProviders != null) {
+                        for (FederatedProvider fp : trustedProviders) {
+                            if (fp instanceof IdentityProvider)
+                                idps.add(fp);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (idps == null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Cannot find specific set of IdPs for " + spId);
+            idps = cotMgr.getCot().getProviders();
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("Using specific set of IdPs for " + spId + ", found: " + idps.size());
+        }
+
+        return idps;
     }
 }

@@ -996,6 +996,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
+            if (logger.isDebugEnabled())
+                logger.debug("Security Token authentication failure : " + e.getMessage(), e);
+
             // Generate audit trail
             Properties auditProps = new Properties();
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
@@ -1010,9 +1013,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // Set of policies enforced during authentication
             Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
-
-            if (logger.isDebugEnabled())
-                logger.debug("Security Token authentication failure : " + e.getMessage(), e);
 
             // Ask for more claims, using other auth schemes
             ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState, exchange);
