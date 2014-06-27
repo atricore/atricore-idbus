@@ -245,6 +245,11 @@ public class ConfigurationImpl extends PropertyStore
     }
 
     @Override
+    public Boolean getSecureCookies() {
+        return getResolvedBooleanProperty(PROPERTY_SECURE_COOKIES);
+    }
+
+    @Override
     public String toString()
     {
         return new StringBuilder().append( this.getClass().getSimpleName() ).append( "{" ).append( "http enabled=" )

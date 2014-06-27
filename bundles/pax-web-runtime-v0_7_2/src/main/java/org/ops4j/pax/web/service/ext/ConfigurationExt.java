@@ -15,4 +15,6 @@ public interface ConfigurationExt extends Configuration {
 
     String getTrustStoreType();
 
+    Boolean getSecureCookies();
+
 }

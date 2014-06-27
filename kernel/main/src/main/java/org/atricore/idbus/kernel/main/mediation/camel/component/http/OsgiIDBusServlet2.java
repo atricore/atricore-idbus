@@ -1,14 +1,11 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
-import org.apache.camel.AsyncCallback;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.http.HttpConsumer;
 import org.apache.camel.component.http.HttpExchange;
 import org.apache.camel.component.jetty.CamelContinuationServlet;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.spi.Registry;
-import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,7 +57,7 @@ import java.util.*;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class OsgiIDBusServlet2 extends CamelContinuationServlet {
+public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBusHttpConstants {
 
     private static final Log logger = LogFactory.getLog(OsgiIDBusServlet2.class);
 
@@ -71,6 +68,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
     private IdentityMediationUnitRegistry registry;
 
     private boolean followRedirects;
+
+    private boolean secureCookies = false;
 
     private boolean reuseHttpClient = false;
 
@@ -89,6 +88,29 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
+
+        if (kernelConfig == null) {
+
+            // Lazy load kernel config
+
+            kernelConfig = lookupKernelConfig();
+
+            if (kernelConfig == null) {
+                logger.error("No Kernel Configuration Context found!");
+                throw new ServletException("No Kernel Configuration Context found!");
+            }
+
+            secureCookies = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.secureCookies", "false"));
+            followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "true"));
+            reuseHttpClient = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.reuseHttpClient", "false"));
+            localTargetBaseUrl = kernelConfig.getProperty("binding.http.localTargetBaseUrl");
+
+            logger.info("Following Redirects internally : " + followRedirects);
+
+            if (reuseHttpClient)
+                logger.info("Reuse HTTP client option is ON (EXPERIMENTAL)");
+
+        }
     }
 
     @Override
@@ -102,28 +124,6 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         try {
 
             started = System.currentTimeMillis();
-
-            if (kernelConfig == null) {
-
-                // Lazy load kernel config
-
-                kernelConfig = lookupKernelConfig();
-
-                if (kernelConfig == null) {
-                    logger.error("No Kernel Configuration Context found!");
-                    throw new ServletException("No Kernel Configuration Context found!");
-                }
-
-                followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "true"));
-                reuseHttpClient = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.reuseHttpClient", "false"));
-                localTargetBaseUrl = kernelConfig.getProperty("binding.http.localTargetBaseUrl");
-
-                logger.info("Following Redirects internally : " + followRedirects);
-
-                if (reuseHttpClient)
-                    logger.info("Reuse HTTP client option is ON (EXPERIMENTAL)");
-
-            }
 
             if (internalProcessingPolicy == null) {
                 org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
@@ -146,7 +146,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
         } finally {
             long ended = System.currentTimeMillis();
-            String parentThread = req.getHeader("X-IdBusProxiedRequest");
+            String parentThread = req.getHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST);
             if (parentThread == null) {
                 mServer.recordResponseTimeMetric(ATRICORE_WEB_BROWSER_PROCESSING_TIME_MS_METRIC_NAME, ended - started);
             }
@@ -161,7 +161,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
         String remoteAddr = null;
         String remoteHost = null;
-        String parentThread = req.getHeader("X-IdBusProxiedRequest");
+        String parentThread = req.getHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST);
         if (parentThread == null) {
 
             if (req.getHeader("X-Forwarded-For") != null) {
@@ -185,8 +185,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             }
             remoteHost = req.getRemoteHost();
         } else {
-            remoteAddr = req.getHeader("X-IdBusRemoteAddress");
-            remoteHost = req.getHeader("X-IdBusRemoteHost");
+            remoteAddr = req.getHeader(HTTP_HEADER_IDBUS_REMOTE_ADDRESS);
+            remoteHost = req.getHeader(HTTP_HEADER_IDBUS_REMOTE_HOST);
         }
 
         HttpRequestBase proxyReq = buildProxyRequest(req, remoteAddr, remoteHost);
@@ -245,13 +245,13 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                     if (header.getName().equals("Content-Type")) continue;
 
                     // The sender of the response has explicitly ask no to follow this redirect.
-                    if (header.getName().equals("FollowRedirect")) {
+                    if (header.getName().equals(HTTP_HEADER_FOLLOW_REDIRECT)) {
                         // Set 'followTargetUrl' to false
                         followTargetUrl = false;
                         continue;
                     }
 
-                    if (header.getName().equals("X-IdBus-FollowRedirect")) {
+                    if (header.getName().equals(HTTP_HEADER_IDBUS_FOLLOW_REDIRECT)) {
                         // Set 'followTargetUrl' to false
                         followTargetUrl = false;
                         continue;
@@ -452,7 +452,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
                 if (logger.isTraceEnabled())
                     logger.trace("Building new proxy HTTP Request for " + targetUrl);
 
-                proxyReq = buildProxyRequest(targetUrl, remoteAddr, remoteHost);
+                proxyReq = buildProxyRequest(req, targetUrl, remoteAddr, remoteHost);
                 // Clear context, we many need a new instance
 
                 httpContext = null;
@@ -465,7 +465,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
 
     }
 
-    protected HttpRequestBase buildProxyRequest(String targetUrl, String remoteAddr, String remoteHost) throws MalformedURLException {
+    protected HttpRequestBase buildProxyRequest(HttpServletRequest req, String targetUrl, String remoteAddr, String remoteHost) throws MalformedURLException {
 
         if (localTargetBaseUrl != null) {
             URL url = new URL(targetUrl);
@@ -484,9 +484,11 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
         // Cookies are automatically managed by the client :)
         // Mark request as PROXIED, so that we don't get into an infinite loop
         HttpRequestBase proxyReq = new HttpGet(targetUrl);
-        proxyReq.addHeader("X-IdBusRemoteAddress", remoteAddr);
-        proxyReq.addHeader("X-IdBusRemoteHost", remoteHost);
-        proxyReq.addHeader("X-IdBusProxiedRequest", "TRUE");
+        proxyReq.addHeader(HTTP_HEADER_IDBUS_REMOTE_ADDRESS, remoteAddr);
+        proxyReq.addHeader(HTTP_HEADER_IDBUS_REMOTE_HOST, remoteHost);
+        proxyReq.addHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST, "TRUE");
+        if (req.isSecure())
+            proxyReq.addHeader(HTTP_HEADER_IDBUS_SECURE, "TRUE");
 
         return proxyReq;
     }
@@ -583,9 +585,11 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet {
             proxyReq.addHeader(hName, hValue);
         }
 
-        proxyReq.addHeader("X-IdBusRemoteAddress", remoteAddr);
-        proxyReq.addHeader("X-IdBusRemoteHost", remoteHost);
-        proxyReq.addHeader("X-IdBusProxiedRequest", "TRUE");
+        proxyReq.addHeader(HTTP_HEADER_IDBUS_REMOTE_ADDRESS, remoteAddr);
+        proxyReq.addHeader(HTTP_HEADER_IDBUS_REMOTE_HOST, remoteHost);
+        proxyReq.addHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST, "TRUE");
+        if (req.isSecure())
+            proxyReq.addHeader(HTTP_HEADER_IDBUS_SECURE, "TRUE");
 
         return proxyReq;
 

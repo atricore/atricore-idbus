@@ -24,6 +24,8 @@ public class EHCacheSessionHandlerBuilder implements SessionHandlerBuilder {
 
     private String cacheName;
 
+    private boolean secureCookies;
+
     public EHCacheSessionHandlerBuilder() {
         LOG.debug("Using EHCache Session Handler builder ...");
         cacheName = "idbus-http-sessions";
@@ -68,7 +70,7 @@ public class EHCacheSessionHandlerBuilder implements SessionHandlerBuilder {
                     workerName);
 
         // Session Manager
-        EHCacheSessionManager sm = new EHCacheSessionManager(server, model, sessionsCache);
+        EHCacheSessionManager sm = new EHCacheSessionManager(server, model, sessionsCache, secureCookies);
         sm.setIdManager(sessionIdManager);
 
         //Session Handler
@@ -91,4 +93,11 @@ public class EHCacheSessionHandlerBuilder implements SessionHandlerBuilder {
         this.cacheName = cacheName;
     }
 
+    public boolean isSecureCookies() {
+        return secureCookies;
+    }
+
+    public void setSecureCookies(boolean secureCookies) {
+        this.secureCookies = secureCookies;
+    }
 }

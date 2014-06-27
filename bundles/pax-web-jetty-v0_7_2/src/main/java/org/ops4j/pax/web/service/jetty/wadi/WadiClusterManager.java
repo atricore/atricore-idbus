@@ -27,6 +27,7 @@ public class WadiClusterManager implements SessionHandlerBuilder {
     private int sweepInterval;
     private boolean enableReplication;
     private boolean deltaReplication;
+    private boolean secureCookies;
 
     public WadiClusterManager() {
         // Some default values
@@ -80,7 +81,7 @@ public class WadiClusterManager implements SessionHandlerBuilder {
             Thread.currentThread().setContextClassLoader(wadiClassLoader);
 
             SessionManager sm = new OsgiWadiSessionManager(wadiClassLoader,
-                    m_wadiCluster, nbReplica, numPartitions, sweepInterval, enableReplication, deltaReplication);
+                    m_wadiCluster, nbReplica, numPartitions, sweepInterval, enableReplication, deltaReplication, secureCookies);
 
             SessionHandler sh = new OsgiWadiSessionHandler(sm);
 
@@ -145,5 +146,13 @@ public class WadiClusterManager implements SessionHandlerBuilder {
 
     public void setWadiCluster(WadiCluster m_wadiCluster) {
         this.m_wadiCluster = m_wadiCluster;
+    }
+
+    public boolean isSecureCookies() {
+        return secureCookies;
+    }
+
+    public void setSecureCookies(boolean secureCookies) {
+        this.secureCookies = secureCookies;
     }
 }
