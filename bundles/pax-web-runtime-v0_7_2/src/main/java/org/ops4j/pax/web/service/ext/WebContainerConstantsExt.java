@@ -15,4 +15,6 @@ public interface WebContainerConstantsExt extends WebContainerConstants {
 
     String PROPERTY_TRUST_STORE_TYPE  = "org.ops4j.pax.web.trustStore";
 
+    String PROPERTY_SECURE_COOKIES = "org.ops4j.pax.web.secureCookies";
+
 }

@@ -33,6 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -146,7 +147,7 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", ed.getLocation());
             // Tell the kernel not to follow this redirect, we need the browser to handle it
-            httpOut.getHeaders().put("X-IdBus-FollowRedirect", "FALSE");
+            httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "FALSE");
 
         } else if (sm instanceof RequestToken) {
             logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");

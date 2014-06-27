@@ -153,6 +153,9 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     }
 
     protected void copyBackState(MediationState state, Exchange exchange) {
+
+        boolean secureCookies = exchange.getIn().getHeader("org.atricore.idbus.http.Secure") != null;
+
         if (state == null) {
             logger.warn("No state received ...!");
             return;
@@ -220,11 +223,11 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                     Date exp = new Date(expiration);
                     String expirationStr = cookieDf.format(exp);
                     exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                            state.getRemoteVariable(name) + ";Path=/;Expires=" + expirationStr);
+                            state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
                 } else {
                     // Session cookie
                     exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                        state.getRemoteVariable(name) + ";Path=/");
+                        state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "Path=/");
                 }
 
             }
@@ -236,7 +239,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             Date exp = new Date(0);
             String expirationStr = cookieDf.format(exp);
             exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                    "-" + ";Path=/;Expires=" + expirationStr);
+                    "-" + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
         }
     }
 

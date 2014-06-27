@@ -333,9 +333,30 @@ class ServerControllerImpl
                         LOG.info("Using Jetty default HTTP MAX HEADER BUFFER SIZE");
 
                 } catch (NoSuchMethodException e) {
-                    LOG.warn("Configuration does not support max header buffer size configuraiton");
+                    LOG.warn("Configuration does not support max header buffer size property");
                 } catch (Exception e) {
-                    LOG.error("Configuration does not support max header buffer size configuraiton");
+                    LOG.error("Configuration does not support max header buffer size property");
+                }
+
+                java.lang.Boolean secureCookies = false;
+                try {
+                    // Since we can't extend the interface, use reflection as a hack.
+                    Method m = m_configuration.getClass().getMethod("getSecureCookies");
+                    secureCookies = (Boolean) m.invoke(m_configuration);
+                    if (secureCookies != null)
+                        LOG.info("Setting SECURE COOKIES to " + maxHeaderBuffSize + " bytes");
+                    else
+                        LOG.info("Using Jetty default SECURE COOKIIES setting");
+
+                    if (m_jettyFactory instanceof ConfigurableJettyFactoryImpl) {
+                        ConfigurableJettyFactoryImpl f = (ConfigurableJettyFactoryImpl) m_jettyFactory;
+                        f.getSessionHandlerBuilder().setSecureCookies(secureCookies);
+                    }
+
+                } catch (NoSuchMethodException e) {
+                    LOG.warn("Configuration does not support secure cookies property");
+                } catch (Exception e) {
+                    LOG.error("Configuration does not support secure cookies property");
                 }
 
                 String trustStore = "";
@@ -381,6 +402,7 @@ class ServerControllerImpl
                     // Get some additional properties, but use reflection to avoid a direct dependency with our extension
                     if (maxHeaderBuffSize != null)
                         connector.setHeaderBufferSize(maxHeaderBuffSize);
+
                     m_jettyServer.addConnector( connector );
                     try
                     {

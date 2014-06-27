@@ -54,32 +54,41 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
     @Override
     public void readRequest(HttpServletRequest httpServletRequest, HttpMessage httpMessage) {
 
+        // TODO : Maybe get the configuration settings ?
+        HttpServletRequest req = new OsgiIDBusServletRequestWrapper(httpServletRequest, false);
 
-        logger.trace("Reading HTTP Servlet Request");
-        super.readRequest(httpServletRequest, httpMessage);
+        if (logger.isTraceEnabled())
+            logger.trace("Reading HTTP Servlet Request");
 
-        if (httpServletRequest.getCookies() != null) {
-            for (Cookie cookie : httpServletRequest.getCookies()) {
-                logger.debug("Setting IDBus Cookie header for " + cookie.getName() + "=" + cookie.getValue());
+        super.readRequest(req, httpMessage);
+
+        if (req.getCookies() != null) {
+            for (Cookie cookie : req.getCookies()) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Setting IDBus Cookie header for " + cookie.getName() + "=" + cookie.getValue());
+
                 httpMessage.getHeaders().put("org.atricore.idbus.http.Cookie." + cookie.getName(), cookie.getValue());
             }
         }
 
         // Export additional information in CAMEL headers
-        httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", httpServletRequest.getRequestURL().toString());
-        httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", httpServletRequest.getQueryString());
+        httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", req.getRequestURL().toString());
+        httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", req.getQueryString());
+        if (req.isSecure())
+            httpMessage.getHeaders().put("org.atricore.idbus.http.Secure", "TRUE");
 
         String remoteAddr = null;
         String remoteHost = null;
-        String parentThread = httpServletRequest.getHeader("X-IdBusProxiedRequest");
+        String parentThread = req.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST);
         if (parentThread == null) {
-            remoteAddr = httpServletRequest.getRemoteAddr();
-            remoteHost = httpServletRequest.getRemoteHost();
+            remoteAddr = req.getRemoteAddr();
+            remoteHost = req.getRemoteHost();
             if (logger.isTraceEnabled())
                 logger.trace("Using request remote address/host : ["+remoteAddr+"/" + remoteHost + "]");
         } else {
-            remoteAddr = httpServletRequest.getHeader("X-IdBusRemoteAddress");
-            remoteHost = httpServletRequest.getHeader("X-IdBusRemoteHost");
+            remoteAddr = req.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_REMOTE_ADDRESS);
+            remoteHost = req.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_REMOTE_HOST);
             if (logger.isTraceEnabled())
                 logger.trace("Using X-IdBus header remote address/host : ["+remoteAddr+"/" + remoteHost + "]");
         }
@@ -87,15 +96,18 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteAddress", remoteAddr);
         httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteHost", remoteHost);
 
-        logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
+        if (logger.isDebugEnabled())
+            logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
 
-        httpMessage.getHeaders().put("org.atricore.idbus.http.HttpSession", httpServletRequest.getSession(true));
+        httpMessage.getHeaders().put("org.atricore.idbus.http.HttpSession", req.getSession(true));
     }
 
     @Override
     public void doWriteResponse(Message message, HttpServletResponse httpServletResponse) throws IOException {
 
-        logger.debug("Writing HTTP Servlet Response");
+        if (logger.isDebugEnabled())
+            logger.debug("Writing HTTP Servlet Response");
+
         // append headers
         for (String key : message.getHeaders().keySet()) {
 
@@ -108,8 +120,11 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
                     
                     String cookieName = key.substring("org.atricore.idbus.http.Set-Cookie.".length());
                     if (!cookieName.equals("JSESSIONID")) {
+
                         // TODO : Avoid setting the same cookie over and over ...
-                        logger.debug("Setting HTTP Cookie " + cookieName + "=" + value);
+                        if (logger.isDebugEnabled())
+                            logger.debug("Setting HTTP Cookie " + cookieName + "=" + value);
+
                         httpServletResponse.addHeader("Set-Cookie",cookieName + "=" + value);
                     }
                 }
@@ -117,7 +132,9 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
         }
 
-        logger.trace("Writing HTTP Servlet Response");
+        if (logger.isTraceEnabled())
+            logger.trace("Writing HTTP Servlet Response");
+
         super.doWriteResponse(message, httpServletResponse);
     }
 }
