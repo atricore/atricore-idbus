@@ -190,57 +190,65 @@ public class SelectIdPMediator implements Serializable {
                                 idpAlias = d.getAlias();
                                 providerType = AppResource.SAML2_IDP_REMOTE.getResourceType();
 
-                            } else if (p instanceof IdentityProvider) {
+                            } else {
+                                if (p instanceof IdentityProvider) {
 
-                                providerType = AppResource.SAML2_IDP_LOCAL.getResourceType();
+                                    providerType = AppResource.SAML2_IDP_LOCAL.getResourceType();
 
-                                // Local IdPs may have dedicated channels to talk to us, with specific MD
+                                    // Local IdPs may have dedicated channels to talk to us, with specific MD
 
-                                IdentityProvider idp = (IdentityProvider) p;
-                                // Get the proper SP Channel and look for the entity ID.
+                                    IdentityProvider idp = (IdentityProvider) p;
+                                    // Get the proper SP Channel and look for the entity ID.
 
-                                SPChannel spChannel = null;
-                                for (Channel c : idp.getChannels()) {
-                                    if (c instanceof SPChannel) {
-                                        SPChannel spC = (SPChannel) c;
-                                        if (spC.getTargetProvider() != null && spC.getTargetProvider().getName().equals(sp.getName())) {
-                                            spChannel = spC;
-                                            break;
+                                    SPChannel spChannel = null;
+                                    for (Channel c : idp.getChannels()) {
+                                        if (c instanceof SPChannel) {
+                                            SPChannel spC = (SPChannel) c;
+                                            if (spC.getTargetProvider() != null && spC.getTargetProvider().getName().equals(sp.getName())) {
+                                                spChannel = spC;
+                                                break;
+                                            }
                                         }
                                     }
-                                }
 
-                                // No override channel configured on IdP to talk to us, use default.
-                                if (spChannel == null) {
-                                    // This better be an SP Channel ...
-                                    spChannel = (SPChannel) idp.getChannel();
-                                }
-
-                                if (logger.isTraceEnabled())
-                                    logger.trace("SPChannel used to access IdP : " + spChannel.getName());
-
-                                idpAlias = spChannel.getMember().getAlias();
-
-                                if (spChannel.getProxy() != null) {
-                                    if (spChannel.getProxy() instanceof BindingChannel) {
-                                        BindingChannel bc = (BindingChannel) spChannel.getProxy();
-                                        BindingProvider bp = (BindingProvider) bc.getFederatedProvider();
-                                        FederatedRemoteProvider remoteIdP = bp.getProxy();
-
-                                        if (logger.isTraceEnabled())
-                                            logger.debug("Remote IdP available : " + remoteIdP.getName());
-
-                                        // TODO: This IdP works as proxy, report remote service type based on remote idp
-
-                                    } else {
-                                        logger.error("Unsupported proxy binding channel type " + spChannel.getProxy());
+                                    // No override channel configured on IdP to talk to us, use default.
+                                    if (spChannel == null) {
+                                        // This better be an SP Channel ...
+                                        spChannel = (SPChannel) idp.getChannel();
                                     }
+
+                                    if (logger.isTraceEnabled())
+                                        logger.trace("SPChannel used to access IdP : " + spChannel.getName());
+
+                                    idpAlias = spChannel.getMember().getAlias();
+
+                                    if (spChannel.getProxy() != null)
+                                        if (spChannel.getProxy() instanceof BindingChannel) {
+                                            BindingChannel bc = (BindingChannel) spChannel.getProxy();
+                                            FederatedRemoteProvider remoteIdP = null;
+                                            if (bc.getFederatedProvider() instanceof BindingProvider) {
+                                                BindingProvider bp = (BindingProvider) bc.getFederatedProvider();
+                                                remoteIdP = bp.getProxy();
+                                            } else {
+                                                ServiceProvider localSp = (ServiceProvider) bc.getFederatedProvider();
+                                                remoteIdP = (FederatedRemoteProvider)
+                                                        localSp.getDefaultFederationService().getChannel().getTargetProvider();
+                                            }
+
+                                            if (logger.isTraceEnabled())
+                                                logger.debug("Remote IdP available : " + remoteIdP.getName());
+
+                                            // TODO: This IdP works as proxy, report remote service type based on remote idp
+
+                                        } else {
+                                            logger.error("Unsupported proxy binding channel type " + spChannel.getProxy());
+                                        }
+
+
+                                } else {
+                                    logger.error("Uknown Identity Provider type " + p.getClass().getName());
+                                    continue;
                                 }
-
-
-                            } else {
-                                logger.error("Uknown Identity Provider type " + p.getClass().getName());
-                                continue;
                             }
 
                             // Create the IDP model
