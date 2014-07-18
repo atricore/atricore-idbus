@@ -311,9 +311,6 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
 
         // Add IDP Name to federated Subject
-
-
-
         if (logger.isDebugEnabled())
             logger.debug("IDP Subject [" + idpSubject + "] mapped to Subject [" + federatedSubject + "] " +
                      "through Account Link [" + acctLink.getId() + "]" );

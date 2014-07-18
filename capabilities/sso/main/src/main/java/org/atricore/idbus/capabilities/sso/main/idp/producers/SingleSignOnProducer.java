@@ -1163,7 +1163,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (proxyResponse.getSubject() == null) {
                 // The authentication failed!
-
+                if (logger.isDebugEnabled())
+                    logger.debug("Authentication failed, no subject received");
             } else {
 
                 // -------------------------------------------------------
