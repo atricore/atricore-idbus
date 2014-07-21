@@ -145,6 +145,36 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
             // Select endpoint, must be a SingleSingOnService endpoint
             EndpointType idpSsoEndpoint = resolveIdpSloEndpoint(idp, true);
+
+            if (idpSsoEndpoint == null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("IdP does not support SLO : " + idp.getAlias() + ", performing SP logout");
+
+                destroySPSecurityContext(exchange, secCtx);
+
+                SSOResponseType ssoResponse = new SSOResponseType();
+                ssoResponse.setID(uuidGenerator.generateId());
+                ssoResponse.setIssuer(getProvider().getName());
+                String destinationLocation = ((SSOSPMediator) channel.getIdentityMediator()).getSpBindingSLO();
+
+                EndpointDescriptor destination =
+                        new EndpointDescriptorImpl("EmbeddedSPAcs",
+                                "SingleLogoutService",
+                                SSOBinding.SSO_ARTIFACT.getValue(),
+                                destinationLocation, null);
+
+                logger.debug("Sending JOSSO SLO Response to " + destination);
+
+                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+                out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
+                        ssoResponse, "SPLogoutResponse", null, destination, in.getMessage().getState()));
+
+                exchange.setOut(out);
+                return;
+
+
+            }
+
             EndpointDescriptor ed = new EndpointDescriptorImpl(
                     "IDPSLOEndpoint",
                     "SingleLogoutService",
