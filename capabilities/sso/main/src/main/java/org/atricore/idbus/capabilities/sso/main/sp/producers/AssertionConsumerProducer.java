@@ -356,7 +356,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 
     /**
-     * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
+     * Build an AuthnResponse .
      */
     protected SPAuthnResponseType buildSPAuthnResponseType(CamelMediationExchange exchange,
                                                            SPInitiatedAuthnRequestType ssoAuthRequest,

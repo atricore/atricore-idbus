@@ -1720,7 +1720,7 @@ public class SingleSignOnProducer extends SSOProducer {
         // Some validations about the user !
         //Subject subject = securityTokenEmissionCtx.getSubject();
 
-        // Look up SSO User (TODO : This could be disbled since it adds an additional access to the users repository)
+        // Look up SSO User (TODO : This could be disabled since it adds an additional access to the users repository)
         SSOUser ssoUser = null;
         Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
         if (p != null && p.size() > 0) {
@@ -2275,7 +2275,9 @@ public class SingleSignOnProducer extends SSOProducer {
      */
     protected RequestSecurityTokenType buildRequestSecurityToken(ClaimSet claims, String context) throws Exception {
 
-        logger.debug("generating RequestSecurityToken...");
+        if (logger.isDebugEnabled())
+            logger.debug("generating RequestSecurityToken...");
+
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
 
         RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
@@ -2287,8 +2289,17 @@ public class SingleSignOnProducer extends SSOProducer {
 
         for (Claim c : claims.getClaims()) {
 
+            if (!(c instanceof CredentialClaim)) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Ignoring non-credential claim " + c);
+                continue;
+            }
+
             CredentialClaim credentialClaim = (CredentialClaim) c;
-            logger.debug("Adding Claim : " + credentialClaim.getQualifier() + " of type " + credentialClaim.getValue().getClass().getName());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Adding Claim : " + credentialClaim.getQualifier() + " of type " + credentialClaim.getValue().getClass().getName());
+
             Object claimObj = credentialClaim.getValue();
 
             if (claimObj instanceof UsernameTokenType) {
@@ -2306,7 +2317,9 @@ public class SingleSignOnProducer extends SSOProducer {
         if (context != null)
             rstRequest.setContext(context);
 
-        logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+        if (logger.isDebugEnabled())
+            logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+
         return rstRequest;
     }
 
