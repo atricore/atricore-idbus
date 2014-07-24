@@ -25,7 +25,6 @@ import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -207,9 +206,6 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // This will destroy the security context
         boolean partialLogout = performSlo(exchange, secCtx, sloRequest);
-
-
-        AuditingServer aServer = mediator.getAuditingServer();
 
         recordInfoAuditTrail("SLO", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
 
@@ -460,126 +456,125 @@ public class SingleLogoutProducer extends SSOProducer {
         // -----------------------------------------------------------------------------
         // Invalidate SSO Session
         // -----------------------------------------------------------------------------
-        if (secCtx != null && secCtx.getSessionIndex() != null) {
+        if (secCtx == null || secCtx.getSessionIndex() == null) {
+            // No session information ...
+            logger.debug("No session information foud, sending SUCCESS status");
+            return partialLogout;
+        }
 
-            try {
+        try {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Terminating SSO Session "  + secCtx.getSessionIndex());
+            if (logger.isDebugEnabled())
+                logger.debug("Terminating SSO Session "  + secCtx.getSessionIndex());
 
-                SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
-                AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+            SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
+            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
 
-                // Notify other SPs using either back or front channels
+            // Notify other SPs using either back or front channels
+
+            for (ProviderSecurityContext pSecCtx : secCtx.lookupProviders()) {
+
+                // Skip from the list the SP that requested SLO, if any
+                if (sloRequest != null &&
+                        pSecCtx.getProviderId().getValue().equals(sloRequest.getIssuer().getValue())) {
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("SP requested SLO, avoid sending back-channel request" + sloRequest.getIssuer().getValue());
+                    continue;
+
+                }
+
+                CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
+                boolean sloPerformed = false;
+
+                // Build a list with all supported back-channel endpoints for the SP
+                List<EndpointDescriptor> eds = new ArrayList<EndpointDescriptor>();
+
+                EndpointDescriptor localEd = resolveSpSloEndpoint(pSecCtx.getProviderId(),
+                        new SSOBinding[] { SSOBinding.SAMLR2_LOCAL}, true);
+
+                if (localEd != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Adding SLO endpoint " + localEd.getName() + " for " + pSecCtx.getProviderId());
+
+                    eds.add(localEd);
+                }
+
+                EndpointDescriptor soapEd = resolveSpSloEndpoint(pSecCtx.getProviderId(),
+                        new SSOBinding[] { SSOBinding.SAMLR2_SOAP}, true);
+
+                if (soapEd != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Adding SLO endpoint " + soapEd.getName() + " for " + pSecCtx.getProviderId());
+                    eds.add(soapEd);
+                }
+
+                if (eds.size() == 0) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId());
+                    continue;
+                }
 
 
-                for (ProviderSecurityContext pSecCtx : secCtx.lookupProviders()) {
+                // Try each endpoint on the list
+                for (EndpointDescriptor ed : eds) {
 
-                    // Skip from the list the SP that requested SLO, if any
-                    if (sloRequest != null &&
-                            pSecCtx.getProviderId().getValue().equals(sloRequest.getIssuer().getValue())) {
+                    // Build SLO Request
+
+                    LogoutRequestType spSloRequest = buildSamlSloRequest(exchange, secCtx, sloRequest, sp, ed);
+
+                    try {
 
                         if (logger.isDebugEnabled())
-                            logger.debug("SP requested SLO, avoid sending back-channel request" + sloRequest.getIssuer().getValue());
-                        continue;
+                            logger.debug("Sending SLO Request " + spSloRequest.getID() +
+                                    " to SP " + sp.getAlias() +
+                                    " using endpoint " + ed.getLocation());
 
-                    }
+                        // Send request and process response
+                        StatusResponseType spSloResponse =
+                                (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
 
-                    CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(pSecCtx.getProviderId());
-                    boolean sloPerformed = false;
+                        validateResponse(spSloRequest, spSloResponse, null);
+                        // Keep track of used IDs
+                        if (mediator.isVerifyUniqueIDs())
+                            mediator.getIdRegistry().register(spSloResponse.getID());
 
-                    // Build a list with all supported back-channel endpoints for the SP
-                    List<EndpointDescriptor> eds = new ArrayList<EndpointDescriptor>();
+                        // Successfully performed SLO for this SP
+                        sloPerformed = true;
+                        break;
 
-                    EndpointDescriptor localEd = resolveSpSloEndpoint(pSecCtx.getProviderId(),
-                            new SSOBinding[] { SSOBinding.SAMLR2_LOCAL}, true);
-
-                    if (localEd != null) {
-                        if (logger.isDebugEnabled())
-                            logger.debug("Adding SLO endpoint " + localEd.getName() + " for " + pSecCtx.getProviderId());
-
-                        eds.add(localEd);
-                    }
-
-                    EndpointDescriptor soapEd = resolveSpSloEndpoint(pSecCtx.getProviderId(),
-                            new SSOBinding[] { SSOBinding.SAMLR2_SOAP}, true);
-
-                    if (soapEd != null) {
-                        if (logger.isDebugEnabled())
-                            logger.debug("Adding SLO endpoint " + soapEd.getName() + " for " + pSecCtx.getProviderId());
-                        eds.add(soapEd);
-                    }
-
-                    if (eds.size() == 0) {
-                        if (logger.isTraceEnabled())
-                            logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId());
-                        continue;
-                    }
-
-
-                    // Try each endpoint on the list
-                    for (EndpointDescriptor ed : eds) {
-
-                        // Build SLO Request
-
-                        LogoutRequestType spSloRequest = buildSamlSloRequest(exchange, secCtx, sloRequest, sp, ed);
-
-                        try {
-
-                            if (logger.isDebugEnabled())
-                                logger.debug("Sending SLO Request " + spSloRequest.getID() +
-                                        " to SP " + sp.getAlias() +
-                                        " using endpoint " + ed.getLocation());
-
-                            // Send request and process response
-                            StatusResponseType spSloResponse =
-                                    (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
-
-                            validateResponse(spSloRequest, spSloResponse, null);
-                            // Keep track of used IDs
-                            if (mediator.isVerifyUniqueIDs())
-                                mediator.getIdRegistry().register(spSloResponse.getID());
-
-                            // Successfully performed SLO for this SP
-                            sloPerformed = true;
-                            break;
-
-                        } catch (Exception e) {
-                            logger.error("Error performing SLO for SP : " + sp.getAlias(), e);
-                        }
-
-                    }
-
-                    if (!sloPerformed) {
-                        if (logger.isDebugEnabled())
-                            logger.debug("No back-channel SLO performed for " + pSecCtx.getProviderId());
-                        partialLogout = true;
-                        continue;
+                    } catch (Exception e) {
+                        logger.error("Error performing SLO for SP : " + sp.getAlias(), e);
                     }
 
                 }
 
-                CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-                // Remove the SSO Session var
-                in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-                in.getMessage().getState().getLocalState().removeAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
+                if (!sloPerformed) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("No back-channel SLO performed for " + pSecCtx.getProviderId());
+                    partialLogout = true;
+                    continue;
+                }
 
-                // Remove pre-authn token
-                in.getMessage().getState().removeRemoteVariable(getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM");
-
-                // Invalidate SSO Session
-                sessionMgr.invalidate(secCtx.getSessionIndex());
-                secCtx.clear();
-                
-
-
-            } catch (NoSuchSessionException e) {
-                logger.debug("JOSSO Session is not valid : " + secCtx.getSessionIndex());
             }
 
-        } else {
-            // No session information ...
-            logger.debug("No session information foud, sending SUCCESS status");
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+            // Remove the SSO Session var
+            in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+            in.getMessage().getState().getLocalState().removeAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
+
+            // Remove pre-authn token
+            in.getMessage().getState().removeRemoteVariable(getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM");
+
+            // Invalidate SSO Session
+            sessionMgr.invalidate(secCtx.getSessionIndex());
+            secCtx.clear();
+
+
+
+        } catch (NoSuchSessionException e) {
+            if (logger.isDebugEnabled())
+                logger.debug("JOSSO Session  is not valid : " + secCtx.getSessionIndex());
         }
 
         return partialLogout;

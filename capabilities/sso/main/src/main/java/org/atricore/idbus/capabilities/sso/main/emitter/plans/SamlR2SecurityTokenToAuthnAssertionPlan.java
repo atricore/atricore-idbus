@@ -113,50 +113,29 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                 }
 
                 // Additional information
-                if (ctx.getProxyResponse() != null) {
+                if (ctx.getProxyPrincipals() != null) {
 
                     // Proxied requests may provide additional information:
-                    SPAuthnResponseType proxyResponse = ctx.getProxyResponse();
-
                     List<SSONameValuePair> proxyProps = new ArrayList();
                     List<SSORole> proxyRoles = new ArrayList();
-
-                    for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Adding subject attribute from proxy response " + attr.getName() + ":" + attr.getValue());
-
-                        proxyProps.add(new SSONameValuePair(attr.getName(), attr.getValue()));
-                    }
-
-                    for (SubjectRoleType p : proxyResponse.getSubjectRoles()) {
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Adding subject role from proxy response " + p.getName());
-
-                        proxyRoles.add(new BaseRoleImpl(p.getName()));
-                    }
-
                     // Now check if the subject itself has additional information
 
-                    if (proxyResponse.getSubject().getAbstractPrincipal() != null) {
+                    for (AbstractPrincipalType p : ctx.getProxyPrincipals()) {
 
-                        for (AbstractPrincipalType p : proxyResponse.getSubject().getAbstractPrincipal()) {
-                            if (p instanceof SubjectAttributeType) {
-                                SubjectAttributeType attr = (SubjectAttributeType) p;
-                                if (logger.isTraceEnabled())
-                                    logger.trace("Adding subject attribute from proxy response subject " + attr.getName() + ":" + attr.getValue());
+                        if (p instanceof SubjectAttributeType) {
+                            SubjectAttributeType attr = (SubjectAttributeType) p;
+                            if (logger.isTraceEnabled())
+                                logger.trace("Adding subject attribute from proxy response subject " + attr.getName() + ":" + attr.getValue());
 
-                                proxyProps.add(new SSONameValuePair(attr.getName(), attr.getValue()));
+                            proxyProps.add(new SSONameValuePair(attr.getName(), attr.getValue()));
 
-                            } else if (p instanceof SubjectRoleType) {
-                                SubjectRoleType r = (SubjectRoleType) p;
-                                if (logger.isTraceEnabled())
-                                    logger.trace("Adding subject role from proxy response subject " + r.getName());
+                        } else if (p instanceof SubjectRoleType) {
+                            SubjectRoleType r = (SubjectRoleType) p;
+                            if (logger.isTraceEnabled())
+                                logger.trace("Adding subject role from proxy response subject " + r.getName());
 
-                                proxyRoles.add(new BaseRoleImpl(r.getName()));
+                            proxyRoles.add(new BaseRoleImpl(r.getName()));
 
-                            }
                         }
                     }
 

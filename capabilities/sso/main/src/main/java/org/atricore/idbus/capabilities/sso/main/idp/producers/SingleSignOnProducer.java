@@ -616,6 +616,10 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
 
+            // Add any proxy principals availabe
+            if (secCtx.getProxyPrincipals() != null)
+                securityTokenEmissionCtx.getProxyPrincipals().addAll(secCtx.getProxyPrincipals());
+
             securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx);
 
             if (logger.isDebugEnabled())
@@ -1184,15 +1188,18 @@ public class SingleSignOnProducer extends SSOProducer {
                 securityTokenEmissionCtx.setAuthnState(authnState);
                 securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
                 securityTokenEmissionCtx.setSpAcs(ed);
-                securityTokenEmissionCtx.setProxyResponse(proxyResponse);
 
                 // in order to request a security token we need to map the claims sent by the proxy to
                 // STS claims
-                List<AbstractPrincipalType> proxyPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
+                List<AbstractPrincipalType> proxySubjectPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
+
+                List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
+
+
 
                 ClaimSet claims = new ClaimSetImpl();
                 UsernameTokenType usernameToken = new UsernameTokenType();
-                for (Iterator<AbstractPrincipalType> iterator = proxyPrincipals.iterator(); iterator.hasNext(); ) {
+                for (Iterator<AbstractPrincipalType> iterator = proxySubjectPrincipals.iterator(); iterator.hasNext(); ) {
                     AbstractPrincipalType next = iterator.next();
 
                     if (next instanceof SubjectNameIDType) {
@@ -1216,23 +1223,33 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
                         claims.addClaim(credentialClaim);
+                    } else {
+                        securityTokenEmissionCtx.getProxyPrincipals().add(next);
                     }
 
                 }
 
-                SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
+                // Now, add all proxy principals stored in the response, different proxies may use different mechanisms
+                if (proxyResponse.getSubjectAttributes() != null)
+                    securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectAttributes());
+
+                if (proxyResponse.getSubjectRoles() != null)
+                    securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectRoles());
+
+                SamlR2SecurityTokenEmissionContext stsCtx = emitAssertionFromClaims(exchange,
                         securityTokenEmissionCtx,
                         claims,
                         sp);
 
-                assertion = cxt.getAssertion();
-                Subject authnSubject = cxt.getSubject();
+                assertion = stsCtx.getAssertion();
+                Subject authnSubject = stsCtx.getSubject();
 
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
+                secCtx.setPRoxyPrincipals(stsCtx.getProxyPrincipals());
 
                 // Associate the SP with the new session, including relay state!
                 // We already validated authn request issuer, so we can use it.
@@ -1599,68 +1616,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         return securityTokenEmissionCtx;
 
-        /*
-
-        AssertionType assertion = null;
-
-        IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
-        IdentityPlanExecutionExchange ex = createIdentityPlanExecutionExchange();
-
-        // Publish SP SAMLR2 Metadata
-        CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
-        ex.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
-        ex.setProperty(WSTConstants.RST_CTX, ctx);
-
-        ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SSOIDPMediator) channel.getIdentityMediator()).getSigner());
-        ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SSOIDPMediator) channel.getIdentityMediator()).getEncrypter());
-
-        // Build Subject for SSOUser     HashSet
-        Set<Principal> principals = new HashSet<Principal>();
-
-        SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
-        SSOUser ssoUser = identityMgr.findUser(ctx.getSsoSession().getUsername());
-
-        principals.add(ssoUser);
-        SSORole[] roles = identityMgr.findRolesByUsername(ssoUser.getName());
-
-        principals.addAll(Arrays.asList(roles));
-
-        ex.setProperty(VAR_SUBJECT, new Subject(true,
-                principals,
-                new java.util.HashSet(),
-                new java.util.HashSet()));
-
-        // Create in/out artifacts
-        AuthnStatementType authnStmt = (AuthnStatementType) ctx.getSsoSession().getSecurityToken().getContent();
-        IdentityArtifact<AuthnStatementType> in =
-                new IdentityArtifactImpl<AuthnStatementType>(new QName(SAML_ASSERTION_NS, "AuthnStatement"),
-                        authnStmt);
-        ex.setIn(in);
-
-        IdentityArtifact<AssertionType> out =
-                new IdentityArtifactImpl<AssertionType>(new QName(SAML_ASSERTION_NS, "Assertion"),
-                        new AssertionType());
-        ex.setOut(out);
-
-        // Prepare execution
-        identityPlan.prepare(ex);
-
-        // Perform execution
-        identityPlan.perform(ex);
-
-        if (!ex.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
-            throw new SecurityTokenEmissionException("Identity plan returned : " + ex.getStatus());
-        }
-
-        if (ex.getOut() == null)
-            throw new SecurityTokenEmissionException("Plan Exchange OUT must not be null!");
-
-        assertion = (AssertionType) ex.getOut().getContent();
-        ctx.setAssertion(assertion);
-
-        return ctx;
-        */
-
     }
 
     /**
@@ -1716,9 +1671,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         securityTokenEmissionCtx.setAssertion(assertion);
         securityTokenEmissionCtx.setSubject(subject);
-
-        // Some validations about the user !
-        //Subject subject = securityTokenEmissionCtx.getSubject();
 
         // Look up SSO User (TODO : This could be disabled since it adds an additional access to the users repository)
         SSOUser ssoUser = null;
