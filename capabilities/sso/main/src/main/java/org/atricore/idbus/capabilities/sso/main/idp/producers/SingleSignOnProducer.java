@@ -192,10 +192,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
 
             } else if (content instanceof SPAuthnResponseType) {
-
-                metric += "doProcessProxyResponse";
+                metric += "doProcessProxyACSResponse";
                 // Process proxy responses
-                doProcessProxyResponse(exchange, (SPAuthnResponseType) content);
+                doProcessProxyACSResponse(exchange, (SPAuthnResponseType) content);
 
             } else {
                 metric += "Unknown";
@@ -1098,8 +1097,8 @@ public class SingleSignOnProducer extends SSOProducer {
      * @param proxyResponse
      * @throws Exception
      */
-    protected void doProcessProxyResponse(CamelMediationExchange exchange,
-                                          SPAuthnResponseType proxyResponse) throws Exception {
+    protected void doProcessProxyACSResponse(CamelMediationExchange exchange,
+                                             SPAuthnResponseType proxyResponse) throws Exception {
 
         //------------------------------------------------------------
         // Process a proxy response
@@ -1565,7 +1564,6 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                                   IdPSecurityContext secCtx) throws Exception {
 
         // TODO : We need to use the STS ..., and get ALL the required tokens again.
-
         // TODO : Set in assertion AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX
 
         MessageQueueManager aqm = getArtifactQueueManager();

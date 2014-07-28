@@ -55,9 +55,13 @@ public interface SSOMetadataConstants {
 
     final static QName SPInitiatedSingleSignOnServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnServiceProxy");
 
+    final static QName SPInitiatedSingleLogoutServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleLogoutServiceProxy");
+
     final static QName IdPInitiatedSingleLogoutServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "IdPInitiatedSingleLogoutServiceProxy");
 
     final static QName ProxyAssertionConsumerService_QName = new QName("urn:org:atricore:idbus:sso:metadata", "ProxyAssertionConsumerService");
+
+    final static QName ProxySingleLogoutService_QName = new QName("urn:org:atricore:idbus:sso:metadata", "ProxySingleLogoutService");
 
     final static QName ManageNameIDService_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "ManageNameIDService");
     final static QName AssertionConsumerService_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "AssertionConsumerService");

@@ -46,10 +46,9 @@ import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypt
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureValidationException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
-import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedLogoutRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
-import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
@@ -57,13 +56,13 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerEx
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
-import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
+import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -104,18 +103,43 @@ public class SingleLogoutProducer extends SSOProducer {
         long s = System.currentTimeMillis();
         String metric = mediator.getMetricsPrefix() + "/Sso/Transactions/";
 
+        boolean proxy = (channel instanceof SPChannel) && ((SPChannel)channel).getProxy() != null;
+
         try {
             if (content instanceof LogoutRequestType) {
                 // Process and exit
-                metric += "doProcessLogoutRequest";
-                doProcessLogoutRequest(exchange, (LogoutRequestType) content);
+
+                if (!proxy) {
+                    metric += "doProcessSLORequest";
+                    doProcessSLORequest(exchange, (LogoutRequestType) content);
+                } else {
+                    metric += "doProcessSLORequestAsProxy";
+                    doProcessSLORequestAsProxy(exchange, (LogoutRequestType) content);
+                }
+
                 return;
 
             } else if (content instanceof IDPInitiatedLogoutRequestType) {
                 // Process and exit
-                metric += "doProcessIdPInitiatedLogoutRequest";
-                doProcessIdPInitiatedLogoutRequest(exchange, (IDPInitiatedLogoutRequestType) content);
+
+                if (!proxy) {
+                    metric += "doProcessIdPInitiatedSLORequest";
+                    doProcessIdPInitiatedSLORequest(exchange, (IDPInitiatedLogoutRequestType) content);
+                } else {
+                    // TODO
+                    logger.warn("IDP Initiated SLO not supported on proxy mode yet!");
+                    metric += "doProcessIdPInitiatedSLORequest";
+                    doProcessIdPInitiatedSLORequest(exchange, (IDPInitiatedLogoutRequestType) content);
+                }
                 return;
+
+            } else if (content instanceof SSOResponseType) {
+                // Do process proxy response, we only get an SSO response when acting as proxy.
+                metric += "doProcessSLOResponseAsProxy";
+                doProcessSLOResponseAsProxy(exchange, (SSOResponseType) content);
+
+                return;
+
             } else {
                 metric += "Unknonw";
             }
@@ -152,7 +176,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
     }
 
-    protected void doProcessIdPInitiatedLogoutRequest(CamelMediationExchange exchange, IDPInitiatedLogoutRequestType sloRequest) throws Exception {
+    protected void doProcessIdPInitiatedSLORequest(CamelMediationExchange exchange, IDPInitiatedLogoutRequestType sloRequest) throws Exception {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         // TODO : Validate request!
@@ -184,10 +208,9 @@ public class SingleLogoutProducer extends SSOProducer {
 
     }
 
-    protected void doProcessLogoutRequest ( CamelMediationExchange exchange, LogoutRequestType sloRequest ) throws Exception {
+    protected void doProcessSLORequest(CamelMediationExchange exchange, LogoutRequestType sloRequest) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-
 
         MediationState mediationState = in.getMessage().getState();
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
@@ -202,7 +225,6 @@ public class SingleLogoutProducer extends SSOProducer {
         // Keep track of used IDs
         if (mediator.isVerifyUniqueIDs())
             mediator.getIdRegistry().register(sloRequest.getID());
-
 
         // This will destroy the security context
         boolean partialLogout = performSlo(exchange, secCtx, sloRequest);
@@ -230,6 +252,106 @@ public class SingleLogoutProducer extends SSOProducer {
                 response, "LogoutResponse", in.getMessage().getRelayState(), ed, in.getMessage().getState()));
 
         exchange.setOut(out);
+
+    }
+
+    protected void doProcessSLORequestAsProxy(CamelMediationExchange exchange, LogoutRequestType sloRequest) throws Exception {
+        // We need to perform an SLO as proxy, the simplest way is to ask our binding channel to start an SP Initiated SLO ?!
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state =in.getMessage().getState();
+
+        validateRequest(sloRequest, in.getMessage().getRawContent(), in.getMessage().getState());
+
+        state.setLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest", sloRequest);
+
+        SPChannel spChannel = (SPChannel) channel;
+        BindingChannel bChannel = (BindingChannel) spChannel.getProxy();
+
+        EndpointDescriptor ed = resolveProxySPInitiatedSLOEndpointDescriptor(exchange, bChannel);
+
+        SPInitiatedLogoutRequestType request = buildProxySLORequest(exchange, bChannel);
+
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(request.getID(),
+                request,
+                "SSOLogoutRequest",
+                null,
+                ed,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+    }
+
+    protected void doProcessSLOResponseAsProxy(CamelMediationExchange exchange, SSOResponseType sloResposne) throws Exception {
+        // TODO :
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
+
+        LogoutRequestType sloRequest = (LogoutRequestType) state.getLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest");
+
+        // Just trigger the SLO Request
+        doProcessSLORequest(exchange, sloRequest);
+    }
+
+    protected EndpointDescriptor resolveProxySPInitiatedSLOEndpointDescriptor(CamelMediationExchange exchange, BindingChannel bChannel) throws SSOException {
+
+        try {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Looking for " + SSOService.SPInitiatedSingleLogoutServiceProxy.toString());
+
+            for (IdentityMediationEndpoint endpoint : bChannel.getEndpoints()) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+
+                if (endpoint.getType().equals(SSOService.SPInitiatedSingleLogoutServiceProxy.toString())) {
+
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        // This is the endpoint we're looking for
+                        return  bChannel.getIdentityMediator().resolveEndpoint(bChannel, endpoint);
+                    }
+                }
+            }
+        } catch (IdentityMediationException e) {
+            throw new SSOException(e);
+        }
+
+        throw new SSOException("No SP endpoint found for SP Initiated SLO using SSO Artifact binding");
+    }
+
+    protected SPInitiatedLogoutRequestType buildProxySLORequest(CamelMediationExchange exchange, BindingChannel bChannel) throws IdentityMediationException {
+
+        SPInitiatedLogoutRequestType req = new SPInitiatedLogoutRequestType();
+        req.setID(uuidGenerator.generateId());
+        IdentityMediator mediator = bChannel.getIdentityMediator();
+
+        for (IdentityMediationEndpoint endpoint : bChannel.getEndpoints()) {
+
+            if (endpoint.getType().equals(SSOService.ProxySingleLogoutService.toString())) {
+                if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                    EndpointDescriptor ed = mediator.resolveEndpoint(channel, endpoint);
+                    req.setReplyTo(ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation());
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("SLORequest.Reply-To:" + req.getReplyTo());
+
+                }
+            }
+        }
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        // Send all transient vars to SP
+        for (String tvarName : in.getMessage().getState().getTransientVarNames()) {
+            RequestAttributeType a = new RequestAttributeType ();
+            a.setName(tvarName);
+            a.setValue(in.getMessage().getState().getTransientVariable(tvarName));
+            req.getRequestAttribute().add(a);
+        }
+
+        return req;
 
     }
 
