@@ -135,8 +135,9 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
             IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
             logger.debug("Using IDP Channel " + idpChannel.getName());
 
-            // Look for SPInitiatedLogoutRequest
+            // Look for SPInitiatedLogoutRequest and store it for future use
             SPInitiatedLogoutRequestType ssoLogoutRequest = (SPInitiatedLogoutRequestType) in.getMessage().getContent();
+            in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedLogoutRequest", ssoLogoutRequest);
 
             // ------------------------------------------------------
             // Send SLO Request to IdP

@@ -498,21 +498,21 @@ public class AssertionConsumerProducer extends SSOProducer {
                             for (Object attributeValue : attributeValues) {
 
                                 if (logger.isDebugEnabled())
-                                    logger.debug("Processing attribute value " + attributeValue) ;
+                                    logger.debug("Processing attribute value " + attributeValue);
 
-                                if (attributeValue instanceof String ) {
+                                if (attributeValue instanceof String) {
 
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding String Attribute Statement to IDP Subject " +
                                                 attr.getName() + ":" +
                                                 attr.getNameFormat() + "=" +
-                                                attr.getAttributeValue()) ;
+                                                attr.getAttributeValue());
                                     }
 
                                     outSubject.getPrincipals().add(
                                             new SubjectAttribute(
-                                                attr.getName(),
-                                                (String) attributeValue
+                                                    attr.getName(),
+                                                    (String) attributeValue
                                             )
 
                                     );
@@ -523,13 +523,13 @@ public class AssertionConsumerProducer extends SSOProducer {
                                         logger.debug("Adding Integer Attribute Value to IDP Subject " +
                                                 attr.getName() + ":" +
                                                 attr.getNameFormat() + "=" +
-                                                attr.getAttributeValue()) ;
+                                                attr.getAttributeValue());
                                     }
 
                                     outSubject.getPrincipals().add(
                                             new SubjectAttribute(
-                                                attr.getName(),
-                                                (Integer) attributeValue
+                                                    attr.getName(),
+                                                    (Integer) attributeValue
                                             )
 
                                     );
@@ -540,17 +540,33 @@ public class AssertionConsumerProducer extends SSOProducer {
                                         logger.debug("Adding Attribute Statement to IDP Subject from DOM Element " +
                                                 attr.getName() + ":" +
                                                 attr.getNameFormat() + "=" +
-                                                e.getTextContent()) ;
+                                                e.getTextContent());
                                     }
 
                                     outSubject.getPrincipals().add(
                                             new SubjectAttribute(
-                                                attr.getName(),
-                                                e.getTextContent()
+                                                    attr.getName(),
+                                                    e.getTextContent()
                                             )
 
                                     );
 
+
+                                } else if (attributeValue == null) {
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug("Adding String Attribute Statement to IDP Subject " +
+                                                attr.getName() + ":" +
+                                                attr.getNameFormat() + "=" +
+                                                "null");
+                                    }
+
+                                    outSubject.getPrincipals().add(
+                                            new SubjectAttribute(
+                                                    attr.getName(),
+                                                    ""
+                                            )
+
+                                    );
 
                                 } else {
                                     logger.error("Unknown Attribute Value type " + attributeValue.getClass().getName());

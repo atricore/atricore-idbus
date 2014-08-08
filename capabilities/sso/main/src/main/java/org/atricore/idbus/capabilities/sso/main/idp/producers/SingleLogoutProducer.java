@@ -664,6 +664,9 @@ public class SingleLogoutProducer extends SSOProducer {
                         // Successfully performed SLO for this SP
                         sloPerformed = true;
                         break;
+                    } catch (ClassCastException e) {
+                        // This normally happens when the SOAP transport fails ...
+                        logger.error("Error performing SLO for SP : " + sp.getAlias(), e);
 
                     } catch (Exception e) {
                         logger.error("Error performing SLO for SP : " + sp.getAlias(), e);

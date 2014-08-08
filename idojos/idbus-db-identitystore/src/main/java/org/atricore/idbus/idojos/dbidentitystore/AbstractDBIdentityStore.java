@@ -60,6 +60,7 @@ public abstract class AbstractDBIdentityStore extends AbstractStore {
     private String _userPropertiesQueryString;
     private String _resetCredentialDml;
     private String _relayCredentialQueryString;
+    private boolean _useColumnsAsPropertyNames;
 
     // ---------------------------------------------------------------
     // AbstractStore extension.
@@ -142,7 +143,8 @@ public abstract class AbstractDBIdentityStore extends AbstractStore {
                 getCredentialsQueryString(),
                 getUserPropertiesQueryString(),
                 getResetCredentialDml(),
-                getRelayCredentialQueryString());
+                getRelayCredentialQueryString(),
+                isUseColumnsAsPropertyNames());
     }
 
     protected IdentityDAO getIdentityDAO(Connection c) {
@@ -154,7 +156,8 @@ public abstract class AbstractDBIdentityStore extends AbstractStore {
                 getCredentialsQueryString(),
                 getUserPropertiesQueryString(),
                 getResetCredentialDml(),
-                getRelayCredentialQueryString());
+                getRelayCredentialQueryString(),
+                isUseColumnsAsPropertyNames());
         
     }
 
@@ -269,5 +272,13 @@ public abstract class AbstractDBIdentityStore extends AbstractStore {
 
     public void setRelayCredentialQueryString ( String relayCredentialQueryString ) {
         this._relayCredentialQueryString = relayCredentialQueryString;
+    }
+
+    public boolean isUseColumnsAsPropertyNames() {
+        return _useColumnsAsPropertyNames;
+    }
+
+    public void setUseColumnsAsPropertyNames(boolean useColumnsAsPropertyNames) {
+        this._useColumnsAsPropertyNames = useColumnsAsPropertyNames;
     }
 }

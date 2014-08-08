@@ -272,11 +272,15 @@ public class SingleLogoutProducer extends SSOProducer {
                         destinationLocation, null);
 
         if (ssoLogoutRequest != null) {
-            logger.debug("SLO Response in reply to " + ssoLogoutRequest.getID());
+
+            if (logger.isDebugEnabled())
+                logger.debug("SLO Response in reply to " + ssoLogoutRequest.getID());
+
             ssoResponse.setInReplayTo(ssoLogoutRequest.getID());
             if (ssoLogoutRequest.getReplyTo() != null) {
 
-                logger.debug("Using requested reply destination : " + ssoLogoutRequest.getReplyTo());
+                if (logger.isDebugEnabled())
+                    logger.debug("Using requested reply destination : " + ssoLogoutRequest.getReplyTo());
 
                 destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
                         "SingleLogoutService",

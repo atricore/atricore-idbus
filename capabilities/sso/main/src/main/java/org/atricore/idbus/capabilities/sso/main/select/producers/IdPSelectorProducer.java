@@ -74,19 +74,32 @@ public class IdPSelectorProducer extends SSOProducer {
                 doProcessUserClaimsResponse(exchange, state, (UserClaimsResponse) content);
 
             } else {
-                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                logger.error("Unknown message type : " + content);
+
+                if (content != null)
+                    throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
                         StatusDetails.UNKNOWN_REQUEST.getValue(),
                         content.getClass().getName(),
                         null);
+
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.UNKNOWN_REQUEST.getValue(),
+                        "No content received",
+                        null);
+
             }
 
 
 
+
+
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
-                    StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    StatusDetails.INTERNAL_ERROR.getValue(),
                     content.getClass().getName(),
                     e);
         }

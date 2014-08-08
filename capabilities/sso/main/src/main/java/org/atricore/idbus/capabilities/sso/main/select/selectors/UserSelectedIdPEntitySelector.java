@@ -44,7 +44,7 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
 
     public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
 
-        CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember");
+        CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember");
         if (idp != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Using previously selected COT member : " + idp);
@@ -112,13 +112,13 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
         if (rememberSelection != null && idp != null) {
             if (logger.isDebugEnabled())
                 logger.debug("Storing selected COT member " + idp.getAlias());
-            ctx.getMediationState().setLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember", idp);
+            ctx.getMediationState().setLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember", idp);
         } else {
 
             if (logger.isDebugEnabled())
                 logger.debug("Clearing selected COT member (if any)");
 
-            ctx.getMediationState().removeLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember");
+            ctx.getMediationState().removeLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember");
         }
 
         return idp;
@@ -128,7 +128,7 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
     @Override
     public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel) {
 
-        if (ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:cotMember") != null)
+        if (ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember") != null)
             return Collections.EMPTY_LIST;
 
         CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
