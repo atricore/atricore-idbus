@@ -779,6 +779,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 			endpointDesc = channel.getIdentityMediator().resolveEndpoint(channel, endpoint);
 
 		} catch (IdentityMediationException e1) {
+            logger.error(e1.getMessage(), e1);
 			throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.RESOURCE_NOT_RECOGNIZED,
@@ -799,6 +800,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
 
         } catch (CircleOfTrustManagerException e) {
+            logger.error(e.getMessage(), e);
             throw new SSOResponseException(response,
                     StatusCode.TOP_RESPONDER,
                     StatusCode.NO_SUPPORTED_IDP,
@@ -1011,12 +1013,14 @@ public class AssertionConsumerProducer extends SSOProducer {
                         signer.validate(idpMd, response, "Response");
 
                 } catch (SamlR2SignatureValidationException e) {
+                    logger.error(e.getMessage(), e);
                     throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
                 } catch (SamlR2SignatureException e) {
                     //other exceptions like JAXB, xml parser...
+                    logger.error(e.getMessage(), e);
                     throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
@@ -1034,12 +1038,14 @@ public class AssertionConsumerProducer extends SSOProducer {
                         state.getTransientVariable("Signature"),
                         true);
             } catch (SamlR2SignatureValidationException e) {
+                logger.error(e.getMessage(), e);
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
             } catch (SamlR2SignatureException e) {
                 //other exceptions like JAXB, xml parser...
+                logger.error(e.getMessage(), e);
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
@@ -1062,7 +1068,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 				try {
 					assertion = encrypter.decryptAssertion((EncryptedElementType)assertionObject);
 				} catch (SamlR2EncrypterException e) {
-
+                    logger.error(e.getMessage(), e);
 					throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
@@ -1080,6 +1086,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                 saml2SpMd = (SPSSODescriptorType) spMd.getEntry();
             } catch (CircleOfTrustManagerException e) {
                 //other exceptions like JAXB, xml parser...
+                logger.error(e.getMessage(), e);
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
@@ -1112,11 +1119,13 @@ public class AssertionConsumerProducer extends SSOProducer {
                         signer.validate(idpMd, assertion);
 
 				} catch (SamlR2SignatureValidationException e) {
+                    logger.error(e.getMessage(), e);
 					throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_SIGNATURE, e);
 				} catch (SamlR2SignatureException e) {
+                    logger.error(e.getMessage(), e);
 					throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
