@@ -55,7 +55,8 @@ public class UidAccountLinkEmitter implements AccountLinkEmitter {
             }
 
             if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"uid\"]") ||
-                 subjectAttribute.getName().trim().equalsIgnoreCase("UserName")) {
+                 subjectAttribute.getName().trim().equalsIgnoreCase("UserName") ||
+                 subjectAttribute.getName().trim().equalsIgnoreCase("uid")) {
 
                 String uid = subjectAttribute.getValue();
 
