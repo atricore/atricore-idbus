@@ -157,7 +157,7 @@ public class ReqRegistrationPanel extends Panel {
         // This is a relative path !, now it's ../CONFIRM
         pagePath = pagePath.substring(2);
 
-        path = path + "/SS" + pagePath;
+        path = path + "/SS/" + pagePath;
 
         Url url  = RequestCycle.get().getRequest().getClientUrl();
 

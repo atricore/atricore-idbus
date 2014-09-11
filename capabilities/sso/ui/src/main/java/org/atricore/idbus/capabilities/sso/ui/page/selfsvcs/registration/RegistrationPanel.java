@@ -99,7 +99,9 @@ public class RegistrationPanel extends Panel {
                     },
                     new IChoiceRenderer<SecurityQuestion>() {
                         public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                            return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                            return securityQuestion.getMessageKey() != null ?
+                                getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                    securityQuestion.getDefaultMessage();
                         }
 
                         public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -130,7 +132,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -161,7 +165,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -180,7 +186,7 @@ public class RegistrationPanel extends Panel {
         final TextField<String> secAnswer3 = new TextField<String>("secAnswer3");
         form.add(secAnswer3);
 
-
+/*
         // Sec. Question 4
         DropDownChoice<SecurityQuestion> secQuestion4 =
                 new DropDownChoice<SecurityQuestion>("secQuestion4",
@@ -193,7 +199,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -224,7 +232,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -243,7 +253,7 @@ public class RegistrationPanel extends Panel {
         final TextField<String> secAnswer5 = new TextField<String>("secAnswer5");
         form.add(secAnswer5);
 
-
+*/
 
         // Submit
         final SubmitLink submit = new SubmitLink("doRegister")  {
@@ -386,6 +396,7 @@ public class RegistrationPanel extends Panel {
         else
             q3.setQuestion(registration.getSecQuestion3());
 
+        /*
         // Q4
         UserSecurityQuestion q4 = new UserSecurityQuestion();
         q4.setAnswer(registration.getSecAnswer4());
@@ -401,10 +412,13 @@ public class RegistrationPanel extends Panel {
             q5.setCustomMessage((registration.getCustomSecQuestion5()));
         else
             q5.setQuestion(registration.getSecQuestion5());
+        */
 
         ConfirmAddUserRequest req = new ConfirmAddUserRequest ();
         req.setUserPassword(registration.getNewPassword());
-        req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3, q4, q5});
+        //req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3, q4, q5});
+        req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3});
+
         req.setTransactionId(transactionId);
 
         AddUserResponse resp = pt.confirmAddUser(req);

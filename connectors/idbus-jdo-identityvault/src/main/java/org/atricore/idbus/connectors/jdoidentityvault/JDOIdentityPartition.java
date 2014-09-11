@@ -561,8 +561,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         try {
             Collection<JDOSecurityQuestion> securityQuestions = securityQuestionDAO.findAll();
+            Collection<SecurityQuestion> secQuestions = toSecurityQuestion(securityQuestions);
             transactionManager.commit(status);
-            return toSecurityQuestion(securityQuestions);
+            return secQuestions;
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new ProvisioningException(e);

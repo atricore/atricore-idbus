@@ -39,6 +39,8 @@ public class VerifyPwdResetPanel extends Panel {
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    private static final int SEC_QUESTIONS_PER_USER = 3;
+
     private Form form;
 
     private SubmitLink submit;
@@ -61,13 +63,10 @@ public class VerifyPwdResetPanel extends Panel {
 
         model = new VerifyPwdResetModel();
 
+        // Get three security questions to recover the password:
         Map<Integer, UserSecurityQuestion>  q = new HashMap<Integer, UserSecurityQuestion>();
         for (int i = 0 ;  i < 3 ; i ++) {
-            int idx = rg.nextInt(5);
-            while (q.containsKey(idx))
-                idx = rg.nextInt(5);
-
-            q.put(idx, user.getSecurityQuestions()[idx]);
+            q.put(i, user.getSecurityQuestions()[i]);
         }
 
         SSOWebSession session = (SSOWebSession) getSession();
