@@ -29,6 +29,8 @@ public class EntitySelectionContext {
 
     private MediationState mediationState;
 
+    private ClaimSet allClaims;
+
     public EntitySelectionContext(MediationState mediationState,
                                   EntitySelectionState selectionState,
                                   CircleOfTrustManager cotManager,
@@ -39,6 +41,7 @@ public class EntitySelectionContext {
         this.cotManager = cotManager;
         this.mediationState = mediationState;
         this.selectionState = selectionState;
+        this.allClaims = userClaims;
         if (userClaims != null) {
             for (Claim attr : userClaims.getClaims()) {
                 UserClaim userAttr = (UserClaim) attr;
@@ -49,6 +52,10 @@ public class EntitySelectionContext {
 
     public UserClaim getUserClaim(String name) {
         return userClaimsIdx.get(name);
+    }
+
+    public ClaimSet getClaims() {
+        return allClaims;
     }
 
     public Collection<String> getUserClaimNames() {

@@ -74,19 +74,32 @@ public class IdPSelectorProducer extends SSOProducer {
                 doProcessUserClaimsResponse(exchange, state, (UserClaimsResponse) content);
 
             } else {
-                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                logger.error("Unknown message type : " + content);
+
+                if (content != null)
+                    throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
                         StatusDetails.UNKNOWN_REQUEST.getValue(),
                         content.getClass().getName(),
                         null);
+
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.UNKNOWN_REQUEST.getValue(),
+                        "No content received",
+                        null);
+
             }
 
 
 
+
+
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
-                    StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    StatusDetails.INTERNAL_ERROR.getValue(),
                     content.getClass().getName(),
                     e);
         }
@@ -189,6 +202,10 @@ public class IdPSelectorProducer extends SSOProducer {
         EntitySelectionState selectionState = (EntitySelectionState) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
 
         for (Claim c : userClaimsResp.getClaimSet().getClaims()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Storing selection claim: " + c);
+
             selectionState.getUserClaims().addClaim(c);
         }
 
@@ -210,7 +227,7 @@ public class IdPSelectorProducer extends SSOProducer {
             if (processNextSelectorEndpoint(exchange, selector, ctx))
                 return;
 
-            // If we get here, it means that there are now more endpoints to process for this selector, try to select
+            // If we get here, it means that there are no more endpoints to process for this selector, try to select
             // an entity now.
 
             entity = entitySelectorMgr.selectEntity(mediator.getPreferredStrategy(), selector, ctx, (SelectorChannel) channel);
