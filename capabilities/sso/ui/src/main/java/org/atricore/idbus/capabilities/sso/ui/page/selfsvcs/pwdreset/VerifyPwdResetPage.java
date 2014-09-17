@@ -9,7 +9,9 @@ import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.AbstractProvisioningRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.ResetPasswordRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
 
 /**
@@ -27,11 +29,12 @@ public class VerifyPwdResetPage extends BasePage {
 
         SSOIdPApplication app = (SSOIdPApplication) getApplication();
 
-        String username = parameters.get("username").toString();
+        //String username = parameters.get("username").toString();
+        String transactionId = parameters.get("transactionId").toString();
+        ResetPasswordRequest req = (ResetPasswordRequest) app.getProvisioningTarget().lookupTransactionRequest(transactionId);
 
         FindUserByUsernameRequest userReq = new FindUserByUsernameRequest();
-        userReq.setUsername(username);
-
+        userReq.setUsername(req.getUser().getUserName());
 
         FindUserByUsernameResponse userResp = app.getProvisioningTarget().findUserByUsername(userReq);
         User user = userResp.getUser();

@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<!--
+<!DOCTYPE orm PUBLIC
+"-//Sun Microsystems, Inc.//DTD Java Data Objects ORM Metadata 2.0//EN"
+"http://java.sun.com/dtd/orm_2_0.dtd">
+
+<orm>
+-->
+<orm xmlns="http://java.sun.com/xml/ns/jdo/orm"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/orm
+        http://java.sun.com/xml/ns/jdo/orm_2_3.xsd">
+
+
+    <package name="org.atricore.idbus.connectors.jdoidentityvault.domain">
+
+        <class name="JDOGroup" table="ATC_GROUP" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="description">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="attrs" table="ATC_GROUP_ATTRS">
+                <join >
+                    <column name="GROUP_ID"/>
+                </join>
+                <element>
+                    <column name="ATTR_ID"/>
+                </element>
+                <!--element column = "ID" primary-key="true" value-strategy="increment"/>
+                <element column="ATTR_ID"/-->
+                <order column="ATTR_ORDER_IDX"/>
+                <foreign-key name="GROUP_ATTRS_FK" delete-action="cascade"/>
+            </field>
+
+        </class>
+
+        <class name="JDOUser" table="ATC_USER">
+
+
+            <field name="userName">
+                <column name="USERNAME"  length="255" jdbc-type="VARCHAR" />
+            </field>
+            <field name="firstName">
+                <column name="FIRSTNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="surename">
+                <column name="SURENAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="commonName">
+                <column name="COMMONNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="givenName">
+                <column name="GIVENNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="initials">
+                <column name="INITIALS" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="generationQualifier">
+                <column name="GENERATIONQUALIFIER" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="distinguishedName">
+                <column name="DISTINGUISHEDNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="email">
+                <column name="EMAIL" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="telephoneNumber">
+                <column name="TELEPHONENUMBER"  length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="facsimilTelephoneNumber">
+                <column name="FACSIMILTELEPHONENUMBER" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="countryName">
+                <column name="COUNTRYNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="localityName">
+                <column name="LOCALITYNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="stateOrProvinceName">
+                <column name="STATEORPROVINCENAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="streetAddress">
+                <column name="STREETADDRESS" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="organizationName">
+                <column name="ORGANIZATIONNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="organizationUnitName">
+                <column name="ORGANIZATIONUNITNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="personalTitle">
+                <column name="PERSONALTITLE" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="businessCategory">
+                <column name="BUSINESSCATEGORY" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="postalAddress">
+                <column name="POSTALADDRESS" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="postalCode">
+                <column name="POSTALCODE" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="postOfficeBox">
+                <column name="POSTOFFICEBOX" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="language">
+                <column name="LANGUAGE" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="accountDisabled">
+                <column name="ACCOUNTDISABLED"/>
+            </field>
+            <field name="accountExpires">
+                <column name="ACCOUNTEXPIRES" />
+            </field>
+            <field name="accountExpirationDate">
+                <column name="ACCOUNTEXPIRATIONDATE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
+            </field>
+            <field name="limitSimultaneousLogin">
+                <column name="LIMITSIMULTANEOUSLOGIN" />
+            </field>
+            <field name="maximunLogins">
+                <column name="MAXIMUNLOGINS" jdbc-type="INTEGER"/>
+            </field>
+            <field name="terminatePreviousSession">
+                <column name="TERMINATEPREVIOUSSESSION"/>
+            </field>
+            <field name="preventNewSession">
+                <column name="PREVENTNEWSESSION" />
+            </field>
+            <field name="allowUserToChangePassword">
+                <column name="ALLOWUSERTOCHANGEPASSWORD" />
+            </field>
+            <field name="forcePeriodicPasswordChanges">
+                <column name="FORCEPERIODICPASSWORDCHANGES" />
+            </field>
+            <field name="daysBetweenChanges">
+                <column name="DAYSBETWEENCHANGES" jdbc-type="INTEGER"/>
+            </field>
+            <field name="passwordExpirationDate">
+                <column name="PASSWORDEXPIRATIONDATE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
+            </field>
+            <field name="notifyPasswordExpiration">
+                <column name="NOTIFYPASSWORDEXPIRATION" />
+            </field>
+            <field name="daysBeforeExpiration">
+                <column name="DAYSBEFOREEXPIRATION" jdbc-type="INTEGER"/>
+            </field>
+            <field name="userPassword">
+                <column name="USERPASSWORD" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="salt">
+                <column name="SALT" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="userCertificate">
+                <column name="USERCERTIFICATE"/>
+            </field>
+            <field name="automaticallyGeneratePassword">
+                <column name="AUTOMATICALLYGENERATEPASSWORD" />
+            </field>
+            <field name="emailNewPasword">
+                <column name="EMAILNEWPASSWORD" />
+            </field>
+
+            <field name="acls" table="ATC_USER_ACL">
+                <join >
+                    <column name="USER_ID"/>
+                </join>
+                <element>
+                    <column name="ACL_ID"/>
+                </element>
+            </field>
+
+            <field name="groups" table="ATC_USER_GROUP">
+                <join >
+                    <column name="USER_ID"/>
+                </join>
+                <element>
+                    <column name="GROUP_ID"/>
+                </element>
+                <!--element column = "ID" primary-key="true" value-strategy="increment"/>
+                <element column="GROUP_ID"/>
+                <order column="GROUP_ORDER_IDX"/>
+                <foreign-key name="USER_GROUPS_FK" delete-action="cascade"/-->
+            </field>
+
+            <field name="attrs" table="ATC_USER_ATTRS">
+                <join >
+                    <column name="USER_ID"/>
+                </join>
+                <element>
+                    <column name="ATTR_ID"/>
+                </element>
+                <!--element column = "ID" primary-key="true" value-strategy="increment"/>
+                <element column="ATTR_ID"/-->
+                <order column="ATTR_ORDER_IDX"/>
+                <foreign-key name="USER_ATTRS_FK" delete-action="cascade"/>
+            </field>
+
+            <field name="securityQuestions"  >
+                <element column="USER_ID"/>
+            </field>
+
+        </class>
+
+        <class name="JDOUserSecurityQuestion" table="ATC_USER_SEC_QUESTION">
+
+            <field name="answer" >
+                <column allows-null="false" length="512" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="hashing">
+                <column length="64" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="encryption">
+                <column length="64" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="customMessage" >
+                <column name="CUSTOM_MESSAGE" allows-null="true" length="512" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="question" >
+                <element>
+                    <column name="QUESTION_ID"/>
+                </element>
+            </field>
+
+        </class>
+
+        <class name="JDOSecurityQuestion" table="ATC_SEC_QUESTION">
+
+            <field name="messageKey" >
+                <column name="MESSAGE_KEY"/>
+            </field>
+
+            <field name="defaultMessage">
+                <column name="DEFAULT_MESSAGE"/>
+            </field>
+        </class>
+
+        <class name="JDOAcl" table="ATC_ACL" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="description">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="entries" table="ATC_ACL_ENTRIES">
+                <join >
+                    <column name="ACL_ID"/>
+                </join>
+                <element>
+                    <column name="ACL_ENTRY_ID"/>
+                </element>
+            </field>
+
+        </class>
+
+        <class name="JDOAclEntry" table="ATC_ACL_ENTRY" >
+
+            <field name="principalNameClaim">
+                <column name="PRINCIPAL_NAME_CLAIM"/>
+            </field>
+
+            <field name="passwordClaim">
+                <column name="PASSWORD_CLAIM"/>
+            </field>
+
+            <field name="decision">
+                <column name="DECISION"/>
+            </field>
+
+            <field name="from">
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="state">
+                <column name="STATE"/>
+            </field>
+
+            <field name="approvalToken">
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="spAlias">
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+        </class>
+
+        <class name="JDOUserAttributeDefinition" table="ATC_USER_ATTRIBUTE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="description">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="type">
+                <column name="TYPE"/>
+            </field>
+
+            <field name="required">
+                <column name="REQUIRED"/>
+            </field>
+
+            <field name="multivalued">
+                <column name="MULTIVALUED"/>
+            </field>
+
+        </class>
+
+        <class name="JDOGroupAttributeDefinition" table="ATC_GROUP_ATTRIBUTE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="description">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="type">
+                <column name="TYPE"/>
+            </field>
+
+            <field name="required">
+                <column name="REQUIRED"/>
+            </field>
+
+            <field name="multivalued">
+                <column name="MULTIVALUED"/>
+            </field>
+
+        </class>
+
+        <class name="JDOUserAttributeValue" table="ATC_USER_ATTRIBUTE_VALUE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="value">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+        </class>
+
+        <class name="JDOGroupAttributeValue" table="ATC_GROUP_ATTRIBUTE_VALUE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="value">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+        </class>
+
+        <class name="JDOSecurityToken" table="ATC_SECURITY_TOKEN" >
+
+            <field name="contentBin">
+                <!--column jdbc-type="LONGVARCHAR" /-->
+                <column jdbc-type="CLOB" length="204800" />
+            </field>
+
+            <field name="serializedContent">
+                <!--column jdbc-type="LONGVARCHAR" /-->
+                <column jdbc-type="CLOB" length="204800" />
+            </field>
+
+            <field name="tokenId">
+                <column jdbc-type="VARCHAR" length="32"/>
+                <index name="TOKEN_ID_IDX" unique="true"/>
+            </field>
+
+        </class>
+
+    </package>
+</orm>

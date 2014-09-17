@@ -75,7 +75,7 @@ public class SSOIdPApplication extends BaseWebApplication {
         addPageMount("SS/HOME", DashboardPage.class);
         addPageMount("SS/PROFILE", ProfilePage.class);
         addPageMount("SS/REGISTER", ReqRegistrationPage.class);
-        addPageMount("SS/REIGSTERED", RegistrationStartedPage.class);
+        addPageMount("SS/REGISTERED", RegistrationStartedPage.class);
 
         addPageMount("SS/CONFIRM", RegistrationPage.class);
 

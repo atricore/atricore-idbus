@@ -22,6 +22,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.Claim;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
@@ -94,104 +95,119 @@ public class SpnegoIdPSelector extends AbstractEntitySelector implements Applica
 
     public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
 
-        UserClaim uc = ctx.getUserClaim(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue());
-        BinarySecurityTokenType binaryToken = (BinarySecurityTokenType) uc.getValue();
-        if (binaryToken == null)
-            return null;
+        List<UserClaim> ucs = new ArrayList<UserClaim>();
+        for (Claim c : ctx.getClaims().getClaims()) {
+            if (c instanceof UserClaim) {
+                UserClaim uc = (UserClaim) c;
+                if (uc.getName().equals(AuthnCtxClass.KERBEROS_AUTHN_CTX.getValue())) {
+                    ucs.add(uc);
+                }
+            }
 
-        String spnegoSecurityToken = binaryToken.getOtherAttributes().get( new QName( SpnegoSecurityTokenAuthenticator.SPNEGO_NS) );
-        String idpName = binaryToken.getOtherAttributes().get( new QName( SpnegoSecurityTokenAuthenticator.SPNEGO_NS, "idp") );
-
-        if (logger.isDebugEnabled())
-            logger.debug("Validating SPNEGO token issued by IdP " + idpName);
+        }
 
         Set<FederatedProvider> idps = findTrustedIdPs(ctx, channel);
 
-        // This goes a little too deep into the dependencies tree
-        // Get IdP claim channel and look for service: urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos
-        for (FederatedProvider fp : idps) {
+        for (UserClaim uc : ucs) {
 
-            if (fp instanceof IdentityProvider) {
+            BinarySecurityTokenType binaryToken = (BinarySecurityTokenType) uc.getValue();
+            if (binaryToken == null)
+                return null;
 
-                IdentityProvider idp = (IdentityProvider) fp;
+            String spnegoSecurityToken = binaryToken.getOtherAttributes().get(new QName(SpnegoSecurityTokenAuthenticator.SPNEGO_NS));
+            String idpName = binaryToken.getOtherAttributes().get(new QName(SpnegoSecurityTokenAuthenticator.SPNEGO_NS, "idp"));
 
-                if (!idp.getName().equals(idpName))
-                    continue;
-
-                if (logger.isTraceEnabled())
-                    logger.trace("Trying WIA on IdP " + idp.getName());
-
-                // We assume we have a WST STS .
-                WSTSecurityTokenService sts = (WSTSecurityTokenService) ((SPChannel) idp.getChannel()).getSecurityTokenService();
-                // Maybe we can navigate the beans instead.
-                Collection<SecurityTokenAuthenticator> authenticators = sts.getAuthenticators();
-
-                for (SecurityTokenAuthenticator authenticator : authenticators) {
-
-                    if (authenticator instanceof SpnegoSecurityTokenAuthenticator) {
-
-                        SpnegoSecurityTokenAuthenticator spnegoAuthn = (SpnegoSecurityTokenAuthenticator) authenticator;
-                        Authenticator legacyAuthenticator = spnegoAuthn.getAuthenticator();
-
-                        for (AuthenticationScheme scheme : legacyAuthenticator.getAuthenticationSchemes()) {
-
-                            if (scheme instanceof SpnegoAuthenticationScheme) {
-
-                                try {
-
-                                    // This will create a copy of the scheme !
-
-                                    if (logger.isTraceEnabled())
-                                        logger.trace("Trying WIA on authentication scheme " + scheme.getName());
-
-                                    Subject s = new Subject();
+            if (logger.isDebugEnabled())
+                logger.debug("Validating SPNEGO token issued by IdP " + idpName + "["+spnegoSecurityToken+"]");
 
 
-                                    Credential spnegoCredential = legacyAuthenticator.newCredential(scheme.getName(), "spnegoSecurityToken", spnegoSecurityToken);
+            // This goes a little too deep into the dependencies tree
+            // Get IdP claim channel and look for service: urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos
+            for (FederatedProvider fp : idps) {
 
-                                    // This will CLONE the scheme, very important
-                                    SpnegoAuthenticationScheme spnegoAuthnScheme = (SpnegoAuthenticationScheme) legacyAuthenticator.getAuthenticationScheme(scheme.getName());
+                if (fp instanceof IdentityProvider) {
 
-                                    spnegoAuthnScheme.initialize(new Credential[]{spnegoCredential}, s);
+                    IdentityProvider idp = (IdentityProvider) fp;
 
-                                    if (spnegoAuthnScheme.authenticate()) {
+                    if (!idp.getName().equals(idpName))
+                        continue;
 
-                                        if (logger.isDebugEnabled())
-                                            logger.debug("Spnego authentication success");
+                    if (logger.isTraceEnabled())
+                        logger.trace("Trying WIA on IdP " + idp.getName());
 
-                                        spnegoAuthnScheme.confirm();
+                    // We assume we have a WST STS .
+                    WSTSecurityTokenService sts = (WSTSecurityTokenService) ((SPChannel) idp.getChannel()).getSecurityTokenService();
+                    // Maybe we can navigate the beans instead.
+                    Collection<SecurityTokenAuthenticator> authenticators = sts.getAuthenticators();
 
-                                        UserClaim sp = ctx.getUserClaim(EntitySelectorConstants.ISSUER_SP_ATTR);
-                                        String spId = sp != null ? (String) sp.getValue() : null;
-                                        if (spId != null) {
+                    for (SecurityTokenAuthenticator authenticator : authenticators) {
+
+                        if (authenticator instanceof SpnegoSecurityTokenAuthenticator) {
+
+                            SpnegoSecurityTokenAuthenticator spnegoAuthn = (SpnegoSecurityTokenAuthenticator) authenticator;
+                            Authenticator legacyAuthenticator = spnegoAuthn.getAuthenticator();
+
+                            for (AuthenticationScheme scheme : legacyAuthenticator.getAuthenticationSchemes()) {
+
+                                if (scheme instanceof SpnegoAuthenticationScheme) {
+
+                                    try {
+
+                                        // This will create a copy of the scheme !
+
+                                        if (logger.isTraceEnabled())
+                                            logger.trace("Trying WIA on authentication scheme " + scheme.getName());
+
+                                        Subject s = new Subject();
+
+                                        Credential spnegoCredential = legacyAuthenticator.newCredential(scheme.getName(), "spnegoSecurityToken", spnegoSecurityToken);
+
+                                        // This will CLONE the scheme, very important
+                                        SpnegoAuthenticationScheme spnegoAuthnScheme = (SpnegoAuthenticationScheme) legacyAuthenticator.getAuthenticationScheme(scheme.getName());
+
+                                        spnegoAuthnScheme.initialize(new Credential[]{spnegoCredential}, s);
+
+                                        if (spnegoAuthnScheme.authenticate()) {
 
                                             if (logger.isDebugEnabled())
-                                                logger.debug("Selecting SP Channel for sp " + spId);
+                                                logger.debug("Spnego authentication success");
 
-                                            for (FederationChannel spChannel : idp.getChannels()) {
-                                                if (spChannel.getTargetProvider() != null && spChannel.getTargetProvider().getName().equals(spId)) {
-                                                    if (logger.isDebugEnabled())
-                                                        logger.debug("Found specific SP Channel for sp " + spId);
-                                                    return spChannel.getMember();
+                                            spnegoAuthnScheme.confirm();
+
+                                            UserClaim sp = ctx.getUserClaim(EntitySelectorConstants.ISSUER_SP_ATTR);
+                                            String spId = sp != null ? (String) sp.getValue() : null;
+                                            if (spId != null) {
+
+                                                if (logger.isDebugEnabled())
+                                                    logger.debug("Selecting SP Channel for sp " + spId);
+
+                                                for (FederationChannel spChannel : idp.getChannels()) {
+                                                    if (spChannel.getTargetProvider() != null && spChannel.getTargetProvider().getName().equals(spId)) {
+                                                        if (logger.isDebugEnabled())
+                                                            logger.debug("Found specific SP Channel for sp " + spId);
+                                                        return spChannel.getMember();
+                                                    }
                                                 }
                                             }
+
+                                            // Default SP Channel
+                                            return idp.getChannel().getMember();
+                                        } else {
+                                            spnegoAuthnScheme.cancel();
                                         }
 
-                                        // Default SP Channel
-                                        return idp.getChannel().getMember();
-                                    } else {
-                                        spnegoAuthnScheme.cancel();
+
+                                    } catch (SSOAuthenticationException e) {
+                                        logger.error("Cannot validate SPNEGO token (SSOAuthenticationException) " + e.getMessage(), e);
+                                    } catch (Exception e) {
+                                        logger.error("Cannot validate SPNEGO token (Excpetion) " + e.getMessage(), e);
                                     }
-
-
-                                } catch (SSOAuthenticationException e) {
-                                    logger.error(e.getMessage(), e);
                                 }
                             }
                         }
                     }
-                }
 
+                }
             }
         }
         return null;
