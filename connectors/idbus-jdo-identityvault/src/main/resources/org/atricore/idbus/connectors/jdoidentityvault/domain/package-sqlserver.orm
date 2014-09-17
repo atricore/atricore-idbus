@@ -138,7 +138,7 @@
                 <column name="ACCOUNTEXPIRES" />
             </field>
             <field name="accountExpirationDate">
-                <column name="ACCOUNTEXPIRATIONDATE" jdbc-type="DATE" />
+                <column name="ACCOUNTEXPIRATIONDATE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
             </field>
             <field name="limitSimultaneousLogin">
                 <column name="LIMITSIMULTANEOUSLOGIN" />
@@ -162,7 +162,7 @@
                 <column name="DAYSBETWEENCHANGES" jdbc-type="INTEGER"/>
             </field>
             <field name="passwordExpirationDate">
-                <column name="PASSWORDEXPIRATIONDATE" jdbc-type="DATE"/>
+                <column name="PASSWORDEXPIRATIONDATE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
             </field>
             <field name="notifyPasswordExpiration">
                 <column name="NOTIFYPASSWORDEXPIRATION" />
