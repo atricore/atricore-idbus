@@ -71,11 +71,14 @@ public class JDOUser implements Serializable {
     private Boolean emailNewPasword;
     private String salt;
 
-    //<--- Access Control ---->
+//<--- Access Control ---->
     private JDOAcl[] acls;
 
 //<--- Extended Attributes ---->
     private JDOUserAttributeValue[] attrs;
+
+//<--- Provisioning Attributes ---->
+    private String changeLog; //
 
     public Long getId() {
         return id;
@@ -483,6 +486,14 @@ public class JDOUser implements Serializable {
 
     public void setAcls(JDOAcl[] acls) {
         this.acls = acls;
+    }
+
+    public String getChangeLog() {
+        return changeLog;
+    }
+
+    public void setChangeLog(String changeLog) {
+        this.changeLog = changeLog;
     }
 
     @Override

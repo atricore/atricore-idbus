@@ -28,15 +28,15 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>all</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <artifactId>idbus-all</artifactId>
+        <version>1.5.0-SNAPSHOT</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Apache Tiles JSP 2.2.2 OSGi</name>
 
@@ -45,7 +45,7 @@
         <commons-digester.version>1.8.1</commons-digester.version>
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <spring.version>3.1.0.RELEASE</spring.version>
     </properties>
 
     <dependencies>

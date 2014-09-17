@@ -25,14 +25,14 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>all</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <artifactId>idbus-all</artifactId>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>sso</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : SSO POM</name>
     <packaging>pom</packaging>
 
@@ -45,8 +45,8 @@
 
     <properties>
 
-        <idbus.kernel.version>1.4.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.4.1-SNAPSHOT</idbus.sts.version>
+        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
         
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
@@ -66,7 +66,7 @@
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
         <servlet.version>2.5</servlet.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <spring.version>3.1.0.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <xalan.version>2.7.1</xalan.version>
         <xbean.version>3.7</xbean.version>
