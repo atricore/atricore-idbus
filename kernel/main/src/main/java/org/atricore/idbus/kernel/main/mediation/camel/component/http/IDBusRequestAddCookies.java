@@ -64,9 +64,13 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         cookie.setDomain(svltCookie.getDomain() != null ? svltCookie.getDomain() : cookieDomain);
         // Path is not that important since we're already on the server and the cookie was received.
         cookie.setPath(svltCookie.getPath() != null ? svltCookie.getPath() : "/");
-        // TODO : FOR NOW WE ONLY SUPPORT SESSION COOKIES cookie.setExpiryDate();
+
+        // TODO : FOR NOW WE ONLY SUPPORT SESSION COOKIES
+        // cookie.setExpiryDate();
         cookie.setVersion(svltCookie.getVersion());
-        cookie.setSecure(svltCookie.getSecure());
+        // Send cookies as non-secure internally :
+        // cookie.setSecure(svltCookie.getSecure());
+        cookie.setSecure(false);
         cookie.setComment(svltCookie.getComment());
 
         return cookie;

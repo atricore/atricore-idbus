@@ -578,9 +578,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             String hName = hNames.nextElement();
             String hValue = req.getHeader(hName);
 
-            // Received cookies will be added to HTTP Client cookie store by our own cookie interceptor
-//            if (hName.equals("Cookie"))
-//                continue;
+            // Received cookies will be added to HTTP Client cookie store by our own cookie interceptor (IDBusRequestAddCookies)
+            if (hName.equals("Cookie"))
+                continue;
 
             proxyReq.addHeader(hName, hValue);
         }
