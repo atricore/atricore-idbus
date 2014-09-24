@@ -33,15 +33,15 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         HttpServletRequest originalRequest = (HttpServletRequest) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest");
         String cookieDomain = (String) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.CookieDomain");
 
-        if (originalRequest != null) {
+        // Obtain cookie store
+        CookieStore cookieStore = (CookieStore) context.getAttribute(
+                ClientContext.COOKIE_STORE);
+        if (cookieStore == null) {
+            logger.error("Cookie store not specified in HTTP context");
+            throw new HttpException("No CookieStore attribute found in context: " + ClientContext.COOKIE_STORE);
+        }
 
-            // Obtain cookie store
-            CookieStore cookieStore = (CookieStore) context.getAttribute(
-                    ClientContext.COOKIE_STORE);
-            if (cookieStore == null) {
-                logger.error("Cookie store not specified in HTTP context");
-                return;
-            }
+        if (originalRequest != null) {
 
             // Convert received servlet cookies to HTTP client cookies
             if (originalRequest.getCookies() != null) {
@@ -51,6 +51,12 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
                 }
             }
 
+        }
+
+        for (Cookie c : cookieStore.getCookies()) {
+            if (c.isSecure()) {
+                logger.trace("Cookie: " + c + " is secure");
+            }
         }
 
         super.process(request, context);
@@ -69,7 +75,7 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         // cookie.setExpiryDate();
         cookie.setVersion(svltCookie.getVersion());
         // Send cookies as non-secure internally :
-        // cookie.setSecure(svltCookie.getSecure());
+        //cookie.setSecure(svltCookie.getSecure());
         cookie.setSecure(false);
         cookie.setComment(svltCookie.getComment());
 

@@ -135,15 +135,34 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
             // Do we actually service this request or we proxy it ?
             if (!followRedirects || !internalProcessingPolicy.match(req)) {
+
+
+                // Non proxied requests, that required secured cookies
+                // TODO : Test behind Apache
+                if (req.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST) == null && (secureCookies || req.isSecure())) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Requesting secure cookies for non-proxied request");
+                    req.setAttribute("org.atricore.idbus.http.SecureCookies", "TRUE");
+                }
+
                 doService(req, res);
             } else {
                 StopWatch sw = new StopWatch("http-request-processing-time-ms");
                 sw.start();
+                // Just signal if the result of proxied requests must be secured
+                if (secureCookies || req.isSecure()) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Requesting secure cookies for proxied requests");
+
+                    req.setAttribute("org.atricore.idbus.http.SecureCookies", "TRUE");
+                }
+
                 doProxyInternally(req, res);
                 sw.stop();
-                mServer.recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME,
-                        sw.getTotalTimeMillis());
+                mServer.recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME, sw.getTotalTimeMillis());
             }
+
         } finally {
             long ended = System.currentTimeMillis();
             String parentThread = req.getHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST);
@@ -342,10 +361,16 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
                             // Previously stored headers
                             res.setStatus(proxyRes.getStatusLine().getStatusCode());
+
+                            boolean secureRequestCookies  = req.getAttribute( "org.atricore.idbus.http.SecureCookies") != null;
+
                             for (Header header : storedHeaders) {
-                                if (header.getName().startsWith("Set-Cookie"))
-                                    res.addHeader(header.getName(), header.getValue());
-                                else
+                                if (header.getName().startsWith("Set-Cookie")) {
+                                    String hValue = header.getValue() + (secureRequestCookies  ? ";Secure" : "");
+                                    if (logger.isTraceEnabled())
+                                        logger.trace("Adding 'Set-Cookie' header : " + header.getValue());
+                                    res.addHeader(header.getName(), hValue);
+                                } else
                                     res.setHeader(header.getName(), header.getValue());
                             }
 
@@ -421,11 +446,18 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                                 }
                             }
 
+                            boolean secureRequestCookies  = req.getAttribute( "org.atricore.idbus.http.SecureCookies") != null;
+
                             for (Header header : storedHeaders) {
-                                if (header.getName().startsWith("Set-Cookie"))
-                                    res.addHeader(header.getName(), header.getValue());
-                                else
+                                if (header.getName().startsWith("Set-Cookie")) {
+                                    String hValue = header.getValue() + (secureRequestCookies ? ";Secure" : "");
+                                    if (logger.isTraceEnabled())
+                                        logger.trace("Adding 'Set-Cookie' header : " + header.getValue());
+                                    res.addHeader(header.getName(), hValue);
+
+                                } else {
                                     res.setHeader(header.getName(), header.getValue());
+                                }
                             }
 
                         }
@@ -602,7 +634,6 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             throws ServletException, IOException {
 
         // FIX For a bug in CXF!
-
         HttpServletResponse res = new WHttpServletResponse(r);
 
         // Lazy  identity mediation registry
