@@ -35,16 +35,6 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-    <filter>
-        <filter-name>OsgiIDBusFilter</filter-name>
-        <filter-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusFilter</filter-class>
-    </filter>
-
-    <filter-mapping>
-        <filter-name>OsgiIDBusFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
     <servlet>
         <servlet-name>OsgiIDBusServlet</servlet-name>
         <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusServlet2</servlet-class>

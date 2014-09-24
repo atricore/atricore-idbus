@@ -154,7 +154,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
     protected void copyBackState(MediationState state, Exchange exchange) {
 
-        boolean secureCookies = exchange.getIn().getHeader("org.atricore.idbus.http.Secure") != null;
+        boolean secureCookies = exchange.getIn().getHeader("org.atricore.idbus.http.SecureCookies") != null;
 
         if (state == null) {
             logger.warn("No state received ...!");

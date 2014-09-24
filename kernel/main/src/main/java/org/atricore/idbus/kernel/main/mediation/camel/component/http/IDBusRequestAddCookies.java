@@ -33,15 +33,15 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         HttpServletRequest originalRequest = (HttpServletRequest) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest");
         String cookieDomain = (String) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.CookieDomain");
 
-        if (originalRequest != null) {
+        // Obtain cookie store
+        CookieStore cookieStore = (CookieStore) context.getAttribute(
+                ClientContext.COOKIE_STORE);
+        if (cookieStore == null) {
+            logger.error("Cookie store not specified in HTTP context");
+            throw new HttpException("No CookieStore attribute found in context: " + ClientContext.COOKIE_STORE);
+        }
 
-            // Obtain cookie store
-            CookieStore cookieStore = (CookieStore) context.getAttribute(
-                    ClientContext.COOKIE_STORE);
-            if (cookieStore == null) {
-                logger.error("Cookie store not specified in HTTP context");
-                return;
-            }
+        if (originalRequest != null) {
 
             // Convert received servlet cookies to HTTP client cookies
             if (originalRequest.getCookies() != null) {
@@ -51,6 +51,12 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
                 }
             }
 
+        }
+
+        for (Cookie c : cookieStore.getCookies()) {
+            if (c.isSecure()) {
+                logger.trace("Cookie: " + c + " is secure");
+            }
         }
 
         super.process(request, context);
@@ -64,9 +70,13 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         cookie.setDomain(svltCookie.getDomain() != null ? svltCookie.getDomain() : cookieDomain);
         // Path is not that important since we're already on the server and the cookie was received.
         cookie.setPath(svltCookie.getPath() != null ? svltCookie.getPath() : "/");
-        // TODO : FOR NOW WE ONLY SUPPORT SESSION COOKIES cookie.setExpiryDate();
+
+        // TODO : FOR NOW WE ONLY SUPPORT SESSION COOKIES
+        // cookie.setExpiryDate();
         cookie.setVersion(svltCookie.getVersion());
-        cookie.setSecure(svltCookie.getSecure());
+        // Send cookies as non-secure internally :
+        //cookie.setSecure(svltCookie.getSecure());
+        cookie.setSecure(false);
         cookie.setComment(svltCookie.getComment());
 
         return cookie;
