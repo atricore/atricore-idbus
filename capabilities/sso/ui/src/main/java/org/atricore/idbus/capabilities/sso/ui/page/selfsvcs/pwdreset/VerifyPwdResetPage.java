@@ -40,7 +40,15 @@ public class VerifyPwdResetPage extends BasePage {
         User user = userResp.getUser();
         // This is a problem, we cannot registration this user again, should we notify the user ?
 
-        VerifyPwdResetPanel verifyPwdResetPanel = new VerifyPwdResetPanel("verifyPwdReset", user);
+        // TODO : Take it from the IdP/Connector ?!
+
+        String hashAlgorithm = app.getIdentityProvider().getProvisioningTarget().getHashAlgorithm();
+        String hashEncoding = app.getIdentityProvider().getProvisioningTarget().getHashEncoding();
+
+        VerifyPwdResetPanel verifyPwdResetPanel =
+                new VerifyPwdResetPanel("verifyPwdReset", user, hashAlgorithm, hashEncoding);
+
+        verifyPwdResetPanel.
         add(verifyPwdResetPanel);
 
     }

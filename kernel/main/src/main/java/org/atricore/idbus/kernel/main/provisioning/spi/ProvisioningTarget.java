@@ -15,6 +15,10 @@ public interface ProvisioningTarget {
 
     void shutDown();
 
+    String getHashAlgorithm();
+
+    String getHashEncoding();
+
     //<--------------- Transactions -------------------->
 
     void purgeOldTransactions();
