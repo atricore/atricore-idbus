@@ -32,6 +32,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.ListSecurityQues
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,11 +50,17 @@ public class RegistrationPanel extends Panel {
 
     private RegistrationModel registration;
 
-    private final List <SecurityQuestion> secQuestions;
+    private List <SecurityQuestion> secQuestions = new ArrayList<SecurityQuestion>();
 
     private String hashAlgorithm = "MD5";
 
     private String hashEncoding = "HEX";
+
+    public RegistrationPanel(String id, String transactionId, String hashAlgorithm, String hashEncoding) {
+        this(id, transactionId);
+        this.hashAlgorithm = hashAlgorithm;
+        this.hashEncoding = hashEncoding;
+    }
 
     public RegistrationPanel(String id, String transactionId) {
         super(id);
@@ -62,13 +69,9 @@ public class RegistrationPanel extends Panel {
 
         SSOIdPApplication app = (SSOIdPApplication) getApplication();
 
-        secQuestions = new ArrayList<SecurityQuestion>();
-
         try {
             ListSecurityQuestionsResponse resp = app.getProvisioningTarget().listSecurityQuestions(new ListSecurityQuestionsRequest());
-            for (SecurityQuestion sq : resp.getSecurityQuestions()) {
-                secQuestions.add(sq);
-            }
+            Collections.addAll(secQuestions, resp.getSecurityQuestions());
         } catch (ProvisioningException e) {
             logger.error(e.getMessage(),  e);
         }

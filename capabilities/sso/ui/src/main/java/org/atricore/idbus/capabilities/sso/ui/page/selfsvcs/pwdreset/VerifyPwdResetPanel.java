@@ -55,6 +55,12 @@ public class VerifyPwdResetPanel extends Panel {
 
     private VerifyPwdResetModel model;
 
+    public VerifyPwdResetPanel(String id, User user, String hashAlgorithm, String hashEncoding) {
+        this(id, user);
+        this.hashAlgorithm = hashAlgorithm;
+        this.hashEncoding = hashEncoding;
+    }
+
     public VerifyPwdResetPanel(String id, User user) {
         super(id);
         this.user = user;

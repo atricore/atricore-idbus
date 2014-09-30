@@ -165,8 +165,8 @@ public class ReqRegistrationPanel extends Panel {
                 url.getHost() + (url.getPort() != 443 && url.getPort() != 80 ? ":" + url.getPort() + "" : "") +
                 path;
 
-        // TODO : Make from and subject also brandlable/internationlized
-        app.getMailService().send("josso@atricore.com",
+        String from = getLocalizer().getString("email.sender", this, "josso@atricore.com");
+        app.getMailService().send(from,
                 username,
                 "Registration", buildEMailText(registration, resp, transactionId, confirmUrl).toString(),
                 "text/html");
