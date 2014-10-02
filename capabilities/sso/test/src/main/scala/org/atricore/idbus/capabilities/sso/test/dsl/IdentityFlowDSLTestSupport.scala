@@ -209,6 +209,10 @@ object MockProvisioningTarget extends ProvisioningTarget {
 
   def lookupTransactionRequest(transactionId: String): AbstractProvisioningRequest = null
 
+  def getHashAlgorithm: String = "MD5";
+
+  def getHashEncoding: String = "HEX";
+
   def removeGroup(groupRequest: RemoveGroupRequest): RemoveGroupResponse = null
 
   def addGroup(groupRequest: AddGroupRequest): AddGroupResponse = null
