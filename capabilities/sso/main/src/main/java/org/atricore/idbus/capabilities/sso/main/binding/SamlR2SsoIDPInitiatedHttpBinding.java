@@ -114,7 +114,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             a.setValue(spId);
             idpInitReq.getRequestAttribute().add(a);
         }
-        atricore_security_token
+       
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
                         idpInitReq,
                         null,
