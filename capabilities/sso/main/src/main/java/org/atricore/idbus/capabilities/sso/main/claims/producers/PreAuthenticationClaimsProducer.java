@@ -87,7 +87,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
             doProcessReceivedSecurityTokenClaim(exchange, claimsRequest);
         } catch (SSORequestException e) {
-
+            logger.error(e.getMessage(), e);
             throw new IdentityMediationFault(
                     e.getTopLevelStatusCode() != null ? e.getTopLevelStatusCode().getValue() : StatusCode.TOP_RESPONDER.getValue(),
                     e.getSecondLevelStatusCode() != null ? e.getSecondLevelStatusCode().getValue() : null,
@@ -96,7 +96,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                     e);
 
         } catch (SSOException e) {
-
+            logger.error(e.getMessage(), e);
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
                     StatusDetails.INTERNAL_ERROR.getValue(),

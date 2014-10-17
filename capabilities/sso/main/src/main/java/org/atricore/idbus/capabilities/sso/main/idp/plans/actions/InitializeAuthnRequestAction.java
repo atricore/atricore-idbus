@@ -83,7 +83,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         
         AuthnRequestType authn = (AuthnRequestType) out.getContent();
 
-        // The channel that recieved the request.
+        // The channel that received the request.
         SPChannel channel = (SPChannel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
         FederationChannel spChannel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_RESPONSE_CHANNEL);
         IdentityMediationEndpoint endpoint = (IdentityMediationEndpoint ) executionContext.getContextInstance().getVariable(VAR_ENDPOINT);
