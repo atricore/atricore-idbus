@@ -1,6 +1,7 @@
 package org.atricore.idbus.capabilities.oauth2.client;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Properties;
@@ -21,14 +22,6 @@ public class OAuth2Client {
 
     private boolean init;
 
-    public static void main(String args[]) throws Exception {
-        OAuth2Client client = new OAuth2Client();
-        client.init();
-
-        System.out.println("IDP pre-authn  : " + client.getIdPPreAuthnUrl());
-        System.out.println("OAuth2 resource: " + client.getResourceUrl());
-    }
-
     public OAuth2Client(String configPath) {
         this.configPath = configPath;
     }
@@ -40,6 +33,7 @@ public class OAuth2Client {
     public OAuth2Client() {
 
     }
+
 
     /**
      * Initializes the client by loading the configuration if necessary.
@@ -56,7 +50,7 @@ public class OAuth2Client {
             requestor = new AccessTokenRequestor(
                     config.getProperty("oauth2.clientId"),
                     config.getProperty("oauth2.clientSecret"),
-                    config.getProperty("oauth2.authorizationServerEndpoint"));
+                    config.getProperty("oauth2.authnEndpoin"));
 
             init = true;
         } catch (IOException e) {
@@ -65,21 +59,11 @@ public class OAuth2Client {
     }
 
     public AccessTokenRequestor getAccessTokenRequestor() throws OAuth2ClientException {
-
         if (!init) {
             throw new OAuth2ClientException("OAuth2 client not initialized");
         }
 
         return requestor;
-    }
-
-    /**
-     * Requests an authorization token for the configured username and password.
-     */
-    public String requestToken() throws OAuth2ClientException {
-        return requestToken(
-                config.getProperty("oauth2.username"),
-                config.getProperty("oauth2.password"));
     }
 
     /**
@@ -96,13 +80,17 @@ public class OAuth2Client {
     }
 
     /**
-     * Builds a pre-authentication Url for the configured username and password.
+     * Builds a pre-authentication Url for the given username and password, and requesting
+     * the default SP (as configured in the oauth2.spAlias property).
+     *
+     * @param usr the username used to issue the access token
+     * @param pwd the password used to issue the access token
      */
-    public String getIdPPreAuthnUrl() throws OAuth2ClientException {
-        return getIdPPreAuthnUrl(
-                config.getProperty("oauth2.username"),
-                config.getProperty("oauth2.password"));
+    public String getIdPPreAuthnUrlForDefaultSp(String usr, String pwd) throws OAuth2ClientException {
+        String spAlias = config.getProperty("oauth2.spAlias");
+        return getIdPPreAuthnUrl(spAlias, usr, pwd);
     }
+
 
     /**
      * Builds a pre-authentication Url for the given username and password.
@@ -111,37 +99,37 @@ public class OAuth2Client {
      * @param pwd the password used to issue the access token
      */
     public String getIdPPreAuthnUrl(String usr, String pwd) throws OAuth2ClientException {
-        String spAlias = config.getProperty("oauth2.serviceProviderAlias");
-        return getIdPPreAuthnUrl(spAlias, usr, pwd);
+        return getIdPPreAuthnUrl(null , usr, pwd);
     }
 
+    /**
+     * Builds a pre-authentication Url for the given username and password.
+     *
+     * @param spAlias SAML SP ALias, null if no specific SP is requested.
+     * @param usr the username used to issue the access token
+     * @param pwd the password used to issue the access token
+     */
     public String getIdPPreAuthnUrl(String spAlias, String usr, String pwd) throws OAuth2ClientException {
 
         try {
             String accessToken = requestToken(usr, pwd);
-            String resourceServerEndpoint = config.getProperty("oauth2.identityProviderPreAuthnEndpoint");
+            String idpPreAuthn = config.getProperty("oauth2.idpPreAuthn");
+
             String preauthUrl =
-                    String.format("%s?atricore_sp_alias=%s&atricore_security_token=%s",
-                            resourceServerEndpoint,
-                            spAlias,
+                    String.format("%s?atricore_security_token=%s",
+                            idpPreAuthn,
                             URLEncoder.encode(accessToken, "UTF-8")
                     );
 
+            if (spAlias != null) {
+                preauthUrl += "&atricore_sp_alias=" + spAlias;
+            }
+
             return preauthUrl;
+
         } catch (UnsupportedEncodingException e) {
             throw new OAuth2ClientException(e);
         }
-    }
-
-
-    /**
-     * Builds a resource Url for the configured username and password.
-     */
-    public String getResourceUrl() throws OAuth2ClientException {
-        return getResourceUrl(
-                config.getProperty("oauth2.resourceServerEndpoint"),
-                config.getProperty("oauth2.username"),
-                config.getProperty("oauth2.password"));
     }
 
     /**
@@ -168,12 +156,17 @@ public class OAuth2Client {
     }
 
 
-    protected Properties loadConfig() throws IOException {
+    protected Properties loadConfig() throws IOException, OAuth2ClientException {
 
         if (configPath == null)
             configPath = "/oauth2.properties";
+
         Properties props = new Properties();
-        props.load(getClass().getResourceAsStream("/oauth2.properties"));
+        InputStream is = getClass().getResourceAsStream("/oauth2.properties");
+        if (is == null)
+            throw new OAuth2ClientException("Configuration not found for " + configPath);
+
+        props.load(is);
         return props;
     }
 

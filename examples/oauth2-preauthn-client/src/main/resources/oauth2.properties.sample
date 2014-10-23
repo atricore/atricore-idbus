@@ -1,0 +1,14 @@
+## OAuth2 sample client configuration
+
+oauth2.clientId=pre-authn-app
+oauth2.clientSecret=@WSX3edc
+
+oauth2.token.endpoint=http://localhost:8081/IDBUS/ML-POC/IDP/OAUTH2/TOKEN/SOAP
+
+# This should be collected
+oauth2.token.username=user1
+oauth2.token.password=user1pwd
+
+
+oauth2.resource=http://localhost:8081/IDBUS/IDA1/IDP/SAML2/SSO/IDP_INITIATE?
+

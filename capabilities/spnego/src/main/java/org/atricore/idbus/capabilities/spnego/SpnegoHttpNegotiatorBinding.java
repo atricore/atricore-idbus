@@ -135,7 +135,9 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
 
         if (sm instanceof InitiateSpnegoNegotiation) {
             InitiateSpnegoNegotiation isn = (InitiateSpnegoNegotiation) sm;
-            logger.debug("Initiating Spnego Negotiation on " + ed.getLocation());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Initiating Spnego Negotiation on " + ed.getLocation());
 
             if (!isn.getSpnegoInitiationEndpoint().equals(ed.getLocation())) {
                 logger.warn("Requested Spnego Negotiation endpoint ignored : " + isn.getSpnegoInitiationEndpoint());
@@ -150,12 +152,19 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "FALSE");
 
         } else if (sm instanceof RequestToken) {
-            logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
-            httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
-            httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
+            if (logger.isDebugEnabled())
+                logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
 
             String fallBackUrl =
                     (ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation()) + "?SPNEGO=false";
+
+            httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
+
+            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+            httpOut.getHeaders().put("Pragma", "no-cache");
+            httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
+            httpOut.getHeaders().put("Content-Type", "text/html");
+            httpOut.getHeaders().put("Location", fallBackUrl);
 
             // Create fall-back HTML
             String fallBackHtml = "<HTML>\n" +

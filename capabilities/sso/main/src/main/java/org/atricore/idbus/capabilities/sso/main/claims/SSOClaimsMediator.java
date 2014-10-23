@@ -45,6 +45,7 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     private static final Log logger = LogFactory.getLog( SSOClaimsMediator.class );
 
+    private boolean rememberMe;
 
     private String basicAuthnUILocation;
 
@@ -74,6 +75,14 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     public void setProvisioningTarget(ProvisioningTarget provisioningTarget) {
         this.provisioningTarget = provisioningTarget;
+    }
+
+    public boolean isRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
     }
 
     @Override

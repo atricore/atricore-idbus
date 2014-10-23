@@ -46,6 +46,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.SecurityTokenNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.FindSecurityTokenByTokenIdRequest;
@@ -135,49 +136,33 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                     claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
         }
 
-        EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
-                claimsProcessingEndpoint);
-
         String preAuthnToken = claimsRequest.getPreauthenticationSecurityToken();
 
+        if (preAuthnToken != null && logger.isDebugEnabled())
+            logger.debug("Pre-authn token found in CredentialClaimsRequest " + claimsRequest.getId());
+
+        MediationState state = in.getMessage().getState();
+
         // No pre-authn token received, looking for remember-me token id
-        if (preAuthnToken == null) {
-
+        if (preAuthnToken == null && mediator.isRememberMe()) {
             if (logger.isDebugEnabled())
-                logger.debug("Pre-authn token not found in CredentialClaimsRequest " + claimsRequest.getId());
+                logger.debug("Pre-authn token not found in CredentialClaimsRequest, using remember me" + claimsRequest.getId());
 
-            // try to get the token from the provider state:
-            MediationState state = in.getMessage().getState();
-            String preAuthnTokenIdVar = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
-            String preAuthnTokenId = state.getRemoteVariable(preAuthnTokenIdVar);
+                preAuthnToken = resolveRememberMeToken(state, mediator);
 
-            if (preAuthnTokenId != null) {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Pre-authn token id found as remote variable (cookie) :  " + preAuthnTokenIdVar + ", ID: " + preAuthnTokenId);
-
-                ProvisioningTarget t = mediator.getProvisioningTarget();
-                FindSecurityTokenByTokenIdRequest req = new FindSecurityTokenByTokenIdRequest();
-                req.setTokenId(preAuthnTokenId);
-                try {
-                    FindSecurityTokenByTokenIdResponse resp = t.findSecurityTokenByTokenId(req);
-                    if (logger.isDebugEnabled())
-                        logger.debug("Pre-authn token id found :  " + preAuthnTokenId + " [" + resp.getSecurityToken().getNameIdentifier() + "]");
-                    preAuthnToken = resp.getSecurityToken().getSerializedContent();
-                } catch (SecurityTokenNotFoundException e) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Pre-authn token id not found (no longer valid)  :  " + preAuthnTokenId);
-                }
-
-            } else {
-                if (logger.isDebugEnabled())
-                    logger.debug("Pre-authn token id not found as remote variable (cookie) :  " + preAuthnTokenIdVar);
-
-            }
-        } else {
-            if (logger.isDebugEnabled())
-                logger.debug("Pre-authn token found in CredentialClaimsRequest " + claimsRequest.getId());
         }
+
+        if (preAuthnToken == null && mediator.getBasicAuthnUILocation() != null) {
+            // Issue OAuth2 Access token request, store claims request.
+
+            return;
+        }
+
+
+
+        // Send claims response
+        EndpointDescriptor ed = mediator.resolveEndpoint(claimsRequest.getIssuerChannel(),
+                claimsProcessingEndpoint);
 
         if (logger.isDebugEnabled())
             logger.debug("Pre-authn token :  " + (preAuthnToken == null ? "NULL" : preAuthnToken));
@@ -202,6 +187,46 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                 in.getMessage().getState()));
 
         exchange.setOut(out);
+
+    }
+
+    protected String resolveRememberMeToken(MediationState state, SSOClaimsMediator mediator) throws SSOException {
+
+        try {
+            // try to get the token from the provider state:
+
+            String preAuthnTokenIdVar = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
+            String preAuthnTokenId = state.getRemoteVariable(preAuthnTokenIdVar);
+
+            if (preAuthnTokenId != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Pre-authn token id found as remote variable (cookie) :  " + preAuthnTokenIdVar + ", ID: " + preAuthnTokenId);
+
+                ProvisioningTarget t = mediator.getProvisioningTarget();
+                FindSecurityTokenByTokenIdRequest req = new FindSecurityTokenByTokenIdRequest();
+                req.setTokenId(preAuthnTokenId);
+                try {
+                    FindSecurityTokenByTokenIdResponse resp = t.findSecurityTokenByTokenId(req);
+                    if (logger.isDebugEnabled())
+                        logger.debug("Pre-authn token id found :  " + preAuthnTokenId + " [" + resp.getSecurityToken().getNameIdentifier() + "]");
+
+                    String preAuthnToken = resp.getSecurityToken().getSerializedContent();
+
+                    return preAuthnToken;
+                } catch (SecurityTokenNotFoundException e) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Pre-authn token id not found (no longer valid)  :  " + preAuthnTokenId);
+                } catch (ProvisioningException e) {
+                    throw new SSOException(e.getMessage(), e);
+                }
+
+            } else {
+                if (logger.isDebugEnabled())
+                    logger.debug("Pre-authn token id not found as remote variable (cookie) :  " + preAuthnTokenIdVar);
+
+            }
+        }
 
     }
 }
