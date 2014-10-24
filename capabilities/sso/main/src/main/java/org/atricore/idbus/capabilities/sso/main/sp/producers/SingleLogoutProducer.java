@@ -188,7 +188,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(samlResponse.getID(),
-                samlResponse, "LogoutResponseType", null, destination, in.getMessage().getState()));
+                samlResponse, "LogoutResponse", null, destination, in.getMessage().getState()));
 
         exchange.setOut(out);
     }
