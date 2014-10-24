@@ -136,6 +136,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                     claimsRequest.getIssuerEndpoint().getType() + " found in channel " + claimsRequest.getIssuerChannel().getName());
         }
 
+        // First, check if we already have a token as part of the request
         String preAuthnToken = claimsRequest.getPreauthenticationSecurityToken();
 
         if (preAuthnToken != null && logger.isDebugEnabled())
@@ -153,8 +154,10 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         }
 
         if (preAuthnToken == null && mediator.getBasicAuthnUILocation() != null) {
-            // Issue OAuth2 Access token request, store claims request.
+            // Issue PreAuthn token request, store claims request.
 
+            // Request is from SSO protocol
+            // Binding is restful ?!
             return;
         }
 
@@ -192,41 +195,41 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
     protected String resolveRememberMeToken(MediationState state, SSOClaimsMediator mediator) throws SSOException {
 
-        try {
-            // try to get the token from the provider state:
+        // try to get the token from the provider state:
 
-            String preAuthnTokenIdVar = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
-            String preAuthnTokenId = state.getRemoteVariable(preAuthnTokenIdVar);
+        String preAuthnTokenIdVar = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
+        String preAuthnTokenId = state.getRemoteVariable(preAuthnTokenIdVar);
 
-            if (preAuthnTokenId != null) {
+        if (preAuthnTokenId != null) {
 
+            if (logger.isDebugEnabled())
+                logger.debug("Pre-authn token id found as remote variable (cookie) :  " + preAuthnTokenIdVar + ", ID: " + preAuthnTokenId);
+
+            ProvisioningTarget t = mediator.getProvisioningTarget();
+            FindSecurityTokenByTokenIdRequest req = new FindSecurityTokenByTokenIdRequest();
+            req.setTokenId(preAuthnTokenId);
+            try {
+                FindSecurityTokenByTokenIdResponse resp = t.findSecurityTokenByTokenId(req);
                 if (logger.isDebugEnabled())
-                    logger.debug("Pre-authn token id found as remote variable (cookie) :  " + preAuthnTokenIdVar + ", ID: " + preAuthnTokenId);
+                    logger.debug("Pre-authn token id found :  " + preAuthnTokenId + " [" + resp.getSecurityToken().getNameIdentifier() + "]");
 
-                ProvisioningTarget t = mediator.getProvisioningTarget();
-                FindSecurityTokenByTokenIdRequest req = new FindSecurityTokenByTokenIdRequest();
-                req.setTokenId(preAuthnTokenId);
-                try {
-                    FindSecurityTokenByTokenIdResponse resp = t.findSecurityTokenByTokenId(req);
-                    if (logger.isDebugEnabled())
-                        logger.debug("Pre-authn token id found :  " + preAuthnTokenId + " [" + resp.getSecurityToken().getNameIdentifier() + "]");
+                String preAuthnToken = resp.getSecurityToken().getSerializedContent();
 
-                    String preAuthnToken = resp.getSecurityToken().getSerializedContent();
-
-                    return preAuthnToken;
-                } catch (SecurityTokenNotFoundException e) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Pre-authn token id not found (no longer valid)  :  " + preAuthnTokenId);
-                } catch (ProvisioningException e) {
-                    throw new SSOException(e.getMessage(), e);
-                }
-
-            } else {
+                return preAuthnToken;
+            } catch (SecurityTokenNotFoundException e) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Pre-authn token id not found as remote variable (cookie) :  " + preAuthnTokenIdVar);
-
+                    logger.debug("Pre-authn token id not found (no longer valid)  :  " + preAuthnTokenId);
+            } catch (ProvisioningException e) {
+                throw new SSOException(e.getMessage(), e);
             }
+
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("Pre-authn token id not found as remote variable (cookie) :  " + preAuthnTokenIdVar);
+
         }
+
+        return null;
 
     }
 }

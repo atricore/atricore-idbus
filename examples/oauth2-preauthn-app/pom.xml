@@ -13,6 +13,7 @@
 
     <groupId>org.atricore.idbus.examples</groupId>
     <artifactId>oauth2-preauthn-app</artifactId>
+    <name>Atricore IDBus :: Example : External Authentication (pre-authn)</name>
 
     <packaging>war</packaging>
 

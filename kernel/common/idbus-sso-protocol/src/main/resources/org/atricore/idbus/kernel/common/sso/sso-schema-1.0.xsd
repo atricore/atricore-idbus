@@ -93,6 +93,16 @@
         </complexContent>
     </complexType>
 
+    <element name="PreAuthenticatedTokenRequest" type="ssop:PreAuthenticatedTokenRequestType"/>
+    <complexType name="PreAuthenticatedTokenRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="SecurityToken" type="string" use="required"/>
+                <attribute name="AuthnCtxClass" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
     <element name="SPInitiatedLogoutRequest" type="ssop:SPInitiatedLogoutRequestType"/>
     <complexType name="SPInitiatedLogoutRequestType">
         <complexContent>
@@ -212,6 +222,17 @@
         <attribute name="PrimaryErrorCode" type="string" use="optional"/>
         <attribute name="SecondaryErrorCode" type="string" use="optional"/>
 
+    </complexType>
+
+
+
+    <element name="PreAuthenticatedTokenResponse" type="ssop:PreAuthenticatedTokenResponseType"/>
+    <complexType name="PreAuthenticatedTokenResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+                <attribute name="SecurityToken" type="string" use="required"/>
+            </extension>
+        </complexContent>
     </complexType>
 
     <element name="SPAuthnResponse" type="ssop:SPAuthnResponseType"/>
