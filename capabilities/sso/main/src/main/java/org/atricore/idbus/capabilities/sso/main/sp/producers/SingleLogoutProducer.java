@@ -145,7 +145,7 @@ public class SingleLogoutProducer extends SSOProducer {
         SPSecurityContext secCtx =
                 (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
-        validateRequest(sloRequest, in.getMessage().getRawContent());
+        validateRequest(sloRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
         CircleOfTrustMemberDescriptor idp = ((FederatedLocalProvider)getProvider()).getCotManager().lookupMemberByAlias(sloRequest.getIssuer().getValue());
         if (secCtx == null || !idp.getAlias().equals(secCtx.getIdpAlias())) {
@@ -188,7 +188,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(samlResponse.getID(),
-                samlResponse, "LogoutResponse", null, destination, in.getMessage().getState()));
+                samlResponse, "LogoutResponse", in.getMessage().getRelayState(), destination, in.getMessage().getState()));
 
         exchange.setOut(out);
     }
@@ -300,7 +300,7 @@ public class SingleLogoutProducer extends SSOProducer {
     }
 
     // TODO : Reuse basic SAML request validations ....
-    protected void validateRequest(LogoutRequestType request, String originalRequest)
+    protected void validateRequest(LogoutRequestType request, String originalRequest, MediationState state)
             throws SSORequestException, SSOException {
 
         SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
@@ -334,30 +334,56 @@ public class SingleLogoutProducer extends SSOProducer {
 		// XML Signature, saml2 core, section 5
         if (mediator.isValidateRequestsSignature()) {
 
-            // If no signature is present, throw an exception!
-            if (request.getSignature() == null)
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
-            try {
+            if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
-                if (originalRequest != null)
-                    signer.validateDom(idpMd, originalRequest);
-                else
-                    signer.validate(idpMd, request);
+                // If no signature is present, throw an exception!
+                if (request.getSignature() == null)
 
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_REQUEST_SIGNATURE);
+                try {
+
+                    if (originalRequest != null)
+                        signer.validateDom(idpMd, originalRequest);
+                    else
+                        signer.validate(idpMd, request);
+
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
+            } else {
+                // HTTP-Redirect binding signature validation !
+                try {
+                    signer.validateQueryString(idpMd,
+                            state.getTransientVariable("SAMLRequest"),
+                            state.getTransientVariable("RelayState"),
+                            state.getTransientVariable("SigAlg"),
+                            state.getTransientVariable("Signature"),
+                            false);
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
+
             }
 
         }
