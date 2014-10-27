@@ -47,6 +47,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
+import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -84,6 +85,8 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
         try {
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+            MediationState state = in.getMessage().getState();
 
             // May be used later by HTTP-Redirect binding!
             AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
@@ -203,7 +206,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
                 CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
                 out.setMessage(new MediationMessageImpl(sloRequest.getID(),
-                        sloRequest, "LogoutRequest", null, ed, in.getMessage().getState()));
+                        sloRequest, "LogoutRequest", state.getLocalState().getId(), ed, in.getMessage().getState()));
 
                 exchange.setOut(out);
 

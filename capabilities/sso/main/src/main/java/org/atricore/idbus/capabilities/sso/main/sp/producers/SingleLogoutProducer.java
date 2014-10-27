@@ -564,6 +564,15 @@ public class SingleLogoutProducer extends SSOProducer {
                         request.getID() + "/ " + response.getInResponseTo());
             }
 
+            if (state.getTransientVariable("RelayState") == null ||
+                    !state.getTransientVariable("RelayState").equals(state.getLocalState().getId())) {
+                throw new SSOResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        null,
+                        StatusDetails.INVALID_RELAY_STATE,
+                        state.getLocalState().getId() + "/ " + state.getTransientVariable("RelayState"));
+            }
+
     	}
 
         // Status.StatusDetails
