@@ -56,7 +56,8 @@ public enum StatusDetails {
 
     INVALID_STATUS_CODE
             ("urn:org:atricore:idbus:samlr2:status:InvalidStatusCode", "Invalid 'Status Code' found."),
-
+    INVALID_RELAY_STATE
+            ("urn:org:atricore:idbus:samlr2:status:InvalidRelayState", "Invalid or empty 'Relay State'."),
     NO_STATUS_CODE
             ("urn:org:atricore:idbus:samlr2:status:NoStatusCode", "No 'Status Code' information found"),
 
