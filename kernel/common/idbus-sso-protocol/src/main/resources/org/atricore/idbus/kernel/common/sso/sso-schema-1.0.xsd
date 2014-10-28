@@ -97,7 +97,6 @@
     <complexType name="PreAuthenticatedTokenRequestType">
         <complexContent>
             <extension base="ssop:SSORequestAbstractType">
-                <attribute name="SecurityToken" type="string" use="required"/>
                 <attribute name="AuthnCtxClass" type="string" use="optional"/>
             </extension>
         </complexContent>
@@ -224,13 +223,12 @@
 
     </complexType>
 
-
-
     <element name="PreAuthenticatedTokenResponse" type="ssop:PreAuthenticatedTokenResponseType"/>
     <complexType name="PreAuthenticatedTokenResponseType">
         <complexContent>
             <extension base="ssop:SSOResponseType">
                 <attribute name="SecurityToken" type="string" use="required"/>
+                <attribute name="AuthnCtxClass" type="string" use="optional"/>
             </extension>
         </complexContent>
     </complexType>

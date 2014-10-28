@@ -12,7 +12,7 @@ import java.util.Properties;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class OAuth2Client {
+public class OAuth2Client implements ConfigurationConstants {
 
     protected Properties config;
 
@@ -48,9 +48,9 @@ public class OAuth2Client {
                 config = loadConfig();
 
             requestor = new AccessTokenRequestor(
-                    config.getProperty("oauth2.clientId"),
-                    config.getProperty("oauth2.clientSecret"),
-                    config.getProperty("oauth2.authnEndpoin"));
+                    config.getProperty(CLIENT_ID),
+                    config.getProperty(CLIENT_SECRET),
+                    config.getProperty(AUTHN_ENDPOINT));
 
             init = true;
         } catch (IOException e) {
@@ -83,47 +83,88 @@ public class OAuth2Client {
      * Builds a pre-authentication Url for the given username and password, and requesting
      * the default SP (as configured in the oauth2.spAlias property).
      *
+     * This method calls the requestToken method.
+     *
      * @param usr the username used to issue the access token
      * @param pwd the password used to issue the access token
      */
-    public String getIdPPreAuthnUrlForDefaultSp(String usr, String pwd) throws OAuth2ClientException {
-        String spAlias = config.getProperty("oauth2.spAlias");
-        return getIdPPreAuthnUrl(spAlias, usr, pwd);
+    public String buildgetIdPInitPreAuthnUrlForDefaultSp(String usr, String pwd) throws OAuth2ClientException {
+        String spAlias = config.getProperty(SP_ALIAS);
+        return buildIdPInitPreAuthnUrl(spAlias, usr, pwd);
     }
 
 
     /**
      * Builds a pre-authentication Url for the given username and password.
      *
+     * This method calls the requestToken method.
+     *
      * @param usr the username used to issue the access token
      * @param pwd the password used to issue the access token
      */
-    public String getIdPPreAuthnUrl(String usr, String pwd) throws OAuth2ClientException {
-        return getIdPPreAuthnUrl(null , usr, pwd);
+    public String buildIdPInitPreAuthnUrl(String usr, String pwd) throws OAuth2ClientException {
+        return buildIdPInitPreAuthnUrl(null, usr, pwd);
     }
+
 
     /**
      * Builds a pre-authentication Url for the given username and password.
      *
-     * @param spAlias SAML SP ALias, null if no specific SP is requested.
+     * This method calls the requestToken method.
+     *
+     * @oaran relayState as received with the pre-authn token request.
+     * @param spAlias SAML SP ALias, null if no specific SP is required or known.
      * @param usr the username used to issue the access token
      * @param pwd the password used to issue the access token
      */
-    public String getIdPPreAuthnUrl(String spAlias, String usr, String pwd) throws OAuth2ClientException {
+    public String buildIdPInitPreAuthnUrl(String spAlias, String usr, String pwd) throws OAuth2ClientException {
 
         try {
             String accessToken = requestToken(usr, pwd);
-            String idpPreAuthn = config.getProperty("oauth2.idpPreAuthn");
+            String idpPreAuthn = config.getProperty(IDP_INIT_PREAUTHN_ENDPOINT);
 
+            // TODO : Relay on SsoPreauthTokenSvcBinding in the future
             String preauthUrl =
-                    String.format("%s?atricore_security_token=%s",
+                    String.format("%s?atricore_security_token=%s&scope=preauth-token",
                             idpPreAuthn,
                             URLEncoder.encode(accessToken, "UTF-8")
                     );
 
-            if (spAlias != null) {
+            if (spAlias != null)
                 preauthUrl += "&atricore_sp_alias=" + spAlias;
-            }
+
+            return preauthUrl;
+
+        } catch (UnsupportedEncodingException e) {
+            throw new OAuth2ClientException(e);
+        }
+    }
+
+
+    /**
+     * Builds a pre-authentication Url for the given username and password.
+     *
+     * This method calls the requestToken method.
+     *
+     * @oaran relayState as received with the pre-authn token request.
+     * @param usr the username used to issue the access token
+     * @param pwd the password used to issue the access token
+     */
+    public String buildIdPPreAuthnResponseUrl(String relayState, String usr, String pwd) throws OAuth2ClientException {
+
+        try {
+            String accessToken = requestToken(usr, pwd);
+            String idpPreAuthn = config.getProperty(IDP_PREAUTHN_RESPONSE_ENDPOINT);
+
+            // TODO : Relay on SsoPreauthTokenSvcBinding in the future
+            String preauthUrl =
+                    String.format("%s?atricore_security_token=%s&scope=preauth-token",
+                            idpPreAuthn,
+                            URLEncoder.encode(accessToken, "UTF-8")
+                    );
+
+            if (relayState != null)
+                preauthUrl += "&relay_state=" + relayState;
 
             return preauthUrl;
 
@@ -134,6 +175,8 @@ public class OAuth2Client {
 
     /**
      * Builds a pre-authentication Url for the given username and password.
+     *
+     * This method calls the requestToken method.
      *
      * @param resource the resource server URL we want to access
      * @param usr the username used to issue the access token

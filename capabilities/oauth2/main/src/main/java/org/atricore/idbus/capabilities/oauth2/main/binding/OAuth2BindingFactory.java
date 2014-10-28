@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.SsoPreAuthnTokenSvcBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;
@@ -57,7 +58,9 @@ public class OAuth2BindingFactory extends MediationBindingFactory implements App
             case SSO_REDIRECT:
                 mb = new SsoHttpRedirectBinding(channel);
                 break;
-
+            case SSO_PREAUTHN:
+                mb = new SsoPreAuthnTokenSvcBinding(channel);
+                break;
             default:
                 break;
         }

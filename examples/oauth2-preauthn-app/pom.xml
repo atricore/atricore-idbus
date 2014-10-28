@@ -25,6 +25,7 @@
             <artifactId>org.atricore.idbus.kernel.common.oauth2</artifactId>
             <version>1.4.1-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
             <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
@@ -61,6 +62,13 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

@@ -11,8 +11,17 @@
     Throwable error = null;
 
     try {
-        String idpUrl = client.getIdPPreAuthnUrl(request.getParameter("username"), request.getParameter("password"));
+
+        String relayState = (String) session.getAttribute("relay_state");
+
+        // This requests a token from the JOSSO server using the configured SOAP response endpoint
+        String idpUrl = client.buildIdPPreAuthnResponseUrl(relayState,
+                request.getParameter("username"),
+                request.getParameter("password"));
+
+        // Redirect the user to the received URL
         response.sendRedirect(idpUrl);
+
         return;
     } catch (OAuth2ClientException e) {
         error = e;

@@ -1,3 +1,14 @@
+<%
+String issuer = request.getParameter("issuer");
+String id = request.getParameter("request_id");
+String relayState = request.getParameter("relay_state");
+
+request.getSession().setAttribute("relay_state", relayState);
+
+// TODO : Verify isuser
+
+%>
+
 <html>
 <head>
     <title>Login Page</title>

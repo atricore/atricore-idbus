@@ -111,6 +111,7 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
                         case SSO_ARTIFACT:
                         case SSO_POST:
                         case SSO_REDIRECT:
+                        case SSO_PREAUTHN:
 
                             // HTTP Bindings are handled with Camel
 
