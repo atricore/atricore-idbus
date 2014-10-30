@@ -45,6 +45,7 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     private static final Log logger = LogFactory.getLog( SSOClaimsMediator.class );
 
+    private boolean rememberMe;
 
     private String basicAuthnUILocation;
 
@@ -76,6 +77,14 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
         this.provisioningTarget = provisioningTarget;
     }
 
+    public boolean isRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
+    }
+
     @Override
     protected RouteBuilder createClaimRoutes(final ClaimChannel claimChannel) throws Exception {
         // Create routes based on endpoints!
@@ -102,6 +111,7 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
                         case SSO_ARTIFACT:
                         case SSO_POST:
                         case SSO_REDIRECT:
+                        case SSO_PREAUTHN:
 
                             // HTTP Bindings are handled with Camel
 

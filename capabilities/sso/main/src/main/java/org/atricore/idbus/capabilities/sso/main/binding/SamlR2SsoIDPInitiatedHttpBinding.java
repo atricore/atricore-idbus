@@ -25,6 +25,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
@@ -89,7 +90,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         if (securityToken != null) {
             idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
             ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setSecurityToken(securityToken);
-            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass("urn:org:atricore:idbus:ac:classes:OAuth2");
+            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass(AuthnCtxClass.OAUTH2_AUTHN_CTX.getValue());
         } else {
             idpInitReq = new IDPInitiatedAuthnRequestType();
         }
@@ -113,7 +114,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             a.setValue(spId);
             idpInitReq.getRequestAttribute().add(a);
         }
-        
+       
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
                         idpInitReq,
                         null,

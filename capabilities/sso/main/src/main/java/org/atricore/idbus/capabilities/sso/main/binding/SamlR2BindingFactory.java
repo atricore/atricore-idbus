@@ -112,6 +112,9 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             case SSO_LOCAL:
                 mb = new SsoLocalBinding(channel);
                 break;
+            case SSO_PREAUTHN:
+                mb = new SsoPreAuthnTokenSvcBinding(channel);
+                break;
             default:
                 logger.warn("Unknown SAMLR2 Binding! " + binding);
         }

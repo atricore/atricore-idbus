@@ -91,6 +91,7 @@
         <module>examples/simple-federation</module>
         <module>examples/simple-provisioning</module>
         <module>examples/salesforce</module>
+        <module>examples/oauth2-preauthn-app</module>
         <module>examples/simple-iwa</module>
         <module>examples/simple-openid</module>
 

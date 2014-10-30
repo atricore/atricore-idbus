@@ -11,6 +11,8 @@ public enum OAuth2Binding {
 
     SSO_REDIRECT(SSOBinding.SSO_REDIRECT.getValue(), SSOBinding.SSO_REDIRECT.isFrontChannel()),
 
+    SSO_PREAUTHN(SSOBinding.SSO_PREAUTHN.getValue(), SSOBinding.SSO_PREAUTHN.isFrontChannel()),
+
     SSO_SOAP(SSOBinding.SSO_SOAP.getValue(), SSOBinding.SSO_SOAP.isFrontChannel()),
 
     SSO_LOCAL(SSOBinding.SSO_LOCAL.getValue(), SSOBinding.SSO_LOCAL.isFrontChannel()),

@@ -116,3 +116,18 @@ log4j.category.DataNucleus=INFO
 
 # DO NOT CHANGE THIS, IT'S FOR MANAGEMENT PURPOSES ONLY
 org.atricore.idbus.log.mode=DEVELOP
+
+# File appender for wire logging (messages)
+log4j.appender.wire=org.apache.log4j.RollingFileAppender
+log4j.appender.wire.layout=org.apache.log4j.PatternLayout
+log4j.appender.wire.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %m%n
+log4j.appender.wire.file=${karaf.data}/log/atricore-wire.log
+log4j.appender.wire.append=true
+log4j.appender.wire.maxFileSize=512MB
+log4j.appender.wire.maxBackupIndex=99
+
+### ---------------------------------------------
+# Add appliances that should output messages to
+# wire log
+### ---------------------------------------------
+# log4j.category.<appliance-realm>.wire=TRACE, wire
