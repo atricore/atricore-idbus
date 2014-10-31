@@ -166,7 +166,16 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         }
 
-        if (preAuthnToken == null && mediator.getBasicAuthnUILocation() != null) {
+        AuthnCtxClass authnCtx = AuthnCtxClass.asEnum(endpoint.getType());
+
+        if (!authnCtx.isPassive() &&
+                preAuthnToken == null &&
+                mediator.getBasicAuthnUILocation() != null) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Non-passive OAuth2 pre-authentication endpoint ["+endpoint.getName()+"] without a token, " +
+                        "requesting one at " + mediator.getBasicAuthnUILocation());
+
             // Issue PreAuthn token request.
 
             PreAuthenticatedTokenRequestType preAuthnReq = new PreAuthenticatedTokenRequestType();
@@ -194,6 +203,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             exchange.setOut(out);
 
             return;
+
         }
 
         sendClaimsResponse(exchange, preAuthnToken);
@@ -213,6 +223,8 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         SSOBinding binding = SSOBinding.SSO_ARTIFACT;
         Channel issuer = claimsRequest.getIssuerChannel();
 
+        if (logger.isDebugEnabled())
+            logger.debug("Sending ClaimsResponse with pre-authn token ["+ (preAuthnToken != null ? preAuthnToken : "<NULL>" )+"]");
 
         // Look for an endpoint to send the response
         for (IdentityMediationEndpoint endpoint : issuer.getEndpoints()) {
@@ -233,17 +245,23 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                 claimsProcessingEndpoint);
 
         if (logger.isDebugEnabled())
-            logger.debug("Pre-authn token :  " + (preAuthnToken == null ? "NULL" : preAuthnToken));
+            logger.debug("Sending Pre-authn token to " +
+                    (ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation()));
 
         PasswordString token = new PasswordString();
         token.setValue(preAuthnToken);
 
-        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.OAUTH2_AUTHN_CTX.getValue(), token);
+        // Endpoint type MUST be authn ctx class
+        CredentialClaim credentialClaim = new CredentialClaimImpl(endpoint.getType(), token);
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(credentialClaim);
 
-        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(claimsRequest.getId() /* TODO : Generate new ID !*/,
-                channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
+        SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(
+                uuidGenerator.generateId(),
+                channel,
+                claimsRequest.getId(),
+                claims,
+                claimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
