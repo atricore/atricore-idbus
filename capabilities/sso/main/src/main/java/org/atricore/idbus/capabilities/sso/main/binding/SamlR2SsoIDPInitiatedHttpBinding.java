@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.PreAuthenticatedIDPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
@@ -39,9 +38,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.w3._1999.xhtml.Html;
 
-import java.io.ByteArrayInputStream;
 import java.util.Map;
 
 /**
@@ -84,13 +81,11 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         String relayState = state.getTransientVariable("RelayState");
 
         String securityToken = state.getTransientVariable("atricore_security_token");
-        // TODO : Token can also be stored in a cookie
-
         IDPInitiatedAuthnRequestType idpInitReq = null;
         if (securityToken != null) {
             idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
             ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setSecurityToken(securityToken);
-            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass(AuthnCtxClass.OAUTH2_AUTHN_CTX.getValue());
+            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX.getValue());
         } else {
             idpInitReq = new IDPInitiatedAuthnRequestType();
         }
