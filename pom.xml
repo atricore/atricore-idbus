@@ -105,6 +105,7 @@
     </properties>
 
 
+    <!-- Minor change -->
     <scm>
         <connection>scm:git://atricore.git.sourceforge.net/gitroot/atricore/atricore</connection>
         <!-- Used by Maven -->
