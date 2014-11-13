@@ -9,6 +9,7 @@ using System.ServiceModel.Dispatcher;
 using System.Configuration;
 using Atricore.OAuth2Protocol;
 
+
 namespace Atricore.OAuth2Client
 {
     public class OAuth2Client
@@ -112,10 +113,10 @@ namespace Atricore.OAuth2Client
 
             String accessToken = requestToken(usr, pwd);
             String idpPreAuthn = ConfigurationManager.AppSettings["idpInitPreAuthn"];
-            String preauthUrl = idpPreAuthn + "?atricore_security_token="+accessToken + "&scope=preauth-token";
+            String preauthUrl = idpPreAuthn + "?atricore_security_token=" + Uri.EscapeDataString(accessToken) + "&scope=preauth-token";
 
             if (spAlias != null)
-                preauthUrl += "&atricore_sp_alias=" + spAlias;
+                preauthUrl += "&atricore_sp_alias=" + Uri.EscapeDataString(spAlias);
 
             return preauthUrl;
 
@@ -135,10 +136,10 @@ namespace Atricore.OAuth2Client
 
             String accessToken = requestToken(usr, pwd);
             String idpPreAuthn = ConfigurationManager.AppSettings["idpPreAuthnResponse"];
-            String preauthUrl = idpPreAuthn + "?atricore_security_token=" + accessToken + " &scope=preauth-token";
+            String preauthUrl = idpPreAuthn + "?atricore_security_token=" + Uri.EscapeDataString(accessToken) + " &scope=preauth-token";
 
             if (relayState != null)
-                preauthUrl += "&relay_state=" + relayState;
+                preauthUrl += "&relay_state=" + Uri.EscapeDataString(relayState);
 
             return preauthUrl;
 
