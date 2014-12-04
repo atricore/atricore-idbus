@@ -48,7 +48,6 @@ public class VerifyPwdResetPage extends BasePage {
         VerifyPwdResetPanel verifyPwdResetPanel =
                 new VerifyPwdResetPanel("verifyPwdReset", user, hashAlgorithm, hashEncoding);
 
-        verifyPwdResetPanel.
         add(verifyPwdResetPanel);
 
     }
