@@ -33,8 +33,8 @@ log4j.appender.out.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %-16.16t | %-
 
 log4j.appender.out.file=${karaf.base}/data/log/atricore.log
 log4j.appender.out.append=true
-log4j.appender.out.maxFileSize=512MB
-log4j.appender.out.maxBackupIndex=99
+log4j.appender.out.maxFileSize=128MB
+log4j.appender.out.maxBackupIndex=9
 
 
 # Sift appender
@@ -125,8 +125,8 @@ log4j.appender.audit.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %m%n
 
 log4j.appender.audit.file=${karaf.base}/data/log/audit.log
 log4j.appender.audit.append=true
-log4j.appender.audit.maxFileSize=512MB
-log4j.appender.audit.maxBackupIndex=99
+log4j.appender.audit.maxFileSize=128MB
+log4j.appender.audit.maxBackupIndex=9
 
 # File appender for wire logging (messages)
 log4j.appender.wire=org.apache.log4j.RollingFileAppender
@@ -134,8 +134,8 @@ log4j.appender.wire.layout=org.apache.log4j.PatternLayout
 log4j.appender.wire.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %m%n
 log4j.appender.wire.file=${karaf.data}/log/atricore-wire.log
 log4j.appender.wire.append=true
-log4j.appender.wire.maxFileSize=512MB
-log4j.appender.wire.maxBackupIndex=99
+log4j.appender.wire.maxFileSize=128MB
+log4j.appender.wire.maxBackupIndex=9
 
 # DO NOT CHANGE THIS, IT'S FOR MANAGEMENT PURPOSES ONLY
 org.atricore.idbus.log.mode=DEBUG
