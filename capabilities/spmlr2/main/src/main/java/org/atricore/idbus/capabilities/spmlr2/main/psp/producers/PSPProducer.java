@@ -432,7 +432,7 @@ public class PSPProducer extends SpmlR2Producer {
         } else if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
             if (logger.isTraceEnabled())
-                logger.trace("Looking for group using PSO-ID " + psoId.getID());
+                logger.trace("Looking for user using PSO-ID " + psoId.getID());
 
             FindUserByIdRequest req = new FindUserByIdRequest();
             req.setId(Long.parseLong(psoId.getID()));

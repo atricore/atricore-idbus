@@ -46,6 +46,8 @@ public interface IdentityPartition {
 
     User findUserById(long id) throws ProvisioningException;
 
+    User findUserByOid(String oid) throws ProvisioningException;
+
     User findUserByUserName(String username) throws ProvisioningException;
 
     Collection<User> findAllUsers() throws ProvisioningException;

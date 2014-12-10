@@ -10,6 +10,7 @@ public class Group implements Serializable {
     private static final long serialVersionUID = 4595183658527599864L;
 
     private long id;
+    private String oid;
     private String name;
     private String description;
 
@@ -21,6 +22,14 @@ public class Group implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getOid() {
+        return oid;
+    }
+
+    public void setOid(String oid) {
+        this.oid = oid;
     }
 
     public String getName() {

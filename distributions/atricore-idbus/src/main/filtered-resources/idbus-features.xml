@@ -91,6 +91,7 @@
         <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.planning/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.web/${idbus.kernel.version}/war</bundle>
         <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.main/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.provisioning/org.atricore.idbus.kernel.provisioning.command/${idbus.kernel.version}</bundle>
     </feature>
 
     <feature name="atricore-connectors" version="${version}">

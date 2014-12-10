@@ -398,6 +398,40 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
+    public User findUserByOid(String oid) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
+        long id = Long.parseLong(oid);
+
+        try {
+
+            JDOUser jdoUser = userDao.findById(id);
+            jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
+            return toUser(jdoUser, true);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            transactionManager.rollback(status);
+            if (e.getActualSize() == 0)
+                throw new UserNotFoundException(id);
+
+            throw new ProvisioningException(e);
+        } catch (JdoObjectRetrievalFailureException e) {
+            transactionManager.rollback(status);
+            throw new UserNotFoundException(id);
+        } catch (JDOObjectNotFoundException e) {
+            transactionManager.rollback(status);
+            throw new UserNotFoundException(id);
+        } catch (NucleusObjectNotFoundException e) {
+            transactionManager.rollback(status);
+            throw new UserNotFoundException(id);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw new ProvisioningException(e);
+        }
+    }
+
 //    @Transactional
     public User findUserByUserName(String username) throws ProvisioningException {
 

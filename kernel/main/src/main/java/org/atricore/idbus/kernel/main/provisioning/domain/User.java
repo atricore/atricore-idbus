@@ -11,6 +11,8 @@ public class User implements Serializable {
 
     private long id;
 
+    private String oid;
+
     //<--- General Information ---->
     private String userName;
     private String firstName;
@@ -80,6 +82,14 @@ public class User implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getOid() {
+        return oid;
+    }
+
+    public void setOid(String oid) {
+        this.oid = oid;
     }
 
     public String getUserName() {
