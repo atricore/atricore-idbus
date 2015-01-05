@@ -44,7 +44,9 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
 
     public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
 
-        CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember");
+        CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor)
+                ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember");
+
         if (idp != null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Using previously selected COT member : " + idp);
