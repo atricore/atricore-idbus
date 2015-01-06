@@ -53,7 +53,7 @@
                     </property>
                 </bean>
                 <bean id="requested-previous-preferred-idp-selection" class="org.atricore.idbus.capabilities.sso.main.select.spi.SelectionStrategy">
-                    <property name="name" value="requested-preferred-idp-selection"/>
+                    <property name="name" value="requested-previous-preferred-idp-selection"/>
                     <property name="description" value="Requested, Previous Selection, then Preferred"/>
                     <property name="selectors">
                         <!-- Ordered list of selectors -->
