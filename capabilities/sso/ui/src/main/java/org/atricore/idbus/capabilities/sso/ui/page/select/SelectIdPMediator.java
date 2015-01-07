@@ -43,9 +43,10 @@ public class SelectIdPMediator implements Serializable {
 
     private static Log logger = LogFactory.getLog(SelectIdPMediator.class);
 
+    private transient SSOUIApplication application;
+
     private IdentityMediationUnitRegistry idsuRegistry;
     private MessageQueueManager artifactQueueManager;
-    private SSOUIApplication application;
     private SSOWebSession session;
     private List<IdPModel> idpModels;
     private UserClaimsRequest userClaimsReq;
@@ -68,7 +69,7 @@ public class SelectIdPMediator implements Serializable {
         idpModels = new ArrayList<IdPModel>();
         userClaimsReq = null;
 
-        WebAppConfig cfg = application.getAppConfig();
+        WebAppConfig cfg = getApplication().getAppConfig();
 
         if (artifactId != null) {
 
@@ -283,6 +284,10 @@ public class SelectIdPMediator implements Serializable {
     }
 
     protected SSOUIApplication getApplication() {
+
+        if (application == null)
+            logger.error("No application instance found for SelectIdPMediator (UI), check transient property value");
+
         return application;
     }
 
