@@ -57,13 +57,24 @@ public interface SSOSessionManager extends java.io.Serializable {
             throws SSOSessionException, TooManyOpenSessionsException;
 
     /**
-     * Initiates a new session given an assertion. The session id is returned.
+     * Initiates a new session given a security token. The session id is returned.
      *
      * @return the new session identifier.
      * @throws TooManyOpenSessionsException if the number of open sessions is exceeded.
      */
     String initiateSession(String username, SecurityToken securityToken)
             throws SSOSessionException, TooManyOpenSessionsException;
+
+    /**
+     * Initiates a new session given a security token. The session id is returned.
+     *
+     * @param sessionTimeout in seconds
+     * @return the new session identifier.
+     * @throws TooManyOpenSessionsException if the number of open sessions is exceeded.
+     */
+    String initiateSession(String username, SecurityToken securityToken, int sessionTimeout)
+            throws SSOSessionException, TooManyOpenSessionsException;
+
 
     /**
      * This method accesss the session associated to the received id.
