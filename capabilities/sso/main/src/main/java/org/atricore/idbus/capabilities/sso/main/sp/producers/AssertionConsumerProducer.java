@@ -75,6 +75,7 @@ import org.w3c.dom.Element;
 
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import java.security.Principal;
@@ -321,12 +322,14 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
 
+        // We mast have an assertion!
         SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
                 (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
                 idp,
                 acctLink,
                 federatedSubject,
-                idpSubject);
+                idpSubject,
+                (AssertionType) response.getAssertionOrEncryptedAssertion().get(0));
 
         Properties auditProps = new Properties();
         auditProps.put("idpAlias", spSecurityCtx.getIdpAlias());
@@ -1334,6 +1337,28 @@ public class AssertionConsumerProducer extends SSOProducer {
 		}		
 		
 	}
+
+    private Calendar getSessionNotOnOrAfter(AssertionType assertion) {
+
+        XMLGregorianCalendar sessionNotOnOrAfter = null;
+        List<AuthnStatementType> authnStatements = getAuthnStatements(assertion);
+
+        for (AuthnStatementType authnStatement : authnStatements) {
+
+            if (authnStatement.getSessionNotOnOrAfter() != null) {
+                if (sessionNotOnOrAfter == null)
+                    sessionNotOnOrAfter = authnStatement.getSessionNotOnOrAfter();
+                else if (sessionNotOnOrAfter.compare(authnStatement.getSessionNotOnOrAfter()) == DatatypeConstants.LESSER) {
+                    sessionNotOnOrAfter = authnStatement.getSessionNotOnOrAfter();
+                }
+            }
+        }
+
+        if (sessionNotOnOrAfter != null)
+            return sessionNotOnOrAfter.toGregorianCalendar();
+
+        return null;
+    }
     
     private List<AuthnStatementType> getAuthnStatements(AssertionType assertion){
     	ArrayList<AuthnStatementType> statementsList = new ArrayList<AuthnStatementType>();
@@ -1375,7 +1400,8 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                         CircleOfTrustMemberDescriptor idp,
                                                         AccountLink acctLink,
                                                         Subject federatedSubject,
-                                                        Subject idpSubject)
+                                                        Subject idpSubject,
+                                                        AssertionType assertion)
             throws SSOException {
 
         if (logger.isDebugEnabled())
@@ -1458,9 +1484,18 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         try {
             // Create new SSO Session
-            // TODO : Should we listen to DESTROYED event?
-            String ssoSessionId = ssoSessionManager.initiateSession(nameId.getName(), token);
 
+            // Take session timeout from the assertion, if available.
+            Calendar sessionExpiration = getSessionNotOnOrAfter(assertion);
+            long sessionTimeout = 0;
+
+            if (sessionExpiration != null) {
+                sessionTimeout = (sessionExpiration.getTimeInMillis() - System.currentTimeMillis()) / 1000L;
+            }
+
+            String ssoSessionId = (sessionTimeout > 0 ?
+                ssoSessionManager.initiateSession(nameId.getName(), token, (int) sessionTimeout) : // Request session timeout
+                ssoSessionManager.initiateSession(nameId.getName(), token));                       // Use default session timeout
 
             if (logger.isTraceEnabled())
                     logger.trace("Created SP SSO Session with id " + ssoSessionId);
