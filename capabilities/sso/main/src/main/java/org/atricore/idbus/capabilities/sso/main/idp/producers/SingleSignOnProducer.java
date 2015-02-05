@@ -1565,9 +1565,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         // TODO : We need to use the STS ..., and get ALL the required tokens again.
         // TODO : Set in assertion AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX
-
-        MessageQueueManager aqm = getArtifactQueueManager();
-
         ClaimSet claims = new ClaimSetImpl();
         UsernameTokenType usernameToken = new UsernameTokenType();
 
@@ -1589,8 +1586,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 RequestedAuthnContextType reqAuthn = authnRequest.getRequestedAuthnContext();
                 if (reqAuthn != null) {
-                    // TODO : We should honor the requested authn!
-                    logger.warn("Requested Authentication context class ignored" + reqAuthn);
+                    // TODO : We should honor the originally requested authentication context!
+                    logger.warn("Requested Authentication context class ignored !!!! " + reqAuthn);
                 }
 
                 CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
@@ -1625,14 +1622,6 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                          SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
                                                                          ClaimSet receivedClaims,
                                                                          CircleOfTrustMemberDescriptor sp) throws Exception {
-        return this.emitAssertionFromClaims(exchange, securityTokenEmissionCtx, receivedClaims, sp, (SPChannel) channel);
-    }
-
-    protected SamlR2SecurityTokenEmissionContext emitAssertionFromClaims(CamelMediationExchange exchange,
-                                                                         SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
-                                                                         ClaimSet receivedClaims,
-                                                                         CircleOfTrustMemberDescriptor sp, SPChannel spChannel) throws Exception {
-
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -1657,12 +1646,12 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
 
-        // Recover emission context, to retrieve Subject information
+        // Recover emission context, to get Subject information
         securityTokenEmissionCtx = (SamlR2SecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
 
         /// Obtain assertion from STS Response
         JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
-        Subject subject = (Subject) rstrt.getAny().get(2);
+        Subject subject = (Subject) rstrt.getAny().get(2); // Hard-coded subject position in response
         AssertionType assertion = (AssertionType) token.getValue().getAny();
         if (logger.isDebugEnabled())
             logger.debug("Generated SamlR2 Assertion " + assertion.getID());
@@ -1670,11 +1659,10 @@ public class SingleSignOnProducer extends SSOProducer {
         securityTokenEmissionCtx.setAssertion(assertion);
         securityTokenEmissionCtx.setSubject(subject);
 
-        // Look up SSO User (TODO : This could be disabled since it adds an additional access to the users repository)
         SSOUser ssoUser = null;
         Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
         if (p != null && p.size() > 0) {
-
+            // We have a simple princiapl, Look for an SSOUser instance
             SimplePrincipal user = p.iterator().next();
             SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
             if (identityMgr != null)
@@ -1683,6 +1671,7 @@ public class SingleSignOnProducer extends SSOProducer {
         } else {
             Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
             if (ssoUsers != null && ssoUsers.size() > 0) {
+                // We already have an SSOUser instance
                 ssoUser = ssoUsers.iterator().next();
             }
         }
@@ -1690,7 +1679,7 @@ public class SingleSignOnProducer extends SSOProducer {
         if (ssoUser != null) {
             // Make some validations on the SSO user
             for (SSONameValuePair nvp : ssoUser.getProperties()) {
-                if (nvp.getName().equals("accountDisabled")) {
+                if (nvp.getName().equalsIgnoreCase("accountDisabled")) {
                     boolean disabled = Boolean.parseBoolean(nvp.getValue());
                     if (disabled) {
                         throw new SecurityTokenAuthenticationFailure("Account disabled");
