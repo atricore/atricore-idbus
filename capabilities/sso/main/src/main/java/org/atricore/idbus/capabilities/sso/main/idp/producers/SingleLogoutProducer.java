@@ -111,7 +111,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
                 if (!proxy) {
                     metric += "doProcessSLORequest";
-                    doProcessSLORequest(exchange, (LogoutRequestType) content);
+                    doProcessSLORequest(exchange, (LogoutRequestType) content, in.getMessage().getRelayState());
                 } else {
                     metric += "doProcessSLORequestAsProxy";
                     doProcessSLORequestAsProxy(exchange, (LogoutRequestType) content);
@@ -208,7 +208,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
     }
 
-    protected void doProcessSLORequest(CamelMediationExchange exchange, LogoutRequestType sloRequest) throws Exception {
+    protected void doProcessSLORequest(CamelMediationExchange exchange, LogoutRequestType sloRequest, String relayState) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
@@ -249,7 +249,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(response.getID(),
-                response, "LogoutResponse", in.getMessage().getRelayState(), ed, in.getMessage().getState()));
+                response, "LogoutResponse", relayState, ed, in.getMessage().getState()));
 
         exchange.setOut(out);
 
@@ -263,7 +263,9 @@ public class SingleLogoutProducer extends SSOProducer {
 
         validateRequest(sloRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
+        // Store original SLO request and relay state.
         state.setLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest", sloRequest);
+        state.setLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORelayState", in.getMessage().getRelayState());
 
         SPChannel spChannel = (SPChannel) channel;
         BindingChannel bChannel = (BindingChannel) spChannel.getProxy();
@@ -290,9 +292,13 @@ public class SingleLogoutProducer extends SSOProducer {
         MediationState state = in.getMessage().getState();
 
         LogoutRequestType sloRequest = (LogoutRequestType) state.getLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest");
+        String relayState = (String) state.getLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORelayState");
+
+        state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest");
+        state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORelayState");
 
         // Just trigger the SLO Request
-        doProcessSLORequest(exchange, sloRequest);
+        doProcessSLORequest(exchange, sloRequest, relayState);
     }
 
     protected EndpointDescriptor resolveProxySPInitiatedSLOEndpointDescriptor(CamelMediationExchange exchange, BindingChannel bChannel) throws SSOException {
