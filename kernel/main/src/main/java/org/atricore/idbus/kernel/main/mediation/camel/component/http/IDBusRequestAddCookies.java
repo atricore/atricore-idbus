@@ -63,6 +63,9 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
 
     }
 
+    /**
+     * Since internal connections (from our HTTP client) are non-secure, cookies must ALL be set to secure = false
+     */
     protected Cookie toClientCookie(HttpContext context, javax.servlet.http.Cookie svltCookie, String cookieDomain) {
 
         BasicClientCookie cookie = new BasicClientCookie(svltCookie.getName(), svltCookie.getValue());
@@ -78,7 +81,38 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         //cookie.setSecure(svltCookie.getSecure());
         cookie.setSecure(false);
         cookie.setComment(svltCookie.getComment());
+        cookie.setExpiryDate(null);
+
+        if (logger.isTraceEnabled())
+            logger.trace("Server Cookie: " + toString(svltCookie));
+
+        if (logger.isTraceEnabled())
+            logger.trace("Client Cookie: " + cookie.toString());
 
         return cookie;
+    }
+
+    protected String toString(javax.servlet.http.Cookie cookie) {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("[version: ");
+        buffer.append(Integer.toString(cookie.getVersion()));
+        buffer.append("]");
+        buffer.append("[name: ");
+        buffer.append(cookie.getName());
+        buffer.append("]");
+        buffer.append("[value: ");
+        buffer.append(cookie.getValue());
+        buffer.append("]");
+        buffer.append("[domain: ");
+        buffer.append(cookie.getDomain());
+        buffer.append("]");
+        buffer.append("[path: ");
+        buffer.append(cookie.getPath());
+        buffer.append("]");
+        buffer.append("[max-age: ");
+        buffer.append(cookie.getMaxAge());
+        buffer.append("]");
+        return buffer.toString();
+
     }
 }

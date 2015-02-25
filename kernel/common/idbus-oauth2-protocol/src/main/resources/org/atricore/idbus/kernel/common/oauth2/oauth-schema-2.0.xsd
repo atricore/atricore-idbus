@@ -50,12 +50,24 @@
     <complexType name="AuthorizationRequestType">
         <complexContent>
             <extension base="oauth2p:OAuthRequestAbstractType">
-                <attribute name="responseType" type="string" use="optional" default="code"/>
+                <attribute name="scope" type="string" use="required"/>
+                <attribute name="responseType" type="string" use="required" default="code"/>
                 <attribute name="clientId" type="string" use="required"/>
+                <!-- this attribute is non-normative -->
                 <attribute name="clientSecret" type="string" use="optional"/>
+
                 <attribute name="redirectUri" type="string" use="optional"/>
-                <attribute name="scope" type="string" use="optional"/>
                 <attribute name="state" type="string" use="optional"/>
+                <attribute name="responseMode" type="string" use="optional"/>
+                <attribute name="nonce" type="string" use="optional"/>
+                <attribute name="display" type="string" use="optional"/>
+                <attribute name="propmt" type="string" use="optional"/>
+                <attribute name="maxAget" type="string" use="optional"/>
+                <attribute name="uiLocales" type="string" use="optional"/>
+                <attribute name="idTokenHint" type="string" use="optional"/>
+                <attribute name="loginHint" type="string" use="optional"/>
+                <attribute name="acrValues" type="string" use="optional"/>
+
             </extension>
         </complexContent>
     </complexType>
