@@ -72,7 +72,6 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
         if (logger.isDebugEnabled())
             logger.debug("Redirecting to " + oauth2ResfulLocation);
 
-
         try {
 
             // ------------------------------------------------------------

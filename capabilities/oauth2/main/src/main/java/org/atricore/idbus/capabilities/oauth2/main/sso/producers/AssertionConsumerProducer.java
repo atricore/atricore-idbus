@@ -58,7 +58,7 @@ public class AssertionConsumerProducer extends AbstractCamelProducer<CamelMediat
         if (logger.isDebugEnabled())
             logger.debug("Using Resource Server URL: [" + rServerLocation + " ]");
 
-        // Create destination with back/to and HTTP-Redirect binding
+        // Create destination with back/to and OAUTH2 Restful binding
         EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
                 "AccessToken",
                 OAuth2Binding.OAUTH2_RESTFUL.getValue(),

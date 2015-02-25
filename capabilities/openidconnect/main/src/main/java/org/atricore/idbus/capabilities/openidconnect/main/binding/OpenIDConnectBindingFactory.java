@@ -49,10 +49,11 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
                 mb = new SsoHttpArtifactBinding(channel);
                 break;
             case OPENID_HTTP_POST:
-                mb = new OpenIDConnectHttpPostBinding(channel);
+
+                // mb = new OpenIDConnectHttpPostBinding(channel);
                 break;
-            case OPENID_HTTP_REDIR:
-                mb = new OpenIDConnectHttpRedirectBinding(channel);
+            case OPENIDCONNECT_AUTHZ:
+                mb = new OpenIDConnectHttpAuthzBinding(channel);
                 break;
             default:
         }
