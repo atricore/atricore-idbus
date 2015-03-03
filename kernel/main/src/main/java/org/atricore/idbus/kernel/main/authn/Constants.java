@@ -22,7 +22,7 @@
 package org.atricore.idbus.kernel.main.authn;
 
 /**
- * Some constants used by frontchannel http.
+ * Some constants used by front-channel http.
  *
  * @author <a href="mailto:sgonzalez@josso.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: Constants.java 1168 2009-04-27 20:18:19Z ajadzinsky $
@@ -30,10 +30,6 @@ package org.atricore.idbus.kernel.main.authn;
 
 public interface Constants  {
 
-    /**
-     * Reqeuest parameter representing an SSO command.
-     * Value : sso_cmd
-     */
     public static final String PASSWORD_NS = "urn:org:atricore:idbus:kernel:main:authn:pwd";
 
     public static final String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";

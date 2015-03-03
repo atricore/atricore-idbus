@@ -49,6 +49,8 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     private String basicAuthnUILocation;
 
+    private String basicAuthnCtxClass;
+
     private String twoFactorAuthnUILocation;
 
     private ProvisioningTarget provisioningTarget;
@@ -59,6 +61,15 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     public void setBasicAuthnUILocation( String basicAuthnUILocation ) {
         this.basicAuthnUILocation = basicAuthnUILocation;
+    }
+
+
+    public String getBasicAuthnCtxClass() {
+        return basicAuthnCtxClass;
+    }
+
+    public void setBasicAuthnCtxClass(String basicAuthnCtxClass) {
+        this.basicAuthnCtxClass = basicAuthnCtxClass;
     }
 
     public String getTwoFactorAuthnUILocation() {

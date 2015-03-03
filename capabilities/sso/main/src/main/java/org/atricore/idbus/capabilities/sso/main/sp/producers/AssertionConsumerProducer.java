@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
+import oasis.names.tc.saml._1_0.assertion.AuthenticationStatementType;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
@@ -39,6 +40,7 @@ import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2AuthnResponseToSPAuthnResponse;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
@@ -1495,6 +1497,21 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
         }
 
+        AuthnCtxClass authnCtx = null;
+        for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
+            if (stmt instanceof AuthnStatementType) {
+                AuthnStatementType authnStmt = (AuthnStatementType) stmt;
+
+                for (JAXBElement e : authnStmt.getAuthnContext().getContent()) {
+                    if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
+                        authnCtx = AuthnCtxClass.asEnum((String) e.getValue());
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
         // Create a new Security Context
         secCtx = new SPSecurityContext();
         
@@ -1503,7 +1520,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         secCtx.setSubject(federatedSubject);
         secCtx.setAccountLink(acctLink);
         secCtx.setRequester(requester);
-
+        secCtx.setAuthnCtxClass(authnCtx);
 
         SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
 
@@ -1528,7 +1545,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             // Update security context with SSO Session ID
             secCtx.setSessionIndex(ssoSessionId);
 
-            // TODO : Use IDP Session information Subject's attributes and update local session: expiration time, etc.
             Set<SubjectAuthenticationAttribute> attrs = idpSubject.getPrincipals(SubjectAuthenticationAttribute.class);
             String idpSsoSessionId = null;
             for (SubjectAuthenticationAttribute attr : attrs) {

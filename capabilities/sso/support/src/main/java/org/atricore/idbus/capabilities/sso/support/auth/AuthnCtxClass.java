@@ -54,7 +54,7 @@ public enum AuthnCtxClass {
     PASSWORD_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:Password", false),
 
     /** URI for Password Protected Transport authentication context. */
-    PPT_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport", true),
+    PPT_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport", false),
 
     /** URI for Previous Session authentication context. */
     PREVIOUS_SESSION_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession", true),

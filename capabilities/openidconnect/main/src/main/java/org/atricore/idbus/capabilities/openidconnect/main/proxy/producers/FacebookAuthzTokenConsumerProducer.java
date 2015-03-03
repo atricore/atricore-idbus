@@ -11,6 +11,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectB
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -118,6 +119,11 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         openIdSubjectAttr.setName("openIdSubject");
         openIdSubjectAttr.setValue(user.getId());
         attrs.add(openIdSubjectAttr);
+
+        SubjectAttributeType authnCtxClassAttr = new SubjectAttributeType();
+        authnCtxClassAttr.setName("authnCtxClass");
+        authnCtxClassAttr.setValue(AuthnCtxClass.PPT_AUTHN_CTX.getValue());
+        attrs.add(authnCtxClassAttr);
 
         // TODO : Add more user information
 
