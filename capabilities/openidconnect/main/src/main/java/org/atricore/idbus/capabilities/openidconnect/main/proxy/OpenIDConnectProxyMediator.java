@@ -87,7 +87,7 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
                         case SSO_REDIRECT:
                         case SSO_ARTIFACT:
                         case OPENID_HTTP_POST:
-                        case OPENID_HTTP_REDIR:
+                        case OPENIDCONNECT_AUTHZ:
 
                             // ----------------------------------------------------------
                             // HTTP Incoming messages:

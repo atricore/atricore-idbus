@@ -183,6 +183,18 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
             }
         }
 
+        AuthnCtxClass authnCtxClass = null;
+        if (mediator.getBasicAuthnCtxClass() != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Using configured Basic Authentication Context class: " + mediator.getBasicAuthnCtxClass());
+            authnCtxClass = AuthnCtxClass.asEnum(mediator.getBasicAuthnCtxClass());
+
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("Using default Basic Authentication Context class: " + AuthnCtxClass.PASSWORD_AUTHN_CTX);
+            authnCtxClass = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+        }
+
         // Build a SAMLR2 Compatible Security token
         UsernameTokenType usernameToken = new UsernameTokenType ();
         AttributedString usernameString = new AttributedString();
@@ -190,10 +202,10 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
         usernameToken.setUsername( usernameString );
         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );
-        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+        usernameToken.getOtherAttributes().put(new QName(authnCtxClass.getValue()), "TRUE");
         usernameToken.getOtherAttributes().put(new QName(Constants.REMEMBERME_NS), rememberMe ? "TRUE" : "FALSE");
 
-        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+        CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtxClass.getValue(), usernameToken);
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(credentialClaim);
 

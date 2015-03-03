@@ -615,7 +615,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
 
-            // Add any proxy principals availabe
+            // Add any proxy principals available
             if (secCtx.getProxyPrincipals() != null)
                 securityTokenEmissionCtx.getProxyPrincipals().addAll(secCtx.getProxyPrincipals());
 
@@ -1007,6 +1007,7 @@ public class SingleSignOnProducer extends SSOProducer {
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
             recordInfoAuditTrail("SSO", ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
             // The authentication failed, let's see what needs to be done.
@@ -1194,7 +1195,27 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
 
+                AuthnCtxClass authnCtx = null;
 
+                if (proxyResponse.getSubjectAttributes() != null) {
+                    for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
+                        if (attr.getName().equals("authnCtxClass")) {
+                            try {
+                                authnCtx = AuthnCtxClass.asEnum(attr.getValue());
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Using authnCtxClass " + attr.getValue());
+                                break;
+                            } catch (Exception e) {
+                                logger.error("Unknonw AuthnCtxClass type " + attr.getValue());
+                            }
+                        }
+                    }
+                }
+
+                // Just in case
+                if (authnCtx == null) {
+                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                }
 
                 ClaimSet claims = new ClaimSetImpl();
                 UsernameTokenType usernameToken = new UsernameTokenType();
@@ -1213,14 +1234,14 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         // TODO : This is not accurate
                         // TODO : We should honor the provided authn. context if any
-                        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                        usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
 
                         // Also update authentication state
-                        authnState.setAuthnCtxClass(AuthnCtxClass.PASSWORD_AUTHN_CTX);
+                        authnState.setAuthnCtxClass(authnCtx);
 
                         usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
 
-                        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                        CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtx.getValue(), usernameToken);
                         claims.addClaim(credentialClaim);
                     } else {
                         securityTokenEmissionCtx.getProxyPrincipals().add(next);
@@ -1565,9 +1586,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         // TODO : We need to use the STS ..., and get ALL the required tokens again.
         // TODO : Set in assertion AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX
-
-        MessageQueueManager aqm = getArtifactQueueManager();
-
         ClaimSet claims = new ClaimSetImpl();
         UsernameTokenType usernameToken = new UsernameTokenType();
 
@@ -1577,23 +1595,40 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (next instanceof SimplePrincipal) {
 
-                // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
                 SimplePrincipal principal = (SimplePrincipal) next;
+
+                // Get previously used authn-ctx class
+                AuthnCtxClass authnCtx = null;
+                List<JAXBElement<?>> c = secCtx.getAuthnStatement().getAuthnContext().getContent();
+                if (c != null && c.size() > 0) {
+                    for (JAXBElement e : c) {
+                        if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
+                            authnCtx = AuthnCtxClass.asEnum((String) e.getValue());
+                            break;
+                        }
+                    }
+                }
+
+                if (authnCtx == null) {
+                    logger.warn("No previous authentication context class, forcing Password");
+                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                }
 
                 AttributedString usernameString = new AttributedString();
                 usernameString.setValue(principal.getName());
                 usernameToken.setUsername(usernameString);
                 usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), principal.getName());
-                usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
                 usernameToken.getOtherAttributes().put(new QName(Constants.PREVIOUS_SESSION_NS), "TRUE");
 
                 RequestedAuthnContextType reqAuthn = authnRequest.getRequestedAuthnContext();
                 if (reqAuthn != null) {
-                    // TODO : We should honor the requested authn!
-                    logger.warn("Requested Authentication context class ignored" + reqAuthn);
+                    // TODO : We should honor the originally requested authentication context!
+                    logger.warn("Requested Authentication context class ignored !!!! " + reqAuthn);
                 }
 
-                CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                //CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtx.getValue(), usernameToken);
                 claims.addClaim(credentialClaim);
             }
 
@@ -1625,14 +1660,6 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                          SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
                                                                          ClaimSet receivedClaims,
                                                                          CircleOfTrustMemberDescriptor sp) throws Exception {
-        return this.emitAssertionFromClaims(exchange, securityTokenEmissionCtx, receivedClaims, sp, (SPChannel) channel);
-    }
-
-    protected SamlR2SecurityTokenEmissionContext emitAssertionFromClaims(CamelMediationExchange exchange,
-                                                                         SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
-                                                                         ClaimSet receivedClaims,
-                                                                         CircleOfTrustMemberDescriptor sp, SPChannel spChannel) throws Exception {
-
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -1657,12 +1684,12 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
 
-        // Recover emission context, to retrieve Subject information
+        // Recover emission context, to get Subject information
         securityTokenEmissionCtx = (SamlR2SecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
 
         /// Obtain assertion from STS Response
         JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
-        Subject subject = (Subject) rstrt.getAny().get(2);
+        Subject subject = (Subject) rstrt.getAny().get(2); // Hard-coded subject position in response
         AssertionType assertion = (AssertionType) token.getValue().getAny();
         if (logger.isDebugEnabled())
             logger.debug("Generated SamlR2 Assertion " + assertion.getID());
@@ -1670,11 +1697,10 @@ public class SingleSignOnProducer extends SSOProducer {
         securityTokenEmissionCtx.setAssertion(assertion);
         securityTokenEmissionCtx.setSubject(subject);
 
-        // Look up SSO User (TODO : This could be disabled since it adds an additional access to the users repository)
         SSOUser ssoUser = null;
         Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
         if (p != null && p.size() > 0) {
-
+            // We have a simple princiapl, Look for an SSOUser instance
             SimplePrincipal user = p.iterator().next();
             SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
             if (identityMgr != null)
@@ -1683,6 +1709,7 @@ public class SingleSignOnProducer extends SSOProducer {
         } else {
             Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
             if (ssoUsers != null && ssoUsers.size() > 0) {
+                // We already have an SSOUser instance
                 ssoUser = ssoUsers.iterator().next();
             }
         }
@@ -1690,7 +1717,7 @@ public class SingleSignOnProducer extends SSOProducer {
         if (ssoUser != null) {
             // Make some validations on the SSO user
             for (SSONameValuePair nvp : ssoUser.getProperties()) {
-                if (nvp.getName().equals("accountDisabled")) {
+                if (nvp.getName().equalsIgnoreCase("accountDisabled")) {
                     boolean disabled = Boolean.parseBoolean(nvp.getValue());
                     if (disabled) {
                         throw new SecurityTokenAuthenticationFailure("Account disabled");
@@ -2401,7 +2428,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                             String saml2authnCtxClassRef = (String) acc.getValue();
 
-                            if (saml2authnCtxClassRef.equals("urn:oasis:names:tc:SAML:2.0:ac:classes:Password")) {
+                            if (saml2authnCtxClassRef.equals(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue())) {
                                 saml11authnStatement.setAuthenticationMethod("urn:oasis:names:tc:SAML:1.0:am:password");
                             }
                             // TODO: map remaining authentication context classes types

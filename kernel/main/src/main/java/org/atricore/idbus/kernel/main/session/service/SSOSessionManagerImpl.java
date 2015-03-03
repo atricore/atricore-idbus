@@ -170,6 +170,18 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
      * @return the new session identifier.
      */
     public String initiateSession(String username, SecurityToken securityToken) throws SSOSessionException {
+        // Convert minutes to seconds:
+        return initiateSession(username, securityToken, getMaxInactiveInterval() * 60);
+    }
+
+    /**
+     * Initiates a new session. The new session id is returned.
+     *
+     * @param sessionTimeout in seconds
+     * @return
+     * @throws SSOSessionException
+     */
+    public String initiateSession(String username, SecurityToken securityToken, int sessionTimeout) throws SSOSessionException {
 
         // Invalidate sessions if necessary
         BaseSession sessions[] = _store.loadByUsername(username);
@@ -224,7 +236,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         session.setId(securityToken.getId()); // We use the securityToken ID as session ID ...!
         session.setCreationTime(System.currentTimeMillis());
         session.setValid(true);
-        session.setMaxInactiveInterval(getMaxInactiveInterval() * 60); // Convert minutes in seconds.
+        session.setMaxInactiveInterval(sessionTimeout); // in seconds.
         session.setUsername(username);
         session.setSecurityToken(securityToken);
         session.setLastNode(_node);

@@ -82,8 +82,11 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
             authorizationUrl.set("hd", mediator.getGoogleAppsDomain());
         }
 
-        // Request the proper scopes
-        String scopes = "openid email " + (mediator.getScopes() != null ? mediator.getScopes () : "");
+        // Request the proper scopes, this varies from IdP to IdP:
+
+        String scopes = mediator.getScopes();
+
+
         if (logger.isDebugEnabled())
             logger.debug("Setting scopes URL parameter to [" + scopes + "]");
 
@@ -107,7 +110,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         // Create Mediation message with redirect
         EndpointDescriptor ed = new EndpointDescriptorImpl("authzCodeService",
                 OpenIDConnectConstants.AuthzCodeProviderService_QNAME.getLocalPart(),
-                OpenIDConnectBinding.OPENID_HTTP_REDIR.getValue(),
+                OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.getValue(),
                 authorizationUrl.build(),
                 null);
 
@@ -125,18 +128,22 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
     protected EndpointDescriptor resolveAuthzTokenServiceEndpoint() {
 
-        String svc = OpenIDConnectConstants.AuthzTokenConsumerService_QNAME.toString();
-        String binding = OpenIDConnectBinding.OPENID_HTTP_REDIR.toString();
+        String googleSvc = OpenIDConnectConstants.GoogleAuthzTokenConsumerService_QNAME.toString();
+        String fbSvc = OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME.toString();
+        String binding = OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.toString();
 
         for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
-            if (endpoint.getType().equals(svc)) {
+            if (endpoint.getType().equals(googleSvc) ||
+                    endpoint.getType().equals(fbSvc) ||
+                    endpoint.getType().endsWith("AuthzTokenConsumerService")) { // Kind of a hack
+
                 if (endpoint.getBinding().equals(binding))
                     return new EndpointDescriptorImpl(channel.getLocation(), endpoint);
             }
         }
 
         logger.warn("No endpoint found for service/binding " +
-                svc + "/" +
+                        "<IdPType>AuthzTokenConsumerService/" +
                 binding);
 
         return null;

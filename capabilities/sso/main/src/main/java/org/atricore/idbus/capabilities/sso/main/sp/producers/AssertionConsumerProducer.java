@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
+import oasis.names.tc.saml._1_0.assertion.AuthenticationStatementType;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
@@ -39,6 +40,7 @@ import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2AuthnResponseToSPAuthnResponse;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
@@ -75,6 +77,7 @@ import org.w3c.dom.Element;
 
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import java.security.Principal;
@@ -321,12 +324,14 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
 
+        // We mast have an assertion!
         SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
                 (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
                 idp,
                 acctLink,
                 federatedSubject,
-                idpSubject);
+                idpSubject,
+                (AssertionType) response.getAssertionOrEncryptedAssertion().get(0));
 
         Properties auditProps = new Properties();
         auditProps.put("idpAlias", spSecurityCtx.getIdpAlias());
@@ -1359,6 +1364,28 @@ public class AssertionConsumerProducer extends SSOProducer {
 		}		
 		
 	}
+
+    private Calendar getSessionNotOnOrAfter(AssertionType assertion) {
+
+        XMLGregorianCalendar sessionNotOnOrAfter = null;
+        List<AuthnStatementType> authnStatements = getAuthnStatements(assertion);
+
+        for (AuthnStatementType authnStatement : authnStatements) {
+
+            if (authnStatement.getSessionNotOnOrAfter() != null) {
+                if (sessionNotOnOrAfter == null)
+                    sessionNotOnOrAfter = authnStatement.getSessionNotOnOrAfter();
+                else if (sessionNotOnOrAfter.compare(authnStatement.getSessionNotOnOrAfter()) == DatatypeConstants.LESSER) {
+                    sessionNotOnOrAfter = authnStatement.getSessionNotOnOrAfter();
+                }
+            }
+        }
+
+        if (sessionNotOnOrAfter != null)
+            return sessionNotOnOrAfter.toGregorianCalendar();
+
+        return null;
+    }
     
     private List<AuthnStatementType> getAuthnStatements(AssertionType assertion){
     	ArrayList<AuthnStatementType> statementsList = new ArrayList<AuthnStatementType>();
@@ -1400,7 +1427,8 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                         CircleOfTrustMemberDescriptor idp,
                                                         AccountLink acctLink,
                                                         Subject federatedSubject,
-                                                        Subject idpSubject)
+                                                        Subject idpSubject,
+                                                        AssertionType assertion)
             throws SSOException {
 
         if (logger.isDebugEnabled())
@@ -1469,6 +1497,21 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
         }
 
+        AuthnCtxClass authnCtx = null;
+        for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
+            if (stmt instanceof AuthnStatementType) {
+                AuthnStatementType authnStmt = (AuthnStatementType) stmt;
+
+                for (JAXBElement e : authnStmt.getAuthnContext().getContent()) {
+                    if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
+                        authnCtx = AuthnCtxClass.asEnum((String) e.getValue());
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
         // Create a new Security Context
         secCtx = new SPSecurityContext();
         
@@ -1477,15 +1520,24 @@ public class AssertionConsumerProducer extends SSOProducer {
         secCtx.setSubject(federatedSubject);
         secCtx.setAccountLink(acctLink);
         secCtx.setRequester(requester);
-
+        secCtx.setAuthnCtxClass(authnCtx);
 
         SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
 
         try {
             // Create new SSO Session
-            // TODO : Should we listen to DESTROYED event?
-            String ssoSessionId = ssoSessionManager.initiateSession(nameId.getName(), token);
 
+            // Take session timeout from the assertion, if available.
+            Calendar sessionExpiration = getSessionNotOnOrAfter(assertion);
+            long sessionTimeout = 0;
+
+            if (sessionExpiration != null) {
+                sessionTimeout = (sessionExpiration.getTimeInMillis() - System.currentTimeMillis()) / 1000L;
+            }
+
+            String ssoSessionId = (sessionTimeout > 0 ?
+                ssoSessionManager.initiateSession(nameId.getName(), token, (int) sessionTimeout) : // Request session timeout
+                ssoSessionManager.initiateSession(nameId.getName(), token));                       // Use default session timeout
 
             if (logger.isTraceEnabled())
                     logger.trace("Created SP SSO Session with id " + ssoSessionId);
@@ -1493,7 +1545,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             // Update security context with SSO Session ID
             secCtx.setSessionIndex(ssoSessionId);
 
-            // TODO : Use IDP Session information Subject's attributes and update local session: expiration time, etc.
             Set<SubjectAuthenticationAttribute> attrs = idpSubject.getPrincipals(SubjectAuthenticationAttribute.class);
             String idpSsoSessionId = null;
             for (SubjectAuthenticationAttribute attr : attrs) {

@@ -4,6 +4,8 @@ import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSO
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -19,8 +21,17 @@ public class SetAuthnResponseSubjectAction extends AbstractSSOAction {
         SPSecurityContext spSecurityContext = (SPSecurityContext) executionContext.getContextInstance().getTransientVariable(VAR_SECURITY_CONTEXT);
 
         if (spSecurityContext != null) {
-            ssoResponse.setSubject(ProtocolUtils.toSubjectType(spSecurityContext .getSubject()));
+
+            SubjectType subject = ProtocolUtils.toSubjectType(spSecurityContext.getSubject());
+            SubjectAttributeType authnCtxAttr = new SubjectAttributeType();
+            authnCtxAttr.setName("authnCtxClass");
+            authnCtxAttr.setValue(spSecurityContext.getAuthnCtxClass().getValue());
+            subject.getAbstractPrincipal().add(authnCtxAttr);
+
+            ssoResponse.setSubject(subject);
             ssoResponse.setSessionIndex(spSecurityContext .getSessionIndex());
+            ssoResponse.getSubjectAttributes().add(authnCtxAttr);
+
         }
 
     }

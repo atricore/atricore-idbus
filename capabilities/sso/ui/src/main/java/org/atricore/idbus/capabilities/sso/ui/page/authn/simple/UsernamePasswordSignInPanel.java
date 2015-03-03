@@ -375,6 +375,9 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                 credentialClaimsRequest.getRelayState());
 
         EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(credentialClaimsRequest, AuthnCtxClass.PASSWORD_AUTHN_CTX);
+        if (claimsEndpoint == null)
+            claimsEndpoint = resolveClaimsEndpoint(credentialClaimsRequest, AuthnCtxClass.PPT_AUTHN_CTX);
+
         if (claimsEndpoint == null) {
             logger.error("No claims endpoint found!");
             // TODO : Create error and redirect to error view using 'IDBusErrArt'

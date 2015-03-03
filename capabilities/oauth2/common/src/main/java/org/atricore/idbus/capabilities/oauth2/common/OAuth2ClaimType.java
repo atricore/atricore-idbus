@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.oauth2.common;
 import javax.management.relation.Role;
 
 /**
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public enum OAuth2ClaimType {

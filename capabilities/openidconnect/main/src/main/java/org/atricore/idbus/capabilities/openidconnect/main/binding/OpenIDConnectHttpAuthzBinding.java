@@ -1,27 +1,32 @@
 package org.atricore.idbus.capabilities.openidconnect.main.binding;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
+import com.google.api.client.auth.openidconnect.IdTokenResponse;
+import com.google.api.client.http.HttpResponse;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.MediationMessage;
-import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
+import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import sun.misc.IOUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
- *
+ * OpenID Connect (OAuth2 Authorization) messages binding using Google OpenID connect toolkit.
  */
-public class OpenIDConnectHttpRedirectBinding extends AbstractMediationHttpBinding {
+public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding {
 
-    private static final Log logger = LogFactory.getLog(OpenIDConnectHttpRedirectBinding.class);
+    private static final Log logger = LogFactory.getLog(OpenIDConnectHttpAuthzBinding.class);
 
-    public OpenIDConnectHttpRedirectBinding(Channel channel) {
-        super(OpenIDConnectBinding.OPENID_HTTP_REDIR.getValue(), channel);
+    public OpenIDConnectHttpAuthzBinding(Channel channel) {
+        super(OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.getValue(), channel);
     }
 
     @Override
@@ -65,6 +70,49 @@ public class OpenIDConnectHttpRedirectBinding extends AbstractMediationHttpBindi
 
         } else if (state.getTransientVariable("access_token") != null) {
             // Looks like an access token
+
+        } else if (state.getTransientVariable("error_code") != null ||
+                   state.getTransientVariable("error") != null) {
+
+
+            // This is an error from the Idp, withotut
+            StringBuffer buf = new StringBuffer(requestUrl);
+            if (queryString != null) {
+                buf.append('?').append(queryString);
+            }
+
+            // ------------------------------------------------
+            // Some Facebook handling, adapt some parameters
+            // to play nice with Google OpenIDConnect stack
+            // ------------------------------------------------
+
+            // Facebook only sends error_code, not error or code, so.
+            if ( state.getTransientVariable("error") == null) {
+                if (state.getTransientVariable("error_code") != null)
+                    buf.append("&error=" + state.getTransientVariable("error_code"));
+            }
+
+            // Facebook sends error_message instead of error_description
+            if (state.getTransientVariable("error_description") == null) {
+                if (state.getTransientVariable("error_message") != null) {
+                    try {
+                        buf.append("&error_description=" + URLEncoder.encode(state.getTransientVariable("error_message"), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        logger.error("Cannot encode OpenID error message : " + state.getTransientVariable("error_message"));
+                    }
+                }
+            }
+
+
+            AuthorizationCodeResponseUrl responseUrl = new AuthorizationCodeResponseUrl(buf.toString());
+
+            return new MediationMessageImpl<AuthorizationCodeResponseUrl>(httpMsg.getMessageId(),
+                    responseUrl,
+                    responseUrl.build(),
+                    null,
+                    responseUrl.getState(),
+                    null,
+                    state);
         }
 
         throw new IllegalStateException("Unrecognized HTTP redirect mesage [" + requestUrl + "?" + queryString + "]");
@@ -114,6 +162,32 @@ public class OpenIDConnectHttpRedirectBinding extends AbstractMediationHttpBindi
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public Object sendMessage(MediationMessage message) throws IdentityMediationException {
+
+        try {
+
+            AuthorizationCodeTokenIdRequest tokenRequest =
+                    (AuthorizationCodeTokenIdRequest) message.getContent();
+
+            HttpResponse httpResponse = tokenRequest.executeUnparsed();
+
+            InputStream is  = httpResponse.getContent();
+
+            byte[] c = IOUtils.readFully(is, 0, true);
+
+            String content = new String(c);
+
+            logger.debug("CONTENT : " + content);
+            IdTokenResponse idTokenResponse = httpResponse.parseAs(IdTokenResponse.class);
+
+            return idTokenResponse;
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new IdentityMediationException(e);
         }
     }
 }

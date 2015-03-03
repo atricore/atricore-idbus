@@ -9,7 +9,7 @@ public enum OpenIDConnectBinding {
 
     // Binding URIs for native openid endpoints
     OPENID_HTTP_POST("urn:OPENID-CONNECT:1.0:bindings:HTTP-POST", true),
-    OPENID_HTTP_REDIR("urn:OPENID-CONNECT:1.0:bindings:HTTP-Redirect", true),
+    OPENIDCONNECT_AUTHZ("urn:OPENID-CONNECT:1.0:bindings:AUTHZ", true),
 
     // Binding URIs for non-native openid endpoints
     SSO_REDIRECT(SSOBinding.SSO_REDIRECT.getValue(), SSOBinding.SSO_REDIRECT.isFrontChannel()),

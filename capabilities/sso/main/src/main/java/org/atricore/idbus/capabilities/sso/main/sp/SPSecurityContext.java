@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp;
 
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.kernel.main.federation.AccountLink;
 
 import javax.security.auth.Subject;
@@ -46,6 +47,11 @@ public class SPSecurityContext implements Serializable {
     private String requester;
 
     private Long lastIdPSessionHeartBeat;
+
+    private AuthnCtxClass authnCtxClass;
+
+    public SPSecurityContext() {
+    }
 
     public String getIdpAlias() {
         return idpAlias;
@@ -132,4 +138,11 @@ public class SPSecurityContext implements Serializable {
                 "]";
     }
 
+    public void setAuthnCtxClass(AuthnCtxClass authnCtxClass) {
+        this.authnCtxClass = authnCtxClass;
+    }
+
+    public AuthnCtxClass getAuthnCtxClass() {
+        return authnCtxClass;
+    }
 }

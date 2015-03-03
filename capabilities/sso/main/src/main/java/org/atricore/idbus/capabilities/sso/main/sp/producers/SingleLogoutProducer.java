@@ -569,7 +569,7 @@ public class SingleLogoutProducer extends SSOProducer {
             }
 
             if (state.getTransientVariable("RelayState") == null ||
-                    !state.getTransientVariable("RelayState").equals(state.getLocalState().getId())) {
+                 !state.getTransientVariable("RelayState").equals(state.getLocalState().getId())) {
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         null,
