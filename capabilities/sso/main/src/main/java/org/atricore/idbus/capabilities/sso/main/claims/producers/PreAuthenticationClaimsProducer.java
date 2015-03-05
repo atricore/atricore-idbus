@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.claims.producers;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -182,8 +183,16 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             ClaimChannel cc = (ClaimChannel) channel;
 
             preAuthnReq.setID(uuidGenerator.generateId());
-            preAuthnReq.setIssuer(cc.getFederatedProvider().getChannel().getMember().getAlias());
-            // TODO : Add additional information if needed
+
+            String idpAlias = cc.getFederatedProvider().getChannel().getMember().getAlias();
+            preAuthnReq.setIssuer(new String(new Base64().encode(idpAlias.getBytes())));
+
+            if (claimsRequest instanceof SSOCredentialClaimsRequest) {
+                String spAlias = ((SSOCredentialClaimsRequest) claimsRequest).getSpAlias();
+                if (logger.isDebugEnabled())
+                    logger.debug("Setting SP Alias as target : " + spAlias);
+                preAuthnReq.setTarget(new String(new Base64().encode(spAlias.getBytes())));
+            }
 
             EndpointDescriptor ed = new EndpointDescriptorImpl("pre-authn-token",
                     "PreAuthenticationTokenService",

@@ -98,6 +98,7 @@
         <complexContent>
             <extension base="ssop:SSORequestAbstractType">
                 <attribute name="AuthnCtxClass" type="string" use="optional"/>
+                <attribute name="Target" type="string" use="optional"/>
             </extension>
         </complexContent>
     </complexType>
