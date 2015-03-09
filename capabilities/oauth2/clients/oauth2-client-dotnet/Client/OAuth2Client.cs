@@ -21,21 +21,6 @@ namespace Atricore.OAuth2Client
 
         private String clientSecret;
 
-        static void Main(string[] args)
-        {
-            string username = ConfigurationManager.AppSettings["username"];
-            string password = ConfigurationManager.AppSettings["password"];
-
-            Atricore.OAuth2Client.OAuth2Client oauth2Client = new Atricore.OAuth2Client.OAuth2Client();
-            oauth2Client.init();
-            String accessToken = oauth2Client.requestToken(username, password);
-
-            string resourceServerEndpoint = ConfigurationManager.AppSettings["idpInitPreAuthn"];
-            string serviceProviderAlias = ConfigurationManager.AppSettings["serviceProviderAlias"];
-            string url = string.Format("{0}?atricore_sp_alias={1}&atricore_security_token={2}", resourceServerEndpoint, serviceProviderAlias, Uri.EscapeDataString(accessToken));
-            Console.WriteLine(url);
-        }
-
         public void init()
         {
             string authorizationServerEndpoint = ConfigurationManager.AppSettings["authorizationServerEndpoint"];
@@ -76,6 +61,7 @@ namespace Atricore.OAuth2Client
          *
          * @param usr the username used to issue the access token
          * @param pwd the password used to issue the access token
+         * @Deprecated
          */
         public String buildgetIdPInitPreAuthnUrlForDefaultSp(String usr, String pwd)  
         {
@@ -83,6 +69,20 @@ namespace Atricore.OAuth2Client
             return buildIdPInitPreAuthnUrl(spAlias, usr, pwd);
         }
 
+        /**
+         * Builds a pre-authentication Url for the given username and password, and requesting
+         * the default SP (as configured in the oauth2.spAlias property).
+         *
+         * This method calls the requestToken method.
+         *
+         * @param usr the username used to issue the access token
+         * @param pwd the password used to issue the access token
+         */
+        public String buildIdPInitPreAuthnUrlForDefaultSp(String usr, String pwd)
+        {
+            String spAlias = ConfigurationManager.AppSettings["serviceProviderAlias"];
+            return buildIdPInitPreAuthnUrl(spAlias, usr, pwd);
+        }
 
         /**
          * Builds a pre-authentication Url for the given username and password.
