@@ -49,6 +49,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-oauth2</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client</artifactId>
         </dependency>
@@ -377,6 +382,8 @@
                         <Embed-Transitive>true</Embed-Transitive>
                         <Embed-Dependency>
                             google-oauth-client; scope=compile; type=!pom; inline=false,
+                            google-api-client; scope=compile; type=!pom; inline=false,
+                            google-api-services-oauth2; scope=compile; type=!pom; inline=false,
                             google-http-client; scope=compile; type=!pom; inline=false,
                             google-http-client-jackson; scope=compile; type=!pom; inline=false,
                             restfb; scope=compile; type=!pom; inline=false,
