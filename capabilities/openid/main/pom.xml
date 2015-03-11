@@ -29,17 +29,17 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.openid</groupId>
         <artifactId>openid</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.openid</groupId>
     <artifactId>org.atricore.idbus.capabilities.openid.main</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : OpenID Main Component</name>
 
     <properties>
-        <idbus.cap.sso.version>1.4.1-SNAPSHOT</idbus.cap.sso.version>
+        <idbus.cap.sso.version>1.4.2-SNAPSHOT</idbus.cap.sso.version>
     </properties>
 
     <dependencies>

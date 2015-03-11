@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
         <artifactId>org.atricore.idbus.capabilities.idconfirmation.component</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
     <artifactId>org.atricore.idbus.capabilities.idconfirmation.component.builtin</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : Identity Confirmation Builtin Components</name>
 

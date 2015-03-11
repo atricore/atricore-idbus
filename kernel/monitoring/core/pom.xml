@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.monitoring</groupId>
         <artifactId>monitoring</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.monitoring</groupId>

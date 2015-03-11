@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
     <artifactId>idconfirmation</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : Identity Confirmation POM</name>
     <packaging>pom</packaging>
 
@@ -45,9 +45,9 @@
 
     <properties>
 
-        <idbus.kernel.version>1.4.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.4.1-SNAPSHOT</idbus.sts.version>
-        <idbus.sso.version>1.4.1-SNAPSHOT</idbus.sso.version>
+        <idbus.kernel.version>1.4.2-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.4.2-SNAPSHOT</idbus.sts.version>
+        <idbus.sso.version>1.4.2-SNAPSHOT</idbus.sso.version>
 
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>

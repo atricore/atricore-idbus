@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.openidconnect</groupId>
     <artifactId>openidconnect</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.2-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : OpenID Connect POM</name>
     <packaging>pom</packaging>
 
@@ -52,8 +52,8 @@
         <httpclient.version>4.0.1</httpclient.version>
         <facebook.restfb.version>1.8.0</facebook.restfb.version>
 
-        <idbus.kernel.version>1.4.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.4.1-SNAPSHOT</idbus.sts.version>
+        <idbus.kernel.version>1.4.2-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.4.2-SNAPSHOT</idbus.sts.version>
 
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
