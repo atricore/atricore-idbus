@@ -1,15 +1,16 @@
 package org.atricore.idbus.capabilities.openidconnect.main.proxy.producers;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.producers.OpenIDConnectProducer;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
-import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -24,6 +25,8 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.util.List;
+
 /**
  * Receives an OAuth2 authorization code and requests the proper access token (back-channel)
  * Then an authn response is sent to the IdP proxy party
@@ -33,6 +36,17 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 public abstract class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
 
     private static final Log logger = LogFactory.getLog(AuthzTokenConsumerProducer.class);
+
+    protected static final String EMAIL_USER_ATTR_NAME = "email";
+    protected static final String FIRST_NAME_USER_ATTR_NAME = "firstName";
+    protected static final String LAST_NAME_USER_ATTR_NAME = "lastName";
+    protected static final String COMMON_NAME_USER_ATTR_NAME = "commonName";
+    protected static final String GENDER_USER_ATTR_NAME = "gender";
+    protected static final String LANGUAGE_USER_ATTR_NAME = "language";
+    protected static final String PICTURE_USER_ATTR_NAME = "picture";
+    protected static final String PROFILE_LINK_USER_ATTR_NAME = "profileLink";
+    protected static final String IS_VERIFIED_USER_ATTR_NAME = "isVerified";
+    protected static final String BIRTHDAY_USER_ATTR_NAME = "birthday";
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
@@ -171,4 +185,12 @@ public abstract class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
         return null;
     }
 
+    protected void addUserAttribute(String name, String value, List<SubjectAttributeType> attrs) {
+        if (StringUtils.isNotBlank(value)) {
+            SubjectAttributeType userAttr = new SubjectAttributeType();
+            userAttr.setName(name);
+            userAttr.setValue(value);
+            attrs.add(userAttr);
+        }
+    }
 }
