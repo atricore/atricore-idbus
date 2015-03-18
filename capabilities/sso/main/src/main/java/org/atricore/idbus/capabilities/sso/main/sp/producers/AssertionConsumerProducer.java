@@ -224,55 +224,20 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ------------------------------------------------------------------
         Subject idpSubject = buildSubjectFromResponse(response);
 
-        // When working as IDP-Proxy, we need to be able to alter the received Subject.
-
-        // TODO : Add additional information or modify IDP Subject ... specially useful for IDP-Proxy profile.
-
-        // check if there is an existing account link for the assertion's subject
         AccountLink acctLink = null;
-
-        /* TODO : For now, only dymanic link is supported!
-        if (accountLinkLifecycle.persistentForIDPSubjectExists(idpSubject)) {
-            acctLink = accountLinkLifecycle.findByIDPAccount(idpSubject);
-            logger.debug("Persistent Account Link Found for Channel [" + fChannel.getName() + "] " +
-                        "IDP Subject [" + idpSubject + "]" );
-        } else if (accountLinkLifecycle.transientForIDPSubjectExists(idpSubject)) {
-            acctLink = accountLinkLifecycle.findByIDPAccount(idpSubject);
-            logger.debug("Transient Account Link Found for Channel [" + fChannel.getName() + "] " +
-                        "IDP Subject [" + idpSubject + "]"
-                       );
-        } else {
-            // there isn't an account link, therefore emit one using the configured
-            // account link emitter
-            AccountLinkEmitter accountLinkEmitter = fChannel.getAccountLinkEmitter();
-
-            logger.debug("Account Link Emitter Found for Channel [" + fChannel.getName() + "] " +
-                        "IDP Subject [" + idpSubject + "]"
-                       );
-
-            if (accountLinkEmitter != null) {
-
-                acctLink = accountLinkEmitter.emit(idpSubject);
-                logger.debug("Emitter Account Link [" + (acctLink != null ? acctLink.getRegion() : "null") + "] [" + fChannel.getName() + "] " +
-                            "IDP Subject [" + idpSubject + "]"
-                           );
-            }
-        } */
-
-        // there isn't an account link, therefore emit one using the configured
-        // account link emitter
         AccountLinkEmitter accountLinkEmitter = fChannel.getAccountLinkEmitter();
-        logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
-        if (accountLinkEmitter != null) {
-            acctLink = accountLinkEmitter.emit(idpSubject);
+        if (logger.isTraceEnabled())
+            logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
-            if (logger.isDebugEnabled())
-                logger.debug("Emitted Account Link [" +
-                        (acctLink != null ? "[" + acctLink.getId() + "]" + acctLink.getLocalAccountNameIdentifier() : "null") +
-                        "] [" + fChannel.getName() + "] " +
-                        " for IDP Subject [" + idpSubject + "]" );
-        }
+        // Emit account link information
+        acctLink = accountLinkEmitter.emit(idpSubject);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Emitted Account Link [" +
+                    (acctLink != null ? "[" + acctLink.getId() + "]" + acctLink.getLocalAccountNameIdentifier() : "null") +
+                    "] [" + fChannel.getName() + "] " +
+                    " for IDP Subject [" + idpSubject + "]" );
 
         if (acctLink == null) {
 
@@ -293,12 +258,11 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.trace("Account Link [" + acctLink.getId() + "] resolved to " +
                      "Local Subject [" + localAccountSubject + "] ");
 
-        Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account
-                                                        // subject is used
+        Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
 
         SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
 
-        // having both idp and local account is now time to apply custom identity mapping rules
+        // having both remote and local accounts information, is now time to apply custom identity mapping rules
         if (fChannel.getIdentityMapper() != null) {
             IdentityMapper im = fChannel.getIdentityMapper();
 
@@ -307,7 +271,6 @@ public class AssertionConsumerProducer extends SSOProducer {
 
             Set<Principal> additionalPrincipals = new HashSet<Principal>();
             additionalPrincipals.add(idpNameAttr);
-
             federatedSubject = im.map(idpSubject, localAccountSubject, additionalPrincipals );
         } else {
             federatedSubject.getPrincipals().add(idpNameAttr);

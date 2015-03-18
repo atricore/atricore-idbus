@@ -81,7 +81,6 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
         GenericUrl requestUrl = new GenericUrl(mediator.getAccessTokenServiceLocation());
 
         // URL used to get the access token.
-
         AuthorizationCodeTokenIdRequest request = new AuthorizationCodeTokenIdRequest(
                 mediator.getHttpTransport(),
                 mediator.getJacksonFactory(),
