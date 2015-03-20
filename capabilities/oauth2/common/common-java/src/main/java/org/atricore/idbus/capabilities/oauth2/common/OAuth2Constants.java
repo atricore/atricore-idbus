@@ -19,5 +19,7 @@ public interface OAuth2Constants {
 
     static final String OAUTH2_IDPALIAS_VAR = "oauth2_idp_alias";
 
+    static final String OAUTH2_PASSIVE_VAR = "oauth2_passive";
+
 
 }

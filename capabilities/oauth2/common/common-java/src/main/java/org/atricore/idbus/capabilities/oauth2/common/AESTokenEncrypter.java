@@ -63,7 +63,7 @@ public class AESTokenEncrypter implements  TokenEncrypter {
         byte[] key = toAESKey(myKey);
 
         SecretKeySpec skeySpec = new SecretKeySpec(key, "AES");
-        Cipher cipher = Cipher.getInstance("AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
         byte[] text = cipher.doFinal(msg.getBytes());
 
