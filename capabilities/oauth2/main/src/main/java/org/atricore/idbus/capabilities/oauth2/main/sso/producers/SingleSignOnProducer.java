@@ -54,7 +54,7 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
         BindingChannel bChannel = (BindingChannel) channel;
         OAuth2BPMediator mediator = (OAuth2BPMediator) bChannel.getIdentityMediator();
         ResourceServer rServer = mediator.getResourceServer();
-
+        // TODO : Implement a request object instead of reading vars from the state
         String idpAlias = null;
         String idpAliasB64 = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_IDPALIAS_VAR);
 

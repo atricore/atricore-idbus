@@ -49,24 +49,39 @@ public class AssertionConsumerProducer extends AbstractCamelProducer<CamelMediat
             validateSolicitedAuthnResponse(exchange, request, response);
         }
 
-        String accessToken = resolveAccessToken(response);
-
         OAuth2BPMediator bpMediator = (OAuth2BPMediator) channel.getIdentityMediator();
         ResourceServer rServer = bpMediator.getResourceServer();
         String rServerLocation = rServer.getResourceLocation();
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
         if (logger.isDebugEnabled())
             logger.debug("Using Resource Server URL: [" + rServerLocation + " ]");
 
-        // Create destination with back/to and OAUTH2 Restful binding
-        EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
-                "AccessToken",
-                OAuth2Binding.OAUTH2_RESTFUL.getValue(),
-                rServerLocation, null);
+        String accessToken = null;
+        if (response.getSubject() == null) {
+            // Authentication failed, return to the application
 
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-        out.setMessage(new MediationMessageImpl(response.getID(),
-                accessToken, "AccessToken", null, destination, state));
+            // Create destination with back/to and OAUTH2 Restful binding
+            EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
+                    "ErrorCode",
+                    OAuth2Binding.OAUTH2_RESTFUL.getValue(),
+                    rServerLocation, null);
+
+            out.setMessage(new MediationMessageImpl(response.getID(),
+                    "authnFailed", "ErrorCode", null, destination, state));
+            
+        } else {
+            accessToken = resolveAccessToken(response);
+            // Create destination with back/to and OAUTH2 Restful binding
+            EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
+                    "AccessToken",
+                    OAuth2Binding.OAUTH2_RESTFUL.getValue(),
+                    rServerLocation, null);
+
+            out.setMessage(new MediationMessageImpl(response.getID(),
+                    accessToken, "AccessToken", null, destination, state));
+
+        }
 
         // Clear authn-ctx once we're done
         state.removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
@@ -93,18 +108,19 @@ public class AssertionConsumerProducer extends AbstractCamelProducer<CamelMediat
     }
 
     protected void validateUnsolicitedAuthnResposne(CamelMediationExchange exchange, SPAuthnResponseType response) throws OAuth2Exception {
-        // TODO : other attributes: target acs, etc.
-        validateAuthnResponse(exchange, response);
+        //validateAuthnResponse(exchange, response);
         if (response  == null) {
             throw new OAuth2Exception("No response found!");
         }
     }
 
     protected void validateAuthnResponse(CamelMediationExchange exchange, SPAuthnResponseType response) throws OAuth2Exception {
+        /*
         // Make sure that we have an OAUTH2 TOKEN
         if (resolveAccessToken(response) == null) {
             throw new OAuth2Exception("No token of type " + WSTConstants.WST_OAUTH2_TOKEN_TYPE + " received in subject attributes set");
         }
+        */
     }
 
     protected String resolveAccessToken(SPAuthnResponseType response) {
