@@ -158,7 +158,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             mediator.getIdRegistry().register(response.getID());
 
         String issuerAlias = response.getIssuer().getValue();
-        FederatedProvider issuer = getCotManager().lookupFederatedProviderByAlias(issuerAlias);
 
         // Response is valid, check received status!
         StatusCode status = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
@@ -260,7 +259,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
 
-        SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
+
 
         // having both remote and local accounts information, is now time to apply custom identity mapping rules
         if (fChannel.getIdentityMapper() != null) {
@@ -269,11 +268,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (logger.isTraceEnabled())
                 logger.trace("Using identity mapper : " + im.getClass().getName());
 
-            Set<Principal> additionalPrincipals = new HashSet<Principal>();
-            additionalPrincipals.add(idpNameAttr);
-            federatedSubject = im.map(idpSubject, localAccountSubject, additionalPrincipals );
-        } else {
-            federatedSubject.getPrincipals().add(idpNameAttr);
+            federatedSubject = im.map(idpSubject, localAccountSubject );
         }
 
         // Add IDP Name to federated Subject
@@ -381,6 +376,9 @@ public class AssertionConsumerProducer extends SSOProducer {
     private Subject buildSubjectFromResponse(ResponseType response) {
 
         Subject outSubject = new Subject();
+
+        String issuerAlias = response.getIssuer().getValue();
+        FederatedProvider issuer = getCotManager().lookupFederatedProviderByAlias(issuerAlias);
 
         if (response.getAssertionOrEncryptedAssertion().size() > 0) {
 
@@ -717,6 +715,12 @@ public class AssertionConsumerProducer extends SSOProducer {
         } else {
             logger.warn("No Assertion present within Response [" + response.getID() + "]");
         }
+
+        SubjectAttribute idpAliasAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
+        SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
+
+        outSubject.getPrincipals().add(idpNameAttr);
+        outSubject.getPrincipals().add(idpAliasAttr);
 
         if (outSubject != null && logger.isDebugEnabled()) {
             logger.debug("IDP Subject:" + outSubject) ;
