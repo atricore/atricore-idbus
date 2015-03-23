@@ -5,6 +5,7 @@ import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Version;
 import com.restfb.types.User;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
@@ -125,7 +126,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         authnCtxClassAttr.setValue(AuthnCtxClass.PPT_AUTHN_CTX.getValue());
         attrs.add(authnCtxClassAttr);
 
-        // TODO : Add more user information
+        addUserAttributes(user, attrs);
 
         SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
         ssoResponse.setID(uuidGenerator.generateId());
@@ -167,5 +168,29 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         return;
 
 
+    }
+
+    private void addUserAttributes(User user, List<SubjectAttributeType> attrs) {
+        addUserAttribute(EMAIL_USER_ATTR_NAME, user.getEmail(), attrs);
+        addUserAttribute(FIRST_NAME_USER_ATTR_NAME, user.getFirstName(), attrs);
+        addUserAttribute(LAST_NAME_USER_ATTR_NAME, user.getLastName(), attrs);
+        addUserAttribute(COMMON_NAME_USER_ATTR_NAME, getUserFullName(user), attrs);
+        addUserAttribute(GENDER_USER_ATTR_NAME, user.getGender(), attrs);
+        addUserAttribute(LANGUAGE_USER_ATTR_NAME, user.getLocale(), attrs);
+        addUserAttribute(PICTURE_USER_ATTR_NAME, user.getPicture() != null ? user.getPicture().getUrl() : null, attrs);
+        addUserAttribute(PROFILE_LINK_USER_ATTR_NAME, user.getLink(), attrs);
+        addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.getVerified()), attrs);
+        addUserAttribute(BIRTHDAY_USER_ATTR_NAME, user.getBirthday(), attrs);
+    }
+
+    private String getUserFullName(User user) {
+        String fullName = user.getFirstName() != null ? user.getFirstName() : "";
+        if (StringUtils.isNotBlank(user.getMiddleName())) {
+            fullName += " " + user.getMiddleName();
+        }
+        if (StringUtils.isNotBlank(user.getLastName())) {
+            fullName += " " + user.getLastName();
+        }
+        return fullName.trim();
     }
 }

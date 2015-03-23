@@ -2521,7 +2521,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             if (attr.getAttributeValue() != null) {
 
                                 if (logger.isTraceEnabled())
-                                    logger.trace("Processing Password Policy Warning statement values, total " + attr.getAttributeValue().size());
+                                    logger.trace("Processing password policy warning statement values, total " + attr.getAttributeValue().size());
 
                                 policy.getValues().addAll(attr.getAttributeValue());
                             }
@@ -2529,13 +2529,14 @@ public class SingleSignOnProducer extends SSOProducer {
                         } else if (attr.getName().startsWith(PasswordPolicyEnforcementError.NAMESPACE)) {
 
                             if (logger.isTraceEnabled())
-                                logger.trace("Processing Password Policy Error statement : " + attr.getFriendlyName());
+                                logger.trace("Processing password policy error statement : " + attr.getFriendlyName());
 
                             policy = new PasswordPolicyEnforcementError(PasswordPolicyErrorType.fromName(attr.getFriendlyName()));
 
                         } else {
                             // What other policies can we handle ?!?
-                            logger.trace("Ignoring attribute : " + attr.getName());
+                            if (logger.isTraceEnabled())
+                                logger.trace("Ignoring non-password policy statement : " + attr.getName());
                         }
 
                         if (policy != null)

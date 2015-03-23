@@ -15,8 +15,6 @@ public class OpenIDConnectFBAuthzBinding extends OpenIDConnectHttpAuthzBinding {
 
     @Override
     public Object sendMessage(MediationMessage message) throws IdentityMediationException {
-
-
         return null;
     }
 }

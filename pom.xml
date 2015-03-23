@@ -92,6 +92,9 @@
         <module>examples/oauth2-preauthn-app</module>
         <module>examples/simple-iwa</module>
         <module>examples/simple-openid</module>
+        <module>examples/custom-identity-mapper</module>
+        <module>examples/custom-identity-vault</module>
+        <module>examples/custom-accountlink-emitter</module>
 
         <module>distributions</module>
     </modules>
