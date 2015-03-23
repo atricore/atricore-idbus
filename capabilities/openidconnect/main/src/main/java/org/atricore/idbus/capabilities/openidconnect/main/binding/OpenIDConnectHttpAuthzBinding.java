@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.binding;
 
+import com.google.api.client.auth.oauth.OAuthCallbackUrl;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.google.api.client.auth.openidconnect.IdTokenResponse;
 import com.google.api.client.http.HttpResponse;
@@ -72,6 +73,23 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
 
         } else if (state.getTransientVariable("access_token") != null) {
             // Looks like an access token
+
+        } else if (state.getTransientVariable("oauth_token") != null &&
+                state.getTransientVariable("oauth_verifier") != null) {
+            // Looks like a OAuth 1.0a (Twitter) response
+            StringBuffer buf = new StringBuffer(requestUrl);
+            if (queryString != null) {
+                buf.append('?').append(queryString);
+            }
+            OAuthCallbackUrl callbackUrl = new OAuthCallbackUrl(buf.toString());
+
+            return new MediationMessageImpl<OAuthCallbackUrl>(httpMsg.getMessageId(),
+                    callbackUrl,
+                    callbackUrl.build(),
+                    null,
+                    state.getTransientVariable("state"),
+                    null,
+                    state);
 
         } else if (state.getTransientVariable("error_code") != null ||
                    state.getTransientVariable("error") != null) {
