@@ -54,9 +54,18 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
         BindingChannel bChannel = (BindingChannel) channel;
         OAuth2BPMediator mediator = (OAuth2BPMediator) bChannel.getIdentityMediator();
         ResourceServer rServer = mediator.getResourceServer();
-
+        // TODO : Implement a request object instead of reading vars from the state
         String idpAlias = null;
         String idpAliasB64 = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_IDPALIAS_VAR);
+
+        boolean passive = false;
+        String passiveStr = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_PASSIVE_VAR);
+        if (passiveStr != null) {
+            passive = Boolean.parseBoolean(passiveStr);
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Passive login : " + passiveStr);
 
         OAuth2AuthnContext authnCtx = (OAuth2AuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:oauth2:authnCtx");
 
@@ -86,7 +95,7 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
 
         // Create SP AuthnRequest
         // TODO : Support on_error ?
-        SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias);
+        SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias, passive);
 
         // Create context information
         authnCtx = new OAuth2AuthnContext();
@@ -111,13 +120,13 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
     /**
      * @return
      */
-    protected SPInitiatedAuthnRequestType buildAuthnRequest(CamelMediationExchange exchange, String idpAlias) {
+    protected SPInitiatedAuthnRequestType buildAuthnRequest(CamelMediationExchange exchange, String idpAlias, boolean passive) {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         SPInitiatedAuthnRequestType req = new SPInitiatedAuthnRequestType();
         req.setID(uuidGenerator.generateId());
-        req.setPassive(false);
+        req.setPassive(passive);
 
         RequestAttributeType idpAliasAttr = new RequestAttributeType();
         idpAliasAttr.setName("atricore_idp_alias");

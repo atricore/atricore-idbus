@@ -86,7 +86,6 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
         String scopes = mediator.getScopes();
 
-
         if (logger.isDebugEnabled())
             logger.debug("Setting scopes URL parameter to [" + scopes + "]");
 

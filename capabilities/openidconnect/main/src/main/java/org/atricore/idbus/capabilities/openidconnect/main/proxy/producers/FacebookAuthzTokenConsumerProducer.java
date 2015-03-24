@@ -13,6 +13,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -81,8 +82,6 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
                 response_uri.getLocation(),
                 code);
 
-
-
         // Now create a new instance with the token
         fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_2);
 
@@ -92,12 +91,11 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
 
         List<SubjectAttributeType> attrs = new ArrayList<SubjectAttributeType>();
 
-
         subject = new SubjectType();
 
         SubjectNameIDType a = new SubjectNameIDType();
         a.setName(user.getEmail());
-        a.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:email");
+        a.setFormat(NameIDFormat.EMAIL.getValue());
         a.setLocalName(user.getEmail());
         a.setNameQualifier(getFederatedProvider().getName().toUpperCase());
         a.setLocalNameQualifier(getFederatedProvider().getName().toUpperCase());

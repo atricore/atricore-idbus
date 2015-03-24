@@ -85,7 +85,7 @@ namespace Atricore.OAuth2Client
         }
 
         /**
-         * Builds a pre-authentication Url for the given username and password.
+         * Builds a pre-authentication Url for the given username and password, using the default SP
          *
          * This method calls the requestToken method.
          *
@@ -110,8 +110,23 @@ namespace Atricore.OAuth2Client
          */
         public String buildIdPInitPreAuthnUrl(String spAlias, String usr, String pwd) 
         {
-
             String accessToken = requestToken(usr, pwd);
+            return buildIdPInitPreAuthnUrlForToken(accessToken, spAlias);
+        }
+
+        /**
+                 * Builds a pre-authentication Url for the given username and password.
+                 *
+                 * This method calls the requestToken method.
+                 *
+                 * @oaran relayState as received with the pre-authn token request.
+                 * @param spAlias SAML SP ALias, null if no specific SP is required or known.
+                 * @param usr the username used to issue the access token
+                 * @param pwd the password used to issue the access token
+                 */
+        public String buildIdPInitPreAuthnUrlForToken(String accessToken, String spAlias)
+        {
+
             String idpPreAuthn = ConfigurationManager.AppSettings["idpInitPreAuthn"];
             String preauthUrl = idpPreAuthn + "?atricore_security_token=" + Uri.EscapeDataString(accessToken) + "&scope=preauth-token";
 
@@ -119,7 +134,6 @@ namespace Atricore.OAuth2Client
                 preauthUrl += "&atricore_sp_alias=" + Uri.EscapeDataString(spAlias);
 
             return preauthUrl;
-
         }
 
 
@@ -133,8 +147,21 @@ namespace Atricore.OAuth2Client
          * @param pwd the password used to issue the access token
          */
         public String buildIdPPreAuthnResponseUrl(String relayState, String usr, String pwd) {
-
             String accessToken = requestToken(usr, pwd);
+            return buildIdPPreAuthnResponseUrl(relayState, accessToken);
+        }
+
+        /**
+         * Builds a pre-authentication Url for the given access token.
+         *
+         * This method calls the requestToken method.
+         *
+         * @oaran relayState as received with the pre-authn token request.
+         * @param accessToken oauth2 access token
+         */
+        public String buildIdPPreAuthnResponseUrl(String relayState, String accessToken)
+        {
+
             String idpPreAuthn = ConfigurationManager.AppSettings["idpPreAuthnResponse"];
             String preauthUrl = idpPreAuthn + "?atricore_security_token=" + Uri.EscapeDataString(accessToken) + " &scope=preauth-token";
 
