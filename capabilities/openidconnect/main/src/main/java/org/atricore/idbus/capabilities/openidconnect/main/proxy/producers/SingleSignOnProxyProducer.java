@@ -109,9 +109,6 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
             OAuthCredentialsResponse requestTokenResponse = requestToken.execute();
 
-            if (logger.isDebugEnabled())
-                logger.debug("Setting scopes URL parameter to [" + scopes + "]");
-
             if (requestTokenResponse.callbackConfirmed == null)
                 throw new OpenIDConnectException("Twitter authentication callback not confirmed");
 
