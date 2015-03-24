@@ -74,6 +74,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
         </dependency>
@@ -387,6 +392,7 @@
                             google-http-client; scope=compile; type=!pom; inline=false,
                             google-http-client-jackson; scope=compile; type=!pom; inline=false,
                             restfb; scope=compile; type=!pom; inline=false,
+                            twitter4j-core; scope=compile; type=!pom; inline=false,
                             jsr305; scope=compile; type=!pom; inline=false,
                             httpclient; scope=compile; type=!pom; inline=false,
                         </Embed-Dependency>
