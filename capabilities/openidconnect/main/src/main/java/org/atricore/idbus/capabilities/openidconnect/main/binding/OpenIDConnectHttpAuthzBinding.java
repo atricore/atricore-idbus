@@ -12,7 +12,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -199,7 +198,7 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
 
                 InputStream is  = httpResponse.getContent();
 
-                byte[] c = IOUtils.readFully(is, 0, true);
+                byte[] c = org.apache.commons.io.IOUtils.toByteArray(is);
 
                 String content = new String(c);
 
