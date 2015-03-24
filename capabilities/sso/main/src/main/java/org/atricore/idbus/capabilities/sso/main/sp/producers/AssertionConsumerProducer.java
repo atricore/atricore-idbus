@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
+import oasis.names.tc.saml._1_0.assertion.AuthenticationStatementType;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
@@ -39,6 +40,7 @@ import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SamlR2AuthnResponseToSPAuthnResponse;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
@@ -156,7 +158,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             mediator.getIdRegistry().register(response.getID());
 
         String issuerAlias = response.getIssuer().getValue();
-        FederatedProvider issuer = getCotManager().lookupFederatedProviderByAlias(issuerAlias);
 
         // Response is valid, check received status!
         StatusCode status = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
@@ -222,55 +223,20 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ------------------------------------------------------------------
         Subject idpSubject = buildSubjectFromResponse(response);
 
-        // When working as IDP-Proxy, we need to be able to alter the received Subject.
-
-        // TODO : Add additional information or modify IDP Subject ... specially useful for IDP-Proxy profile.
-
-        // check if there is an existing account link for the assertion's subject
         AccountLink acctLink = null;
-
-        /* TODO : For now, only dymanic link is supported!
-        if (accountLinkLifecycle.persistentForIDPSubjectExists(idpSubject)) {
-            acctLink = accountLinkLifecycle.findByIDPAccount(idpSubject);
-            logger.debug("Persistent Account Link Found for Channel [" + fChannel.getName() + "] " +
-                        "IDP Subject [" + idpSubject + "]" );
-        } else if (accountLinkLifecycle.transientForIDPSubjectExists(idpSubject)) {
-            acctLink = accountLinkLifecycle.findByIDPAccount(idpSubject);
-            logger.debug("Transient Account Link Found for Channel [" + fChannel.getName() + "] " +
-                        "IDP Subject [" + idpSubject + "]"
-                       );
-        } else {
-            // there isn't an account link, therefore emit one using the configured
-            // account link emitter
-            AccountLinkEmitter accountLinkEmitter = fChannel.getAccountLinkEmitter();
-
-            logger.debug("Account Link Emitter Found for Channel [" + fChannel.getName() + "] " +
-                        "IDP Subject [" + idpSubject + "]"
-                       );
-
-            if (accountLinkEmitter != null) {
-
-                acctLink = accountLinkEmitter.emit(idpSubject);
-                logger.debug("Emitter Account Link [" + (acctLink != null ? acctLink.getRegion() : "null") + "] [" + fChannel.getName() + "] " +
-                            "IDP Subject [" + idpSubject + "]"
-                           );
-            }
-        } */
-
-        // there isn't an account link, therefore emit one using the configured
-        // account link emitter
         AccountLinkEmitter accountLinkEmitter = fChannel.getAccountLinkEmitter();
-        logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
-        if (accountLinkEmitter != null) {
-            acctLink = accountLinkEmitter.emit(idpSubject);
+        if (logger.isTraceEnabled())
+            logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
-            if (logger.isDebugEnabled())
-                logger.debug("Emitted Account Link [" +
-                        (acctLink != null ? "[" + acctLink.getId() + "]" + acctLink.getLocalAccountNameIdentifier() : "null") +
-                        "] [" + fChannel.getName() + "] " +
-                        " for IDP Subject [" + idpSubject + "]" );
-        }
+        // Emit account link information
+        acctLink = accountLinkEmitter.emit(idpSubject);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Emitted Account Link [" +
+                    (acctLink != null ? "[" + acctLink.getId() + "]" + acctLink.getLocalAccountNameIdentifier() : "null") +
+                    "] [" + fChannel.getName() + "] " +
+                    " for IDP Subject [" + idpSubject + "]" );
 
         if (acctLink == null) {
 
@@ -291,24 +257,18 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.trace("Account Link [" + acctLink.getId() + "] resolved to " +
                      "Local Subject [" + localAccountSubject + "] ");
 
-        Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account
-                                                        // subject is used
+        Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
 
-        SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
 
-        // having both idp and local account is now time to apply custom identity mapping rules
+
+        // having both remote and local accounts information, is now time to apply custom identity mapping rules
         if (fChannel.getIdentityMapper() != null) {
             IdentityMapper im = fChannel.getIdentityMapper();
 
             if (logger.isTraceEnabled())
                 logger.trace("Using identity mapper : " + im.getClass().getName());
 
-            Set<Principal> additionalPrincipals = new HashSet<Principal>();
-            additionalPrincipals.add(idpNameAttr);
-
-            federatedSubject = im.map(idpSubject, localAccountSubject, additionalPrincipals );
-        } else {
-            federatedSubject.getPrincipals().add(idpNameAttr);
+            federatedSubject = im.map(idpSubject, localAccountSubject );
         }
 
         // Add IDP Name to federated Subject
@@ -416,6 +376,9 @@ public class AssertionConsumerProducer extends SSOProducer {
     private Subject buildSubjectFromResponse(ResponseType response) {
 
         Subject outSubject = new Subject();
+
+        String issuerAlias = response.getIssuer().getValue();
+        FederatedProvider issuer = getCotManager().lookupFederatedProviderByAlias(issuerAlias);
 
         if (response.getAssertionOrEncryptedAssertion().size() > 0) {
 
@@ -752,6 +715,12 @@ public class AssertionConsumerProducer extends SSOProducer {
         } else {
             logger.warn("No Assertion present within Response [" + response.getID() + "]");
         }
+
+        SubjectAttribute idpAliasAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
+        SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
+
+        outSubject.getPrincipals().add(idpNameAttr);
+        outSubject.getPrincipals().add(idpAliasAttr);
 
         if (outSubject != null && logger.isDebugEnabled()) {
             logger.debug("IDP Subject:" + outSubject) ;
@@ -1495,6 +1464,21 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
         }
 
+        AuthnCtxClass authnCtx = null;
+        for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
+            if (stmt instanceof AuthnStatementType) {
+                AuthnStatementType authnStmt = (AuthnStatementType) stmt;
+
+                for (JAXBElement e : authnStmt.getAuthnContext().getContent()) {
+                    if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
+                        authnCtx = AuthnCtxClass.asEnum((String) e.getValue());
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+
         // Create a new Security Context
         secCtx = new SPSecurityContext();
         
@@ -1503,7 +1487,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         secCtx.setSubject(federatedSubject);
         secCtx.setAccountLink(acctLink);
         secCtx.setRequester(requester);
-
+        secCtx.setAuthnCtxClass(authnCtx);
 
         SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
 
@@ -1528,7 +1512,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             // Update security context with SSO Session ID
             secCtx.setSessionIndex(ssoSessionId);
 
-            // TODO : Use IDP Session information Subject's attributes and update local session: expiration time, etc.
             Set<SubjectAuthenticationAttribute> attrs = idpSubject.getPrincipals(SubjectAuthenticationAttribute.class);
             String idpSsoSessionId = null;
             for (SubjectAuthenticationAttribute attr : attrs) {

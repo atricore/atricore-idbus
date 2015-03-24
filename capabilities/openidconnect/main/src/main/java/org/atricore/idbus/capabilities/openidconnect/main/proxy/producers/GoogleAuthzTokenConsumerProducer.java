@@ -3,7 +3,10 @@ package org.atricore.idbus.capabilities.openidconnect.main.proxy.producers;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.google.api.client.auth.openidconnect.IdToken;
 import com.google.api.client.auth.openidconnect.IdTokenResponse;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.GenericUrl;
+import com.google.api.services.oauth2.Oauth2;
+import com.google.api.services.oauth2.model.Userinfoplus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.AuthorizationCodeTokenIdRequest;
@@ -11,6 +14,8 @@ import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectB
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -20,6 +25,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +35,8 @@ import java.util.List;
 public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer {
 
     private static final Log logger = LogFactory.getLog(GoogleAuthzTokenConsumerProducer.class);
+
+    private static final int MAX_NUM_OF_USER_INFO_RETRIES = 1;
 
     public GoogleAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -74,7 +82,6 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
         GenericUrl requestUrl = new GenericUrl(mediator.getAccessTokenServiceLocation());
 
         // URL used to get the access token.
-
         AuthorizationCodeTokenIdRequest request = new AuthorizationCodeTokenIdRequest(
                 mediator.getHttpTransport(),
                 mediator.getJacksonFactory(),
@@ -105,6 +112,26 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
         if (logger.isTraceEnabled())
             logger.trace("Subject [" + googleSubject + "]");
 
+        // get user info
+        Oauth2 userInfoService = new Oauth2.Builder(mediator.getHttpTransport(), mediator.getJacksonFactory(),
+                new GoogleCredential().setAccessToken(accessToken)).build();
+        int retry = 0;
+        Userinfoplus user = null;
+        while (retry <= MAX_NUM_OF_USER_INFO_RETRIES) {
+            try {
+                user = userInfoService.userinfo().get().execute();
+                break;
+            } catch (IOException e) {
+                retry++;
+                logger.error(e.getMessage(), e);
+                if (retry <= MAX_NUM_OF_USER_INFO_RETRIES) {
+                    logger.debug("Getting Google user info, retry: " + retry);
+                } else {
+                    logger.error("Failed to get Google user info!");
+                }
+            }
+        }
+
         SubjectType subject;
 
         List<SubjectAttributeType> attrs = new ArrayList<SubjectAttributeType>();
@@ -114,7 +141,7 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
 
         SubjectNameIDType a = new SubjectNameIDType();
         a.setName(email);
-        a.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:email");
+        a.setFormat(NameIDFormat.EMAIL.getValue());
         a.setLocalName(email);
         a.setNameQualifier(getFederatedProvider().getName().toUpperCase());
         a.setLocalNameQualifier(getFederatedProvider().getName().toUpperCase());
@@ -136,7 +163,14 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
         openIdSubjectAttr.setValue(googleSubject);
         attrs.add(openIdSubjectAttr);
 
-        // TODO : Add more user information
+        SubjectAttributeType authnCtxClassAttr = new SubjectAttributeType();
+        authnCtxClassAttr.setName("authnCtxClass");
+        authnCtxClassAttr.setValue(AuthnCtxClass.PPT_AUTHN_CTX.getValue());
+        attrs.add(authnCtxClassAttr);
+
+        if (user != null) {
+            addUserAttributes(user, attrs);
+        }
 
         SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
         ssoResponse.setID(uuidGenerator.generateId());
@@ -177,5 +211,17 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
 
         return;
 
+    }
+
+    private void addUserAttributes(Userinfoplus user, List<SubjectAttributeType> attrs) {
+        addUserAttribute(EMAIL_USER_ATTR_NAME, user.getEmail(), attrs);
+        addUserAttribute(FIRST_NAME_USER_ATTR_NAME, user.getGivenName(), attrs);
+        addUserAttribute(LAST_NAME_USER_ATTR_NAME, user.getFamilyName(), attrs);
+        addUserAttribute(COMMON_NAME_USER_ATTR_NAME, user.getName(), attrs);
+        addUserAttribute(GENDER_USER_ATTR_NAME, user.getGender(), attrs);
+        addUserAttribute(LANGUAGE_USER_ATTR_NAME, user.getLocale(), attrs);
+        addUserAttribute(PICTURE_USER_ATTR_NAME, user.getPicture(), attrs);
+        addUserAttribute(PROFILE_LINK_USER_ATTR_NAME, user.getLink(), attrs);
+        addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.isVerifiedEmail()), attrs);
     }
 }

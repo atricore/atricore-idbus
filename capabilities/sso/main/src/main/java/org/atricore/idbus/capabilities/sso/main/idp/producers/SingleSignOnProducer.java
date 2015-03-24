@@ -615,7 +615,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
 
-            // Add any proxy principals availabe
+            // Add any proxy principals available
             if (secCtx.getProxyPrincipals() != null)
                 securityTokenEmissionCtx.getProxyPrincipals().addAll(secCtx.getProxyPrincipals());
 
@@ -1007,6 +1007,7 @@ public class SingleSignOnProducer extends SSOProducer {
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
             recordInfoAuditTrail("SSO", ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
             // The authentication failed, let's see what needs to be done.
@@ -1194,7 +1195,27 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
 
+                AuthnCtxClass authnCtx = null;
 
+                if (proxyResponse.getSubjectAttributes() != null) {
+                    for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
+                        if (attr.getName().equals("authnCtxClass")) {
+                            try {
+                                authnCtx = AuthnCtxClass.asEnum(attr.getValue());
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Using authnCtxClass " + attr.getValue());
+                                break;
+                            } catch (Exception e) {
+                                logger.error("Unknonw AuthnCtxClass type " + attr.getValue());
+                            }
+                        }
+                    }
+                }
+
+                // Just in case
+                if (authnCtx == null) {
+                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                }
 
                 ClaimSet claims = new ClaimSetImpl();
                 UsernameTokenType usernameToken = new UsernameTokenType();
@@ -1213,14 +1234,14 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         // TODO : This is not accurate
                         // TODO : We should honor the provided authn. context if any
-                        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                        usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
 
                         // Also update authentication state
-                        authnState.setAuthnCtxClass(AuthnCtxClass.PASSWORD_AUTHN_CTX);
+                        authnState.setAuthnCtxClass(authnCtx);
 
                         usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
 
-                        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                        CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtx.getValue(), usernameToken);
                         claims.addClaim(credentialClaim);
                     } else {
                         securityTokenEmissionCtx.getProxyPrincipals().add(next);
@@ -1574,14 +1595,30 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (next instanceof SimplePrincipal) {
 
-                // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
                 SimplePrincipal principal = (SimplePrincipal) next;
+
+                // Get previously used authn-ctx class
+                AuthnCtxClass authnCtx = null;
+                List<JAXBElement<?>> c = secCtx.getAuthnStatement().getAuthnContext().getContent();
+                if (c != null && c.size() > 0) {
+                    for (JAXBElement e : c) {
+                        if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
+                            authnCtx = AuthnCtxClass.asEnum((String) e.getValue());
+                            break;
+                        }
+                    }
+                }
+
+                if (authnCtx == null) {
+                    logger.warn("No previous authentication context class, forcing Password");
+                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                }
 
                 AttributedString usernameString = new AttributedString();
                 usernameString.setValue(principal.getName());
                 usernameToken.setUsername(usernameString);
                 usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), principal.getName());
-                usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
                 usernameToken.getOtherAttributes().put(new QName(Constants.PREVIOUS_SESSION_NS), "TRUE");
 
                 RequestedAuthnContextType reqAuthn = authnRequest.getRequestedAuthnContext();
@@ -1590,7 +1627,8 @@ public class SingleSignOnProducer extends SSOProducer {
                     logger.warn("Requested Authentication context class ignored !!!! " + reqAuthn);
                 }
 
-                CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                //CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtx.getValue(), usernameToken);
                 claims.addClaim(credentialClaim);
             }
 
@@ -2390,7 +2428,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                             String saml2authnCtxClassRef = (String) acc.getValue();
 
-                            if (saml2authnCtxClassRef.equals("urn:oasis:names:tc:SAML:2.0:ac:classes:Password")) {
+                            if (saml2authnCtxClassRef.equals(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue())) {
                                 saml11authnStatement.setAuthenticationMethod("urn:oasis:names:tc:SAML:1.0:am:password");
                             }
                             // TODO: map remaining authentication context classes types
@@ -2483,7 +2521,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             if (attr.getAttributeValue() != null) {
 
                                 if (logger.isTraceEnabled())
-                                    logger.trace("Processing Password Policy Warning statement values, total " + attr.getAttributeValue().size());
+                                    logger.trace("Processing password policy warning statement values, total " + attr.getAttributeValue().size());
 
                                 policy.getValues().addAll(attr.getAttributeValue());
                             }
@@ -2491,13 +2529,14 @@ public class SingleSignOnProducer extends SSOProducer {
                         } else if (attr.getName().startsWith(PasswordPolicyEnforcementError.NAMESPACE)) {
 
                             if (logger.isTraceEnabled())
-                                logger.trace("Processing Password Policy Error statement : " + attr.getFriendlyName());
+                                logger.trace("Processing password policy error statement : " + attr.getFriendlyName());
 
                             policy = new PasswordPolicyEnforcementError(PasswordPolicyErrorType.fromName(attr.getFriendlyName()));
 
                         } else {
                             // What other policies can we handle ?!?
-                            logger.trace("Ignoring attribute : " + attr.getName());
+                            if (logger.isTraceEnabled())
+                                logger.trace("Ignoring non-password policy statement : " + attr.getName());
                         }
 
                         if (policy != null)

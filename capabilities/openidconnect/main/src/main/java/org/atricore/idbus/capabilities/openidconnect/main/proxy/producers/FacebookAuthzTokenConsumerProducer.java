@@ -5,12 +5,15 @@ import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Version;
 import com.restfb.types.User;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -79,8 +82,6 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
                 response_uri.getLocation(),
                 code);
 
-
-
         // Now create a new instance with the token
         fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_2);
 
@@ -90,12 +91,11 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
 
         List<SubjectAttributeType> attrs = new ArrayList<SubjectAttributeType>();
 
-
         subject = new SubjectType();
 
         SubjectNameIDType a = new SubjectNameIDType();
         a.setName(user.getEmail());
-        a.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:email");
+        a.setFormat(NameIDFormat.EMAIL.getValue());
         a.setLocalName(user.getEmail());
         a.setNameQualifier(getFederatedProvider().getName().toUpperCase());
         a.setLocalNameQualifier(getFederatedProvider().getName().toUpperCase());
@@ -119,7 +119,12 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         openIdSubjectAttr.setValue(user.getId());
         attrs.add(openIdSubjectAttr);
 
-        // TODO : Add more user information
+        SubjectAttributeType authnCtxClassAttr = new SubjectAttributeType();
+        authnCtxClassAttr.setName("authnCtxClass");
+        authnCtxClassAttr.setValue(AuthnCtxClass.PPT_AUTHN_CTX.getValue());
+        attrs.add(authnCtxClassAttr);
+
+        addUserAttributes(user, attrs);
 
         SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
         ssoResponse.setID(uuidGenerator.generateId());
@@ -161,5 +166,29 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         return;
 
 
+    }
+
+    private void addUserAttributes(User user, List<SubjectAttributeType> attrs) {
+        addUserAttribute(EMAIL_USER_ATTR_NAME, user.getEmail(), attrs);
+        addUserAttribute(FIRST_NAME_USER_ATTR_NAME, user.getFirstName(), attrs);
+        addUserAttribute(LAST_NAME_USER_ATTR_NAME, user.getLastName(), attrs);
+        addUserAttribute(COMMON_NAME_USER_ATTR_NAME, getUserFullName(user), attrs);
+        addUserAttribute(GENDER_USER_ATTR_NAME, user.getGender(), attrs);
+        addUserAttribute(LANGUAGE_USER_ATTR_NAME, user.getLocale(), attrs);
+        addUserAttribute(PICTURE_USER_ATTR_NAME, user.getPicture() != null ? user.getPicture().getUrl() : null, attrs);
+        addUserAttribute(PROFILE_LINK_USER_ATTR_NAME, user.getLink(), attrs);
+        addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.getVerified()), attrs);
+        addUserAttribute(BIRTHDAY_USER_ATTR_NAME, user.getBirthday(), attrs);
+    }
+
+    private String getUserFullName(User user) {
+        String fullName = user.getFirstName() != null ? user.getFirstName() : "";
+        if (StringUtils.isNotBlank(user.getMiddleName())) {
+            fullName += " " + user.getMiddleName();
+        }
+        if (StringUtils.isNotBlank(user.getLastName())) {
+            fullName += " " + user.getLastName();
+        }
+        return fullName.trim();
     }
 }

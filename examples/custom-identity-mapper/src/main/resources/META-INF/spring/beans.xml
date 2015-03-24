@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+      http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <!-- ========================================== -->
+    <!-- Custom Identity Mapper 01 descriptor       -->
+    <!-- ========================================== -->
+
+    <!-- Define as many custom mappers as needed -->
+    <bean name="custom-identity-mapper-01" class="org.atricore.idbus.examples.sso.idmapper.CustomIdentityMapper">
+        <property name="customCfg" value="my-custom-prop-value-01" />
+    </bean>
+    <!-- Export the component as an OSGi Service -->
+    <osgi:service id="custom-identity-mapper-svc-01"
+                  ref="custom-identity-mapper-01"
+                  interface="org.atricore.idbus.kernel.main.federation.IdentityMapper"/>
+
+    <!-- Define the policy descriptor -->
+    <bean name="custom-identity-mapper-policy-01" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy">
+        <property name="name" value="Custom 01"/>
+        <property name="useLocalId" value="false"/>
+        <!-- MUST match the Custom bean name -->
+        <property name="customMapper" value="custom-identity-mapper-01"/>
+    </bean>
+    <!-- Export the policy descriptor as an OSGi service -->
+    <osgi:service id="custom-identity-mapper-policy-svc-01"
+                  ref="custom-identity-mapper-policy-01"
+                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy" />
+
+    <!-- ========================================== -->
+    <!-- Custom Identity Mapper 02 descriptor       -->
+    <!-- ========================================== -->
+
+    <!-- Define as many custom mappers as needed -->
+    <bean name="custom-identity-mapper-02" class="org.atricore.idbus.examples.sso.idmapper.CustomIdentityMapper">
+        <property name="customCfg" value="my-custom-prop-value-02" />
+    </bean>
+    <!-- Export the component as an OSGi Service -->
+    <osgi:service id="custom-identity-mapper-svc-02"
+                  ref="custom-identity-mapper-02"
+                  interface="org.atricore.idbus.kernel.main.federation.IdentityMapper"/>
+
+    <!-- Define the policy descriptor -->
+    <bean name="custom-identity-mapper-policy-02" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy">
+        <property name="name" value="Custom 02"/>
+        <property name="useLocalId" value="false"/>
+        <!-- MUST match the Custom bean name -->
+        <property name="customMapper" value="custom-identity-mapper-02"/>
+    </bean>
+    <!-- Export the policy descriptor as an OSGi service -->
+    <osgi:service id="custom-identity-mapper-policy-svc-02"
+                  ref="custom-identity-mapper-policy-02"
+                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityMappingPolicy" />
+
+</s:beans>

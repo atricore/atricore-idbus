@@ -41,9 +41,6 @@ import java.util.List;
 
 
 /**
- * /**
- * @org.apache.xbean.XBean element="account-link-lifecycle"
- *
  * Account Link Lifecycle Manager
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
@@ -78,7 +75,7 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
 
     public boolean persistentForIDPSubjectExists(Subject idpSubject) {
     	boolean exists = false;
-    	if(findByIDPAccount(idpSubject) != null) exists = true;
+    	if (findByIDPAccount(idpSubject) != null) exists = true;
     	return exists;
     }
 

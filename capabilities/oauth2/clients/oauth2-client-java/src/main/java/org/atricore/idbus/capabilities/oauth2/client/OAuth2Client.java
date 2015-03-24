@@ -88,7 +88,24 @@ public class OAuth2Client implements ConfigurationConstants {
      * @param usr the username used to issue the access token
      * @param pwd the password used to issue the access token
      */
+    @Deprecated
     public String buildgetIdPInitPreAuthnUrlForDefaultSp(String usr, String pwd) throws OAuth2ClientException {
+        String spAlias = config.getProperty(SP_ALIAS);
+        return buildIdPInitPreAuthnUrl(spAlias, usr, pwd);
+    }
+
+
+    /**
+     * Builds a pre-authentication Url for the given username and password, and requesting
+     * the default SP (as configured in the oauth2.spAlias property).
+     *
+     * This method calls the requestToken method.
+     *
+     * @param usr the username used to issue the access token
+     * @param pwd the password used to issue the access token
+     */
+    @Deprecated
+    public String buildIdPInitPreAuthnUrlForDefaultSp(String usr, String pwd) throws OAuth2ClientException {
         String spAlias = config.getProperty(SP_ALIAS);
         return buildIdPInitPreAuthnUrl(spAlias, usr, pwd);
     }

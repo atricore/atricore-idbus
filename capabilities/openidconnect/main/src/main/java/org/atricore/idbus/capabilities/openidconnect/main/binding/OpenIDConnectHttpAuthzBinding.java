@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.binding;
 
+import com.google.api.client.auth.oauth.OAuthCallbackUrl;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.google.api.client.auth.openidconnect.IdTokenResponse;
 import com.google.api.client.http.HttpResponse;
@@ -11,7 +12,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import sun.misc.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +24,8 @@ import java.net.URLEncoder;
 public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding {
 
     private static final Log logger = LogFactory.getLog(OpenIDConnectHttpAuthzBinding.class);
+
+    private static final int MAX_NUM_OF_AUTHORIZATION_RETRIES = 1;
 
     public OpenIDConnectHttpAuthzBinding(Channel channel) {
         super(OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.getValue(), channel);
@@ -70,6 +72,23 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
 
         } else if (state.getTransientVariable("access_token") != null) {
             // Looks like an access token
+
+        } else if (state.getTransientVariable("oauth_token") != null &&
+                state.getTransientVariable("oauth_verifier") != null) {
+            // Looks like a OAuth 1.0a (Twitter) response
+            StringBuffer buf = new StringBuffer(requestUrl);
+            if (queryString != null) {
+                buf.append('?').append(queryString);
+            }
+            OAuthCallbackUrl callbackUrl = new OAuthCallbackUrl(buf.toString());
+
+            return new MediationMessageImpl<OAuthCallbackUrl>(httpMsg.getMessageId(),
+                    callbackUrl,
+                    callbackUrl.build(),
+                    null,
+                    state.getTransientVariable("state"),
+                    null,
+                    state);
 
         } else if (state.getTransientVariable("error_code") != null ||
                    state.getTransientVariable("error") != null) {
@@ -168,26 +187,35 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
     @Override
     public Object sendMessage(MediationMessage message) throws IdentityMediationException {
 
-        try {
+        int retry = 0;
+        while (retry <= MAX_NUM_OF_AUTHORIZATION_RETRIES) {
+            try {
 
-            AuthorizationCodeTokenIdRequest tokenRequest =
-                    (AuthorizationCodeTokenIdRequest) message.getContent();
+                AuthorizationCodeTokenIdRequest tokenRequest =
+                        (AuthorizationCodeTokenIdRequest) message.getContent();
 
-            HttpResponse httpResponse = tokenRequest.executeUnparsed();
+                HttpResponse httpResponse = tokenRequest.executeUnparsed();
 
-            InputStream is  = httpResponse.getContent();
+                InputStream is  = httpResponse.getContent();
 
-            byte[] c = IOUtils.readFully(is, 0, true);
+                byte[] c = org.apache.commons.io.IOUtils.toByteArray(is);
 
-            String content = new String(c);
+                String content = new String(c);
 
-            logger.debug("CONTENT : " + content);
-            IdTokenResponse idTokenResponse = httpResponse.parseAs(IdTokenResponse.class);
+                logger.debug("CONTENT : " + content);
+                IdTokenResponse idTokenResponse = httpResponse.parseAs(IdTokenResponse.class);
 
-            return idTokenResponse;
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            throw new IdentityMediationException(e);
+                return idTokenResponse;
+            } catch (IOException e) {
+                retry++;
+                logger.error(e.getMessage(), e);
+                if (retry <= MAX_NUM_OF_AUTHORIZATION_RETRIES) {
+                    logger.debug("OpenID Connect authorization retry: " + retry);
+                } else {
+                    throw new IdentityMediationException(e);
+                }
+            }
         }
+        throw new IdentityMediationException("OpenID Connect authorization failed!");
     }
 }

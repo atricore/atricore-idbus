@@ -119,6 +119,10 @@ public class SsoPreAuthnTokenSvcBinding extends AbstractMediationHttpBinding {
                 ssoQryString.append("&atuhn_ctx=").append(req.getAuthnCtxClass());
             }
 
+            if (req.getTarget() != null) {
+                ssoQryString.append("&target=").append(req.getTarget());
+            }
+
 
         } else {
             throw new IllegalStateException("Unsupported content type : " + out.getContent().getClass().getSimpleName());

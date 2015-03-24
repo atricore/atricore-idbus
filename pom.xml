@@ -88,6 +88,9 @@
         <module>connectors/idbus-jdo-identityvault</module>
 
         <module>applications/idbus-server</module>
+        <module>examples/custom-accountlink-emitter</module>
+        <module>examples/custom-identity-mapper</module>
+        <module>examples/custom-identity-vault</module>
         <module>examples/simple-federation</module>
         <module>examples/simple-provisioning</module>
         <module>examples/salesforce</module>

@@ -49,6 +49,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-oauth2</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client</artifactId>
         </dependency>
@@ -66,6 +71,11 @@
         <dependency>
             <groupId>com.restfb</groupId>
             <artifactId>restfb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
         </dependency>
 
         <dependency>
@@ -377,9 +387,12 @@
                         <Embed-Transitive>true</Embed-Transitive>
                         <Embed-Dependency>
                             google-oauth-client; scope=compile; type=!pom; inline=false,
+                            google-api-client; scope=compile; type=!pom; inline=false,
+                            google-api-services-oauth2; scope=compile; type=!pom; inline=false,
                             google-http-client; scope=compile; type=!pom; inline=false,
                             google-http-client-jackson; scope=compile; type=!pom; inline=false,
                             restfb; scope=compile; type=!pom; inline=false,
+                            twitter4j-core; scope=compile; type=!pom; inline=false,
                             jsr305; scope=compile; type=!pom; inline=false,
                             httpclient; scope=compile; type=!pom; inline=false,
                         </Embed-Dependency>
