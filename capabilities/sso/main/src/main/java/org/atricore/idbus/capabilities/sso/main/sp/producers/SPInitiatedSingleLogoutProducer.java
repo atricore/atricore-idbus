@@ -412,10 +412,10 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
         CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
         SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
-        secCtx.clear();
 
         try {
             ssoSessionManager.invalidate(secCtx.getSessionIndex());
+            secCtx.clear();
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
             in.getMessage().getState().removeRemoteVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
         } catch (NoSuchSessionException e) {
