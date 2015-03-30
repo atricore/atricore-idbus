@@ -14,6 +14,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.lang.Override;
 import java.util.Collection;
 
 /**
@@ -83,6 +84,11 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
 
     @Override
     public User findUserById(long id) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public User findUserByOid(String oid) throws ProvisioningException {
         return null;
     }
 
