@@ -11,10 +11,8 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -173,26 +171,15 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
         int retry = 0;
         while (retry <= MAX_NUM_OF_AUTHORIZATION_RETRIES) {
 
-            InputStream is = null;
             try {
 
                 AuthorizationCodeTokenIdRequest tokenRequest =
                         (AuthorizationCodeTokenIdRequest) message.getContent();
 
                 HttpResponse httpResponse = tokenRequest.executeUnparsed();
-
-                is  = httpResponse.getContent();
-
-                byte[] c = IOUtils.toByteArray(is);
-
-                String content = new String(c);
-
-                logger.debug("CONTENT : " + content);
                 IdTokenResponse idTokenResponse = httpResponse.parseAs(IdTokenResponse.class);
-
                 return idTokenResponse;
             } catch (IOException e) {
-                IOUtils.closeQuietly(is);
                 retry++;
                 logger.error(e.getMessage(), e);
                 if (retry <= MAX_NUM_OF_AUTHORIZATION_RETRIES) {
