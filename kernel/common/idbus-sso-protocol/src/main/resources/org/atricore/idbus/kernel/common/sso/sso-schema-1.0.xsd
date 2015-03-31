@@ -139,6 +139,17 @@
         </complexContent>
     </complexType>
 
+    <element name="CurrentEntityRequest" type="ssop:CurrentEntityRequestType"/>
+    <complexType name="CurrentEntityRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="entityId" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="CurrentEntityResponse" type="ssop:SSOResponseType"/>
+
     <element name="SPCredentialsCallbackResponse" type="ssop:SPCredentialsCallbackResponseType"/>
     <complexType name="SPCredentialsCallbackResponseType">
         <complexContent>

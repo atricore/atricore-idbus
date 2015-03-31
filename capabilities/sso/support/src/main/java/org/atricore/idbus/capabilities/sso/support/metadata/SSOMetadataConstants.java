@@ -49,6 +49,7 @@ public interface SSOMetadataConstants {
     final static QName SPCredentialsCallbackService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "CredentialsCallbackService");
 
     final static QName IdPSelectorService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "IdPSelectorService");
+    final static QName IdPSelectorCallbackService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "IdPSelectorCallbackService");
     final static QName SPSelectorService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPSelectorService");
     final static QName EntitySelectorDescriptor_QNAME = new QName("urn:oasis:names:tc:SAML:2.0:metadata", "EntitySelectorDescriptor");
 

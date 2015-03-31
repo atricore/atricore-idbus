@@ -11,9 +11,9 @@ import java.util.Map;
 /**
  * Created by sgonzalez on 7/28/14.
  */
-public class SPInitiatedSingleLogoutServiceProxy <E> extends AbstractCamelEndpoint<CamelMediationExchange> {
+public class SPInitiatedSingleLogoutServiceProxyEndpoint<E> extends AbstractCamelEndpoint<CamelMediationExchange> {
 
-    public SPInitiatedSingleLogoutServiceProxy(String uri, Component component, Map parameters ) throws Exception {
+    public SPInitiatedSingleLogoutServiceProxyEndpoint(String uri, Component component, Map parameters) throws Exception {
         super(uri, component, parameters);
     }
 

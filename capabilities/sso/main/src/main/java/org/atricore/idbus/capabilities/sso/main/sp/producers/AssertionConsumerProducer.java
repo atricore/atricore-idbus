@@ -21,7 +21,6 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
-import oasis.names.tc.saml._1_0.assertion.AuthenticationStatementType;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
@@ -50,8 +49,12 @@ import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypt
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureValidationException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
+import org.atricore.idbus.common.sso._1_0.protocol.CurrentEntityRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
@@ -66,6 +69,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -80,7 +84,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
-import java.security.Principal;
 import java.util.*;
 
 /**
@@ -99,7 +102,17 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-        
+        // Incomming message
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        if (in.getMessage().getContent() instanceof ResponseType) {
+            doProcessSamlResponseType(exchange, (ResponseType) in.getMessage().getContent());
+        } else {
+            throw new IdentityMediationException("Unknown message type : " + in.getMessage().getContent());
+        }
+    }
+
+    protected void doProcessSamlResponseType(CamelMediationExchange exchange, ResponseType response) throws Exception {
         // Incomming message
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
@@ -126,12 +139,6 @@ public class AssertionConsumerProducer extends SSOProducer {
                         "AssertionConsumerService",
                         SSOBinding.SSO_ARTIFACT.getValue(),
                         destinationLocation, null);
-
-        // ------------------------------------------------------
-        // Resolve IDP configuration!
-        // ------------------------------------------------------
-        // Create in/out artifacts
-        ResponseType response = (ResponseType) in.getMessage().getContent();
 
         // Stored by SP Initiated producer
         AuthnRequestType authnRequest =
@@ -176,7 +183,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("IDP Reports Passive login failed");
 
-            // This is  SP initiated SSO or  we did not requested passive authentication
+            // This is SP initiated SSO or  we did not requested passive authentication
             if (authnRequest == null || authnRequest.getForceAuthn()) {
                 throw new SSOException("IDP Sent " + StatusCode.NO_PASSIVE + " but passive was not requested.");
             }
@@ -259,8 +266,6 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
 
-
-
         // having both remote and local accounts information, is now time to apply custom identity mapping rules
         if (fChannel.getIdentityMapper() != null) {
             IdentityMapper im = fChannel.getIdentityMapper();
@@ -282,7 +287,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
 
-        // We mast have an assertion!
+        // We must have an assertion!
         SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
                 (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
                 idp,
@@ -302,18 +307,95 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
         recordInfoAuditTrail("SP-SSOR", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
-        // ---------------------------------------------------
-        // Send SPAuthnResponse
-        // ---------------------------------------------------
+        Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(fChannel.getFederatedProvider(),
+                SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
 
         SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, spSecurityCtx, destination);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+        // ---------------------------------------------------
+        // We must tell our Entity selector about the IdP we're using.  It's considered a selection.
+        // ---------------------------------------------------
+        if (availableIdPs.size() > 1) {
+
+            EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
+
+            if (idpSelectorCallbackEndpoint != null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Sending Current Selected IdP request, callback location : " + idpSelectorCallbackEndpoint);
+
+                // Store destination and response
+                CurrentEntityRequestType entityRequest = new CurrentEntityRequestType();
+
+                entityRequest.setID(uuidGenerator.generateId());
+                entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
+                entityRequest.setEntityId(idp.getAlias());
+
+                entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
+                        idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
+
+
+                String idpSelectorLocation = ((SSOSPMediator) mediator).getIdpSelector();
+
+                EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
+                        "IDPSelectorEndpoint",
+                        "EntitySelector",
+                        SSOBinding.SSO_ARTIFACT.toString(),
+                        idpSelectorLocation,
+                        null);
+
+                out.setMessage(new MediationMessageImpl(entityRequest.getID(),
+                        entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
+
+                state.setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse", ssoResponse);
+                state.setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse:endpoint", destination);
+
+                return;
+            } else {
+                if (logger.isDebugEnabled())
+                    logger.debug("Multipel IdPs found, but no callback idp selection service is avaiable");
+            }
+        }
+
+        // ---------------------------------------------------
+        // Send SPAuthnResponse
+        // ---------------------------------------------------
+
         out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
-                ssoResponse, "SPAuthnResposne", null, destination, in.getMessage().getState()));
+                ssoResponse, "SPAuthnResponse", null, destination, in.getMessage().getState()));
 
         exchange.setOut(out);
 
+    }
+
+    protected EndpointDescriptor resolveIdPSelectorCallbackEndpoint(CamelMediationExchange exchange,
+                                                                    FederationChannel fChannel) throws SSOException {
+
+        try {
+
+            if(logger.isDebugEnabled())
+                logger.debug("Looking for " + SSOService.IdPSelectorCallbackService.toString() + " on channel " + fChannel.getName());
+
+            for (IdentityMediationEndpoint endpoint : fChannel.getEndpoints()) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+
+                if (endpoint.getType().equals(SSOService.IdPSelectorCallbackService.toString())) {
+
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        // This is the endpoint we're looking for
+                        return  fChannel.getIdentityMediator().resolveEndpoint(fChannel, endpoint);
+                    }
+                }
+            }
+        } catch (IdentityMediationException e) {
+            throw new SSOException(e);
+        }
+
+        return null;
     }
 
 
