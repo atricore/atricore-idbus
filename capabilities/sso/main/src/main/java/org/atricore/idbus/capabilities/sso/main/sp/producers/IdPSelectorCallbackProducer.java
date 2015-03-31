@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.main.sp.producers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
+import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -35,12 +36,14 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
-
         // Mediation state
         MediationState state = in.getMessage().getState();
 
-        SPAuthnResponseType ssoResponse = (SPAuthnResponseType) state.getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse");
-        EndpointDescriptor destination = (EndpointDescriptor) state.getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse:endpoint");
+        SPAuthnResponseType ssoResponse = (SPAuthnResponseType) state.getLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP);
+        EndpointDescriptor destination = (EndpointDescriptor) state.getLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
+
+        state.removeLocalVariable("urn:org:atricore:idbus:sso:protocol:tmp:SPAuthnResponse");
+        state.removeLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse:tmp:endpoint");
 
         // ---------------------------------------------------
         // Send SPAuthnResponse

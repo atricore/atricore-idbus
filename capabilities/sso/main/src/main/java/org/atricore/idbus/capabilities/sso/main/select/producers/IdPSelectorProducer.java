@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.capabilities.sso.main.select.internal.EntitySelectionState;
@@ -122,9 +123,24 @@ public class IdPSelectorProducer extends SSOProducer {
 
         state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY", idp);
 
+        EndpointDescriptor destination = new EndpointDescriptorImpl("idpSelectorCallback",
+                SSOMetadataConstants.IdPSelectorCallbackService_QNAME.getLocalPart(),
+                SSOBinding.SSO_ARTIFACT.getValue(), request.getReplyTo(), null);
+
         SSOResponseType response = new SSOResponseType();
         response.setID(uuidGenerator.generateId());
         response.setInReplayTo(request.getID());
+
+        // Send User Claims request
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                response,
+                "SSOResponse",
+                null,
+                destination,
+                state));
+
+        exchange.setOut(out);
 
 
 

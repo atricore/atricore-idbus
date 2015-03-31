@@ -336,7 +336,6 @@ public class AssertionConsumerProducer extends SSOProducer {
                 entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
                         idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
 
-
                 String idpSelectorLocation = ((SSOSPMediator) mediator).getIdpSelector();
 
                 EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
@@ -349,8 +348,8 @@ public class AssertionConsumerProducer extends SSOProducer {
                 out.setMessage(new MediationMessageImpl(entityRequest.getID(),
                         entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
 
-                state.setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse", ssoResponse);
-                state.setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse:endpoint", destination);
+                state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
+                state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
 
                 return;
             } else {
