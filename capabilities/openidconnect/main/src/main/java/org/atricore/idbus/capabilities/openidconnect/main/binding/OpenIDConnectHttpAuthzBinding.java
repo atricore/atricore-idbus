@@ -195,14 +195,6 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
                         (AuthorizationCodeTokenIdRequest) message.getContent();
 
                 HttpResponse httpResponse = tokenRequest.executeUnparsed();
-
-                InputStream is  = httpResponse.getContent();
-
-                byte[] c = IOUtils.readFully(is, 0, true);
-
-                String content = new String(c);
-
-                logger.debug("CONTENT : " + content);
                 IdTokenResponse idTokenResponse = httpResponse.parseAs(IdTokenResponse.class);
                 return idTokenResponse;
             } catch (IOException e) {
