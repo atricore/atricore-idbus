@@ -42,8 +42,8 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         SPAuthnResponseType ssoResponse = (SPAuthnResponseType) state.getLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP);
         EndpointDescriptor destination = (EndpointDescriptor) state.getLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
 
-        state.removeLocalVariable("urn:org:atricore:idbus:sso:protocol:tmp:SPAuthnResponse");
-        state.removeLocalVariable("urn:org:atricore:idbus:sso:protocol:SPAuthnResponse:tmp:endpoint");
+        state.removeLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP);
+        state.removeLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
 
         // ---------------------------------------------------
         // Send SPAuthnResponse
