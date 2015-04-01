@@ -14,7 +14,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -189,6 +188,7 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
 
         int retry = 0;
         while (retry <= MAX_NUM_OF_AUTHORIZATION_RETRIES) {
+
             try {
 
                 AuthorizationCodeTokenIdRequest tokenRequest =
@@ -198,13 +198,12 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
 
                 InputStream is  = httpResponse.getContent();
 
-                byte[] c = org.apache.commons.io.IOUtils.toByteArray(is);
+                byte[] c = IOUtils.readFully(is, 0, true);
 
                 String content = new String(c);
 
                 logger.debug("CONTENT : " + content);
                 IdTokenResponse idTokenResponse = httpResponse.parseAs(IdTokenResponse.class);
-
                 return idTokenResponse;
             } catch (IOException e) {
                 retry++;
