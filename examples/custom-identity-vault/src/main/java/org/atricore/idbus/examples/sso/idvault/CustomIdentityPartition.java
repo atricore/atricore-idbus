@@ -32,11 +32,6 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public SchemaManager getSchemaManager() {
-        return null;
-    }
-
-    @Override
     public Group findGroupById(long id) throws ProvisioningException {
         return null;
     }
@@ -107,61 +102,6 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public AclEntry findAclEntryById(long id) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public void deleteAclEntry(long id) throws ProvisioningException {
-
-    }
-
-    @Override
-    public Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public SecurityToken addSecurityToken(SecurityToken securityToken) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public SecurityToken updateSecurityToken(SecurityToken securityToken) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public void deleteSecurityToken(String id) throws ProvisioningException {
-
-    }
-
-    @Override
-    public SecurityToken findSecurityTokenByTokenId(String tokenId) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public Collection<SecurityToken> findSecurityTokensByIssueInstantBefore(long issueInstant) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
-    public Collection<SecurityToken> findSecurityTokensByExpiresOnBefore(long expiresOn) throws ProvisioningException {
-        return null;
-    }
-
-    @Override
     public void boot() throws Exception {
 
     }
@@ -170,4 +110,6 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     public void afterPropertiesSet() throws Exception {
 
     }
+
+
 }

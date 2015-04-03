@@ -5,6 +5,8 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 
 /**
+ * This represents a destination to provision identity and mediation information (when available)
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public interface ProvisioningTarget {
@@ -26,6 +28,19 @@ public interface ProvisioningTarget {
     boolean isTransactionValid(String transactionId);
 
     AbstractProvisioningRequest lookupTransactionRequest(String transactionId);
+
+    /**
+     * Is Mediation Partition available, true when mediation partition is supported
+     * by this instance.
+     */
+    boolean isMediationPartitionAvailable();
+
+    /**
+     * Is Schema management available, true when schema management is supported
+     * by this instance.
+     */
+    boolean isSchemaManagementAvailable();
+
 
     //<--------------- Groups -------------------->
 
