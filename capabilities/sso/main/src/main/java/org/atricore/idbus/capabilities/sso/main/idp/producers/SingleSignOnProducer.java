@@ -351,7 +351,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // Send Authn Request to IDP
             // ------------------------------------------------------
             in.getMessage().getState().setLocalVariable(
-                    SAMLR2Constants.SAML_PROTOCOL_NS + ":PreAuthenticatedAuthnRequest", preauthAuthnRequest);
+                    SAMLR2Constants.SAML_IDBUS_NS + ":PreAuthenticatedAuthnRequest", preauthAuthnRequest);
 
             // Send SAMLR2 Message back
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
