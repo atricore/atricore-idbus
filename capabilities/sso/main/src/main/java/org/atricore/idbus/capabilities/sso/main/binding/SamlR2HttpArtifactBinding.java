@@ -189,7 +189,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                     if (relayState != null && rs != null && !relayState.equals(rs)) {
                         relayState = rs;
                         logger.warn("Provided relay state does not match stored state : " + relayState + " : " + rs +
-                                ", forcing " + relayState);
+                                ", forchandleCrossOriginResourceSharing(exchange);ing " + relayState);
                     }
                 }
 
@@ -239,6 +239,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", redirLocation);
+            handleCrossOriginResourceSharing(exchange);
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

@@ -184,8 +184,9 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
     }
 
     /**
-     * This will look in all registered providers that realize the given role for the channel that targets the source
-     * provider and return its COT Member descriptor.
+     * This will look in all registered providers that realize the given role for the channel and targets the source
+     * provider
+     * @return the COT Member descriptor for the selected provider
      *
      */
     public CircleOfTrustMemberDescriptor lookupMemberForProvider(Provider srcProvider, String role) throws CircleOfTrustManagerException {
@@ -221,6 +222,13 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
     }
 
+    /**
+     * This will look for FederationChannel associated with the source provider, that targets the destination provider and
+     * return the COT Member descriptor.
+     *
+     * @return the COT Member descriptor for the selected provider
+     *
+     */
     public CircleOfTrustMemberDescriptor lookupMemberForProvider(Provider srcProvider, Provider destProvider) throws CircleOfTrustManagerException {
 
         CircleOfTrustMemberDescriptor targetingMember = null;

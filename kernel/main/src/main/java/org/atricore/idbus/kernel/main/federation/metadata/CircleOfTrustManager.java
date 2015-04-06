@@ -53,34 +53,29 @@ public interface CircleOfTrustManager {
             throws CircleOfTrustManagerException;
 
     /**
-     * Look for a COT Member descriptor that realizes the given role.
+     * This will look the first registered providers that realize the given role targets the
+     * provider
+     * @return the COT Member descriptor for the selected provider
      *
-     * @param provider
-     * @param role
-     * @return
-     * @throws CircleOfTrustManagerException
      */
     CircleOfTrustMemberDescriptor lookupMemberForProvider(Provider provider, String role)
             throws CircleOfTrustManagerException;
 
     /**
-     * Look for a COT Member descriptor in the destination provider.  If mustBeTarget is set to true, only the member
-     * that targets the source provider is returned, otherwise the destination provider default target is returned.
+     * This will look for FederationChannel associated with the source provider, that targets the destination provider and
+     * return the COT Member descriptor.
      *
-     * @param srcProvider
-     * @param destProvider
-     * @return
-     * @throws CircleOfTrustManagerException
+     * @return the COT Member descriptor for the selected provider
+     *
      */
     CircleOfTrustMemberDescriptor lookupMemberForProvider(Provider srcProvider, Provider destProvider)
             throws CircleOfTrustManagerException;
 
     /**
-     * Lookup all members that realize the given role and can be used by the given provider.
-     * @param provider
-     * @param role
-     * @return
-     * @throws CircleOfTrustManagerException
+     * This will look the all registered providers that realize the given role and target the
+     * provider 
+     * @return the COT Member descriptor for the selected provider
+     *
      */
     Collection<CircleOfTrustMemberDescriptor> lookupMembersForProvider(Provider provider, String role)
         throws CircleOfTrustManagerException;

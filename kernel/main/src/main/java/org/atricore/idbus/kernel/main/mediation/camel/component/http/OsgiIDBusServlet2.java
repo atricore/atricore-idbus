@@ -108,7 +108,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             logger.info("Following Redirects internally : " + followRedirects);
 
             if (reuseHttpClient)
-                logger.info("Reuse HTTP client option is ON (EXPERIMENTAL)");
+                logger.warn("Reuse HTTP client option is ON (EXPERIMENTAL !!!!)");
 
         }
     }

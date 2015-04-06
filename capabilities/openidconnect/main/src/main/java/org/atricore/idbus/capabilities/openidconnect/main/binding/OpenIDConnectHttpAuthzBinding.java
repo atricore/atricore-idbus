@@ -158,6 +158,7 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", openIdConnectRedirLocation);
+            handleCrossOriginResourceSharing(exchange);
 
 
         } catch (Exception e) {
