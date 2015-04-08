@@ -396,7 +396,9 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             if (allow) {
                 httpOut.getHeaders().put("Access-Control-Allow-Origin", origin);
-                httpOut.getHeaders().put("Access-Control-Allow-Credentials", true);
+                httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
+                httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                httpOut.getHeaders().put("Access-Control-Allow-Credentials", "true");
             }
         }
 
