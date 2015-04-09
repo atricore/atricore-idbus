@@ -59,6 +59,10 @@ public enum SSOBinding {
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
     SSO_POST("urn:org:atricore:idbus:sso:bindings:HTTP-POST", true),
 
+    /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
+    AJAX_POST("urn:org:atricore:idbus:sso:bindings:AJAX-POST", true),
+
+
     /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
     SSO_SOAP("urn:org:atricore:idbus:sso:bindings:SOAP", false),
 
