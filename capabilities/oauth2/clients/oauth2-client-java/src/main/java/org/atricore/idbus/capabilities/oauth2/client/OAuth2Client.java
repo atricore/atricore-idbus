@@ -191,6 +191,36 @@ public class OAuth2Client implements ConfigurationConstants {
     }
 
     /**
+     * Builds a pre-authentication Url for the given access token.
+     *
+     * This method calls the requestToken method.
+     *
+     * @oaran relayState as received with the pre-authn token request.
+     * @param accessToken oauth2 access token
+     */
+    public String buildIdPPreAuthnResponseUrl(String relayState, String accessToken) throws OAuth2ClientException {
+
+        try {
+            String idpPreAuthn = config.getProperty(IDP_PREAUTHN_RESPONSE_ENDPOINT);
+
+            // TODO : Relay on SsoPreauthTokenSvcBinding in the future
+            String preauthUrl =
+                    String.format("%s?atricore_security_token=%s&scope=preauth-token",
+                            idpPreAuthn,
+                            URLEncoder.encode(accessToken, "UTF-8")
+                    );
+
+            if (relayState != null)
+                preauthUrl += "&relay_state=" + relayState;
+
+            return preauthUrl;
+        } catch (UnsupportedEncodingException e) {
+            throw new OAuth2ClientException(e);
+        }
+
+    }
+
+    /**
      * Builds a pre-authentication Url for the given username and password.
      *
      * This method calls the requestToken method.

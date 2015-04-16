@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class OAuth2AccessToken implements java.io.Serializable {
 
+    private String userId;
+
     private long timeStamp;
 
     private long rnd;
@@ -53,6 +55,40 @@ public class OAuth2AccessToken implements java.io.Serializable {
 
     public void setExpiresOn(long expiresOn) {
         this.expiresOn = expiresOn;
+    }
+
+    public String getUserId() {
+        if (claims == null)
+            return null;
+
+        if (userId != null)
+            return userId;
+
+        for (OAuth2Claim c : claims) {
+            if (c.getType().equals("USERID")) {
+                userId = c.getValue();
+                return userId;
+            }
+        }
+        return null;
+    }
+
+    public String getAttribute(String name) {
+        for (OAuth2Claim c : claims) {
+            if (c.getType().equals("ATTRIBUTE") && c.getValue().equals(name)) {
+                return c.getAttribute();
+            }
+        }
+        return null;
+    }
+
+    public Boolean isUserInRole(String name) {
+        for (OAuth2Claim c : claims) {
+            if (c.getType().equals("ROLE") && c.getValue().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
