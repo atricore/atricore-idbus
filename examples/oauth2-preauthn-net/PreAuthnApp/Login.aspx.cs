@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Atricore.OAuth2Client;
+using OAuth2ResourceServer;
+using OAuth2Common;
 
 namespace PreAuthnApp
 {
@@ -24,8 +26,21 @@ namespace PreAuthnApp
             OAuth2Client client = new OAuth2Client();
             client.init();
 
+            // Create a new OAuth2 secure access token resolver
+            SecureAccessTokenResolver tr = new SecureAccessTokenResolver();
+            tr.init();
+
             // Recover previously stored relay state
             String relayState = (String) HttpContext.Current.Session["relay_state"];
+
+            // Request an access token
+            String accessToken = client.requestToken(UserName.Text, UserPass.Text);
+
+            // Resolve the token to get user information
+            OAuth2AccessToken at = tr.resolve(accessToken);
+
+            String userId = at.UserId;
+            String email = at.getAttribute("email");
 
             // Perform pre-authentication, the created URL will have the proper authz token as request parameter
             String idpUrl = client.buildIdPPreAuthnResponseUrl(relayState, UserName.Text, UserPass.Text);
