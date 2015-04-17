@@ -19,12 +19,7 @@ public interface IdentityPartition {
 
     String getDescription();
 
-    @Deprecated
-    IdentityVault getIdentityVault();
-
     IdentityStore getIdentityStore();
-
-    SchemaManager getSchemaManager();
 
     Group findGroupById(long id) throws ProvisioningException;
 
@@ -56,27 +51,7 @@ public interface IdentityPartition {
 
     Collection<User> getUsersByGroup(Group group) throws ProvisioningException;
 
-    AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException;
 
-    AclEntry findAclEntryById(long id) throws ProvisioningException;
-
-    AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException;
-
-    void deleteAclEntry(long id) throws ProvisioningException;
-
-    Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException;
-
-    SecurityToken addSecurityToken(SecurityToken securityToken) throws ProvisioningException;
-
-    SecurityToken updateSecurityToken(SecurityToken securityToken) throws ProvisioningException;
-
-    void deleteSecurityToken(String id) throws ProvisioningException;
-
-    SecurityToken findSecurityTokenByTokenId(String tokenId) throws ProvisioningException;
-
-    Collection<SecurityToken> findSecurityTokensByIssueInstantBefore(long issueInstant) throws ProvisioningException;
-
-    Collection<SecurityToken> findSecurityTokensByExpiresOnBefore(long expiresOn) throws ProvisioningException;
 }
 
 

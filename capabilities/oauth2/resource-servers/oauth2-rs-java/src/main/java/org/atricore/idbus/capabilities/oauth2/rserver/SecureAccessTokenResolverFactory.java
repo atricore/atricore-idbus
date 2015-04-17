@@ -4,6 +4,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.atricore.idbus.capabilities.oauth2.common.AESTokenEncrypter;
 import org.atricore.idbus.capabilities.oauth2.common.HMACTokenSigner;
 
+import java.io.IOException;
+
 /**
  * Secure resolver factory, for now it fixes HMAC-SHA1 and AES for signing and encrypting
  *
@@ -22,31 +24,42 @@ public class SecureAccessTokenResolverFactory extends AccessTokenResolverFactory
     public AccessTokenResolver doMakeResolver() {
 
         // Resolver
-        SecureAccessTokenResolverImpl r = new SecureAccessTokenResolverImpl();
-        String defaultKey = config.getProperty(SHARED_SECRECT_PROPERTY);
-        String encKey = config.getProperty(SHARED_SECRECT_ENC_PROPERTY, defaultKey);
-        String signKey = config.getProperty(SHARED_SECRECT_SIGN_PROPERTY, defaultKey);
-        long tkValidityInterval = Long.parseLong(config.getProperty(TOKEN_VALIDITY_INTERVAL_PROPERTY, "30000"));
+        try {
 
-        if (defaultKey == null && signKey == null)
-            throw new RuntimeException("Secure Token Resolver requires a signature verification key");
+            if (config == null)
+                loadConfig();
 
-        if (defaultKey == null && encKey == null)
-            throw new RuntimeException("Secure Token Resolver requires an encryption verification key");
+            SecureAccessTokenResolverImpl r = new SecureAccessTokenResolverImpl();
+            String defaultKey = config.getProperty(SHARED_SECRECT_PROPERTY);
+            String encKey = config.getProperty(SHARED_SECRECT_ENC_PROPERTY, defaultKey);
+            String signKey = config.getProperty(SHARED_SECRECT_SIGN_PROPERTY, defaultKey);
+            long tkValidityInterval = Long.parseLong(config.getProperty(TOKEN_VALIDITY_INTERVAL_PROPERTY, "30000"));
 
-        // HMAC Signer
-        HMACTokenSigner signer = new HMACTokenSigner();
-        signer.setKey(signKey);
-        r.setTokenSigner(signer);
+            if (defaultKey == null && signKey == null)
+                throw new RuntimeException("Secure Token Resolver requires a signature verification key");
 
-        // AES Encrypter
-        AESTokenEncrypter encrypter = new AESTokenEncrypter();
-        encrypter.setBase64key(encKey);
-        r.setTokenEncrypter(encrypter);
+            if (defaultKey == null && encKey == null)
+                throw new RuntimeException("Secure Token Resolver requires an encryption verification key");
 
-        r.setTokenValidityInterval(tkValidityInterval);
+            // HMAC Signer
+            HMACTokenSigner signer = new HMACTokenSigner();
+            signer.setKey(signKey);
+            r.setTokenSigner(signer);
 
-        return r;
+            // AES Encrypter
+            AESTokenEncrypter encrypter = new AESTokenEncrypter();
+            encrypter.setBase64key(encKey);
+            r.setTokenEncrypter(encrypter);
+
+            r.setTokenValidityInterval(tkValidityInterval);
+
+            return r;
+
+        } catch (OAuth2RServerException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

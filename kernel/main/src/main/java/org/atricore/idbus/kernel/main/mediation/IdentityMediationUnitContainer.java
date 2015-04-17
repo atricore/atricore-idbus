@@ -42,4 +42,6 @@ public interface IdentityMediationUnitContainer {
     Collection<IdentityMediator> getMediators();
 
     void setMediators(Collection<IdentityMediator> mediators);
+
+    IdentityMediationUnit getUnit();
 }

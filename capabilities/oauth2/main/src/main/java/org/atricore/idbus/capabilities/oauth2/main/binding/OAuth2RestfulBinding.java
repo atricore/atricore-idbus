@@ -97,6 +97,7 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", oauth2ResfulLocation);
+            handleCrossOriginResourceSharing(exchange);
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

@@ -108,7 +108,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             logger.info("Following Redirects internally : " + followRedirects);
 
             if (reuseHttpClient)
-                logger.info("Reuse HTTP client option is ON (EXPERIMENTAL)");
+                logger.warn("Reuse HTTP client option is ON (EXPERIMENTAL !!!!)");
 
         }
     }
@@ -905,16 +905,16 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         public void addHeader(String name, String value) {
             if (name.equalsIgnoreCase("content.type"))
                 super.addHeader("Content-Type", value);
-
-            super.addHeader(name, value);
+            else
+                super.addHeader(name, value);
         }
 
         @Override
         public void setHeader(String name, String value) {
-            if (name.equalsIgnoreCase("content.type")) {
+            if (name.equalsIgnoreCase("content.type"))
                 super.setHeader("Content-Type", value);
-            }
-            super.setHeader(name, value);
+            else
+                super.setHeader(name, value);
         }
     }
 }

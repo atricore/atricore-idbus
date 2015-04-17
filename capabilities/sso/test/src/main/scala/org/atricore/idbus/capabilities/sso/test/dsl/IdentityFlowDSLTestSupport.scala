@@ -205,6 +205,10 @@ object MockProvisioningTarget extends ProvisioningTarget {
 
   def purgeOldTransactions() {}
 
+  def isSchemaManagementAvailable(): Boolean = false
+
+  def isMediationPartitionAvailable(): Boolean = false
+
   def isTransactionValid(transactionId: String): Boolean = false
 
   def lookupTransactionRequest(transactionId: String): AbstractProvisioningRequest = null

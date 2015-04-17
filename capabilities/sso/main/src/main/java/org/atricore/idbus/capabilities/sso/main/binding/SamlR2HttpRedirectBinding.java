@@ -262,6 +262,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", redirLocation);
+            handleCrossOriginResourceSharing(exchange);
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

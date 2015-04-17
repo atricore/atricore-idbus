@@ -150,6 +150,7 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("Location", ed.getLocation());
             // Tell the kernel not to follow this redirect, we need the browser to handle it
             httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "FALSE");
+            handleCrossOriginResourceSharing(exchange);
 
         } else if (sm instanceof RequestToken) {
             if (logger.isDebugEnabled())
