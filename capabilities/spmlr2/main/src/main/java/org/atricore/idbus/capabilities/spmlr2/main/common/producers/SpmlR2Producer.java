@@ -121,7 +121,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
             ModificationType spmlMod = spmlRequest.getModification().get(0);
 
             UserType spmlUser = (UserType) spmlMod.getData();
-            User user = lookupUser(target, spmlUser.getUserName());
+            User user = lookupUser(target, spmlUser.getId());
 
             // Do not override null properties in the original object
             String[] ignoredProps = getNullProps(spmlUser, new String[] {"id", "groups", "attrs"});

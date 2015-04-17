@@ -56,5 +56,4 @@ public interface IdentityMediator {
 
     Object sendMessage(Object content, EndpointDescriptor destination, Channel channel) throws IdentityMediationException;
 
-
 }

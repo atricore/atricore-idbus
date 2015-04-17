@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- * Extends the default 'RequestAddCookies' initializing the client cookie store with the recevied cookies from the browser
+ * Extends the default 'RequestAddCookies' initializing the client cookie store with the received cookies from the browser
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */

@@ -1,5 +1,7 @@
 package org.atricore.idbus.capabilities.oauth2.rserver;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -13,6 +15,8 @@ public abstract class AccessTokenResolverFactory {
     private static String factoryClass = SecureAccessTokenResolverFactory.class.getName();
 
     protected Properties config;
+
+    protected String configPath;
 
     public static String getFactoryClass() {
         return factoryClass;
@@ -40,12 +44,31 @@ public abstract class AccessTokenResolverFactory {
         }
     }
 
+    public static AccessTokenResolverFactory newInstance(String configPath) throws OAuth2RServerException {
+        String clazz = System.getProperty("org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolverFactory", factoryClass);
+        try {
+            AccessTokenResolverFactory f = (AccessTokenResolverFactory) Class.forName(clazz).newInstance();
+            f.setConfigPath(configPath);
+            return f;
+        } catch (Exception e) {
+            throw new OAuth2RServerException("Cannot create factory for " + clazz);
+        }
+    }
+
     public Properties getConfig() {
         return config;
     }
 
     public void setConfig(Properties config) {
         this.config = config;
+    }
+
+    public String getConfigPath() {
+        return configPath;
+    }
+
+    public void setConfigPath(String configPath) {
+        this.configPath = configPath;
     }
 
 
@@ -57,5 +80,20 @@ public abstract class AccessTokenResolverFactory {
     }
 
     protected abstract AccessTokenResolver doMakeResolver();
+
+    protected Properties loadConfig() throws IOException, OAuth2RServerException {
+
+        if (configPath == null)
+            configPath = "/oauth2.properties";
+
+        Properties props = new Properties();
+        InputStream is = getClass().getResourceAsStream("/oauth2.properties");
+        if (is == null)
+            throw new OAuth2RServerException("Configuration not found for " + configPath);
+
+        props.load(is);
+
+        return this.config = props;
+    }
 
 }

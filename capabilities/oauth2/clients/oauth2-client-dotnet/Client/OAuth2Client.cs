@@ -26,14 +26,26 @@ namespace Atricore.OAuth2Client
             string authorizationServerEndpoint = ConfigurationManager.AppSettings["authorizationServerEndpoint"];
             clientId = ConfigurationManager.AppSettings["clientId"];
             clientSecret = ConfigurationManager.AppSettings["clientSecret"];
+            string endpointTransportGuarantee = ConfigurationManager.AppSettings["endpointTransportGuarantee"];
+            bool disableCertificateValidation = Convert.ToBoolean(ConfigurationManager.AppSettings["disableCertificateValidation"]);
 
             var messageElement = new TextMessageEncodingBindingElement();
-            var transportElement = new HttpTransportBindingElement();
+            TransportBindingElement transportElement;
+            if ("NONE".Equals(endpointTransportGuarantee)) {
+                transportElement = new HttpTransportBindingElement();
+            } else if ("CONFIDENTIAL".Equals(endpointTransportGuarantee)) {
+                transportElement = new HttpsTransportBindingElement();
+            } else {
+                throw new OAuth2ClientException("Invalid endpointTransportGuarantee value: " + endpointTransportGuarantee);
+            }
             messageElement.MessageVersion = MessageVersion.CreateVersion(EnvelopeVersion.Soap11, AddressingVersion.None);
             CustomBinding binding = new CustomBinding(messageElement, transportElement);
             EndpointAddress endpoint = new EndpointAddress(new Uri(authorizationServerEndpoint));
 
             client = new OAuth2Protocol.AccessTokenRequestor.OAuthPortTypeClient(binding, endpoint);
+
+            if (disableCertificateValidation)
+                System.Net.ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
         }
 
         public String requestToken(String usr, String pwd) 
@@ -163,7 +175,7 @@ namespace Atricore.OAuth2Client
         {
 
             String idpPreAuthn = ConfigurationManager.AppSettings["idpPreAuthnResponse"];
-            String preauthUrl = idpPreAuthn + "?atricore_security_token=" + Uri.EscapeDataString(accessToken) + " &scope=preauth-token";
+            String preauthUrl = idpPreAuthn + "?atricore_security_token=" + Uri.EscapeDataString(accessToken) + "&scope=preauth-token";
 
             if (relayState != null)
                 preauthUrl += "&relay_state=" + Uri.EscapeDataString(relayState);

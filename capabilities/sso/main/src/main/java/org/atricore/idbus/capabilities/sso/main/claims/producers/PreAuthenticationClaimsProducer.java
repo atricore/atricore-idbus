@@ -125,8 +125,17 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         String relayState = in.getMessage().getRelayState();
 
-        if (relayState == null || !relayState.equals(in.getMessage().getState().getLocalState().getId())) {
-            throw new SSOException("Invalid relay state received " + relayState);
+
+        CredentialClaimsRequest claimRequest =
+                (CredentialClaimsRequest) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:credential-claims-request");
+
+        if (claimRequest != null) {
+            if (relayState == null || !relayState.equals(in.getMessage().getState().getLocalState().getId())) {
+                throw new SSOException("Invalid relay state received " + relayState);
+            }
+        } else {
+            if (relayState != null)
+                throw new SSOException("Unexpected relay state received " + relayState);
         }
 
         String preAuthToken = resp.getSecurityToken();

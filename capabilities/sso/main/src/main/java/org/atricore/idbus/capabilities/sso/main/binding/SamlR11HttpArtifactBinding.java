@@ -214,6 +214,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", redirLocation);
+            handleCrossOriginResourceSharing(exchange);
 
 
 

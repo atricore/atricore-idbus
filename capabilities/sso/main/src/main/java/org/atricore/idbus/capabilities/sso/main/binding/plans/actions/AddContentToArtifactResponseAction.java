@@ -1,12 +1,11 @@
 package org.atricore.idbus.capabilities.sso.main.binding.plans.actions;
 
-import oasis.names.tc.saml._1_0.protocol.*;
 import oasis.names.tc.saml._2_0.protocol.*;
-import oasis.names.tc.saml._2_0.protocol.ObjectFactory;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -39,17 +38,19 @@ public class AddContentToArtifactResponseAction  extends AbstractSSOAction {
 
         try {
 
-            ObjectFactory of = new ObjectFactory();
+
             JAXBElement samlXmlElement = null;
 
             // SAML Type may be any request or response ... AuthnRequest
 
-            String type = content.getClass().getSimpleName();
+            String type = content.getClass().getName();
             //String ofMethodName = "create" + type.substring(0, type.length() - "Type".length());
             String ofMethodName = "create" + samlType;
 
             if (logger.isTraceEnabled())
                 logger.trace("Creating SAML 2.0 JAXB Content with ObjectFactory method : " + ofMethodName);
+
+            Object of = resolveObjectFactory(type);
 
             Method m = of.getClass().getMethod(ofMethodName, content.getClass());
             samlXmlElement = (JAXBElement) m.invoke(of, content);
@@ -60,9 +61,22 @@ public class AddContentToArtifactResponseAction  extends AbstractSSOAction {
             response.setAny(samlXmlElement);
 
         } catch (Exception e) {
-            logger.error("Cannot create SAML 2.0 JAXB Content " + e.getMessage(), e);
+            logger.error("Cannot create SAML 2.0 Content " + e.getMessage(), e);
+            throw new IdentityMediationException(e);
         }
 
 
+    }
+
+    protected Object resolveObjectFactory(String type) {
+
+        if (type.startsWith(SAMLR2Constants.SAML_PROTOCOL_PKG))
+            return new oasis.names.tc.saml._2_0.protocol.ObjectFactory();
+        else if (type.startsWith(SAMLR2Constants.SAML_IDBUS_PKG))
+            return new oasis.names.tc.saml._2_0.idbus.ObjectFactory();
+        else if (type.startsWith(SAMLR2Constants.SAML_ASSERTION_PKG))
+            return new oasis.names.tc.saml._2_0.assertion.ObjectFactory();
+        else
+            throw new IllegalArgumentException("Unsupported SAML type : " + type);
     }
 }

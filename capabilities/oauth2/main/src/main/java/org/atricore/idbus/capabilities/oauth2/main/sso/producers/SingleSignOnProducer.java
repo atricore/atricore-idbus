@@ -47,6 +47,9 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
         super(endpoint);
     }
 
+    /**
+     * Acts as SP initiated SSO service
+     */
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
