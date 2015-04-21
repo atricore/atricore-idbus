@@ -109,7 +109,6 @@
         <module>proxy</module>
         <module>monitoring</module>
         <module>auditing</module>
-        <module>provisioning</module>
         <!--
         <module>agent</module>
         -->

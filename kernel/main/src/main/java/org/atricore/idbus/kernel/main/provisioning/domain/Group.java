@@ -64,9 +64,14 @@ public class Group implements Serializable {
 
         Group that = (Group) o;
 
-        if(id == 0) return false;
+        if (oid != null)
+            return oid.equals(that.oid);
 
-        if (id != that.id) return false;
+        if(id == 0)
+            return false;
+
+        if (id != that.id)
+            return false;
 
         return true;
     }
