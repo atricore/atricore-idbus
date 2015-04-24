@@ -9,21 +9,12 @@ public class Group implements Serializable {
 
     private static final long serialVersionUID = 4595183658527599864L;
 
-    private long id;
     private String oid;
     private String name;
     private String description;
 
     private GroupAttributeValue[] attrs;
     
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getOid() {
         return oid;
     }
@@ -67,17 +58,11 @@ public class Group implements Serializable {
         if (oid != null)
             return oid.equals(that.oid);
 
-        if(id == 0)
-            return false;
-
-        if (id != that.id)
-            return false;
-
-        return true;
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return oid != null ? oid.hashCode() : super.hashCode();
     }
 }

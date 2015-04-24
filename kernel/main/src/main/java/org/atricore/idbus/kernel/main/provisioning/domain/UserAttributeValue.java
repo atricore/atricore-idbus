@@ -9,17 +9,17 @@ public class UserAttributeValue implements Serializable {
 
     private static final long serialVersionUID = 4595183658527197264L;
 
-    private long id;
+    private String id;
 
     private String name;
 
     private String value;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -39,12 +39,6 @@ public class UserAttributeValue implements Serializable {
         this.value = value;
     }
 
-
-    @Override
-    public int hashCode() {
-        return (int) (id ^ (id >>> 32));
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,9 +46,14 @@ public class UserAttributeValue implements Serializable {
 
         UserAttributeValue that = (UserAttributeValue) o;
 
-        if(id == 0) return false;
-        if (id != that.id) return false;
+        if (id != null)
+            return id.equals(that.id);
 
-        return true;
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : super.hashCode();
     }
 }

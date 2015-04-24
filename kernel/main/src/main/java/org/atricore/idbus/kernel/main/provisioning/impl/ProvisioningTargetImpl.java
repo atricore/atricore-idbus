@@ -199,7 +199,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.schemaManager = schemaManager;
     }
 
-    public void deleteGroup(long id) throws ProvisioningException {
+    public void deleteGroup(String id) throws ProvisioningException {
         try {
             identityPartition.deleteGroup(id);
         } catch (Exception e) {
@@ -212,7 +212,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws ProvisioningException {
 
         try {
-            Group group = identityPartition.findGroupById(groupRequest.getId());
+            Group group = identityPartition.findGroupByOid(groupRequest.getId());
             FindGroupByIdResponse groupResponse = new FindGroupByIdResponse ();
             groupResponse.setGroup(group);
             return groupResponse;
@@ -298,7 +298,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningException {
         try {
             
-            Group group = identityPartition.findGroupById(groupRequest.getId());
+            Group group = identityPartition.findGroupByOid(groupRequest.getId());
 
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
@@ -412,8 +412,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Retrieve the user from the partition
         AddUserResponse response = (AddUserResponse) t.getResponse();
-        Long uid = response.getUser().getId();
-        User tmpUser = identityPartition.findUserById(uid);
+        String uid = response.getUser().getOid();
+        User tmpUser = identityPartition.findUserByOid(uid);
 
         // New user information
 
@@ -450,7 +450,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws ProvisioningException {
         try {
-            User user = identityPartition.findUserById(userRequest.getId());
+            User user = identityPartition.findUserByOid(userRequest.getId());
             FindUserByIdResponse userResponse = new FindUserByIdResponse();
             userResponse.setUser(user);
             return userResponse;
@@ -500,7 +500,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             
             User user = userRequest.getUser();
-            User oldUser = identityPartition.findUserById(user.getId());
+            User oldUser = identityPartition.findUserByOid(user.getOid());
 
             // DO NOT UPDATE USER PASSWORD OR LIFE QUESTIONS HERE
             BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "securityQuestions", "acls", "userPassword", "id"});
@@ -535,7 +535,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         validatePassword(setPwdRequest.getNewPassword());
 
         try {
-            User user = identityPartition.findUserById(setPwdRequest.getUserId());
+            User user = identityPartition.findUserByOid(setPwdRequest.getUserId());
 
             String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword(), user.getSalt());
             if (!user.getUserPassword().equals(currentPwd)) {
@@ -566,7 +566,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         validatePassword(pwd);
 
         try {
-            User user = identityPartition.findUserById(resetPwdRequest.getUser().getId());
+            User user = identityPartition.findUserByOid(resetPwdRequest.getUser().getOid());
             User providedUser = resetPwdRequest.getUser();
             if (!user.getUserName().equals(providedUser.getUserName()))
                 throw new ProvisioningException("Invalid user information");
@@ -617,7 +617,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
         ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
 
-        User user = identityPartition.findUserById(req.getUser().getId());
+        User user = identityPartition.findUserByOid(req.getUser().getOid());
 
         String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
         String pwdHash = createPasswordHash(newPwd, user.getSalt());

@@ -96,7 +96,7 @@ public class PwdChangePanel extends Panel {
 
         SetPasswordRequest req = new SetPasswordRequest ();
 
-        req.setUserId(user.getId());
+        req.setUserId(user.getOid());
         req.setCurrentPassword(pwdChange.getCurrentPassword());
         req.setNewPassword(pwdChange.getNewPassword());
 

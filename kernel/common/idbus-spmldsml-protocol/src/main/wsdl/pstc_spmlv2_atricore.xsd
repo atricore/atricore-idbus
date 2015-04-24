@@ -50,7 +50,7 @@
                     <element ref="spmlatc:attributeValue" minOccurs="0" maxOccurs="unbounded"/>
                 </sequence>
 
-                <attribute name="id" type="xsd:long" use="required"/>
+                <attribute name="id" type="xsd:string" use="required"/>
                 <attribute name="name" type="xsd:string" use="required"/>
                 <attribute name="description" type="xsd:string" use="required"/>
             </extension>
@@ -67,7 +67,7 @@
                     <element ref="spmlatc:attributeValue" minOccurs="0" maxOccurs="unbounded"/>
                 </sequence>
 
-                <attribute name="id" type="xsd:long" use="required"/>
+                <attribute name="id" type="xsd:string" use="required"/>
 
                 <!-- Built-in Attributes -->
                 <attribute name="userName" type="xsd:string" use="required"/>
@@ -123,7 +123,7 @@
     <xsd:complexType name="UserAttributeType">
         <complexContent>
             <extension base="spml:ExtensibleType">
-                <attribute name="id" type="xsd:long" use="required"/>
+                <attribute name="id" type="xsd:string" use="required"/>
                 <xsd:attribute name="name" type="xsd:string" use="required"/>
                 <xsd:attribute name="description" type="xsd:string" use="required"/>
                 <attribute name="type" type="spmlatc:AttributeType" use="required"/>
@@ -136,7 +136,7 @@
     <xsd:complexType name="GroupAttributeType">
         <complexContent>
             <extension base="spml:ExtensibleType">
-                <attribute name="id" type="xsd:long" use="required"/>
+                <attribute name="id" type="xsd:string" use="required"/>
                 <xsd:attribute name="name" type="xsd:string" use="required"/>
                 <xsd:attribute name="description" type="xsd:string" use="required"/>
                 <attribute name="type" type="spmlatc:AttributeType" use="required"/>
@@ -147,7 +147,7 @@
     </xsd:complexType>
     
     <xsd:complexType name="AttributeValueType">
-        <xsd:attribute name="id" type="xsd:long" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="value" type="xsd:string" use="required"/>
     </xsd:complexType>

@@ -36,8 +36,6 @@ import java.util.Date;
  */
 public class AddUserRequest extends AbstractProvisioningRequest {
 
-    private long id;
-    
 //<--- General Information ---->
     private String userName;
     private String firstName;
@@ -94,14 +92,6 @@ public class AddUserRequest extends AbstractProvisioningRequest {
 
     private UserAttributeValue[] attrs;
     private UserSecurityQuestion[] securityQuestions;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getUserName() {
         return userName;

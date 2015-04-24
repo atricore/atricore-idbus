@@ -21,7 +21,7 @@ public interface IdentityPartition {
 
     IdentityStore getIdentityStore();
 
-    Group findGroupById(long id) throws ProvisioningException;
+    Group findGroupByOid(String oid) throws ProvisioningException;
 
     Group findGroupByName(String name) throws ProvisioningException;
 
@@ -33,13 +33,11 @@ public interface IdentityPartition {
 
     Group updateGroup(Group group) throws ProvisioningException;
 
-    void deleteGroup(long id) throws ProvisioningException;
+    void deleteGroup(String oid) throws ProvisioningException;
 
     User addUser(User user) throws ProvisioningException;
 
-    void deleteUser(long id) throws ProvisioningException;
-
-    User findUserById(long id) throws ProvisioningException;
+    void deleteUser(String oid) throws ProvisioningException;
 
     User findUserByOid(String oid) throws ProvisioningException;
 
