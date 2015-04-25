@@ -93,6 +93,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
 
+
         // We can send several attributes within the request.
         String spAlias = state.getTransientVariable("atricore_sp_alias");
         if (spAlias != null) {
@@ -108,6 +109,11 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             a.setName("atricore_sp_id");
             a.setValue(spId);
             idpInitReq.getRequestAttribute().add(a);
+        }
+
+        String passive = state.getTransientVariable("passive");
+        if (passive != null) {
+            idpInitReq.setPassive(Boolean.parseBoolean(passive));
         }
        
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),

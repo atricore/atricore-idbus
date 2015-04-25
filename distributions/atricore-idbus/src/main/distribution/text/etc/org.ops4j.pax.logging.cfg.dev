@@ -34,6 +34,17 @@ log4j.appender.out.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %-16.16t | %-
 log4j.appender.out.file=${karaf.base}/data/log/atricore.log
 log4j.appender.out.append=false
 
+# File appender (errors)
+log4j.appender.err=org.apache.log4j.RollingFileAppender
+log4j.appender.err.layout=org.apache.log4j.PatternLayout
+log4j.appender.err.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %-16.16t | %-32.32c{1} | %-32.32C %4L | %X{bundle.id} - %X{bundle.name} - %X{bundle.version} | %m%n
+
+log4j.appender.err.file=${karaf.base}/data/log/atricore-err.log
+log4j.appender.err.append=false
+log4j.appender.err.maxFileSize=128MB
+log4j.appender.err.maxBackupIndex=9
+log4j.appender.err.threshold=WARN
+
 # Sift appender
 log4j.appender.sift=org.apache.log4j.sift.MDCSiftingAppender
 log4j.appender.sift.key=bundle.name
