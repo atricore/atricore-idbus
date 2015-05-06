@@ -1,6 +1,6 @@
 package org.atricore.idbus.kernel.main.provisioning.domain;
 
-public class ProvisioningTask {
+public class ProvisioningTaskDescriptor {
 
     private String oid;
 

@@ -308,6 +308,10 @@ object MockProvisioningTarget extends ProvisioningTarget {
   def findSecurityTokensByExpiresOnBefore(findSecurityTokensByExpiresOnBeforeRequest: FindSecurityTokensByExpiresOnBeforeRequest): FindSecurityTokensByExpiresOnBeforeResponse = null
 
   def findSecurityTokensByIssueInstantBefore(findSecurityTokensByIssueInstantBeforeRequest: FindSecurityTokensByIssueInstantBeforeRequest): FindSecurityTokensByIssueInstantBeforeResponse = null
+
+  def listUserAccounts(request: ListUserAccountsRequest): ListUserAccountsResponse = null
+
+  def listResources(requesst: ListResourcesRequest): ListResourcesResponse = null
 }
 
 object MockMailService extends MailService {

@@ -9,10 +9,7 @@ import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
-import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
-import org.atricore.idbus.kernel.main.provisioning.spi.MediationPartition;
-import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
-import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
+import org.atricore.idbus.kernel.main.provisioning.spi.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -49,6 +46,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private int saltLength;
     
     private IdentityPartition identityPartition;
+
+    private Map<String, IdentityResource> resources = new HashMap<String, IdentityResource>();
 
     private MediationPartition mediationPartition;
 
@@ -379,7 +378,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         AddUserResponse userResponse = new AddUserResponse();
 
         User u = new User();
-        BeanUtils.copyProperties(userRequest, u, new String[] {"groups", "securityQuestions", "userPassword"});
+        BeanUtils.copyProperties(userRequest, u, new String[]{"groups", "securityQuestions", "userPassword"});
 
         String salt = generateSalt();
 
@@ -523,7 +522,39 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+    @Override
+    public ListUserAccountsResponse listUserAccounts(ListUserAccountsRequest request) throws ProvisioningException {
+        try {
+
+            List<Account> userAccounts = new ArrayList<Account>();
+            for (IdentityResource resource : resources.values()) {
+
+                if (request.getResourceOid() != null) {
+                    if (request.getResourceOid().equals(resource.getOid()))
+                        userAccounts.add(resource.getUserAccount(request.getUserOid()));
+                } else {
+                    userAccounts.add(resource.getUserAccount(request.getUserOid()));
+                }
+            }
+
+            Account[] accounts = userAccounts.toArray(new Account[userAccounts.size()]);
+
+            ListUserAccountsResponse response = new ListUserAccountsResponse();
+            response.setAccounts(accounts);
+
+            return response;
+
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+
+    @Override
+    public ListResourcesResponse listResources(ListResourcesRequest request) throws ProvisioningException {
+        return new ListResourcesResponse();
+    }
+
     public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByUserRequest) throws ProvisioningException {
         // TODO !
         throw new UnsupportedOperationException("Not Implemented yet!");
@@ -978,6 +1009,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
+    }
+
+    public void registerResource(IdentityResource resource) {
+        this.resources.put(resource.getOid(), resource);
     }
 
     protected String createPasswordHash(String password, String salt) throws ProvisioningException {

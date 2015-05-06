@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.Account;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
@@ -97,6 +98,10 @@ public interface ProvisioningTarget {
 
     GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest)
     		throws ProvisioningException;
+
+    ListUserAccountsResponse listUserAccounts(ListUserAccountsRequest request) throws ProvisioningException;
+
+    ListResourcesResponse listResources(ListResourcesRequest requesst) throws ProvisioningException;
 
     SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest)
             throws ProvisioningException;

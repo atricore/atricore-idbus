@@ -13,6 +13,10 @@ public class Account implements Serializable {
 
     private String uid;
 
+    private String resourceOid;
+
+    private String resourceName;
+
     public String getOid() {
         return oid;
     }
@@ -27,5 +31,21 @@ public class Account implements Serializable {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getResourceOid() {
+        return resourceOid;
+    }
+
+    public void setResourceOid(String resourceOid) {
+        this.resourceOid = resourceOid;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 }
