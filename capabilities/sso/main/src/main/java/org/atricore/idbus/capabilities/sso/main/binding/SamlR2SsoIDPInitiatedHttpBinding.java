@@ -93,7 +93,6 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
 
-
         // We can send several attributes within the request.
         String spAlias = state.getTransientVariable("atricore_sp_alias");
         if (spAlias != null) {

@@ -375,7 +375,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-//    @Transactional
+    @Override
+    public long getUserCount() throws ProvisioningException {
+        // TODO : Optimize!
+        return userDao.findAll().size();
+    }
+
+    //    @Transactional
     protected User findUserById(long id) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();

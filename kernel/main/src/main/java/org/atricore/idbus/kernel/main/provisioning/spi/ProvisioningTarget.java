@@ -40,8 +40,8 @@ public interface ProvisioningTarget {
      * Is Schema management available, true when schema management is supported
      * by this instance.
      */
+    @Deprecated
     boolean isSchemaManagementAvailable();
-
 
     //<--------------- Groups -------------------->
 

@@ -1,5 +1,8 @@
 package org.atricore.idbus.kernel.main.provisioning.domain;
 
+import java.util.Collection;
+import java.util.List;
+
 public class ProvisioningTaskDescriptor {
 
     private String oid;
@@ -9,6 +12,10 @@ public class ProvisioningTaskDescriptor {
     private ProvisioningTaskType type;
 
     private boolean recurring;
+
+    private OperationResult result;
+
+    private List<OperationResult> partialResults;
 
     public String getOid() {
         return oid;
@@ -40,5 +47,21 @@ public class ProvisioningTaskDescriptor {
 
     public void setType(ProvisioningTaskType type) {
         this.type = type;
+    }
+
+    public OperationResult getResult() {
+        return result;
+    }
+
+    public void setResult(OperationResult result) {
+        this.result = result;
+    }
+
+    public List<OperationResult> getPartialResults() {
+        return partialResults;
+    }
+
+    public void setPartialResults(List<OperationResult> partialResults) {
+        this.partialResults = partialResults;
     }
 }

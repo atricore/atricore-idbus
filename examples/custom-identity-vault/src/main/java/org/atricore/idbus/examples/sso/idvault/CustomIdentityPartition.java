@@ -100,6 +100,11 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
+    public long getUserCount() throws ProvisioningException {
+        return 0;
+    }
+
+    @Override
     public void boot() throws Exception {
 
     }
