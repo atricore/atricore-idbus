@@ -398,7 +398,7 @@ public class IdPSelectorProducer extends SSOProducer {
                                          CircleOfTrustMemberDescriptor selectedCotMembery) throws SSOException {
 
         if (logger.isDebugEnabled())
-            logger.debug("Sending selection response with entity " + selectedCotMembery != null ? (selectedCotMembery.getId() + " " + selectedCotMembery.getAlias()) : "NULL");
+            logger.debug("Sending selection response with entity " + (selectedCotMembery != null ? (selectedCotMembery.getId() + " " + selectedCotMembery.getAlias()) : "NULL"));
 
         // Do something with the outcome
         SelectEntityResponseType response = new SelectEntityResponseType();
