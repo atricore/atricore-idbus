@@ -94,6 +94,7 @@ import java.security.Principal;
 
 public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
+    public static final String SCHEME_NAME = "basic-authentication";
 
     private static final Log logger = LogFactory.getLog(UsernamePasswordAuthScheme.class);
 
@@ -115,7 +116,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     private int _saltLength = 2;
 
     public UsernamePasswordAuthScheme() {
-        this.setName("basic-authentication");
+        this.setName(SCHEME_NAME);
     }
 
     /**

@@ -157,17 +157,17 @@ public class VerifyPwdResetPanel extends Panel {
 
         // Verify each question
 
-        String a1 = PasswordUtil.createPasswordHash(model.getAnswer1(), getHashAlgorithm(), getHashEncoding(), getDigest());
+        String a1 = model.getAnswer1();
         if (!a1.equals(questions[0].getAnswer())) {
             return false;
         }
 
-        String a2 = PasswordUtil.createPasswordHash(model.getAnswer2(), getHashAlgorithm(), getHashEncoding(), getDigest());
+        String a2 = model.getAnswer2();
         if (!a2.equals(questions[1].getAnswer())) {
             return false;
         }
 
-        String a3 = PasswordUtil.createPasswordHash(model.getAnswer3(), getHashAlgorithm(), getHashEncoding(), getDigest());
+        String a3 = model.getAnswer3();
         if (!a3.equals(questions[2].getAnswer())) {
             return false;
         }

@@ -100,6 +100,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                 <bean class="org.atricore.idbus.kernel.main.mail.MailSender" init-method="init">
                     <property name="name" value="default"/>
                     <property name="host" value="${mail.smtp.host}"/>
+                    <property name="port" value="${mail.smtp.port}"/>
+                    <property name="auth" value="${mail.smtp.auth}"/>
+                    <property name="starttlsEnable" value="${mail.smtp.starttls.enable}"/>
+
                     <property name="username" value="${mail.username}"/>
                     <property name="password" value="${mail.password}"/>
                 </bean>
@@ -205,6 +209,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <!-- Default Mail properties -->
         <prop key="mail.smtp.host">localhost</prop>
+        <prop key="mail.smtp.port">25</prop>
+        <prop key="mail.smtp.auth">false</prop>
+        <prop key="mail.smtp.starttls.enable">false</prop>
+
         <prop key="mail.username">admin</prop>
         <prop key="mail.password">admin</prop>
 
@@ -225,3 +233,4 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
 
 </beans>
+

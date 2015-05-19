@@ -366,10 +366,11 @@ public class RegistrationPanel extends Panel {
         if (!registration.getNewPassword().equals(registration.getRetypedPassword()))
             throw new RegistrationException("error.password.doNotMatch", "Invalid temporary password");
 
+        /** TODO : Verify temporary password
         String hash = PasswordUtil.createPasswordHash(registration.getPassword(), getHashAlgorithm(), getHashEncoding(), getDigest());
         if (!hash.equals(tmpUser.getUserPassword())) {
             throw new RegistrationException("error.tmpPassword.invalid", "Invalid temporary password");
-        }
+        } **/
 
         RegistrationModel registration = getRegisterModel();
 
