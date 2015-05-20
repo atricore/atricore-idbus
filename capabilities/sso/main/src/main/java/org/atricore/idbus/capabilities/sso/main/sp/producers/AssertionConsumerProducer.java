@@ -317,45 +317,40 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ---------------------------------------------------
         // We must tell our Entity selector about the IdP we're using.  It's considered a selection.
         // ---------------------------------------------------
-        if (availableIdPs.size() > 1) {
 
-            EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
+        EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
 
-            if (idpSelectorCallbackEndpoint != null) {
+        if (idpSelectorCallbackEndpoint != null) {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Sending Current Selected IdP request, callback location : " + idpSelectorCallbackEndpoint);
+            if (logger.isDebugEnabled())
+                logger.debug("Sending Current Selected IdP request, callback location : " + idpSelectorCallbackEndpoint);
 
-                // Store destination and response
-                CurrentEntityRequestType entityRequest = new CurrentEntityRequestType();
+            // Store destination and response
+            CurrentEntityRequestType entityRequest = new CurrentEntityRequestType();
 
-                entityRequest.setID(uuidGenerator.generateId());
-                entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
-                entityRequest.setEntityId(idp.getAlias());
+            entityRequest.setID(uuidGenerator.generateId());
+            entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
+            entityRequest.setEntityId(idp.getAlias());
 
-                entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
-                        idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
+            entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
+                    idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
 
-                String idpSelectorLocation = ((SSOSPMediator) mediator).getIdpSelector();
+            String idpSelectorLocation = ((SSOSPMediator) mediator).getIdpSelector();
 
-                EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
-                        "IDPSelectorEndpoint",
-                        "EntitySelector",
-                        SSOBinding.SSO_ARTIFACT.toString(),
-                        idpSelectorLocation,
-                        null);
+            EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
+                    "IDPSelectorEndpoint",
+                    "EntitySelector",
+                    SSOBinding.SSO_ARTIFACT.toString(),
+                    idpSelectorLocation,
+                    null);
 
-                out.setMessage(new MediationMessageImpl(entityRequest.getID(),
-                        entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
+            out.setMessage(new MediationMessageImpl(entityRequest.getID(),
+                    entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
 
-                state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
-                state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
 
-                return;
-            } else {
-                if (logger.isDebugEnabled())
-                    logger.debug("Multipel IdPs found, but no callback idp selection service is avaiable");
-            }
+            return;
         }
 
         // ---------------------------------------------------

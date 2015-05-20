@@ -39,6 +39,20 @@ public class UUIDGenerator extends AbstractIdGenerator {
      * Generate and return an artifact
      */
     public synchronized String generateId() {
+        if (System.getProperty("org.atricore.idbus.uuid.legacy") != null) {
+            return legacyUUID();
+        }
+
+        return jdkUUID();
+    }
+
+    protected String jdkUUID() {
+
+        return "id-" + java.util.UUID.randomUUID().toString();
+    }
+
+    protected String legacyUUID() {
+
 
         byte random[] = new byte[16];
 
@@ -65,6 +79,7 @@ public class UUIDGenerator extends AbstractIdGenerator {
             }
         }
         return ("id" + result.toString());
+
 
     }
 

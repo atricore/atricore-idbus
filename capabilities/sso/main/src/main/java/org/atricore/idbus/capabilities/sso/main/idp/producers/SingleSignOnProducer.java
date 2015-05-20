@@ -518,6 +518,9 @@ public class SingleSignOnProducer extends SSOProducer {
                     CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
                     EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
 
+                    // Now we mark this IdP as the selected one
+                    // TODO IDP SELECT :
+
                     ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
 
                     out.setMessage(new MediationMessageImpl(response.getID(),
@@ -637,6 +640,9 @@ public class SingleSignOnProducer extends SSOProducer {
                     sp,
                     ed);
 
+            // Now we mark this IdP as the selected one
+            // TODO IDP SELECT :
+
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response;
 
@@ -665,81 +671,7 @@ public class SingleSignOnProducer extends SSOProducer {
      */
     @Deprecated
     public void doProcessAssertIdentityWithBasicAuth(CamelMediationExchange exchange, SecTokenAuthnRequestType authnRequest) throws Exception {
-
-        if (true)
-            throw new UnsupportedOperationException("Please, use pre-authentication service instead");
-
-        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-
-        AuthenticationState authnState = this.getAuthnState(exchange);
-
-        NameIDType issuer = authnRequest.getIssuer();
-        CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
-        // Resolve SP endpoint
-        EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
-
-        // -------------------------------------------------------
-        // Build STS Context
-        // -------------------------------------------------------
-        // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
-        // It will transport back the Subject wich is not supported by the WST protocol
-        SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
-        // Send extra information to STS, using the emission context
-
-        securityTokenEmissionCtx.setMember(sp);
-        // TODO : Resolve SP SAMLR2 Role springmetadata
-
-        securityTokenEmissionCtx.setRoleMetadata(null);
-        securityTokenEmissionCtx.setAuthnState(authnState);
-        securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
-        securityTokenEmissionCtx.setIssuerMetadata(sp.getMetadata());
-        securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
-        securityTokenEmissionCtx.setSpAcs(ed);
-
-        UsernameTokenType usernameToken = new UsernameTokenType();
-        AttributedString usernameString = new AttributedString();
-        usernameString.setValue(authnRequest.getUsername());
-
-        usernameToken.setUsername(usernameString);
-        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), authnRequest.getPassword());
-        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
-
-        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
-        ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(credentialClaim);
-
-        SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange, securityTokenEmissionCtx, claims, sp);
-        AssertionType assertion = cxt.getAssertion();
-        Subject authnSubject = cxt.getSubject();
-
-        logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
-                (authnRequest != null ? authnRequest.getID() : "<NULL>"));
-
-        // Create a new SSO Session
-        IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
-
-        // Associate the SP with the new session, including relay state!
-        // TODO : Instead of authnRequest, use metadata to get issuer!
-
-        secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
-
-        // Build a response for the SP
-        ResponseType response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
-
-        // Set the SSO Session var
-        // State not supported in SOAP yet in.getMessage().getState().setLocalVariable(channel.getFederatedProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
-        // State not supported in SOAP yet in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
-
-        // --------------------------------------------------------------------
-        // Send Authn Response to SP
-        // --------------------------------------------------------------------
-
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-        out.setMessage(new MediationMessageImpl(response.getID(),
-                response, "Response", authnState.getReceivedRelayState(), ed, null));
-
-        exchange.setOut(out);
-
+        throw new UnsupportedOperationException("Please, use pre-authentication service instead");
     }
 
     /**
@@ -967,7 +899,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 per.getStatements().addAll(stmts);
 
-
                 out.setMessage(new MediationMessageImpl(
                         per.getId(),
                         per,
@@ -977,6 +908,9 @@ public class SingleSignOnProducer extends SSOProducer {
                         in.getMessage().getState()));
                 return;
             }
+
+            // Now we mark this IdP as the selected one
+            // TODO IDP SELECT :
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
 
@@ -1027,6 +961,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Authentication failure, no more endpoints available, consider proxying to another IDP.
                 if (logger.isDebugEnabled())
                     logger.error("No claims endpoint found for authn request : " + authnRequest.getID());
+
+                // Now we mark this IdP as the elected one
+                // TODO IDP SELECT :
 
                 // Send failure response
                 EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
@@ -1288,18 +1225,15 @@ public class SingleSignOnProducer extends SSOProducer {
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
             oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response = null;
 
-
             // --------------------------------------------------------------------
             // Send Authn Response to SP
             // --------------------------------------------------------------------
-
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
                 saml11Response = signer.sign(saml11Response);
             }
-
 
             clearAuthnState(exchange);
 
@@ -1341,6 +1275,9 @@ public class SingleSignOnProducer extends SSOProducer {
                         in.getMessage().getState()));
                 return;
             }
+
+            // Now we mark this IdP as the elected one
+            // TODO IDP SELECT
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),

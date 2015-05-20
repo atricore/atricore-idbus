@@ -100,7 +100,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
 
                 long now = System.currentTimeMillis();
                 if (secCtx.getLastIdPSessionHeartBeat() == null ||
-                        secCtx.getLastIdPSessionHeartBeat() + mediator.getIdpSessionHeartBeatInterval() * 1000L <  now) {
+                        secCtx.getLastIdPSessionHeartBeat() + mediator.getIdpSessionHeartBeatInterval() * 1000L < now) {
 
                     // Send HB request to IDP.  If we get a null response, HB was not sent.
                     IDPSessionHeartBeatResponseType idpResp = performIdPSessionHeartBeat(exchange, secCtx);
@@ -115,7 +115,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
 
                 } else {
                     if (logger.isTraceEnabled())
-                        logger.debug("IDP Session heart beat not necessary ["+secCtx.getIdpSsoSession()+"]");
+                        logger.debug("IDP Session heart beat not necessary [" + secCtx.getIdpSsoSession() + "]");
                     response.setValid(true);
                 }
 
@@ -152,7 +152,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
             // If no SP Channel is found is because the IDP is probably a remote provider and no SPChannel definition
             // can be found.
             // TODO : Add Heart Beat service to metadata to be able to send heartbeat requests to remote IDPS (only for Atricore IDPS)
-            SPChannel spChannel = resolveSpChannel(idp);
+            SPChannel spChannel = resolveTargetSpChannel(idp);
             EndpointDescriptor ed = spChannel != null ? resolveIdpHeartBeatEndpoint(spChannel) : null;
 
             if (ed == null) {
@@ -216,7 +216,10 @@ public class SessionHeartBeatProducer extends SSOProducer {
 
     }
 
-    protected SPChannel resolveSpChannel(CircleOfTrustMemberDescriptor idp) throws SSOException {
+    /**
+     * Resolves the SP channel used by the target IdP to receive messages from this SP
+     */
+    protected SPChannel resolveTargetSpChannel(CircleOfTrustMemberDescriptor idp) throws SSOException {
         // The channel might be a binding or federation channel, get the main channel from the provider.
         CircleOfTrust cot = ((FederatedLocalProvider)getProvider()).getChannel().getCircleOfTrust();
 
@@ -293,11 +296,10 @@ public class SessionHeartBeatProducer extends SSOProducer {
     }
 
     protected IDPSessionHeartBeatRequestType buildIDPSessionHeartBeatRequest(SPSecurityContext secCtx) throws SSOException, IdentityPlanningException {
-
         IDPSessionHeartBeatRequestType request = new IDPSessionHeartBeatRequestType();
         request.setID(uuidGenerator.generateId());
         request.setSsoSessionId(secCtx.getIdpSsoSession());
-        // TODO : request.setIssuer();
+        request.setIssuer(resolveIdpChannel(resolveIdp(secCtx.getIdpAlias())).getMember().getAlias());
 
         return request;
     }
