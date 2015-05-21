@@ -1314,6 +1314,14 @@ public class SingleSignOnProducer extends SSOProducer {
                     "urn:oasis:names:tc:SAML:2.0:metadata:IDPSSODescriptor");
             saml2IdpMd = (IDPSSODescriptorType) idpMd.getEntry();
 
+            // Can this channel process requests from this SP ?!
+            FederationChannel spChannel = resolveSpChannel(getCotManager().lookupMemberByAlias(spAlias));
+            if (!spChannel.equals(channel)) {
+                logger.warn("SP is trusted, but using the wrong SP channel! " + spChannel.getName());
+            }
+
+
+
         } catch (CircleOfTrustManagerException e) {
             throw new SSORequestException(request,
                     StatusCode.TOP_REQUESTER,
@@ -1322,6 +1330,8 @@ public class SingleSignOnProducer extends SSOProducer {
                     request.getIssuer().getValue(),
                     e);
         }
+
+
 
         // SAML Want AuthnRequest signed has precedence over want requests signed
         boolean validateSignature = mediator.isValidateRequestsSignature();

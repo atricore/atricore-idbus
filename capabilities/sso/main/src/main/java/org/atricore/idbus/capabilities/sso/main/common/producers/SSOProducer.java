@@ -382,8 +382,8 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
      */
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor targetIdp) {
         // Resolve IdP channel, then look for the ACS endpoint
-        BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getFederatedProvider();
+
+        FederatedLocalProvider sp = (FederatedLocalProvider) getProvider();
 
         // Default IdP channel
         FederationChannel idpChannel = sp.getChannel();

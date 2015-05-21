@@ -371,10 +371,16 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         for (FederatedProvider provider : cot.getProviders()) {
             for (CircleOfTrustMemberDescriptor cotDescr : provider.getMembers()) {
                 if (cotDescr.getAlias().equals(selectedIdP.getAlias())) {
-                    idp = (IdentityProvider) provider;
-                    break;
+
+                    if (provider instanceof IdentityProvider) {
+                        idp = (IdentityProvider) provider;
+                        break;
+                    }
                 }
             }
+
+            if (idp != null)
+                break;
         }
 
         if (idp == null) {
@@ -390,10 +396,10 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
 
 
-        for (FederationService service : idp.getFederationServices()) {
-            if (service.getChannel().getTargetProvider() != null &&
-                    service.getChannel().getTargetProvider().equals(sp)) {
-                return service.getChannel().getMember();
+        for (FederationChannel fChannel : idp.getDefaultFederationService().getOverrideChannels()) {
+            if (fChannel.getTargetProvider() != null &&
+                    fChannel.getTargetProvider().equals(sp)) {
+                return fChannel.getMember();
             }
         }
 
