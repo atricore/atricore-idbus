@@ -72,6 +72,7 @@ import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqTo
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.*;
@@ -518,15 +519,8 @@ public class SingleSignOnProducer extends SSOProducer {
                     CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
                     EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
 
-                    // Now we mark this IdP as the selected one
-                    // TODO IDP SELECT :
-
                     ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
-
-                    out.setMessage(new MediationMessageImpl(response.getID(),
-                            response, "Response", relayState, ed, in.getMessage().getState()));
-
-                    exchange.setOut(out);
+                    sendSaml2Response(exchange, relayState, response, ed);
                     return;
 
                 }
@@ -641,23 +635,15 @@ public class SingleSignOnProducer extends SSOProducer {
                     ed);
 
             // Now we mark this IdP as the selected one
-            // TODO IDP SELECT :
-
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response;
-
                 saml11Response = transformSamlR2ResponseToSaml11(response);
-
-                out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
-                        saml11Response, "Response", relayState, ed, in.getMessage().getState()));
-
+                sendSaml11Response(exchange, relayState, saml11Response, ed);
             } else {
                 // SAML R2 is used by default
-                out.setMessage(new MediationMessageImpl(response.getID(),
-                        response, "Response", relayState, ed, in.getMessage().getState()));
+                sendSaml2Response(exchange, relayState, response, ed);
             }
 
-            exchange.setOut(out);
         }
 
     }
@@ -909,27 +895,11 @@ public class SingleSignOnProducer extends SSOProducer {
                 return;
             }
 
-            // Now we mark this IdP as the selected one
-            // TODO IDP SELECT :
-
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Sending SAML 1.1 Response");
-
-                out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
-                        saml11Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml11Response(exchange, authnState.getReceivedRelayState(), saml11Response, ed);
             } else {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Sending SAML 2.0 Response");
-
-                // SAML R2 is used by default
-                out.setMessage(new MediationMessageImpl(saml2Response.getID(),
-                        saml2Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml2Response(exchange, authnState.getReceivedRelayState(), saml2Response, ed);
             }
-
-            exchange.setOut(out);
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
@@ -962,19 +932,12 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (logger.isDebugEnabled())
                     logger.error("No claims endpoint found for authn request : " + authnRequest.getID());
 
-                // Now we mark this IdP as the elected one
-                // TODO IDP SELECT :
-
                 // Send failure response
                 EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
 
                 // This could be a response to a passive request ...
                 ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
-
-                out.setMessage(new MediationMessageImpl(response.getID(),
-                        response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
-
-                exchange.setOut(out);
+                sendSaml2Response(exchange, authnState.getReceivedRelayState(), response, ed);
                 return;
             }
 
@@ -1276,19 +1239,12 @@ public class SingleSignOnProducer extends SSOProducer {
                 return;
             }
 
-            // Now we mark this IdP as the elected one
-            // TODO IDP SELECT
-
+            // Send the response
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
-                out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
-                        saml11Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml11Response(exchange, authnState.getReceivedRelayState(), saml11Response, ed);
             } else {
-                // SAML R2 is used by default
-                out.setMessage(new MediationMessageImpl(saml2Response.getID(),
-                        saml2Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml2Response(exchange, authnState.getReceivedRelayState(), saml2Response, ed);
             }
-
-            exchange.setOut(out);
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
@@ -2588,6 +2544,134 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
         }
+        return null;
+    }
+
+    /**
+     * TODO : Perform SAML 2 to SAML 1.1 transformation here
+     *
+     * @param exchange
+     * @param relayState
+     * @param ssoResponse
+     * @param destination
+     * @return
+     * @throws SSOException
+     */
+    protected boolean sendSaml11Response(CamelMediationExchange exchange,
+                                        String relayState,
+                                         oasis.names.tc.saml._1_0.protocol.ResponseType ssoResponse,
+                                        EndpointDescriptor destination) throws SSOException {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Sending SAML 1.1 Response");
+
+        return sendResponse(exchange, relayState, ssoResponse, destination);
+    }
+
+
+    protected boolean sendSaml2Response(CamelMediationExchange exchange,
+                                        String relayState,
+                                        ResponseType ssoResponse,
+                                        EndpointDescriptor destination) throws SSOException {
+        if (logger.isDebugEnabled())
+            logger.debug("Sending SAML 1.1 Response");
+
+        return sendResponse(exchange, relayState, ssoResponse, destination);
+
+    }
+
+    protected boolean sendResponse(CamelMediationExchange exchange,
+                                   String relayState,
+                                   Object ssoResponse,
+                                   EndpointDescriptor destination) throws SSOException {
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        FederationChannel fChannel = (FederationChannel) channel;
+        MediationState state = in.getMessage().getState();
+
+        EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
+
+        if (idpSelectorCallbackEndpoint != null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Sending Current Selected IdP request, callback location : " + idpSelectorCallbackEndpoint);
+
+            // Store destination and response
+            CurrentEntityRequestType entityRequest = new CurrentEntityRequestType();
+
+            entityRequest.setID(uuidGenerator.generateId());
+            entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
+            entityRequest.setEntityId(fChannel.getMember().getAlias());
+
+            entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
+                    idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
+
+            String idpSelectorLocation = ((SSOIDPMediator) channel.getIdentityMediator()).getIdpSelector();
+
+            if (idpSelectorLocation == null) {
+
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        ssoResponse, "Response", relayState, destination, in.getMessage().getState()));
+
+                exchange.setOut(out);
+
+                return false;
+            }
+
+            EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
+                    "IDPSelectorEndpoint",
+                    "EntitySelector",
+                    SSOBinding.SSO_ARTIFACT.toString(),
+                    idpSelectorLocation,
+                    null);
+
+            out.setMessage(new MediationMessageImpl(entityRequest.getID(),
+                    entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
+
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP, relayState);
+
+            exchange.setOut(out);
+
+            return true;
+        }
+
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                ssoResponse, "Response", relayState, destination, in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+        // No request was issued
+        return false;
+    }
+
+    protected EndpointDescriptor resolveIdPSelectorCallbackEndpoint(CamelMediationExchange exchange,
+                                                                    FederationChannel fChannel) throws SSOException {
+
+        try {
+
+            if(logger.isDebugEnabled())
+                logger.debug("Looking for " + SSOService.IdPSelectorCallbackService.toString() + " on channel " + fChannel.getName());
+
+            for (IdentityMediationEndpoint endpoint : fChannel.getEndpoints()) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+
+                if (endpoint.getType().equals(SSOService.IdPSelectorCallbackService.toString())) {
+
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        // This is the endpoint we're looking for
+                        return  fChannel.getIdentityMediator().resolveEndpoint(fChannel, endpoint);
+                    }
+                }
+            }
+        } catch (IdentityMediationException e) {
+            throw new SSOException(e);
+        }
+
         return null;
     }
 

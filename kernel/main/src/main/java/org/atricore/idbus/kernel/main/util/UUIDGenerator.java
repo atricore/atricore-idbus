@@ -39,11 +39,11 @@ public class UUIDGenerator extends AbstractIdGenerator {
      * Generate and return an artifact
      */
     public synchronized String generateId() {
-        if (System.getProperty("org.atricore.idbus.uuid.legacy") != null) {
-            return legacyUUID();
+        if (System.getProperty("org.atricore.idbus.uuid.jdk") != null) {
+            return jdkUUID();
         }
 
-        return jdkUUID();
+        return legacyUUID();
     }
 
     protected String jdkUUID() {

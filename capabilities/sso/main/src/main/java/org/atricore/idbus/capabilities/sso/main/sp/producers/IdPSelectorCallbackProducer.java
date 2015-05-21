@@ -14,7 +14,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
 /**
- * Created by sgonzalez on 3/31/15.
+ *
  */
 public class IdPSelectorCallbackProducer extends SSOProducer {
 
@@ -41,6 +41,9 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
 
         SPAuthnResponseType ssoResponse = (SPAuthnResponseType) state.getLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP);
         EndpointDescriptor destination = (EndpointDescriptor) state.getLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Relaying SPAuthnResponse " + ssoResponse.getID() + " [issuer:"+ssoResponse.getIssuer()+"]");
 
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP);
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);

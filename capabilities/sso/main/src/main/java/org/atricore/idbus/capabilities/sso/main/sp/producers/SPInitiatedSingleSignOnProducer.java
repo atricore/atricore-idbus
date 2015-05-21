@@ -40,11 +40,7 @@ import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
-import org.atricore.idbus.kernel.main.federation.SubjectNameID;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
-import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
+import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -54,13 +50,14 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  *
@@ -288,11 +285,18 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
             SPInitiatedAuthnRequestType ssoAuthnReq =
                     (SPInitiatedAuthnRequestType) in.getMessage().getState().getLocalVariable(
-                        "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+                            "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
 
             String relayState = in.getMessage().getState().getLocalState().getId();
             SelectEntityResponseType response = (SelectEntityResponseType) in.getMessage().getContent();
-            CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberById(response.getEntityId());
+            CircleOfTrustMemberDescriptor selectedIdP = getCotManager().lookupMemberById(response.getEntityId());
+
+            // Now, the COT member may be associated to a local IdP, and actually an override channel, or maybe this
+            // SP requires an override channel.
+            // We need to:
+            // 1. check if this is a local provider
+            // 2. get the proper SPChannel and MD for this SP from the local provider
+            CircleOfTrustMemberDescriptor idp = resolveActualIdP(selectedIdP);
 
             if (logger.isDebugEnabled())
                 logger.debug("Using IdP " + idp.getAlias());
@@ -337,6 +341,64 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         } catch (Exception e) {
             throw new SSOException(e);
         }
+    }
+
+    protected CircleOfTrustMemberDescriptor resolveActualIdP(CircleOfTrustMemberDescriptor selectedIdP) {
+        // This is useful when the IdP is local, and overrides the SP channel.
+
+
+        CircleOfTrust cot = null;
+        FederatedProvider sp = null;
+        if (channel instanceof FederationChannel) {
+            FederationChannel fChannel = (FederationChannel) channel;
+            sp = fChannel.getFederatedProvider();
+            cot = fChannel.getCircleOfTrust();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Resolving actual IdP from FederationChannel " + fChannel.getName());
+        } else if (channel instanceof BindingChannel) {
+            BindingChannel bChannel = (BindingChannel) channel;
+            sp = bChannel.getFederatedProvider();
+            cot = sp.getDefaultFederationService().getChannel().getCircleOfTrust();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Resolving actual IdP from BindingChannel " + bChannel.getName());
+
+        }
+
+
+        IdentityProvider idp = null;
+        for (FederatedProvider provider : cot.getProviders()) {
+            for (CircleOfTrustMemberDescriptor cotDescr : provider.getMembers()) {
+                if (cotDescr.getAlias().equals(selectedIdP.getAlias())) {
+                    idp = (IdentityProvider) provider;
+                    break;
+                }
+            }
+        }
+
+        if (idp == null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Local IdP not found for COT Member " + selectedIdP);
+
+            // assume this is a remote IdP
+            return selectedIdP;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Local IdP " + idp.getName() + " found for COT Member " + selectedIdP);
+
+
+
+        for (FederationService service : idp.getFederationServices()) {
+            if (service.getChannel().getTargetProvider() != null &&
+                    service.getChannel().getTargetProvider().equals(sp)) {
+                return service.getChannel().getMember();
+            }
+        }
+
+        return idp.getDefaultFederationService().getChannel().getMember();
+
     }
 
     protected AuthnRequestType buildAuthnRequest(CamelMediationExchange exchange,
