@@ -70,13 +70,14 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
             Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
 
-            SamlR2SecurityTokenEmissionContext samlr2Ctx = null;
+            List<AbstractPrincipalType> proxyPrincipals = null;
             if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
-                samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+                SamlR2SecurityTokenEmissionContext samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+                proxyPrincipals = samlr2Ctx.getProxyPrincipals();
             }
 
             // Build an access token for the subject,
-            OAuth2AccessToken token = buildOAuth2AccessToken(subject, samlr2Ctx.getProxyPrincipals(), requestToken);
+            OAuth2AccessToken token = buildOAuth2AccessToken(subject, proxyPrincipals, requestToken);
 
             OAuth2AccessTokenEnvelope envelope = buildOAuth2AccessTokenEnvelope(token);
 
