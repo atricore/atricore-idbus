@@ -1093,8 +1093,6 @@ public class SingleSignOnProducer extends SSOProducer {
                 // STS claims
                 List<AbstractPrincipalType> proxySubjectPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
 
-                List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
-
                 AuthnCtxClass authnCtx = null;
 
                 if (proxyResponse.getSubjectAttributes() != null) {
