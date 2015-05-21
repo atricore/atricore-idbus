@@ -10,17 +10,17 @@ public class SecurityQuestion implements Serializable {
 
     private static final long serialVersionUID = -2547786148798923521L;
 
-    private Long id;
+    private String id;
 
     private String messageKey;
 
     private String defaultMessage;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

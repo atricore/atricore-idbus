@@ -199,7 +199,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.schemaManager = schemaManager;
     }
 
-    public void deleteGroup(long id) throws ProvisioningException {
+    public void deleteGroup(String id) throws ProvisioningException {
         try {
             identityPartition.deleteGroup(id);
         } catch (Exception e) {
@@ -412,7 +412,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Retrieve the user from the partition
         AddUserResponse response = (AddUserResponse) t.getResponse();
-        Long uid = response.getUser().getId();
+        String uid = response.getUser().getId();
         User tmpUser = identityPartition.findUserById(uid);
 
         // New user information

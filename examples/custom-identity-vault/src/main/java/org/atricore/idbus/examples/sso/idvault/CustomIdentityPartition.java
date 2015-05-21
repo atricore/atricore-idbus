@@ -32,7 +32,7 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public Group findGroupById(long id) throws ProvisioningException {
+    public Group findGroupById(String id) throws ProvisioningException {
         return null;
     }
 
@@ -62,7 +62,7 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public void deleteGroup(long id) throws ProvisioningException {
+    public void deleteGroup(String id) throws ProvisioningException {
 
     }
 
@@ -72,12 +72,12 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public void deleteUser(long id) throws ProvisioningException {
+    public void deleteUser(String id) throws ProvisioningException {
 
     }
 
     @Override
-    public User findUserById(long id) throws ProvisioningException {
+    public User findUserById(String id) throws ProvisioningException {
         return null;
     }
 

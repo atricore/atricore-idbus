@@ -14,11 +14,11 @@ public interface MediationPartition {
 
     AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException;
 
-    AclEntry findAclEntryById(long id) throws ProvisioningException;
+    AclEntry findAclEntryById(String id) throws ProvisioningException;
 
     AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException;
 
-    void deleteAclEntry(long id) throws ProvisioningException;
+    void deleteAclEntry(String id) throws ProvisioningException;
 
     Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException;
 

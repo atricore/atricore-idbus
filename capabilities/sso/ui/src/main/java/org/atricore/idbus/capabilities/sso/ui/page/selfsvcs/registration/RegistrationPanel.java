@@ -463,9 +463,9 @@ public class RegistrationPanel extends Panel {
     }
 
 
-    protected SecurityQuestion lookupQuestion(Long id) {
+    protected SecurityQuestion lookupQuestion(String id) {
         for (SecurityQuestion sq : this.secQuestions) {
-            if (sq.getId() == id)
+            if (sq.getId().equals(id))
                 return sq;
         }
         return null;

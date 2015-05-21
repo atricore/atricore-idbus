@@ -23,12 +23,12 @@ public class CustomSchemaManager extends AbstractSchemaManager {
     }
 
     @Override
-    public void deleteUserAttribute(long id) throws ProvisioningException {
+    public void deleteUserAttribute(String id) throws ProvisioningException {
 
     }
 
     @Override
-    public UserAttributeDefinition findUserAttributeById(long id) throws ProvisioningException {
+    public UserAttributeDefinition findUserAttributeById(String id) throws ProvisioningException {
         return null;
     }
 
@@ -53,12 +53,12 @@ public class CustomSchemaManager extends AbstractSchemaManager {
     }
 
     @Override
-    public void deleteGroupAttribute(long id) throws ProvisioningException {
+    public void deleteGroupAttribute(String id) throws ProvisioningException {
 
     }
 
     @Override
-    public GroupAttributeDefinition findGroupAttributeById(long id) throws ProvisioningException {
+    public GroupAttributeDefinition findGroupAttributeById(String id) throws ProvisioningException {
         return null;
     }
 
