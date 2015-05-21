@@ -12,6 +12,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.MediationPartition;
+import org.atricore.idbus.kernel.main.store.DefaultStore;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -151,7 +152,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public void init() throws ProvisioningException {
 
         if (getIdentityStore() == null) {
-            JDOIdentityStore store = new JDOIdentityStore();
+            DefaultStore store = new DefaultStore();
             store.setPartition(this);
             setIdentityStore(store);
         }
