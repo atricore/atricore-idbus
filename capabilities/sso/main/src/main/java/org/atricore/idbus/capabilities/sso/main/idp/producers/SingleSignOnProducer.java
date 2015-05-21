@@ -2639,7 +2639,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
-            state.setLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP, relayState);
+            if (relayState != null)
+                state.setLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP, relayState);
 
             exchange.setOut(out);
 
