@@ -111,6 +111,14 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             idpInitReq.getRequestAttribute().add(a);
         }
 
+        String idpAlias = state.getTransientVariable("atricore_idp_alias");
+        if (idpAlias != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_idp_alias");
+            a.setValue(idpAlias);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
         String passive = state.getTransientVariable("passive");
         if (passive != null) {
             idpInitReq.setPassive(Boolean.parseBoolean(passive));

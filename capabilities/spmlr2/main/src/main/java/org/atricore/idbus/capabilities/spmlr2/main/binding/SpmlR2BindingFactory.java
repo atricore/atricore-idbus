@@ -48,11 +48,11 @@ public class SpmlR2BindingFactory extends MediationBindingFactory implements App
             default:
                 logger.warn("Unknown SPMLR2 Binding! " + binding);
         }
-        
+
         if (mb != null && mb instanceof AbstractMediationBinding) {
             ((AbstractMediationBinding)mb).setStateManagerClassLoader(this.applicationContext.getClassLoader());
         }
-        
+
         return mb;
         
     }

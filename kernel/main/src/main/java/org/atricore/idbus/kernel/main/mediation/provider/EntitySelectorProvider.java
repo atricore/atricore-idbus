@@ -20,4 +20,6 @@ public interface EntitySelectorProvider extends Provider, StatefulProvider {
     CircleOfTrustManager getCotManager();
 
     BundleContext getBundleContext();
+
+
 }
