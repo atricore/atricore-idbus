@@ -255,7 +255,8 @@ public class SingleSignOnProducer extends SSOProducer {
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseFormat", idpInitiatedAuthnRequest.getPreferredResponseFormat());
 
-            CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
+            //CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
+            CircleOfTrustMemberDescriptor idp = ((FederationChannel) channel).getMember();
             logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
@@ -275,6 +276,14 @@ public class SingleSignOnProducer extends SSOProducer {
             // Get SPInitiated authn request, if any!
             IDPInitiatedAuthnRequestType ssoAuthnRequest =
                     (IDPInitiatedAuthnRequestType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
+
+            if (ssoAuthnRequest.getRequestAttribute() != null)
+                for (RequestAttributeType attr : ssoAuthnRequest.getRequestAttribute()) {
+                    if (attr.getName().equals(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR)) {
+                        in.getMessage().getState().setLocalVariable(
+                                "urn:org:atricore:idbus:sso:protocol:requestedidp", attr.getValue());
+                    }
+                }
 
             AuthnRequestType authnRequest = buildIdPInitiatedAuthnRequest(exchange, ssoAuthnRequest, idp, ed, (FederationChannel) channel);
 
@@ -330,7 +339,8 @@ public class SingleSignOnProducer extends SSOProducer {
                     "urn:org:atricore:idbus:sso:protocol:responseFormat",
                     PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
 
-            CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
+            //CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
+            CircleOfTrustMemberDescriptor idp = ((FederationChannel) channel).getMember();
             logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
@@ -484,7 +494,8 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
                         proxyEndpoint.getLocation());
 
-                SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest);
+                SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest,
+                        (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp"));
 
                 in.getMessage().getState().setLocalVariable(
                         "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
@@ -1014,7 +1025,9 @@ public class SingleSignOnProducer extends SSOProducer {
         // This is IDP-Initiated , but we're acting as proxy
         CircleOfTrustMemberDescriptor sp = null;
         if (authnRequest == null) {
-            // Now authn-request, this is IDP initiated, the authnState is probably new.
+            // No authn-request, this is IDP initiated, the authnState is probably new.
+
+            // TODO: Use requested SP instead of target channel
             SPChannel spChannel = (SPChannel) channel;
             sp = resolveProviderDescriptor(spChannel.getTargetProvider());
 
@@ -1031,7 +1044,7 @@ public class SingleSignOnProducer extends SSOProducer {
             a.setValue(sp.getAlias());
             idpInitReq.getRequestAttribute().add(a);
 
-            // This builds an authn request type in behalf of the original SP
+            // This builds an authn request type on behalf of the original SP
             authnRequest = buildIdPInitiatedAuthnRequest(exchange, idpInitReq, idpProxy, destination, spChannel);
 
             authnState.setResponseMode("unsolicited");
@@ -1859,16 +1872,16 @@ public class SingleSignOnProducer extends SSOProducer {
         return (PreAuthenticatedAuthnRequestType) idPlanExchange.getOut().getContent();
     }
 
-    protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(FederatedProvider sp) {
+    protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(FederatedProvider provider) {
 
-        FederatedLocalProvider spl = (FederatedLocalProvider) sp;
+        FederatedLocalProvider localSp = (FederatedLocalProvider) provider;
 
-        for (FederationChannel fChannel : spl.getChannels()) {
+        for (FederationChannel fChannel : localSp.getChannels()) {
             if (fChannel.getTargetProvider() != null) {
 
                 if (fChannel.getTargetProvider().getName().equals(((SPChannel) channel).getFederatedProvider().getName())) {
                     if (logger.isTraceEnabled())
-                        logger.trace("Selected SP Channel " + fChannel.getName() + " from provider " + sp);
+                        logger.trace("Selected SP Channel " + fChannel.getName() + " from provider " + provider);
 
                     return fChannel.getMember();
                 }
@@ -1876,10 +1889,10 @@ public class SingleSignOnProducer extends SSOProducer {
         }
 
         if (logger.isTraceEnabled())
-            logger.trace("Selected SP Channel " + spl.getChannel().getName() + " from provider " + sp);
+            logger.trace("Selected SP Channel " + localSp.getChannel().getName() + " from provider " + provider);
 
         // Use default channel
-        return spl.getChannel().getMember();
+        return localSp.getChannel().getMember();
     }
 
     protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(NameIDType issuer) {
@@ -1997,6 +2010,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
     }
 
+    /**
+     * @deprecated This should not be used, local
+     */
     protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -2016,7 +2032,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // TODO : [ENTITY-SEL] CHECK BASE 64 ENCODING AND ENTITY SELECTOR USAGE!
             if (a.getName().equals(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR))
-                idpAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
+                idpAlias = a.getValue();
         }
 
         if (idpAlias != null) {
@@ -2025,6 +2041,12 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Using IdP alias from request attribute " + idpAlias);
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
+            if (idp == null) {
+                // Try decoding the alias
+                idpAlias = new String(Base64.decodeBase64(idpAlias.getBytes()));
+                idp = getCotManager().lookupMemberByAlias(idpAlias);
+            }
+
             if (idp == null) {
                 throw new SSOException("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
             }
@@ -2517,12 +2539,19 @@ public class SingleSignOnProducer extends SSOProducer {
      *
      * @return
      */
-    protected SPInitiatedAuthnRequestType buildAuthnProxyRequest(AuthnRequestType source) {
+    protected SPInitiatedAuthnRequestType buildAuthnProxyRequest(AuthnRequestType source, String idpAlias) {
 
         SPInitiatedAuthnRequestType target = new SPInitiatedAuthnRequestType();
         target.setID(uuidGenerator.generateId());
         target.setPassive(source.getIsPassive() != null ? source.getIsPassive() : false);
         target.setForceAuthn(source.getForceAuthn() != null ? source.getForceAuthn() : false);
+
+        if (idpAlias != null) {
+            RequestAttributeType idpAliasAttr = new RequestAttributeType();
+            idpAliasAttr.setName(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR);
+            idpAliasAttr.setValue(idpAlias);
+            target.getRequestAttribute().add(idpAliasAttr);
+        }
 
         if (source.getIssuer() != null) {
             NameIDType issuer = source.getIssuer();

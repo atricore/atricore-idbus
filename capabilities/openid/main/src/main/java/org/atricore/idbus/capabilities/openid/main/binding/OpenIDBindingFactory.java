@@ -54,7 +54,7 @@ public class OpenIDBindingFactory extends MediationBindingFactory implements App
                 break;
             default:
         }
-        
+
         if (mb != null && mb instanceof AbstractMediationBinding) {
             ((AbstractMediationBinding)mb).setStateManagerClassLoader(this.applicationContext.getClassLoader());
         }

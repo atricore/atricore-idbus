@@ -87,7 +87,6 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
         in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
 
-
         Object content = in.getMessage().getContent();
 
         if (content == null || content instanceof SPInitiatedAuthnRequestType ) {

@@ -98,6 +98,14 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
             idpInitReq.getRequestAttribute().add(a);
         }
 
+        String idpAlias = state.getTransientVariable("atricore_idp_alias");
+        if (idpAlias != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_idp_alias");
+            a.setValue(idpAlias);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
                 idpInitReq,
                 null,
