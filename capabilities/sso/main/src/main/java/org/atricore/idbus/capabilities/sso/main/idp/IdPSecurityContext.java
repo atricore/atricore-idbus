@@ -76,7 +76,7 @@ public class IdPSecurityContext implements java.io.Serializable {
     }
 
 
-    public void setPRoxyPrincipals(List<AbstractPrincipalType> proxyPrinciapsl) {
+    public void setProxyPrincipals(List<AbstractPrincipalType> proxyPrinciapsl) {
         this.proxyPrincipals = proxyPrinciapsl;
     }
 

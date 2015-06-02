@@ -51,10 +51,10 @@ import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signatur
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
+import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.common.sso._1_0.protocol.CurrentEntityRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
@@ -451,6 +451,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     private Subject buildSubjectFromResponse(ResponseType response) {
 
+        // Some attributes are IdP generated, and they don't depend on the actual mapping policy. (i.e. idpName, etc).
+        Map<String, SubjectAttribute> subjectAttrs = new HashMap<String, SubjectAttribute>();
+
         Subject outSubject = new Subject();
 
         String issuerAlias = response.getIssuer().getValue();
@@ -539,8 +542,8 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                             for (Object attributeValue : attributeValues) {
 
-                                if (logger.isDebugEnabled())
-                                    logger.debug("Processing attribute value " + attributeValue);
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Processing attribute value " + attributeValue);
 
                                 if (attributeValue instanceof String) {
 
@@ -551,13 +554,14 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                 attr.getAttributeValue());
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
-                                                    (String) attributeValue
-                                            )
 
-                                    );
+                                    SubjectAttribute sAttr =
+                                            getNextSubjectAttr(subjectAttrs, attr.getName(),
+                                                    (String) attributeValue
+                                            );
+
+                                    if (sAttr != null)
+                                        outSubject.getPrincipals().add(sAttr);
 
                                 } else if (attributeValue instanceof Integer) {
 
@@ -568,13 +572,11 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                 attr.getAttributeValue());
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
-                                                    (Integer) attributeValue
-                                            )
 
-                                    );
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, attr.getName(),
+                                            (Integer) attributeValue);
+                                    outSubject.getPrincipals().add(sAttr);
+
 
                                 } else if (attributeValue instanceof Element) {
                                     Element e = (Element) attributeValue;
@@ -585,13 +587,9 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                 e.getTextContent());
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
-                                                    e.getTextContent()
-                                            )
-
-                                    );
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, attr.getName(), e.getTextContent());
+                                    if (sAttr != null)
+                                        outSubject.getPrincipals().add(sAttr);
 
 
                                 } else if (attributeValue == null) {
@@ -602,13 +600,9 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                 "null");
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
-                                                    ""
-                                            )
-
-                                    );
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, attr.getName(), "");
+                                    if (sAttr != null)
+                                        outSubject.getPrincipals().add(sAttr);
 
                                 } else {
                                     logger.error("Unknown Attribute Value type " + attributeValue.getClass().getName());
@@ -792,8 +786,8 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.warn("No Assertion present within Response [" + response.getID() + "]");
         }
 
-        SubjectAttribute idpAliasAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
-        SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
+        SubjectAttribute idpAliasAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
+        SubjectAttribute idpNameAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
 
         outSubject.getPrincipals().add(idpNameAttr);
         outSubject.getPrincipals().add(idpAliasAttr);
@@ -803,6 +797,51 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
 
         return outSubject;
+    }
+
+    protected SubjectAttribute getNextSubjectAttr(Map<String, SubjectAttribute> subjectAttrs, String name, Integer value) {
+        return getNextSubjectAttr(subjectAttrs, name, value != null ? value.toString() : "");
+    }
+
+    protected SubjectAttribute getNextSubjectAttr(Map<String, SubjectAttribute> subjectAttrs, String name, String value) {
+
+        // Roles are multi-valued
+        boolean multiValued = false;
+        if (name.equals(DCEPACAttributeDefinition.GROUPS.getValue())) {
+            multiValued = true;
+        }
+
+        // Check if the name has been used
+        SubjectAttribute old = subjectAttrs.get(name);
+
+
+        int i = 0;
+        boolean found = false;
+        while(old != null) {
+
+            if (old.getValue().equals(value))
+                found = true;
+
+            i++;
+            old = subjectAttrs.get(name + "#" + i);
+        }
+
+        String newName = i > 0 ? name + "#" + i : name;
+
+        SubjectAttribute attr = null;
+        if (multiValued) {
+            // Multi-valued attributes are added only once!
+            if (!found) {
+                attr = new SubjectAttribute(name, value);
+                subjectAttrs.put(newName, attr);
+            }
+
+        } else {
+            attr = new SubjectAttribute(newName, value);
+            subjectAttrs.put(newName, attr);
+        }
+
+        return attr;
     }
 
 

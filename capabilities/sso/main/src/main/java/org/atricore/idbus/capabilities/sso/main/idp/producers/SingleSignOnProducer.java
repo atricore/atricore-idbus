@@ -45,6 +45,8 @@ import oasis.names.tc.saml._1_0.assertion.AudienceRestrictionConditionType;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.assertion.SubjectType;
 import oasis.names.tc.saml._2_0.idbus.PreAuthenticatedAuthnRequestType;
+import oasis.names.tc.saml._2_0.idbus.SPEntryType;
+import oasis.names.tc.saml._2_0.idbus.SPListType;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
@@ -566,8 +568,43 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Send SP relay state
                 claimsRequest.setTargetRelayState(in.getMessage().getRelayState());
 
-                if (authnRequest.getIssuer() != null)
+                if (authnRequest.getIssuer() != null) {
                     claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
+                }
+
+                // Proxy extensions override default issuer:
+                if (authnRequest.getExtensions() != null) {
+                    // We have extensions:
+                    oasis.names.tc.saml._2_0.protocol.ExtensionsType ext = authnRequest.getExtensions();
+                    List<Object> any = ext.getAny();
+                    if(any != null)
+                        for (Object o : any) {
+                            if (o instanceof JAXBElement) {
+                                JAXBElement e = (JAXBElement) o;
+                                if (e.getValue() instanceof SPListType) {
+                                    SPListType spList = (SPListType) e.getValue();
+
+                                    if (spList != null && spList.getSPEntry() != null && spList.getSPEntry().size() > 0) {
+
+                                        SPEntryType sp = spList.getSPEntry().get(0);
+                                        String providerId = sp.getProviderID();
+
+                                        if (spList.getSPEntry().size() > 1)
+                                            logger.error("Too many SPs listed, using first " + providerId);
+
+                                        if (providerId != null) {
+                                            if (logger.isDebugEnabled())
+                                                logger.debug("Overriding SP alis with extension " + providerId);
+                                            claimsRequest.setSpAlias(providerId);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                }
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Sending SP Alias with claims request [" + claimsRequest.getId() + "] " + claimsRequest.getSpAlias() != null ? claimsRequest.getSpAlias() : "NULL");
 
                 // Set requested authn class
                 claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
@@ -1180,7 +1217,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
-                secCtx.setPRoxyPrincipals(stsCtx.getProxyPrincipals());
+                secCtx.setProxyPrincipals(stsCtx.getProxyPrincipals());
 
                 // Associate the SP with the new session, including relay state!
                 // We already validated authn request issuer, so we can use it.
@@ -2555,9 +2592,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
         if (source.getIssuer() != null) {
             NameIDType issuer = source.getIssuer();
-            // TODO : Other issuer values may be useful here
             target.setIssuer(issuer.getValue());
         }
+
         // Set our proxy endpoint here!
         EndpointDescriptor idpAcsProxy = resolveIdPProxyAcsEndpoint();
         if (idpAcsProxy != null)

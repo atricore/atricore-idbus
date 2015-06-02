@@ -76,7 +76,13 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
             // TODO : We could group some properties as multi valued attributes like, privileges!
             for (SSONameValuePair property : ssoUser.getProperties()) {
                 AttributeType attrProp = new AttributeType();
-                attrProp.setName(SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + property.getName());
+
+                // Only qualify property names if needed
+                if (property.getName().indexOf(':') >= 0)
+                    attrProp.setName(property.getName());
+                else
+                    attrProp.setName(SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + property.getName());
+
                 attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
                 attrProp.getAttributeValue().add(property.getValue());
 

@@ -164,6 +164,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             }
         }
 
+        // Add proxy principals (principals received from tho proxied provider), but only if we don't have such a principal yet.
         if (proxyPrincipals != null) {
             for (AbstractPrincipalType principal : proxyPrincipals) {
                 if (principal instanceof SubjectAttributeType) {

@@ -31,10 +31,10 @@ public interface WSTConstants {
      * This is not actually an oasis profile
      */
     static final String WST_OAUTH2_TOKEN_TYPE =
-            "http://docs.oasis-open.org/wss/oasis-wss-oauth2-token-profile-1.1#OAUTH2.0";
+            "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#OAUTH2.0";
 
     static final String WST_SAMLR2_TOKEN_TYPE =
-            "http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0";
+            "urn:docs:oasis:open:org:wss:oasis_wss_saml_token_profile_1_1#SAMLV2.0";
 
     static final String WST_ISSUE_REQUEST =
             "http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue";
