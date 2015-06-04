@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessTokenEnvelope;
+import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.*;
@@ -91,6 +92,24 @@ public class JasonUtils {
 
 
         return mapper.readValue(new ByteArrayInputStream(strAccessTokenEnvelope.getBytes()), OAuth2AccessTokenEnvelope.class);
+    }
+
+    public static String marshalAccessTokenResponse(AccessTokenResponseType accessTokenResponse) throws IOException {
+        return marshalAccessTokenResponse(accessTokenResponse, true);
+    }
+
+    public static String marshalAccessTokenResponse(AccessTokenResponseType accessTokenResponse, boolean encode) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        mapper.writeValue(baos, accessTokenResponse);
+        String jsonTokenResp = new String(baos.toByteArray());
+
+        if (logger.isTraceEnabled())
+            logger.trace("Marshaled AccessTokenResponse (JSON):\n" + jsonTokenResp);
+
+        if (encode)
+            return new String(Base64.encodeBase64(jsonTokenResp.getBytes()));
+        else
+            return jsonTokenResp;
     }
 
     public static String deflate(String tokenStr, boolean encode) {

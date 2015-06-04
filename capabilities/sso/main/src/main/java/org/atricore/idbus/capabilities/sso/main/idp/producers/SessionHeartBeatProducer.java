@@ -8,6 +8,8 @@ import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPSessionHeartBeatRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPSessionHeartBeatResponseType;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
@@ -16,6 +18,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
+import org.atricore.idbus.kernel.main.session.SSOSession;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
@@ -58,6 +61,15 @@ public class SessionHeartBeatProducer extends SSOProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
+        // Verify issuer
+        if (request.getIssuer() == null)
+            throw new SSOSessionException("Issuer must be provided in IDPSessionHeartBeatRequest : " + request.getID());
+
+        CircleOfTrustMemberDescriptor sp = getCotManager().lookupMemberByAlias(request.getIssuer());
+        if (sp == null) {
+            throw new SSOSessionException("Unknown SP in IDPSessionHeartBeatRequest : " + request.getID()+ ", " + request.getIssuer());
+        }
+
         // Recover local session information
         IdPSecurityContext secCtx =
                 (IdPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
@@ -66,7 +78,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
         response.setID(uuidGenerator.generateId());
         response.setInReplayTo(request.getID());
         response.setSsoSessionId(request.getSsoSessionId());
-        response.setIssuer(getProvider().getName());
+        response.setIssuer(resolveSpChannel(sp).getMember().getAlias());
 
         if (secCtx == null || secCtx.getSessionIndex() == null) {
 

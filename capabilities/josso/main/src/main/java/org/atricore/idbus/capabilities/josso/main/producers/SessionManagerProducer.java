@@ -99,6 +99,7 @@ public class SessionManagerProducer extends AbstractJossoProducer {
             SPSessionHeartBeatRequestType heartBeatReq = new SPSessionHeartBeatRequestType();
             heartBeatReq.setID(uuidGenerator.generateId());
             heartBeatReq.setSsoSessionId(request.getSsoSessionId());
+            heartBeatReq.setIssuer(appId);
 
             // Send message to SP Binding Channel
             SPSessionHeartBeatResponseType heartBeatRes =

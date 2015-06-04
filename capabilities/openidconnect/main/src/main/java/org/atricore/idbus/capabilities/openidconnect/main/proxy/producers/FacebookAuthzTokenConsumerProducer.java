@@ -17,6 +17,7 @@ import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -32,6 +33,8 @@ import java.util.List;
 public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer {
 
     private static final Log logger = LogFactory.getLog(FacebookAuthzTokenConsumerProducer.class);
+
+    private static final int MAX_NUM_OF_FB_API_CALL_RETRIES = 1;
 
     public FacebookAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -77,15 +80,51 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
 
         FacebookClient fb = new DefaultFacebookClient(Version.VERSION_2_2);
 
-        FacebookClient.AccessToken at = fb.obtainUserAccessToken(mediator.getClientId(),
-                mediator.getClientSecret(),
-                response_uri.getLocation(),
-                code);
+        int retry = 0;
+        FacebookClient.AccessToken at = null;
+        while (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+            try {
+                at = fb.obtainUserAccessToken(mediator.getClientId(),
+                        mediator.getClientSecret(),
+                        response_uri.getLocation(),
+                        code);
+                break;
+            } catch (Exception e) {
+                retry++;
+                logger.error(e.getMessage(), e);
+                if (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+                    logger.debug("Getting Facebook access token, retry: " + retry);
+                } else {
+                    throw new IdentityMediationException(e);
+                }
+            }
+        }
+        if (at == null) {
+            throw new IdentityMediationException("Facebook authorization failed!");
+        }
 
         // Now create a new instance with the token
         fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_2);
 
-        User user = fb.fetchObject("me", User.class);
+        retry = 0;
+        User user = null;
+        while (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+            try {
+                user = fb.fetchObject("me", User.class);
+                break;
+            } catch (Exception e) {
+                retry++;
+                logger.error(e.getMessage(), e);
+                if (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+                    logger.debug("Getting Facebook user info, retry: " + retry);
+                } else {
+                    throw new IdentityMediationException(e);
+                }
+            }
+        }
+        if (user == null) {
+            throw new IdentityMediationException("Facebook authorization failed!");
+        }
 
         SubjectType subject;
 

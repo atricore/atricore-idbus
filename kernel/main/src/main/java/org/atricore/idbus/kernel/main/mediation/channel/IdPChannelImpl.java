@@ -42,6 +42,8 @@ public class IdPChannelImpl extends AbstractFederationChannel implements IdPChan
 
     private boolean isProxyModeEnabled;
 
+    private boolean enableProxyExtension;
+
     private Channel proxy;
 
     /**
@@ -79,5 +81,13 @@ public class IdPChannelImpl extends AbstractFederationChannel implements IdPChan
 
     public void setProxy(Channel proxy) {
         this.proxy = proxy;
+    }
+
+    public boolean isEnableProxyExtension() {
+        return enableProxyExtension;
+    }
+
+    public void setEnableProxyExtension(boolean enableProxyExtension) {
+        this.enableProxyExtension = enableProxyExtension;
     }
 }

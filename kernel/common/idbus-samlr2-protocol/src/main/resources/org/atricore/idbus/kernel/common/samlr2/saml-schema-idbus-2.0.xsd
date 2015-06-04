@@ -53,4 +53,17 @@
         </complexContent>
     </complexType>
 
+    <element name="SPList" type="samli:SPListType"/>
+    <complexType name="SPListType">
+        <sequence>
+            <element ref="samli:SPEntry" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <element name="SPEntry" type="samli:SPEntryType"/>
+    <complexType name="SPEntryType">
+        <attribute name="ProviderID" type="anyURI" use="required"/>
+        <attribute name="Name" type="string" use="optional"/>
+        <attribute name="Loc" type="anyURI" use="optional"/>
+    </complexType>
+
 </schema>

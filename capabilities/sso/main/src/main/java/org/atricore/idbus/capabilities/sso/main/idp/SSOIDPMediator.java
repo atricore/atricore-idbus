@@ -57,6 +57,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
     private SSOBinding preferredIdpSLOBinding = SSOBinding.SAMLR2_ARTIFACT;
 
     private String claimEndpointSelection;
+    private String idpSelector;
 
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
@@ -403,4 +404,11 @@ public class SSOIDPMediator extends AbstractSSOMediator {
     }
 
 
+    public String getIdpSelector() {
+        return idpSelector;
+    }
+
+    public void setIdpSelector(String idpSelector) {
+        this.idpSelector = idpSelector;
+    }
 }

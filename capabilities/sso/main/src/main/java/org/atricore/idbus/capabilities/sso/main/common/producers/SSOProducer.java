@@ -352,19 +352,48 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
     }
 
     /**
-     * @return
+     * Obtains the SP Channel that the target SP must use to send messages to the current provider
      */
-    protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
+    protected FederationChannel resolveSpChannel(CircleOfTrustMemberDescriptor targetSp) {
         // Resolve IdP channel, then look for the ACS endpoint
-        BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getFederatedProvider();
+        FederatedLocalProvider idp = (FederatedLocalProvider) getProvider();
 
+        FederationChannel spChannel = idp.getChannel();
+        for (FederationChannel fChannel : idp.getChannels()) {
+
+            FederatedProvider sp = fChannel.getTargetProvider();
+            for (CircleOfTrustMemberDescriptor member : sp.getMembers()) {
+                if (member.getAlias().equals(targetSp.getAlias())) {
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Selected IdP channel " + fChannel.getName() + " for provider " + sp.getName());
+                    spChannel = fChannel;
+                    break;
+                }
+
+            }
+
+        }
+        return spChannel;
+    }
+
+    /**
+     * Obtains the IdP Channel that the target IdP must use to send messages to the current provider (SP)
+     */
+    protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor targetIdp) {
+        // Resolve IdP channel, then look for the ACS endpoint
+
+        FederatedLocalProvider sp = (FederatedLocalProvider) getProvider();
+
+        // Default IdP channel
         FederationChannel idpChannel = sp.getChannel();
+
+        // Look for overrides
         for (FederationChannel fChannel : sp.getChannels()) {
 
             FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
-                if (member.getAlias().equals(idpDescriptor.getAlias())) {
+                if (member.getAlias().equals(targetIdp.getAlias())) {
 
                     if (logger.isDebugEnabled())
                         logger.debug("Selected IdP channel " + fChannel.getName() + " for provider " + idp.getName());
@@ -377,7 +406,6 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         }
 
         return idpChannel;
-
     }
 
     protected void destroySPSecurityContext(CamelMediationExchange exchange,

@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoAuthnContext;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
 import org.atricore.idbus.capabilities.josso.main.JossoException;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.common.sso._1_0.protocol.CredentialType;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -156,7 +157,7 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         req.setPassive(cmd != null && cmd.equals("login_optional"));
 
         RequestAttributeType idpAliasAttr = new RequestAttributeType();
-        idpAliasAttr.setName("atricore_idp_alias");
+        idpAliasAttr.setName(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR);
         idpAliasAttr.setValue(idpAlias);
         req.getRequestAttribute().add(idpAliasAttr);
 

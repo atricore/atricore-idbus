@@ -21,11 +21,14 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp.plans.actions;
 
+import oasis.names.tc.saml._2_0.idbus.SPEntryType;
+import oasis.names.tc.saml._2_0.idbus.SPListType;
 import oasis.names.tc.saml._2_0.metadata.EndpointType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.ExtensionsType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
 import org.apache.commons.logging.Log;
@@ -33,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
@@ -42,9 +46,13 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDes
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -58,6 +66,15 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         if (in == null || out == null)
             return;
+
+        AuthnRequestType authn = (AuthnRequestType) out.getContent();
+
+        // The channel that received the request.
+        BindingChannel channel = (BindingChannel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
+        FederationChannel idpChannel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_RESPONSE_CHANNEL);
+        IdentityMediationEndpoint endpoint = (IdentityMediationEndpoint ) executionContext.getContextInstance().getVariable(VAR_ENDPOINT);
+
+        CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
         boolean passive = false;
         boolean forceAuthn = false;
@@ -92,10 +109,38 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                 if (logger.isDebugEnabled() && passive)
                     logger.debug("Generating PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
 
-
                 if (logger.isDebugEnabled() && !passive)
                     logger.debug("Generating NON-PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
 
+            }
+
+            // JOSSO SAML Extension (only if IDP Channel supports it)
+            if (idpChannel instanceof IdPChannel) {
+                IdPChannel extIdPChannel = (IdPChannel) idpChannel;
+
+                if (extIdPChannel.isProxyModeEnabled() && extIdPChannel.isEnableProxyExtension()) {
+                    // We're acting as a proxy,
+
+                    //logger.warn("IDP capabilities detection improvement required");
+
+                    SPEntryType spEntry = new SPEntryType();
+                    spEntry.setName(ssoAuthnReq.getIssuer());
+                    spEntry.setProviderID(ssoAuthnReq.getIssuer());
+                    spEntry.setLoc(ssoAuthnReq.getIssuer());
+
+                    SPListType spList = new SPListType();
+                    spList.getSPEntry().add(spEntry);
+
+                    JAXBElement<SPListType> jaxbSPList = new JAXBElement<SPListType>(new QName(SAMLR2Constants.SAML_IDBUS_NS, "SPList"), SPListType.class, spList);
+
+                    ExtensionsType ext = authn.getExtensions();
+                    if (ext == null) {
+                        ext = new ExtensionsType();
+                        authn.setExtensions(ext);
+                    }
+
+                    ext.getAny().add(jaxbSPList);
+                }
             }
 
 
@@ -105,14 +150,6 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         }
 
 
-        AuthnRequestType authn = (AuthnRequestType) out.getContent();
-
-        // The channel that recieved the request.
-        BindingChannel channel = (BindingChannel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
-        FederationChannel idpChannel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_RESPONSE_CHANNEL);
-        IdentityMediationEndpoint endpoint = (IdentityMediationEndpoint ) executionContext.getContextInstance().getVariable(VAR_ENDPOINT);
-
-        CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
         // saml:Subject [optional]
         // TODO : If credentials are present, Send SAML Subject, as stated in Saml 2 profiles : 4.1.4.1 <AuthnRequest> Usage

@@ -8,6 +8,7 @@ import org.atricore.idbus.capabilities.oauth2.main.OAuth2AuthnContext;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2BPMediator;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Exception;
 import org.atricore.idbus.capabilities.oauth2.main.ResourceServer;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
@@ -132,7 +133,7 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
         req.setPassive(passive);
 
         RequestAttributeType idpAliasAttr = new RequestAttributeType();
-        idpAliasAttr.setName("atricore_idp_alias");
+        idpAliasAttr.setName(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR);
         idpAliasAttr.setValue(idpAlias);
         req.getRequestAttribute().add(idpAliasAttr);
 

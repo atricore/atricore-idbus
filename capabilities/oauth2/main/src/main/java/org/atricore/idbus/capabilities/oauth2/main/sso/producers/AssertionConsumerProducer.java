@@ -9,6 +9,8 @@ import org.atricore.idbus.capabilities.oauth2.main.OAuth2Exception;
 import org.atricore.idbus.capabilities.oauth2.main.ResourceServer;
 import org.atricore.idbus.capabilities.oauth2.main.binding.OAuth2Binding;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
+import org.atricore.idbus.common.oauth._2_0.protocol.ErrorCodeType;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -17,8 +19,6 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-
-import java.net.URLEncoder;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -57,31 +57,25 @@ public class AssertionConsumerProducer extends AbstractCamelProducer<CamelMediat
         if (logger.isDebugEnabled())
             logger.debug("Using Resource Server URL: [" + rServerLocation + " ]");
 
-        String accessToken = null;
+        AccessTokenResponseType accessTokenResponse = new AccessTokenResponseType();
+
         if (response.getSubject() == null) {
             // Authentication failed, return to the application
-
-            // Create destination with back/to and OAUTH2 Restful binding
-            EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
-                    "ErrorCode",
-                    OAuth2Binding.OAUTH2_RESTFUL.getValue(),
-                    rServerLocation, null);
-
-            out.setMessage(new MediationMessageImpl(response.getID(),
-                    "authnFailed", "ErrorCode", null, destination, state));
-            
+            accessTokenResponse.setError(ErrorCodeType.UNAUTHORIZED_CLIENT);
+            accessTokenResponse.setErrorDescription("Authentication failed");
         } else {
-            accessToken = resolveAccessToken(response);
-            // Create destination with back/to and OAUTH2 Restful binding
-            EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
-                    "AccessToken",
-                    OAuth2Binding.OAUTH2_RESTFUL.getValue(),
-                    rServerLocation, null);
-
-            out.setMessage(new MediationMessageImpl(response.getID(),
-                    accessToken, "AccessToken", null, destination, state));
-
+            String accessToken = resolveAccessToken(response);
+            accessTokenResponse.setAccessToken(accessToken);
         }
+
+        // Create destination with back/to and OAUTH2 Restful binding
+        EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
+                "AccessTokenResponse",
+                OAuth2Binding.OAUTH2_RESTFUL.getValue(),
+                rServerLocation, null);
+
+        out.setMessage(new MediationMessageImpl(response.getID(),
+                accessTokenResponse, "AccessTokenResponse", null, destination, state));
 
         // Clear authn-ctx once we're done
         state.removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");

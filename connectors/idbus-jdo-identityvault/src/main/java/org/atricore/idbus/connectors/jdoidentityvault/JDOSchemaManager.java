@@ -15,12 +15,10 @@ import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningExcepti
 import org.atricore.idbus.kernel.main.provisioning.exception.UserAttributeNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractSchemaManager;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.orm.jdo.JdoObjectRetrievalFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.jdo.FetchPlan;
@@ -78,7 +76,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
         TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
-            JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findById(attrDef.getId());
+            JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findById(Long.parseLong(attrDef.getId()));
             if (!jdoUserAttribute.getName().equals(attrDef.getName())) {
                 usrAttrValDao.updateName(jdoUserAttribute.getName(), attrDef.getName());
             }
@@ -103,7 +101,9 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     }
 
 //    @Transactional
-    public void deleteUserAttribute(long id) throws ProvisioningException {
+    public void deleteUserAttribute(String attributeId) throws ProvisioningException {
+
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -131,7 +131,9 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     }
 
 //    @Transactional
-    public UserAttributeDefinition findUserAttributeById(long id) throws ProvisioningException {
+    public UserAttributeDefinition findUserAttributeById(String attributeId) throws ProvisioningException {
+
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -225,7 +227,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
         TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
-            JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findById(attrDef.getId());
+            JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findById(Long.parseLong(attrDef.getId()));
             if (!jdoGroupAttribute.getName().equals(attrDef.getName())) {
                 grpAttrValDao.updateName(jdoGroupAttribute.getName(), attrDef.getName());
             }
@@ -250,7 +252,9 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     }
 
 //    @Transactional
-    public void deleteGroupAttribute(long id) throws ProvisioningException {
+    public void deleteGroupAttribute(String attributeId) throws ProvisioningException {
+
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -278,7 +282,9 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     }
 
 //    @Transactional
-    public GroupAttributeDefinition findGroupAttributeById(long id) throws ProvisioningException {
+    public GroupAttributeDefinition findGroupAttributeById(String attributeId) throws ProvisioningException {
+
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -353,22 +359,33 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     
     protected JDOUserAttributeDefinition toJDOUserAttribute(UserAttributeDefinition userAttribute) {
         JDOUserAttributeDefinition jdoUserAttribute = toJDOUserAttribute(new JDOUserAttributeDefinition(), userAttribute);
-        jdoUserAttribute.setId(userAttribute.getId());
+        if (userAttribute.getId() != null)
+            jdoUserAttribute.setId(Long.parseLong(userAttribute.getId()));
         return jdoUserAttribute;
     }
 
     protected JDOUserAttributeDefinition toJDOUserAttribute(JDOUserAttributeDefinition jdoUserAttribute,
                                                     UserAttributeDefinition userAttribute) {
 
-        BeanUtils.copyProperties(userAttribute, jdoUserAttribute, new String[] {"id", "type"});
         jdoUserAttribute.setType(JDOAttributeType.fromValue(userAttribute.getType().toString()));
+        jdoUserAttribute.setName(userAttribute.getName());
+        jdoUserAttribute.setDescription(userAttribute.getDescription());
+        jdoUserAttribute.setMultivalued(userAttribute.isMultivalued());
+        jdoUserAttribute.setRequired(userAttribute.isRequired());
+
         return jdoUserAttribute;
     }
 
     protected UserAttributeDefinition toUserAttribute(JDOUserAttributeDefinition jdoUserAttribute) {
         UserAttributeDefinition userAttribute = new UserAttributeDefinition();
-        BeanUtils.copyProperties(jdoUserAttribute, userAttribute, new String[] {"type"});
+
+        userAttribute.setId(jdoUserAttribute.getId() + "");
         userAttribute.setType(AttributeType.fromValue(jdoUserAttribute.getType().toString()));
+        userAttribute.setName(jdoUserAttribute.getName());
+        userAttribute.setDescription(jdoUserAttribute.getDescription());
+        userAttribute.setMultivalued(jdoUserAttribute.getMultivalued());
+        userAttribute.setRequired(jdoUserAttribute.getRequired());
+
         return userAttribute;
     }
 
@@ -384,21 +401,33 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
     protected JDOGroupAttributeDefinition toJDOGroupAttribute(GroupAttributeDefinition groupAttribute) {
         JDOGroupAttributeDefinition jdoGroupAttribute = toJDOGroupAttribute(new JDOGroupAttributeDefinition(), groupAttribute);
-        jdoGroupAttribute.setId(groupAttribute.getId());
+        jdoGroupAttribute.setId(Long.parseLong(groupAttribute.getId()));
         return jdoGroupAttribute;
     }
 
     protected JDOGroupAttributeDefinition toJDOGroupAttribute(JDOGroupAttributeDefinition jdoGroupAttribute,
                                                     GroupAttributeDefinition groupAttribute) {
-        BeanUtils.copyProperties(groupAttribute, jdoGroupAttribute, new String[] {"id", "type"});
+
         jdoGroupAttribute.setType(JDOAttributeType.fromValue(groupAttribute.getType().toString()));
+
+        jdoGroupAttribute.setName(groupAttribute.getName());
+        jdoGroupAttribute.setDescription(groupAttribute.getDescription());
+        jdoGroupAttribute.setMultivalued(groupAttribute.isMultivalued());
+        jdoGroupAttribute.setRequired(groupAttribute.isRequired());
+
         return jdoGroupAttribute;
     }
 
     protected GroupAttributeDefinition toGroupAttribute(JDOGroupAttributeDefinition jdoGroupAttribute) {
         GroupAttributeDefinition groupAttribute = new GroupAttributeDefinition();
-        BeanUtils.copyProperties(jdoGroupAttribute, groupAttribute, new String[] {"type"});
+
+        groupAttribute.setId(jdoGroupAttribute.getId() + "");
         groupAttribute.setType(AttributeType.fromValue(jdoGroupAttribute.getType().toString()));
+        groupAttribute.setName(jdoGroupAttribute.getName());
+        groupAttribute.setDescription(jdoGroupAttribute.getDescription());
+        groupAttribute.setMultivalued(jdoGroupAttribute.getMultivalued());
+        groupAttribute.setRequired(jdoGroupAttribute.getRequired());
+
         return groupAttribute;
     }
 

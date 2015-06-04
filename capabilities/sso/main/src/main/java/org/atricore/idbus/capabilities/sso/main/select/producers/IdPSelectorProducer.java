@@ -26,6 +26,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -84,10 +86,10 @@ public class IdPSelectorProducer extends SSOProducer {
 
                 if (content != null)
                     throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
-                        null,
-                        StatusDetails.UNKNOWN_REQUEST.getValue(),
-                        content.getClass().getName(),
-                        null);
+                            null,
+                            StatusDetails.UNKNOWN_REQUEST.getValue(),
+                            content.getClass().getName(),
+                            null);
 
                 throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
@@ -96,9 +98,6 @@ public class IdPSelectorProducer extends SSOProducer {
                         null);
 
             }
-
-
-
 
 
         } catch (Exception e) {
@@ -121,7 +120,15 @@ public class IdPSelectorProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Storing selected entity " + idp);
 
-        state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY", idp);
+        // Keep track of selected entities
+        Deque<String> idps = (Deque<String>) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_IDPS");
+        if (idps == null) {
+            idps = new ArrayDeque<String>();
+            state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_IDPS", idps);
+        }
+
+        idps.removeLastOccurrence(idp.getAlias());
+        idps.addFirst(idp.getAlias());
 
         EndpointDescriptor destination = new EndpointDescriptorImpl("idpSelectorCallback",
                 SSOMetadataConstants.IdPSelectorCallbackService_QNAME.getLocalPart(),
@@ -153,19 +160,21 @@ public class IdPSelectorProducer extends SSOProducer {
         SSOEntitySelectorMediator mediator = (SSOEntitySelectorMediator) channel.getIdentityMediator();
         EntitySelectorManager entitySelectorMgr = mediator.getSelectorManager();
 
-        CircleOfTrustMemberDescriptor previouslySelectedCotMember = (CircleOfTrustMemberDescriptor)
-                state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY");
-
-        if (logger.isDebugEnabled())
-            logger.debug("Found previously selected entity " + previouslySelectedCotMember);
-
         // Information to make a decision can be obtain in the following ways:
 
         // 1. In the request (preferred IdP, requested IdP, etc)
         // 2. As provider state variables (user IP, user-agent, etc)
         // 3. Provided by additional endpoints as User Claims
 
+        Deque<String> idps = (Deque<String>) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_IDPS");
+        if (idps == null) {
+            idps = new ArrayDeque<String>();
+            state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_IDPS", idps);
+        }
+
         EntitySelectionState selectionState = new EntitySelectionState();
+        selectionState.setPreviousCotMembers(idps);
+
         ClaimSet userClaims = new ClaimSetImpl();
 
         if (request.getRequestAttribute() != null) {
@@ -177,8 +186,7 @@ public class IdPSelectorProducer extends SSOProducer {
                 }
             }
             selectionState.setUserClaims(userClaims);
-            if (previouslySelectedCotMember != null)
-                selectionState.setPreviousCotMember(previouslySelectedCotMember.getAlias());
+
         }
 
         selectionState.setRequest(request);
@@ -225,11 +233,13 @@ public class IdPSelectorProducer extends SSOProducer {
         sendSelectionResponse(exchange, state, selectionState.getRequest(), entity);
 
         // Clear selection state
-        state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+
         if (entity != null) {
             if (logger.isDebugEnabled())
                 logger.debug("Storing selected entity " + entity.getAlias());
-            state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY", entity);
+
+            idps.removeLastOccurrence(entity.getAlias());
+            idps.addFirst(entity.getAlias());
         }
 
     }
@@ -243,6 +253,7 @@ public class IdPSelectorProducer extends SSOProducer {
 
         // Get selection state
         EntitySelectionState selectionState = (EntitySelectionState) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
+        Deque<String> idps = selectionState.getPreviousCotMembers();
 
         for (Claim c : userClaimsResp.getClaimSet().getClaims()) {
 
@@ -284,12 +295,12 @@ public class IdPSelectorProducer extends SSOProducer {
         // Send the selected entity, if any
         sendSelectionResponse(exchange, state, selectionState.getRequest(), entity);
 
-        // Clear selection state
-        state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
         if (entity != null) {
             if (logger.isDebugEnabled())
                 logger.debug("Storing selected entity " + entity.getAlias());
-            state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY", entity);
+
+            idps.removeLastOccurrence(entity.getAlias());
+            idps.addFirst(entity.getAlias());
         }
 
     }
@@ -398,7 +409,7 @@ public class IdPSelectorProducer extends SSOProducer {
                                          CircleOfTrustMemberDescriptor selectedCotMembery) throws SSOException {
 
         if (logger.isDebugEnabled())
-            logger.debug("Sending selection response with entity " + selectedCotMembery != null ? (selectedCotMembery.getId() + " " + selectedCotMembery.getAlias()) : "NULL");
+            logger.debug("Sending selection response with entity " + (selectedCotMembery != null ? (selectedCotMembery.getId() + " " + selectedCotMembery.getAlias()) : "NULL"));
 
         // Do something with the outcome
         SelectEntityResponseType response = new SelectEntityResponseType();

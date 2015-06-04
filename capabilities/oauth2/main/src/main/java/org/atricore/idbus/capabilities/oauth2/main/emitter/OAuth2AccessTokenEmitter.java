@@ -4,12 +4,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.*;
 import org.atricore.idbus.capabilities.oauth2.common.util.JasonUtils;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.oauth._2_0.protocol.OAuthAccessTokenType;
 import org.atricore.idbus.common.oauth._2_0.protocol.ObjectFactory;
+import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
@@ -20,10 +24,7 @@ import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -67,8 +68,16 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             if (logger.isTraceEnabled())
                 logger.trace("Building OAuth2 Token from " + subject);
 
+            Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
+
+            List<AbstractPrincipalType> proxyPrincipals = null;
+            if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
+                SamlR2SecurityTokenEmissionContext samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+                proxyPrincipals = samlr2Ctx.getProxyPrincipals();
+            }
+
             // Build an access token for the subject,
-            OAuth2AccessToken token = buildOAuth2AccessToken(subject, requestToken);
+            OAuth2AccessToken token = buildOAuth2AccessToken(subject, proxyPrincipals, requestToken);
 
             OAuth2AccessTokenEnvelope envelope = buildOAuth2AccessTokenEnvelope(token);
 
@@ -126,7 +135,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         return new OAuth2AccessTokenEnvelope (encryptAlg, sigAlg, sigValue, tokenValue, true);
     }
 
-    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject, Object requestToken) {
+    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject, List<AbstractPrincipalType> proxyPrincipals, Object requestToken) {
 
         // User
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
@@ -140,13 +149,45 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
         // Roles
         Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
+        Set<String> usedRoles = new HashSet<String>();
+
         for (SSORole ssoRole : ssoRoles) {
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
+            usedRoles.add(ssoRole.getName());
         }
 
+        Set<String> usedProps = new HashSet<String>();
         if (user.getProperties() != null) {
             for (SSONameValuePair property : user.getProperties()) {
+                usedProps.add(property.getName());
                 at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
+            }
+        }
+
+        // Add proxy principals (principals received from tho proxied provider), but only if we don't have such a principal yet.
+        if (proxyPrincipals != null) {
+            for (AbstractPrincipalType principal : proxyPrincipals) {
+                if (principal instanceof SubjectAttributeType) {
+                    SubjectAttributeType attr = (SubjectAttributeType) principal;
+                    String name = attr.getName();
+                    if (name != null) {
+                        int idx = name.lastIndexOf(':');
+                        if (idx >=0) name = name.substring(idx + 1);
+                    }
+
+                    String value = attr.getValue();
+                    if (!usedProps.contains(name)) {
+                        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), name, value));
+                        usedProps.add(name);
+                    }
+                } else if (principal instanceof SubjectRoleType) {
+                    SubjectRoleType role = (SubjectRoleType) principal;
+                    if (!usedRoles.contains(role.getName())) {
+                        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), role.getName()));
+                        usedRoles.add(role.getName());
+                    }
+                }
+
             }
         }
 

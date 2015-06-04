@@ -368,7 +368,8 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             // External application is requesting cross origin support:
 
-            Boolean allowAll = Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.cors.allowAll", "false"));
+            Boolean allowAll = getConfigurationContext() != null ?
+                    Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.cors.allowAll", "false")) : false;
 
             if (logger.isTraceEnabled())
                 logger.trace("User-Agent requesting cross origin support for " + origin);

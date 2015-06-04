@@ -19,6 +19,7 @@ import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -127,9 +128,12 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
                 if (retry <= MAX_NUM_OF_USER_INFO_RETRIES) {
                     logger.debug("Getting Google user info, retry: " + retry);
                 } else {
-                    logger.error("Failed to get Google user info!");
+                    throw new IdentityMediationException(e);
                 }
             }
+        }
+        if (user == null) {
+            throw new IdentityMediationException("Google authorization failed!");
         }
 
         SubjectType subject;
@@ -168,9 +172,7 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
         authnCtxClassAttr.setValue(AuthnCtxClass.PPT_AUTHN_CTX.getValue());
         attrs.add(authnCtxClassAttr);
 
-        if (user != null) {
-            addUserAttributes(user, attrs);
-        }
+        addUserAttributes(user, attrs);
 
         SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
         ssoResponse.setID(uuidGenerator.generateId());

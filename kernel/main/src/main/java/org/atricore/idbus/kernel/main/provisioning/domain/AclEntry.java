@@ -9,7 +9,7 @@ public class AclEntry implements Serializable {
 
     private static final long serialVersionUID = 4595183658527599864L;
 
-    private Long id;
+    private String id;
     private String principalNameClaim;
     private String passwordClaim;
     private AclDecisionType decision;
@@ -18,11 +18,11 @@ public class AclEntry implements Serializable {
     private String approvalToken;
     private String spAlias;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -90,15 +90,14 @@ public class AclEntry implements Serializable {
 
         AclEntry that = (AclEntry) o;
 
-        if(id == 0) return false;
+        if (id != null)
+            return id.equals(that.id);
 
-        if (id != that.id) return false;
-
-        return true;
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return id != null ? id.hashCode() : super.hashCode();
     }
 }

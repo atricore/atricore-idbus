@@ -5,17 +5,17 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class SetPasswordRequest extends AbstractProvisioningRequest {
 
-    private long userId;
+    private String userId;
 
     private String currentPassword;
 
     private String newPassword;
 
-    public long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

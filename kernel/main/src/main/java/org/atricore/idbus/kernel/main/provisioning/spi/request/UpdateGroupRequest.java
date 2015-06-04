@@ -32,17 +32,17 @@ import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
  */
 public class UpdateGroupRequest extends AbstractProvisioningRequest {
 
-    long id;
-    String name;
-    String description;
+    private String id;
+    private String name;
+    private String description;
 
     private GroupAttributeValue[] attrs;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

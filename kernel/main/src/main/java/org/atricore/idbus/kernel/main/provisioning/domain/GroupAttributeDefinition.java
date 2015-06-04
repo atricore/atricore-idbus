@@ -9,7 +9,7 @@ public class GroupAttributeDefinition implements Serializable {
 
     private static final long serialVersionUID = -723975199665695619L;
     
-    private long id;
+    private String id;
 
     private String name;
 
@@ -21,11 +21,11 @@ public class GroupAttributeDefinition implements Serializable {
 
     private boolean multivalued;
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -76,15 +76,14 @@ public class GroupAttributeDefinition implements Serializable {
 
         GroupAttributeDefinition that = (GroupAttributeDefinition) o;
 
-        if(id == 0) return false;
+        if (id != null)
+            return id.equals(that.id);
 
-        if (id != that.id) return false;
-
-        return true;
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return id != null ? id.hashCode() : super.hashCode();
     }    
 }

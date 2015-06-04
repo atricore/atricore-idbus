@@ -116,8 +116,9 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                 if (ctx.getProxyPrincipals() != null) {
 
                     // Proxied requests may provide additional information:
-                    List<SSONameValuePair> proxyProps = new ArrayList();
-                    List<SSORole> proxyRoles = new ArrayList();
+                    Map<String, SSONameValuePair> proxyProps = new HashMap<String, SSONameValuePair>();
+                    Map<String, SSORole> proxyRoles = new HashMap<String, SSORole>();
+
                     // Now check if the subject itself has additional information
 
                     for (AbstractPrincipalType p : ctx.getProxyPrincipals()) {
@@ -127,28 +128,29 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                             if (logger.isTraceEnabled())
                                 logger.trace("Adding subject attribute from proxy response subject " + attr.getName() + ":" + attr.getValue());
 
-                            proxyProps.add(new SSONameValuePair(attr.getName(), attr.getValue()));
+                            proxyProps.put(attr.getName(), new SSONameValuePair(attr.getName(), attr.getValue()));
 
                         } else if (p instanceof SubjectRoleType) {
                             SubjectRoleType r = (SubjectRoleType) p;
                             if (logger.isTraceEnabled())
                                 logger.trace("Adding subject role from proxy response subject " + r.getName());
 
-                            proxyRoles.add(new BaseRoleImpl(r.getName()));
+                            proxyRoles.put(r.getName(), new BaseRoleImpl(r.getName()));
 
                         }
                     }
 
                     if (proxyProps.size() > 0) {
                         if (logger.isDebugEnabled())
-                            logger.debug("Merging proxy properties with SSO user " + proxyProps.size());
+                            logger.debug("Merging proxy properties with SSO user ["+ssoUser.getName()+"] " + proxyProps.size());
 
                         for (int i = 0 ; i < ssoUser.getProperties().length ; i ++) {
-                            proxyProps.add(ssoUser.getProperties()[i]);
+                            SSONameValuePair prop = ssoUser.getProperties()[i];
+                            proxyProps.put(prop.getName(), prop);
                         }
 
                         BaseUserImpl proxySsoUser = new BaseUserImpl(ssoUser.getName());
-                        proxySsoUser.setProperties(proxyProps.toArray(new SSONameValuePair[proxyProps.size()]));
+                        proxySsoUser.setProperties(proxyProps.values().toArray(new SSONameValuePair[proxyProps.size()]));
                         ssoUser = proxySsoUser;
 
                     }
@@ -157,14 +159,17 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                     if (proxyRoles.size() > 0) {
 
                         if (logger.isDebugEnabled())
-                            logger.debug("Merging proxy roles with SSO roles " + proxyRoles.size());
+                            logger.debug("Merging proxy roles with SSO roles ["+ssoUser.getName()+"] " + proxyRoles.size());
 
                         // Add non-proxy roles
                         for (int i = 0; i < ssoRoles.length; i++) {
-                            proxyRoles.add(ssoRoles[i]);
+                            SSORole role = ssoRoles[i];
+                            proxyRoles.put(role.getName(), role);
                         }
-                        ssoRoles = proxyRoles.toArray(new SSORole[proxyRoles.size()]);
+                        ssoRoles = proxyRoles.values().toArray(new SSORole[proxyRoles.size()]);
                     }
+
+
                 }
 
                 principals.add(ssoUser);

@@ -355,6 +355,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
             UserType spmlUser = new UserType();
             BeanUtils.copyProperties(user, spmlUser, new String[] {"groups", "attrs"});
+
             if (user.getGroups() != null) {
                 for (int i = 0; i < user.getGroups().length; i++) {
                     Group group = user.getGroups()[i];
@@ -432,7 +433,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         return psoGroupAttribute;
     }
 
-    protected User lookupUser(ProvisioningTarget target, long userId) throws ProvisioningException {
+    protected User lookupUser(ProvisioningTarget target, String userId) throws ProvisioningException {
         FindUserByIdRequest req = new FindUserByIdRequest();
         req.setId(userId);
         FindUserByIdResponse res = target.findUserById(req);
@@ -441,7 +442,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
     }
 
 
-    protected User lookupUser(ProvisioningTarget target, String username) throws ProvisioningException {
+    protected User lookupUserByName(ProvisioningTarget target, String username) throws ProvisioningException {
         FindUserByUsernameRequest req = new FindUserByUsernameRequest ();
         req.setUsername(username);
         FindUserByUsernameResponse res = target.findUserByUsername(req);
@@ -459,7 +460,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     }
 
-    protected UserAttributeDefinition lookupUserAttribute(ProvisioningTarget target, long id) throws ProvisioningException {
+    protected UserAttributeDefinition lookupUserAttribute(ProvisioningTarget target, String id) throws ProvisioningException {
         FindUserAttributeByIdRequest req = new FindUserAttributeByIdRequest();
         req.setId(id);
         FindUserAttributeByIdResponse res = target.findUserAttributeById(req);
@@ -467,7 +468,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         return res.getUserAttribute();
     }
 
-    protected UserAttributeDefinition lookupUserAttribute(ProvisioningTarget target, String name) throws ProvisioningException {
+    protected UserAttributeDefinition lookupUserAttributeByName(ProvisioningTarget target, String name) throws ProvisioningException {
         FindUserAttributeByNameRequest req = new FindUserAttributeByNameRequest();
         req.setName(name);
         FindUserAttributeByNameResponse res = target.findUserAttributeByName(req);
@@ -475,7 +476,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         return res.getUserAttribute();
     }
 
-    protected GroupAttributeDefinition lookupGroupAttribute(ProvisioningTarget target, long id) throws ProvisioningException {
+    protected GroupAttributeDefinition lookupGroupAttribute(ProvisioningTarget target, String id) throws ProvisioningException {
         FindGroupAttributeByIdRequest req = new FindGroupAttributeByIdRequest();
         req.setId(id);
         FindGroupAttributeByIdResponse res = target.findGroupAttributeById(req);
@@ -483,7 +484,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         return res.getGroupAttribute();
     }
 
-    protected GroupAttributeDefinition lookupGroupAttribute(ProvisioningTarget target, String name) throws ProvisioningException {
+    protected GroupAttributeDefinition lookupGroupAttributeByName(ProvisioningTarget target, String name) throws ProvisioningException {
         FindGroupAttributeByNameRequest req = new FindGroupAttributeByNameRequest();
         req.setName(name);
         FindGroupAttributeByNameResponse res = target.findGroupAttributeByName(req);
