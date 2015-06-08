@@ -496,8 +496,10 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
                         proxyEndpoint.getLocation());
 
+                // Get requested IDP and clear the variable
                 SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest,
                         (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp"));
+                in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
 
                 in.getMessage().getState().setLocalVariable(
                         "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);

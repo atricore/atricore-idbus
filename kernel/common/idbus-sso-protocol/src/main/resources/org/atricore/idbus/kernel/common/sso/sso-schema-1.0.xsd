@@ -150,6 +150,18 @@
 
     <element name="CurrentEntityResponse" type="ssop:SSOResponseType"/>
 
+    <element name="ClearEntityRequest" type="ssop:ClearEntityRequestType"/>
+    <complexType name="ClearEntityRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="entityId" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="ClearEntityResponse" type="ssop:SSOResponseType"/>
+
+
     <element name="SPCredentialsCallbackResponse" type="ssop:SPCredentialsCallbackResponseType"/>
     <complexType name="SPCredentialsCallbackResponseType">
         <complexContent>
