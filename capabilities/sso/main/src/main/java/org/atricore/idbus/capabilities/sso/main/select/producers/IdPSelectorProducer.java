@@ -76,10 +76,17 @@ public class IdPSelectorProducer extends SSOProducer {
 
             } else if (content instanceof CurrentEntityRequestType) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Processing claims response for " + endpointRef);
+                    logger.debug("Processing current entity request for " + endpointRef);
 
                 // Claims collected from the user, to make a selection decision.
                 doProcessCurrentEntityRequest(exchange, state, (CurrentEntityRequestType) content);
+
+            } else if (content instanceof ClearEntityRequestType) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing clear entity request for " + endpointRef);
+
+                // Claims collected from the user, to make a selection decision.
+                doProcessClearEntityRequest(exchange, state, (ClearEntityRequestType) content);
 
             } else {
                 logger.error("Unknown message type : " + content);
@@ -142,15 +149,52 @@ public class IdPSelectorProducer extends SSOProducer {
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 response,
-                "SSOResponse",
+                "CurrentEntityResponse",
                 null,
                 destination,
                 state));
 
         exchange.setOut(out);
 
+    }
 
+    protected void doProcessClearEntityRequest(CamelMediationExchange exchange, MediationState state, ClearEntityRequestType request) throws SSOException {
 
+        // Do we need to collect more information to make a decision ?!
+        SSOEntitySelectorMediator mediator = (SSOEntitySelectorMediator) channel.getIdentityMediator();
+
+        CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(request.getEntityId());
+
+        if (logger.isDebugEnabled())
+            logger.debug("Clearing selected entity " + idp);
+
+        // Keep track of selected entities
+        Deque<String> idps = (Deque<String>) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_IDPS");
+        if (idps == null) {
+            idps = new ArrayDeque<String>();
+            state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_IDPS", idps);
+        }
+
+        idps.remove(idp.getAlias());
+
+        EndpointDescriptor destination = new EndpointDescriptorImpl("idpSelectorCallback",
+                SSOMetadataConstants.IdPSelectorCallbackService_QNAME.getLocalPart(),
+                SSOBinding.SSO_ARTIFACT.getValue(), request.getReplyTo(), null);
+
+        SSOResponseType response = new SSOResponseType();
+        response.setID(uuidGenerator.generateId());
+        response.setInReplayTo(request.getID());
+
+        // Send User Claims request
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                response,
+                "ClearEntityResponse",
+                null,
+                destination,
+                state));
+
+        exchange.setOut(out);
 
     }
 

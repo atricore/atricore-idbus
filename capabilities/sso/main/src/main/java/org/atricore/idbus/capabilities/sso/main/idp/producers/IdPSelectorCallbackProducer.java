@@ -48,6 +48,7 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         Object ssoResponse = state.getLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP);
         EndpointDescriptor destination = (EndpointDescriptor) state.getLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
         String relayState = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP);
+        String type = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP);
 
         if (logger.isDebugEnabled()) {
             if (ssoResponse instanceof ResponseType) {
@@ -62,6 +63,7 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP);
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP);
+        state.removeLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP);
 
 
         // ---------------------------------------------------
@@ -69,7 +71,7 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         // ---------------------------------------------------
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                ssoResponse, "Response", relayState, destination, in.getMessage().getState()));
+                ssoResponse, type != null ? type : "Response", relayState, destination, in.getMessage().getState()));
 
         exchange.setOut(out);
 
