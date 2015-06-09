@@ -33,6 +33,27 @@
     <!-- Services  -->
     <!--           -->
 
+    <bean id="attributeProfileMapperRegistry" class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry"
+            init-method="init">
+        <property name="builtInMappers">
+            <list>
+                <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.BasicAttributeProfileMapper">
+                    <property name="name" value="basic-built-in"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.JOSSOAttributeProfileMapper">
+                    <property name="name" value="josso-built-in"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.OneToOneAttributeProfileMapper">
+                    <property name="name" value="one-to-one-built-in"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <osgi:service id="attributeProfileMapperRegistryExporter"
+                  interface="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry"
+                  ref="attributeProfileMapperRegistry"/>
+
     <bean id="osgiSelectionStrategiesRegistry" class="org.atricore.idbus.capabilities.sso.main.select.internal.OsgiSelectionStrategiesRegistry">
         <constructor-arg ref="selectionStrategiesRegistry" />
     </bean>

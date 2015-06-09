@@ -50,6 +50,8 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
 
     private Channel proxy;
 
+    private String attributeProfile;
+
     public SecurityTokenService getSecurityTokenService() {
         return securityTokenService;
     }
@@ -88,5 +90,14 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
 
     public void setProxy(Channel proxy) {
         this.proxy = proxy;
+    }
+
+    @Override
+    public String getAttributeProfile() {
+        return attributeProfile;
+    }
+
+    public void setAttributeProfile(String attributeProfile) {
+        this.attributeProfile = attributeProfile;
     }
 }

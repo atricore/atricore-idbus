@@ -164,16 +164,17 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             }
         }
 
-        // Add proxy principals (principals received from tho proxied provider), but only if we don't have such a principal yet.
+        // Add proxy principals (principals received from the proxied provider), but only if we don't have such a principal yet.
         if (proxyPrincipals != null) {
             for (AbstractPrincipalType principal : proxyPrincipals) {
                 if (principal instanceof SubjectAttributeType) {
                     SubjectAttributeType attr = (SubjectAttributeType) principal;
                     String name = attr.getName();
+                    /*
                     if (name != null) {
                         int idx = name.lastIndexOf(':');
                         if (idx >=0) name = name.substring(idx + 1);
-                    }
+                    } */
 
                     String value = attr.getValue();
                     if (!usedProps.contains(name)) {

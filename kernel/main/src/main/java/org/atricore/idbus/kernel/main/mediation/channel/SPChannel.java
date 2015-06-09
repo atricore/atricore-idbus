@@ -45,4 +45,5 @@ public interface SPChannel extends FederationChannel {
 
     Channel getProxy();
 
+    String getAttributeProfile();
 }

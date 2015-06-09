@@ -88,6 +88,8 @@ public interface SSOPlanningConstants {
 
     static final String VAR_NAMEID_BUILDERS = "urn:org:atricore:idbus:samlr2:emitter:NameIDBuilders";
 
+    static final String VAR_ATTRIBUTE_PROFILE = "urn:org:atricore:idbus:samlr2:emitter:AttributeProfile";
+
     static final String VAR_DEFAULT_NAMEID_BUILDER = "urn:org:atricore:idbus:samlr2:emitter:DefaultNameIDBuilder";
 
     static final String VAR_IGNORE_REQUESTED_NAMEID_POLICY = "urn:org:atricore:idbus:samlr2:emitter:IgnoreRequestedNameIDPolicy";

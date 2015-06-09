@@ -115,6 +115,7 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
             ex.setProperty(VAR_COT_MEMBER, ctx.getMember());
             ex.setProperty(VAR_RESPONSE_MODE, ctx.getAuthnState().getResponseMode());
             ex.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ctx.getSpAcs());
+            ex.setProperty(VAR_ATTRIBUTE_PROFILE, ctx.getAttributeProfile());
 
 
         } else {

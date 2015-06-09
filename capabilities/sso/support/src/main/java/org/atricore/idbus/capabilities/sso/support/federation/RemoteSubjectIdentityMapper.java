@@ -28,8 +28,10 @@ public class RemoteSubjectIdentityMapper implements IdentityMapper {
     private Set<String> roleAttributeNames = new HashSet<String>();
 
     public RemoteSubjectIdentityMapper() {
+        // TODO : This depends on the attribute profile, make it dynamic!
         roleAttributeNames.add(DCEPACAttributeDefinition.GROUPS.getValue());
         roleAttributeNames.add(DCEPACAttributeDefinition.GROUP.getValue());
+        roleAttributeNames.add("groups");
     }
 
     public Set<String> getRoleAttributeNames() {

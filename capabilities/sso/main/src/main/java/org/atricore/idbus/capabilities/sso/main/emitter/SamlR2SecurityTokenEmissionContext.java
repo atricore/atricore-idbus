@@ -67,6 +67,7 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     private MetadataEntry issuerMetadata;
 
+    private String attributeProfile;
 
     public SamlR2SecurityTokenEmissionContext() {
     }
@@ -170,5 +171,13 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     public EndpointDescriptor getSpAcs() {
         return this.spAcs;
+    }
+
+    public String getAttributeProfile() {
+        return attributeProfile;
+    }
+
+    public void setAttributeProfile(String attributeProfile) {
+        this.attributeProfile = attributeProfile;
     }
 }

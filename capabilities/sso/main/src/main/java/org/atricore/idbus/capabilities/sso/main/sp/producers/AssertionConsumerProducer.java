@@ -807,7 +807,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         // Roles are multi-valued
         boolean multiValued = false;
-        if (name.equals(DCEPACAttributeDefinition.GROUPS.getValue())) {
+        // TODO : This depends on the attribute profile, make it dynamic!
+        if (name.equals(DCEPACAttributeDefinition.GROUPS.getValue()) ||
+                name.equals("groups")) {
             multiValued = true;
         }
 

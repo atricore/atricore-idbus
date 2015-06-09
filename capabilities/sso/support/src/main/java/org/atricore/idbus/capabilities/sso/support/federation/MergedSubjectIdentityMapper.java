@@ -28,8 +28,10 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
     private Set<String> roleAttributeNames = new HashSet<String>();
 
     public MergedSubjectIdentityMapper() {
+        // TODO : This depends on the attribute profile, make it dynamic!
         roleAttributeNames.add(DCEPACAttributeDefinition.GROUPS.getValue());
         roleAttributeNames.add(DCEPACAttributeDefinition.GROUP.getValue());
+        roleAttributeNames.add("groups");
     }
 
     public Set<String> getRoleAttributeNames() {
