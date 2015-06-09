@@ -1,12 +1,17 @@
 package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes;
 
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
-import org.atricore.idbus.kernel.main.authn.SSORole;
-import org.atricore.idbus.kernel.main.authn.SSOUser;
-import org.atricore.idbus.kernel.main.authn.SecurityToken;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
+import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
+import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.kernel.main.authn.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,6 +19,7 @@ import java.util.Set;
  */
 public class JOSSOAttributeProfileMapper extends BaseAttributeProfileMapper {
 
+    private static final Log logger = LogFactory.getLog(JOSSOAttributeProfileMapper.class);
 
     public JOSSOAttributeProfileMapper() {
         setType(SamlR2AttributeProfileType.JOSSO);
@@ -21,21 +27,138 @@ public class JOSSOAttributeProfileMapper extends BaseAttributeProfileMapper {
 
     @Override
     protected Collection<AttributeType> userToAttributes(SSOUser ssoUser) {
-        throw new UnsupportedOperationException("Not implemented");
+
+        List<AttributeType> attrProps = new ArrayList<AttributeType>();
+
+        AttributeType attrPrincipal = new AttributeType();
+        attrPrincipal.setName(DCEPACAttributeDefinition.PRINCIPAL.getValue());
+        attrPrincipal.setNameFormat(AttributeNameFormat.URI.getValue());
+        attrPrincipal.getAttributeValue().add(ssoUser.getName());
+
+        attrProps.add(attrPrincipal);
+
+        // This will add SSO User properties as attribute statements.
+
+        if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
+
+            // TODO : We could group some properties as multi valued attributes like, privileges!
+            for (SSONameValuePair property : ssoUser.getProperties()) {
+                AttributeType attrProp = new AttributeType();
+
+                // Only qualify property names if needed
+                if (property.getName().indexOf(':') >= 0)
+                    attrProp.setName(property.getName());
+                else
+                    attrProp.setName(SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + property.getName());
+
+                attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
+                attrProp.getAttributeValue().add(property.getValue());
+
+                attrProps.add(attrProp);
+            }
+        }
+
+        return attrProps;
+
     }
 
     @Override
     protected Collection<AttributeType> rolesToAttributes(Set<SSORole> ssoRoles) {
-        throw new UnsupportedOperationException("Not implemented");
+        // Groups
+        List<AttributeType> attrRoles = new ArrayList<AttributeType>();
+
+        AttributeType attrRole = new AttributeType();
+        // TODO : Make SAML Attribute profile configurable
+        attrRole.setName(DCEPACAttributeDefinition.GROUPS.getValue());
+        attrRole.setNameFormat(AttributeNameFormat.URI.getValue());
+        for (SSORole role : ssoRoles)
+            attrRole.getAttributeValue().add(role.getName());
+
+        attrRoles.add(attrRole);
+
+        return attrRoles;
+
+
     }
 
     @Override
     protected Collection<AttributeType> policiesToAttributes(Set<SSOPolicyEnforcementStatement> ssoPolicies) {
-        throw new UnsupportedOperationException("Not implemented");
+        // SSO Enforced policies
+        // TODO : Can we use SAML Authn context information ?!
+        List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
+
+        for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicies) {
+            AttributeType attrPolicy = new AttributeType();
+
+            attrPolicy.setFriendlyName(ssoPolicyEnforcement.getName());
+            attrPolicy.setName(ssoPolicyEnforcement.getNs() + ":" + ssoPolicyEnforcement.getName());
+            attrPolicy.setNameFormat(AttributeNameFormat.URI.getValue());
+
+            if (ssoPolicyEnforcement.getValues().size() > 0) {
+                for (Object v : ssoPolicyEnforcement.getValues())
+                    attrPolicy.getAttributeValue().add(v);
+            }
+
+            attrPolicies.add(attrPolicy);
+        }
+
+        return attrPolicies;
+
     }
 
     @Override
     protected Collection<AttributeType> tokenToAttributes(SecurityToken securityToken) {
-        throw new UnsupportedOperationException("Not implemented");
+        // Additional tokens
+        List<AttributeType> attrTokens = new ArrayList<AttributeType>();
+        if (securityToken.getSerializedContent() != null &&
+                securityToken.getNameIdentifier() != null) {
+
+            // Token Value
+            {
+                // This should be properly encoded !!
+                AttributeType attrToken = new AttributeType();
+
+                if (securityToken.getNameIdentifier() != null) {
+                    if (securityToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
+                        attrToken.setFriendlyName("OAUTH2");
+                    } else {
+                        attrToken.setFriendlyName(securityToken.getNameIdentifier());
+                    }
+
+                }
+
+                // Token by name identifier
+                attrToken.setName(securityToken.getNameIdentifier());
+                attrToken.setNameFormat(AttributeNameFormat.URI.getValue());
+                attrToken.getAttributeValue().add(securityToken.getSerializedContent());
+
+                attrTokens.add(attrToken);
+            }
+
+            // Token ID
+            {
+                AttributeType attrTokenById = new AttributeType();
+
+                if (securityToken.getNameIdentifier() != null) {
+                    if (securityToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
+                        attrTokenById.setFriendlyName("OAUTH2_ID");
+                    } else {
+                        attrTokenById.setFriendlyName(securityToken.getNameIdentifier() + "_ID");
+                    }
+                }
+
+                // Token by name identifier
+                attrTokenById.setName(securityToken.getNameIdentifier() + "_ID");
+                attrTokenById.setNameFormat(AttributeNameFormat.URI.getValue());
+                attrTokenById.getAttributeValue().add(securityToken.getId());
+
+                attrTokens.add(attrTokenById);
+            }
+        } else {
+            logger.debug("Ignoring token " + securityToken.getNameIdentifier());
+        }
+
+        return attrTokens;
+
     }
 }
