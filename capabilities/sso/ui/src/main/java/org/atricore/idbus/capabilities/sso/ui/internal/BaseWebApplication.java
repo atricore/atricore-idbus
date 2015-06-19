@@ -13,6 +13,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.settings.IRequestCycleSettings;
 import org.atricore.idbus.capabilities.sso.ui.*;
 import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
@@ -242,6 +243,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         // Resource settings
         getResourceSettings().setEncodeJSessionId(false);
 
+        // Avoid redirections on UI pages
+        getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
 
     }
 
