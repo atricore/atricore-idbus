@@ -23,6 +23,8 @@ package org.atricore.idbus.capabilities.sso.main.sp.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
@@ -45,6 +47,8 @@ import java.util.Set;
  */
 public class InitializeLogoutRequestAction extends AbstractSSOAction {
 
+    private static final Log logger = LogFactory.getLog(InitializeAuthnRequestAction.class);
+
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
 
         SPInitiatedLogoutRequestType ssoLogout = (SPInitiatedLogoutRequestType) in.getContent();
@@ -66,25 +70,31 @@ public class InitializeLogoutRequestAction extends AbstractSSOAction {
         // Subjenct NameID
         NameIDType user = new NameIDType();
 
-        Subject idpSubject = secCtx.getAccountLink().getIdpSubject();
-        Set<SubjectNameID> ids = idpSubject.getPrincipals( SubjectNameID.class );
-        if ( ids == null || ids.size() != 1 )
-            throw new IdentityMediationFault(StatusCode.TOP_REQUESTER.getValue(),
-                    StatusCode.UNKNOWN_PRINCIPAL.getValue() ,
-                    null,
-                    "Found " + (ids != null ? ids.size() : "0") + " subjecst",
-                    null);
+        // To improve SLO use-cases, subject can be considered optional:
+        if (secCtx != null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using SP security context " + secCtx.getIdpSsoSession());
+
+            Subject idpSubject = secCtx.getAccountLink().getIdpSubject();
+            Set<SubjectNameID> ids = idpSubject.getPrincipals(SubjectNameID.class);
+
+            if (ids == null || ids.size() != 1)
+                throw new IdentityMediationFault(StatusCode.TOP_REQUESTER.getValue(),
+                        StatusCode.UNKNOWN_PRINCIPAL.getValue(),
+                        null,
+                        "Found " + (ids != null ? ids.size() : "0") + " subjecst",
+                        null);
 
 
+            SubjectNameID idpSubjectNameID = ids.iterator().next();
 
-        SubjectNameID idpSubjectNameID = ids.iterator().next();
+            user.setFormat(idpSubjectNameID.getFormat());
+            user.setValue(idpSubjectNameID.getName());
+            user.setNameQualifier(idpSubjectNameID.getNameQualifier());
+            user.setSPNameQualifier(idpSubjectNameID.getLocalNameQualifier());
 
-        user.setFormat( idpSubjectNameID.getFormat() );
-        user.setValue( idpSubjectNameID.getName() );
-        user.setNameQualifier( idpSubjectNameID.getNameQualifier() );
-        user.setSPNameQualifier( idpSubjectNameID.getLocalNameQualifier() );
-
-        sloReq.setNameID( user );
-
+            sloReq.setNameID(user);
+        }
     }
 }

@@ -312,6 +312,7 @@ cleanUp() {
 cleanUpFast() {
     rm -rf $KARAF_BASE/data/activemq-idbus
     rm -rf $KARAF_BASE/data/tmp
+    mkdir -p $KARAF_BASE/data/tmp
 }
 
 

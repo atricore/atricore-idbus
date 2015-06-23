@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
-import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
@@ -47,10 +46,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
@@ -179,7 +176,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
                 if (logger.isDebugEnabled())
                     logger.debug("Selecting from " + availableIdPs.size() + " IDps" );
 
-                SelectEntityRequestType selectIdPRequest = buildSelectEntityRequest(bChannel, ssoAuthnReq, availableIdPs);
+                SelectEntityRequestType selectIdPRequest = buildSelectIdPRequest(bChannel, ssoAuthnReq, availableIdPs);
 
                 // Look up for appliance entity select endpoint for IdPs
                 String idpSelectorLocation  = mediator.getIdpSelector();
@@ -342,70 +339,6 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
         }
     }
 
-    protected CircleOfTrustMemberDescriptor resolveActualIdP(CircleOfTrustMemberDescriptor selectedIdP) {
-        // This is useful when the IdP is local, and overrides the SP channel.
-
-
-        CircleOfTrust cot = null;
-        FederatedProvider sp = null;
-        if (channel instanceof FederationChannel) {
-            FederationChannel fChannel = (FederationChannel) channel;
-            sp = fChannel.getFederatedProvider();
-            cot = fChannel.getCircleOfTrust();
-
-            if (logger.isDebugEnabled())
-                logger.debug("Resolving actual IdP from FederationChannel " + fChannel.getName());
-        } else if (channel instanceof BindingChannel) {
-            BindingChannel bChannel = (BindingChannel) channel;
-            sp = bChannel.getFederatedProvider();
-            cot = sp.getDefaultFederationService().getChannel().getCircleOfTrust();
-
-            if (logger.isDebugEnabled())
-                logger.debug("Resolving actual IdP from BindingChannel " + bChannel.getName());
-
-        }
-
-
-        IdentityProvider idp = null;
-        for (FederatedProvider provider : cot.getProviders()) {
-            for (CircleOfTrustMemberDescriptor cotDescr : provider.getMembers()) {
-                if (cotDescr.getAlias().equals(selectedIdP.getAlias())) {
-
-                    if (provider instanceof IdentityProvider) {
-                        idp = (IdentityProvider) provider;
-                        break;
-                    }
-                }
-            }
-
-            if (idp != null)
-                break;
-        }
-
-        if (idp == null) {
-            if (logger.isDebugEnabled())
-                logger.debug("Local IdP not found for COT Member " + selectedIdP);
-
-            // assume this is a remote IdP
-            return selectedIdP;
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Local IdP " + idp.getName() + " found for COT Member " + selectedIdP);
-
-
-
-        for (FederationChannel fChannel : idp.getDefaultFederationService().getOverrideChannels()) {
-            if (fChannel.getTargetProvider() != null &&
-                    fChannel.getTargetProvider().equals(sp)) {
-                return fChannel.getMember();
-            }
-        }
-
-        return idp.getDefaultFederationService().getChannel().getMember();
-
-    }
-
     protected AuthnRequestType buildAuthnRequest(CamelMediationExchange exchange,
                                                  CircleOfTrustMemberDescriptor idp,
                                                  EndpointDescriptor ed,
@@ -449,76 +382,6 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
         return (AuthnRequestType) idPlanExchange.getOut().getContent();
 
-    }
-
-
-    protected SelectEntityRequestType buildSelectEntityRequest(BindingChannel bChannel,
-                                                         SPInitiatedAuthnRequestType ssoAuthnReq,
-                                                         Collection<CircleOfTrustMemberDescriptor> availableIdPs) {
-
-        SSOSPMediator mediator = (SSOSPMediator) bChannel.getIdentityMediator();
-
-        SelectEntityRequestType selectIdPRequest = new SelectEntityRequestType();
-        selectIdPRequest.setID(uuidGenerator.generateId());
-        selectIdPRequest.setIssuer(bChannel.getFederatedProvider().getName());
-        for (IdentityMediationEndpoint ed : channel.getEndpoints()) {
-            if (ed.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
-                    ed.getType().equals(endpoint.getType())) {
-                selectIdPRequest.setReplyTo(channel.getLocation() + ed.getLocation());
-                break;
-            }
-        }
-
-        for (CircleOfTrustMemberDescriptor idp : availableIdPs) {
-
-            RequestAttributeType idpAttr = new RequestAttributeType();
-            idpAttr.setName(SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
-            idpAttr.setValue(idp.getAlias());
-
-            selectIdPRequest.getRequestAttribute().add(idpAttr);
-        }
-
-        // Send the name of the SP asking for the selection
-        RequestAttributeType spAttr = new RequestAttributeType();
-        spAttr.setName(EntitySelectorConstants.ISSUER_SP_ATTR);
-        spAttr.setValue(((BindingChannel)channel).getProvider().getName());
-
-        selectIdPRequest.getRequestAttribute().add(spAttr);
-
-        // Send the preferred IDP alias
-        RequestAttributeType preferredIdp = new RequestAttributeType();
-        preferredIdp.setName(EntitySelectorConstants.PREFERRED_IDP_ATTR);
-        preferredIdp.setValue(mediator.getPreferredIdpAlias());
-
-        selectIdPRequest.getRequestAttribute().add(preferredIdp);
-
-        if (ssoAuthnReq != null) {
-
-            // Add additional information about the environment ...
-
-            RequestAttributeType authnCtx = new RequestAttributeType();
-            authnCtx.setName(EntitySelectorConstants.AUTHN_CTX_ATTR);
-            authnCtx.setValue(ssoAuthnReq.getAuthnCtxClass());
-
-            selectIdPRequest.getRequestAttribute().add(authnCtx);
-
-            // All request attributes
-            if (ssoAuthnReq.getRequestAttribute() != null) {
-                for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
-                    RequestAttributeType a =
-                            ssoAuthnReq.getRequestAttribute().get(i);
-
-                    RequestAttributeType a1 = new RequestAttributeType();
-                    a1.setName(a.getName());
-                    a1.setValue(a.getValue());
-
-                    selectIdPRequest.getRequestAttribute().add(a1);
-
-                }
-            }
-        }
-
-        return selectIdPRequest;
     }
 
     /**
