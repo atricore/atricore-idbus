@@ -214,7 +214,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
         // Set SSO Session ID
         if (ssoSessionId != null) {
-            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), "SSOSessionID", ssoSessionId));
+            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), "idpSsoSession", ssoSessionId));
         }
 
         // User properties
