@@ -1550,19 +1550,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             nameId = nameIds.iterator().next();
             if (logger.isTraceEnabled())
                 logger.trace("Using Subject ID " + nameId.getName() + "[" + nameId.getFormat() + "] ");
-
-            /* Old logic, serched for UNSPECIFIED Subject Name ID:
-            for (SubjectNameID i : nameIds) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("Checking Subject ID " + i.getName() + "["+i.getFormat()+"] ");
-
-                // TODO : Support other name ID formats !!!
-                if (i.getFormat() == null || i.getFormat().equals(NameIDFormat.UNSPECIFIED.getValue())) {
-                    nameId = i;
-                    break;
-                }
-            } */
         }
 
         if (nameId == null) {
@@ -1570,19 +1557,14 @@ public class AssertionConsumerProducer extends SSOProducer {
             throw new SSOException("No suitable Subject Name Identifier (SubjectNameID) found");
         }
 
+        // Get authentication information from the assertion:
         String idpSessionIndex = null;
-        Collection<SubjectAuthenticationAttribute> authnAttrs = idpSubject.getPrincipals(SubjectAuthenticationAttribute.class);
-        for (SubjectAuthenticationAttribute authnAttr : authnAttrs) {
-            if (authnAttr.getName().equals(SubjectAuthenticationAttribute.Name.SESSION_INDEX.name())) {
-                idpSessionIndex = authnAttr.getValue();
-                break;
-            }
-        }
-
         AuthnCtxClass authnCtx = null;
         for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
             if (stmt instanceof AuthnStatementType) {
                 AuthnStatementType authnStmt = (AuthnStatementType) stmt;
+
+                idpSessionIndex = authnStmt.getSessionIndex();
 
                 for (JAXBElement e : authnStmt.getAuthnContext().getContent()) {
                     if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
@@ -1607,7 +1589,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
 
         try {
-            // Create new SSO Session
+            // Create new local SP SSO Session
 
             // Take session timeout from the assertion, if available.
             Calendar sessionExpiration = getSessionNotOnOrAfter(assertion);
@@ -1627,24 +1609,12 @@ public class AssertionConsumerProducer extends SSOProducer {
             // Update security context with SSO Session ID
             secCtx.setSessionIndex(ssoSessionId);
 
-            Set<SubjectAuthenticationAttribute> attrs = idpSubject.getPrincipals(SubjectAuthenticationAttribute.class);
-            String idpSsoSessionId = null;
-            for (SubjectAuthenticationAttribute attr : attrs) {
-                // Session index
-                if (attr.getName().equals(SubjectAuthenticationAttribute.Name.SESSION_INDEX.name())) {
-                    idpSsoSessionId = attr.getValue();
-                    break;
-                }
-            }
-
-            // SubjectAuthenticationAttribute.Name.SESSION_NOT_ON_OR_AFTER
-
             if (logger.isDebugEnabled())
                 logger.debug("Created SP security context " + secCtx);
 
             in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
             in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
-            in.getMessage().getState().getLocalState().addAlternativeId("idpSsoSessionId", idpSsoSessionId);
+            in.getMessage().getState().getLocalState().addAlternativeId("idpSsoSessionId", secCtx.getIdpSsoSession());
 
             if (logger.isTraceEnabled())
                 logger.trace("Stored SP Security Context in " + getProvider().getName().toUpperCase() + "_SECURITY_CTX");

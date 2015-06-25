@@ -3,12 +3,14 @@ package org.atricore.idbus.capabilities.sso.support.core.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.main.federation.AbstractPrincipal;
 import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.SubjectRole;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,6 +54,11 @@ public class ProtocolUtils {
     }
 
     public static Subject toSubject(SubjectType s) {
+        return toSubject(s, null);
+    }
+
+
+    public static Subject toSubject(SubjectType s, Collection<AbstractPrincipalType> additionalAttrs) {
 
         Set<Principal> principals = new HashSet<Principal>();
 
@@ -81,6 +88,25 @@ public class ProtocolUtils {
 
             } else {
                 logger.warn("Unknown principal type " + pt.getClass().getSimpleName());
+            }
+        }
+
+        if (additionalAttrs != null) {
+            // TODO : Should we replace old attributes or duplicate them ?
+            for (AbstractPrincipalType pt : additionalAttrs) {
+                if (pt instanceof SubjectAttributeType) {
+                    SubjectAttributeType st = (SubjectAttributeType) pt;
+                    SubjectAttribute p = new SubjectAttribute(st.getName(), st.getValue());
+                    principals.add(p);
+
+                } else if (pt instanceof SubjectRoleType) {
+                    SubjectRoleType st = (SubjectRoleType) pt;
+                    SubjectRole p = new SubjectRole(st.getName());
+                    principals.add(p);
+
+                } else {
+                    logger.warn("Unknown principal type " + pt.getClass().getSimpleName());
+                }
             }
         }
 
