@@ -115,7 +115,7 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
 
         } else {
             aa = new JossoAuthenticationAssertionImpl(response.getID(),
-                response.getSessionIndex(), toSubject(response.getSubject()));
+                response.getSessionIndex(), toSubject(response.getSubject(), response.getSubjectAttributes()));
 
             // Add an alternative identifier to local state:
 

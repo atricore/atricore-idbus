@@ -62,6 +62,7 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
         String idpAlias = null;
         String idpAliasB64 = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_IDPALIAS_VAR);
 
+        // Passive option
         boolean passive = false;
         String passiveStr = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_PASSIVE_VAR);
         if (passiveStr != null) {

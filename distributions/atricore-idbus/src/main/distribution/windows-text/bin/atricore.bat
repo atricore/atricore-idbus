@@ -220,6 +220,7 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     rmdir /S /Q %KARAF_BASE%\data\tmp\ 2> nul
     rmdir /S /Q %KARAF_BASE%\data\ehcache\ 2> nul
     rmdir /S /Q %KARAF_BASE%\data\cache\ 2> nul
+    mkdir %KARAF_BASE%\data\tmp\ 2> nul
 
 
     SET OPTS=-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true

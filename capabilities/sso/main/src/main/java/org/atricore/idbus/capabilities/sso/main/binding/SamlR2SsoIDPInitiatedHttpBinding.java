@@ -86,6 +86,11 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
             ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setSecurityToken(securityToken);
             ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX.getValue());
+
+            String rememberMe = state.getTransientVariable("remember_me");
+            if (rememberMe != null) {
+                // TODO : idpInitReq.setRememberMe(Boolean.parseBoolean(rememberMe));
+            }
         } else {
             idpInitReq = new IDPInitiatedAuthnRequestType();
         }

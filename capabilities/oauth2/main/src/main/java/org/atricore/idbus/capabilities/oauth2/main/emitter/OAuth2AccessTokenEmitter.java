@@ -70,14 +70,16 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
             Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
 
+            String ssoSessionId = null;
             List<AbstractPrincipalType> proxyPrincipals = null;
             if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
                 SamlR2SecurityTokenEmissionContext samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
                 proxyPrincipals = samlr2Ctx.getProxyPrincipals();
+                ssoSessionId = samlr2Ctx.getSessionIndex();
             }
 
             // Build an access token for the subject,
-            OAuth2AccessToken token = buildOAuth2AccessToken(subject, proxyPrincipals, requestToken);
+            OAuth2AccessToken token = buildOAuth2AccessToken(subject, proxyPrincipals, requestToken, ssoSessionId);
 
             OAuth2AccessTokenEnvelope envelope = buildOAuth2AccessTokenEnvelope(token);
 
@@ -135,7 +137,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         return new OAuth2AccessTokenEnvelope (encryptAlg, sigAlg, sigValue, tokenValue, true);
     }
 
-    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject, List<AbstractPrincipalType> proxyPrincipals, Object requestToken) {
+    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject, List<AbstractPrincipalType> proxyPrincipals, Object requestToken, String ssoSessionId) {
 
         // User
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
@@ -211,6 +213,10 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
         at.setExpiresOn(at.getTimeStamp() + expiresIn);
 
+        // Set SSO Session ID
+        if (ssoSessionId != null) {
+            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), "idpSsoSession", ssoSessionId));
+        }
 
         // User properties
         // TODO:

@@ -101,13 +101,15 @@ public class SingleLogoutProducer extends SSOProducer {
 
             if (content instanceof StatusResponseType) {
 
-                // A response to a previous Logout Request
+                // A response to a previous Logout Request issued by this SP
                 StatusResponseType samlResponse = (StatusResponseType) in.getMessage().getContent();
                 if (logger.isDebugEnabled())
                     logger.debug("Received SAML 2.0 SLO Response " + samlResponse.getID());
                 doProcessStatusResponse(exchange, samlResponse);
 
             } else if (content instanceof LogoutRequestType) {
+
+                // A logout request issued by an IdP
                 LogoutRequestType samlSloRequest = (LogoutRequestType) in.getMessage().getContent();
                 if (logger.isDebugEnabled())
                     logger.debug("Received SAML 2.0 SLO Request " + samlSloRequest.getID());

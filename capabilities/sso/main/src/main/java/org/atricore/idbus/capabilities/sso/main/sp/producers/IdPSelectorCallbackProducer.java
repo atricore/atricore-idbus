@@ -14,7 +14,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
 /**
- *
+ * Called by Entity Selector after the SP issues a Current Entity request
  */
 public class IdPSelectorCallbackProducer extends SSOProducer {
 

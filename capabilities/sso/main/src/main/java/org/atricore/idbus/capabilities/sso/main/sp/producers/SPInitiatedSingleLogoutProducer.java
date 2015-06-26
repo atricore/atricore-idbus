@@ -36,15 +36,12 @@ import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
-import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
-import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
+import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
@@ -62,6 +59,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.Set;
 
@@ -76,175 +74,163 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     public SPInitiatedSingleLogoutProducer ( AbstractCamelEndpoint<CamelMediationExchange> endpoint ) throws Exception {
-        super( endpoint );
+        super(endpoint);
     }
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws SSOException {
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        if (in.getMessage().getContent() == null || in.getMessage().getContent() instanceof SPInitiatedLogoutRequestType) {
+            doProcessSPInitiatedLogoutRequest(exchange, (SPInitiatedLogoutRequestType) in.getMessage().getContent());
+        } else if (in.getMessage().getContent() instanceof SelectEntityResponseType) {
+            doProcessSelectEntityResponse(exchange, (SelectEntityResponseType) in.getMessage().getContent());
+        } else {
+            throw new SSOException("Unknown SSO message type " + in.getMessage().getContent());
+        }
+
+
+    }
+
+    protected void doProcessSelectEntityResponse(CamelMediationExchange exchange, SelectEntityResponseType selectEntityResponse) throws SSOException {
+        try {
+
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+            // May be used later by HTTP-Redirect binding!
+            SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
+            in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+
+            SPInitiatedLogoutRequestType ssoLogoutRequest =
+                    (SPInitiatedLogoutRequestType) in.getMessage().getState().getLocalVariable(
+                            "urn:org:atricore:idbus:sso:protocol:SPInitiatedSLORequest");
+
+            String relayState = in.getMessage().getState().getLocalState().getId();
+            SelectEntityResponseType response = (SelectEntityResponseType) in.getMessage().getContent();
+            CircleOfTrustMemberDescriptor selectedIdP = getCotManager().lookupMemberById(response.getEntityId());
+
+            // Now, the COT member may be associated to a local IdP, and actually an override channel, or maybe this
+            // SP requires an override channel.
+            // We need to:
+            // 1. check if this is a local provider
+            // 2. get the proper SPChannel and MD for this SP from the local provider
+            CircleOfTrustMemberDescriptor idp = resolveActualIdP(selectedIdP);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using selected IdP " + idp.getAlias());
+
+            // Look for a security context, if any (this should be empty or invalid,
+            SPSecurityContext secCtx =
+                    (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+
+
+            sendSaml2SLORequest(exchange, secCtx, idp, ssoLogoutRequest);
+
+        } catch (IdentityPlanningException e) {
+            throw new SSOException(e);
+        }
+    }
+
+
+    protected void doProcessSPInitiatedLogoutRequest(CamelMediationExchange exchange, SPInitiatedLogoutRequestType ssoLogoutRequest) throws SSOException {
         logger.debug("Processing SP Initiated Single Logout on HTTP Redirect");
 
         try {
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-            MediationState state = in.getMessage().getState();
-
             // May be used later by HTTP-Redirect binding!
-            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+            SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
             in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            String relayState = in.getMessage().getState().getLocalState().getId();
 
+            // Look for a security context, if any
             SPSecurityContext secCtx =
                     (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
+            CircleOfTrustMemberDescriptor idp = null;
+
+            // If there is no security context, we select an IdP and issue the SLO
             if (secCtx == null || secCtx.getSessionIndex() == null) {
-                // No SSO Session found SLO Request
-                // Go back to partner application
 
-                SSOResponseType ssoResponse = new SSOResponseType();
-                ssoResponse.setID(uuidGenerator.generateId());
-                ssoResponse.setIssuer(getProvider().getName());
-                String destinationLocation = ((SSOSPMediator) channel.getIdentityMediator()).getSpBindingSLO();
+                // ------------------------------------------------------
+                // Resolve IDP configuration!
+                // ------------------------------------------------------
+                BindingChannel bChannel = (BindingChannel) channel;
+                Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(bChannel.getFederatedProvider(),
+                        SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
 
-                EndpointDescriptor destination =
-                        new EndpointDescriptorImpl("EmbeddedSPAcs",
-                                "SingleLogoutService",
-                                SSOBinding.SSO_ARTIFACT.getValue(),
-                                destinationLocation, null);
+                // Do we have to select an IdP ?
+                if (availableIdPs.size() == 1) {
 
-                logger.debug("Sending JOSSO SLO Response to " + destination);
+                    idp = availableIdPs.iterator().next();
 
-                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-                out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
-                        ssoResponse, "SPLogoutResponse", null, destination, in.getMessage().getState()));
+                    if (logger.isDebugEnabled())
+                        logger.debug("Starting SP Initiated SLO without Session ");
 
-                exchange.setOut(out);
-                return;
+                    if (logger.isTraceEnabled())
+                        logger.trace("Starting SP Initiated SLO without SP Security Context ");
 
+                } else {
+                    // Trigger IdP selection
+                    SelectEntityRequestType selectIdPRequest = buildSelectIdPRequest(bChannel, ssoLogoutRequest, availableIdPs);
+
+                    // Look up for appliance entity select endpoint for IdPs
+                    String idpSelectorLocation  = mediator.getIdpSelector();
+
+                    EndpointDescriptor ed = new EndpointDescriptorImpl(
+                            "IDPSelectorEndpoint",
+                            "EntitySelector",
+                            SSOBinding.SSO_ARTIFACT.toString(),
+                            idpSelectorLocation,
+                            null);
+
+                    if (ssoLogoutRequest != null)
+                        in.getMessage().getState().setLocalVariable(
+                                "urn:org:atricore:idbus:sso:protocol:SPInitiatedSLORequest", ssoLogoutRequest);
+                    else
+                        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedSLORequest");
+
+                    // Send SAMLR2 Message back
+                    CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+                    out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                            selectIdPRequest,
+                            "SelectEntityRequest",
+                            relayState,
+                            ed,
+                            in.getMessage().getState()));
+
+                    // Send request
+                    exchange.setOut(out);
+
+                    return;
+                }
+
+
+            } else {
+                if (logger.isDebugEnabled())
+                    logger.debug("Starting SP Initiated SLO for SP session " +
+                            (secCtx != null ? secCtx.getSessionIndex() : "<NULL>"));
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Starting SP Initiated SLO with SP Security Context " + secCtx);
+
+                idp = resolveIdp(exchange, secCtx.getIdpAlias());
             }
 
-            if (logger.isDebugEnabled())
-                logger.debug("Starting SP Initiated SLO for SP session " +
-                        (secCtx != null ? secCtx.getSessionIndex() : "<NULL>"));
 
-            if (logger.isTraceEnabled())
-                logger.trace("Starting SP Initiated SLO with SP Security Context " + secCtx);
-
-            CircleOfTrustMemberDescriptor idp = resolveIdp(exchange, secCtx.getIdpAlias());
             if (idp == null) {
                 throw new SSOException("No IdP descriptor found for " + secCtx.getIdpAlias());
             }
 
-            logger.debug("Using IDP " + idp.getAlias());
+            if (logger.isDebugEnabled())
+                logger.debug("Using default/known IdP " + idp.getAlias());
 
-            IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
-            logger.debug("Using IDP Channel " + idpChannel.getName());
-
-            // Look for SPInitiatedLogoutRequest and store it for future use
-            SPInitiatedLogoutRequestType ssoLogoutRequest = (SPInitiatedLogoutRequestType) in.getMessage().getContent();
-            in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedLogoutRequest", ssoLogoutRequest);
-
-            // ------------------------------------------------------
-            // Send SLO Request to IdP
-            // ------------------------------------------------------
-            SSOBinding binding = SSOBinding.asEnum(SSOBinding.SAMLR2_REDIRECT.getValue());
-
-            // Select endpoint, must be a SingleSingOnService endpoint
-            EndpointType idpSsoEndpoint = resolveIdpSloEndpoint(idp, true);
-
-            if (idpSsoEndpoint == null) {
-                if (logger.isDebugEnabled())
-                    logger.debug("IdP does not support SLO : " + idp.getAlias() + ", performing SP logout");
-
-                destroySPSecurityContext(exchange, secCtx);
-
-                SSOResponseType ssoResponse = new SSOResponseType();
-                ssoResponse.setID(uuidGenerator.generateId());
-                ssoResponse.setIssuer(getProvider().getName());
-                String destinationLocation = ((SSOSPMediator) channel.getIdentityMediator()).getSpBindingSLO();
-
-                EndpointDescriptor destination =
-                        new EndpointDescriptorImpl("EmbeddedSPAcs",
-                                "SingleLogoutService",
-                                SSOBinding.SSO_ARTIFACT.getValue(),
-                                destinationLocation, null);
-
-                logger.debug("Sending JOSSO SLO Response to " + destination);
-
-                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-                out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
-                        ssoResponse, "SPLogoutResponse", null, destination, in.getMessage().getState()));
-
-                exchange.setOut(out);
-                return;
-
-
-            }
-
-            EndpointDescriptor ed = new EndpointDescriptorImpl(
-                    "IDPSLOEndpoint",
-                    "SingleLogoutService",
-                    idpSsoEndpoint.getBinding(),
-                    idpSsoEndpoint.getLocation(),
-                    idpSsoEndpoint.getResponseLocation());
-
-            LogoutRequestType sloRequest = buildSLORequest(exchange, idp, idpChannel, ed, secCtx);
-
-            Properties auditProps = new Properties();
-            auditProps.put("idpAlias", secCtx.getIdpAlias());
-            auditProps.put("idpSession", secCtx.getIdpSsoSession());
-
-            Set<SubjectNameID> principals = secCtx.getSubject().getPrincipals(SubjectNameID.class);
-            SubjectNameID principal = null;
-            if (principals.size() == 1) {
-                principal = principals.iterator().next();
-            }
-
-            recordInfoAuditTrail("SP-SLO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
-
-            if (binding.isFrontChannel()) {
-
-                // Send the IDP SLO Request to the browser for delivery.
-                in.getMessage().getState().setLocalVariable(SAMLR2Constants.SAML_PROTOCOL_NS + ":LogoutRequest",  sloRequest);
-
-                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-                out.setMessage(new MediationMessageImpl(sloRequest.getID(),
-                        sloRequest, "LogoutRequest", state.getLocalState().getId(), ed, in.getMessage().getState()));
-
-                exchange.setOut(out);
-
-            } else {
-
-
-                destroySPSecurityContext(exchange, secCtx);
-
-                EndpointDescriptor destination =
-                        new EndpointDescriptorImpl("EmbeddedSPAcs",
-                                "SingleLogoutService",
-                                endpoint.getBinding(),
-                                null, null);
-
-                try {
-                    channel.getIdentityMediator().sendMessage(sloRequest, destination, channel);
-                    // TODO : Verify IDP Response!
-                } catch (IdentityMediationException e) {
-                    throw new SSOException("Can't logout from IDP:" + e);
-                }
-
-
-                SSOResponseType ssoResponse = new SSOResponseType();
-                ssoResponse.setID(uuidGenerator.generateId());
-                ssoResponse.setInReplayTo(sloRequest.getID());
-                ssoResponse.setIssuer(getProvider().getName());
-
-                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-                out.setMessage(new MediationMessageImpl(sloRequest.getID(),
-                        ssoResponse, "SSOResponseType", null, destination, in.getMessage().getState()));
-
-                exchange.setOut(out);
-
-
-            }
+            sendSaml2SLORequest(exchange, secCtx, idp, ssoLogoutRequest);
 
         } catch (IdentityPlanningException e) {
+            throw new SSOException(e);
+        } catch (CircleOfTrustManagerException e) {
             throw new SSOException(e);
         }
     }
@@ -252,7 +238,9 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
     protected LogoutRequestType buildSLORequest(CamelMediationExchange exchange,
                                                 CircleOfTrustMemberDescriptor idp,
                                                 IdPChannel idpChannel,
-                                                EndpointDescriptor ed, SPSecurityContext secCtx) throws IdentityPlanningException, SSOException {
+                                                EndpointDescriptor ed,
+                                                SPSecurityContext secCtx,
+                                                SPInitiatedLogoutRequestType ssoLogoutRequest) throws IdentityPlanningException, SSOException {
 
         CamelMediationMessage samlIn = (CamelMediationMessage) exchange.getIn();
 
@@ -266,11 +254,11 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, idpChannel);
 
         // Get SPInitiated authn request, if any!
-        SPInitiatedLogoutRequestType ssoLogoutRequest = (SPInitiatedLogoutRequestType) samlIn.getMessage().getContent();
+
 
         // Create in/out artifacts
         IdentityArtifact in =
-            new IdentityArtifactImpl(new QName("urn:org:atricore:idbus:sso:protocol", "SPInitiatedAuthnRequest"), ssoLogoutRequest);
+            new IdentityArtifactImpl(new QName("urn:org:atricore:idbus:sso:protocol", "SPInitiatedLogoutRequest"), ssoLogoutRequest);
         idPlanExchange.setIn(in);
 
         IdentityArtifact<LogoutRequestType> out =
@@ -318,9 +306,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                     idpChannel = fChannel;
                     break;
                 }
-
             }
-
         }
 
         return idpChannel;
@@ -409,6 +395,9 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
     protected void destroySPSecurityContext(CamelMediationExchange exchange,
                                             SPSecurityContext secCtx) throws SSOException {
 
+        if (secCtx == null)
+            return;
+
         CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
         SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
@@ -426,6 +415,133 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
     }
 
+    protected void sendSaml2SLORequest(CamelMediationExchange exchange,
+                                       SPSecurityContext secCtx,
+                                       CircleOfTrustMemberDescriptor idp,
+                                       SPInitiatedLogoutRequestType ssoLogoutRequest) throws SSOException, IdentityPlanningException {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
+
+        logger.debug("Using IDP " + idp.getAlias());
+        IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
+
+        logger.debug("Using IDP Channel " + idpChannel.getName());
+
+        // Look for SPInitiatedLogoutRequest and store it for future use
+
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedLogoutRequest", ssoLogoutRequest);
+
+        // ------------------------------------------------------
+        // Send SLO Request to IdP
+        // ------------------------------------------------------
+        SSOBinding binding = SSOBinding.asEnum(SSOBinding.SAMLR2_REDIRECT.getValue());
+
+        // Select endpoint, must be a SingleSingOnService endpoint
+        EndpointType idpSsoEndpoint = resolveIdpSloEndpoint(idp, true);
+        if (idpSsoEndpoint == null) {
+            if (logger.isDebugEnabled())
+                logger.debug("IdP does not support SLO : " + idp.getAlias() + ", performing SP logout");
+
+            destroySPSecurityContext(exchange, secCtx);
+            sendSPInitiatedSSOResponse(exchange);
+            return;
+        }
+
+        EndpointDescriptor ed = new EndpointDescriptorImpl(
+                "IDPSLOEndpoint",
+                "SingleLogoutService",
+                idpSsoEndpoint.getBinding(),
+                idpSsoEndpoint.getLocation(),
+                idpSsoEndpoint.getResponseLocation());
+
+        LogoutRequestType sloRequest = buildSLORequest(exchange, idp, idpChannel, ed, secCtx, ssoLogoutRequest);
+
+        Properties auditProps = new Properties();
+        auditProps.put("idpAlias", idp.getAlias());
+        auditProps.put("idpSession", secCtx != null ? secCtx.getIdpSsoSession() : "N/A");
+
+        SubjectNameID principal = null;
+        if (secCtx != null) {
+            Set<SubjectNameID> principals = secCtx != null ? secCtx.getSubject().getPrincipals(SubjectNameID.class) : null;
+            if (principals.size() == 1) {
+                principal = principals.iterator().next();
+            } else {
+                // ?!
+            }
+        }
+        recordInfoAuditTrail("SP-SLO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+
+        if (binding.isFrontChannel()) {
+
+            // Send the IDP SLO Request to the browser for delivery.
+            in.getMessage().getState().setLocalVariable(SAMLR2Constants.SAML_PROTOCOL_NS + ":LogoutRequest",  sloRequest);
+
+            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+            out.setMessage(new MediationMessageImpl(sloRequest.getID(),
+                    sloRequest, "LogoutRequest", state.getLocalState().getId(), ed, in.getMessage().getState()));
+
+            exchange.setOut(out);
+
+        } else {
+
+            destroySPSecurityContext(exchange, secCtx);
+
+            EndpointDescriptor destination =
+                    new EndpointDescriptorImpl("EmbeddedSPAcs",
+                            "SingleLogoutService",
+                            endpoint.getBinding(),
+                            null, null);
+
+            try {
+                channel.getIdentityMediator().sendMessage(sloRequest, destination, channel);
+                // TODO : Verify IDP Response!
+            } catch (IdentityMediationException e) {
+                throw new SSOException("Can't logout from IDP:" + e);
+            }
+
+
+            SSOResponseType ssoResponse = new SSOResponseType();
+            ssoResponse.setID(uuidGenerator.generateId());
+            ssoResponse.setInReplayTo(sloRequest.getID());
+            ssoResponse.setIssuer(getProvider().getName());
+
+            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+            out.setMessage(new MediationMessageImpl(sloRequest.getID(),
+                    ssoResponse, "SSOResponseType", null, destination, in.getMessage().getState()));
+
+            exchange.setOut(out);
+
+
+        }
+    }
+
+    /**
+     *
+     */
+    protected void sendSPInitiatedSSOResponse(CamelMediationExchange exchange) {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        SSOResponseType ssoResponse = new SSOResponseType();
+        ssoResponse.setID(uuidGenerator.generateId());
+        ssoResponse.setIssuer(getProvider().getName());
+        String destinationLocation = ((SSOSPMediator) channel.getIdentityMediator()).getSpBindingSLO();
+
+        EndpointDescriptor destination =
+                new EndpointDescriptorImpl("EmbeddedSPAcs",
+                        "SingleLogoutService",
+                        SSOBinding.SSO_ARTIFACT.getValue(),
+                        destinationLocation, null);
+
+        logger.debug("Sending JOSSO SLO Response to " + destination);
+
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
+                ssoResponse, "SPLogoutResponse", null, destination, in.getMessage().getState()));
+
+        exchange.setOut(out);
+    }
 
 
 }
