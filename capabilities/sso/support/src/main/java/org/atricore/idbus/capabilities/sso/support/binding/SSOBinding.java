@@ -48,6 +48,10 @@ public enum SSOBinding {
     /** Non-normative, only useful between local providers, for perfomrance issues */
     SAMLR2_LOCAL("urn:oasis:names:tc:SAML:2.0:bindings:LOCAL", false),
 
+    /** Non-normative, only useful to receive SAML 2 MD Requests */
+    SAMLR2_MD("urn:oasis:names:tc:SAML:2.0:bindings:MD", true),
+
+
     // Extended SAMLR2 Bindings, because SAMLR2 is a core capability, we call this extensions IDBUS
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/

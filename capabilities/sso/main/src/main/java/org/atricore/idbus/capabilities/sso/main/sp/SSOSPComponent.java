@@ -27,6 +27,7 @@ import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.endpoints.ArtifactResolutionEndpoint;
+import org.atricore.idbus.capabilities.sso.main.common.endpoints.MetadataEndpoint;
 import org.atricore.idbus.capabilities.sso.main.sp.endpoints.*;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -97,6 +98,9 @@ public class SSOSPComponent extends DefaultComponent {
                 break;
             case IdPSelectorCallbackService:
                 endpoint = new IdPSelectorCallbackEndpoint(uri, this, parameters);
+                break;
+            case MetadataService:
+                endpoint = new MetadataEndpoint(uri, this, parameters);
                 break;
 
             default:

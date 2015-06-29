@@ -23,6 +23,7 @@ package org.atricore.idbus.capabilities.sso.support.core.util;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.codec.binary.Base64;
@@ -96,6 +97,28 @@ public class XmlUtils {
     //  -----------------------------------------------------------
     // JAXBUtils
     //  -----------------------------------------------------------
+
+    // SAML 2.0 MD
+
+    public static String masrhalSamlR2Metadata(EntityDescriptorType metadata, boolean encode) throws Exception {
+        String type = metadata.getClass().getSimpleName();
+        if (type.endsWith("Type"))
+            type = type.substring(0, type.length() - 4);
+
+        return masrhalSamlR2Metadata(metadata, type, encode);
+    }
+
+    public static String masrhalSamlR2Metadata(EntityDescriptorType metadata, String metadataType, boolean encode) throws Exception {
+
+        String marshaledMd;
+        marshaledMd = marshalSamlR2(
+                metadata,
+                SAMLR2Constants.SAML_METADATA_NS,
+                metadataType
+        );
+
+        return encode ? new String(new Base64().encode(marshaledMd.getBytes())) : marshaledMd;
+    }
 
     // SAML 2.0 Request
 
@@ -179,7 +202,7 @@ public class XmlUtils {
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
-            return (RequestAbstractType)((JAXBElement) o).getValue();
+            return (RequestAbstractType) ((JAXBElement) o).getValue();
 
         return (RequestAbstractType) o;
     }
@@ -280,9 +303,9 @@ public class XmlUtils {
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
-            return (StatusResponseType)((JAXBElement) o).getValue();
+            return (StatusResponseType) ((JAXBElement) o).getValue();
 
-        return (StatusResponseType)o;
+        return (StatusResponseType) o;
     }
 
     public static StatusResponseType unmarshalSamlR2Response(String base64Response) throws Exception {
@@ -328,9 +351,9 @@ public class XmlUtils {
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
-            return (SSORequestAbstractType)((JAXBElement) o).getValue();
+            return (SSORequestAbstractType) ((JAXBElement) o).getValue();
 
-        return (SSORequestAbstractType)o;
+        return (SSORequestAbstractType) o;
     }
 
 
@@ -378,9 +401,9 @@ public class XmlUtils {
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
         if (o instanceof JAXBElement)
-            return (SSOResponseType)((JAXBElement) o).getValue();
+            return (SSOResponseType) ((JAXBElement) o).getValue();
 
-        return (SSOResponseType)o;
+        return (SSOResponseType) o;
     }
 
     public static StatusResponseType unmarshalSSOResponse(String base64Response) throws Exception {
@@ -460,7 +483,7 @@ public class XmlUtils {
 
                     @Override
                     public String[] getPreDeclaredNamespaceUris() {
-                        return new String[] {
+                        return new String[]{
                                 SAMLR2Constants.SAML_PROTOCOL_NS,
                                 SAMLR2Constants.SAML_ASSERTION_NS,
                                 "http://www.w3.org/2000/09/xmldsig#",
@@ -496,9 +519,9 @@ public class XmlUtils {
     }
 
     public static String marshal(Object msg,
-                                       final String msgQName,
-                                       final String msgLocalName,
-                                       String[] userPackages) throws Exception {
+                                 final String msgQName,
+                                 final String msgLocalName,
+                                 String[] userPackages) throws Exception {
 
 
         TreeSet<String> contextPackages = new TreeSet<String>();

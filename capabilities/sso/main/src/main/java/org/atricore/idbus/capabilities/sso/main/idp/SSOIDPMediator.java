@@ -84,6 +84,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
                     switch (binding) {
                         // http endpoints
+                        case SAMLR2_MD:
                         case SAMLR2_ARTIFACT:
                         case SAMLR11_ARTIFACT:
                         case SAMLR2_POST:

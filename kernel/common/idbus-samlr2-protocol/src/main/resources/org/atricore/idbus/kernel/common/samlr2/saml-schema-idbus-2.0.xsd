@@ -33,6 +33,12 @@
 
     <import namespace="urn:oasis:names:tc:SAML:2.0:protocol"
             schemaLocation="saml-schema-protocol-2.0.xsd"/>
+
+    <element name="MetadataRequest" type="samli:MetadataRequestType"/>
+    <complexType name="MetadataRequestType">
+
+    </complexType>
+
     <element name="SecTokenAuthnRequest" type="samli:SecTokenAuthnRequestType"/>
     <complexType name="SecTokenAuthnRequestType">
         <complexContent>
