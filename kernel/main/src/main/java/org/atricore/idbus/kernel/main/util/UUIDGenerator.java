@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Use org.atricore.idbus.uuid.jdk system property to enable built-in JDK UUIDs
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: UUIDGenerator.java 1305 2009-06-18 14:19:47Z sgonzalez $
@@ -36,25 +37,36 @@ public class UUIDGenerator extends AbstractIdGenerator {
     private int artifactLength = 8;
 
     /**
-     * Generate and return an artifact
+     * Generates a string identifier
      */
     public synchronized String generateId() {
         if (System.getProperty("org.atricore.idbus.uuid.jdk") != null) {
             return jdkUUID();
         }
 
-        return legacyUUID();
+        return legacyUUID(this.artifactLength);
     }
 
-    protected String jdkUUID() {
+    /**
+     * Generates a long identifier
+     */
+    public synchronized long generateLongId() {
+        return Long.parseLong(legacyUUID(4).substring(2), 16);
+    }
 
+    /**
+     * Generates UUIDs using JDK's built-in implementation
+     */
+    protected String jdkUUID() {
         return "id-" + java.util.UUID.randomUUID().toString();
     }
 
-    protected String legacyUUID() {
+    /**
+     * Generates HEX identifier, twice as long as artifactLength
+     */
+    protected String legacyUUID(int artifactLength) {
 
-
-        byte random[] = new byte[16];
+        byte random[] = new byte[artifactLength * 2];
 
         // Render the result as a String of hexadecimal digits
         StringBuffer result = new StringBuffer();
@@ -79,8 +91,6 @@ public class UUIDGenerator extends AbstractIdGenerator {
             }
         }
         return ("id" + result.toString());
-
-
     }
 
 }

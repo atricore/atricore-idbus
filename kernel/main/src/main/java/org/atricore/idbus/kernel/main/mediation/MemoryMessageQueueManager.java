@@ -2,6 +2,7 @@ package org.atricore.idbus.kernel.main.mediation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.util.IdGenerator;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.jms.ConnectionFactory;
@@ -17,7 +18,7 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
 
     private static final Log logger = LogFactory.getLog(MemoryMessageQueueManager.class);
 
-    private UUIDGenerator uuidGenerator = new UUIDGenerator();
+    private IdGenerator idGenerator = new ArtifactGeneratorImpl();
 
     private int artifactTTL = 600; // seconds
 
@@ -89,7 +90,7 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
     }
 
     public synchronized Artifact pushMessage(Object msg) throws Exception {
-        Artifact a = ArtifactImpl.newInstance(uuidGenerator.generateId());
+        Artifact a = ArtifactImpl.newInstance(idGenerator.generateId());
         msgs.put(a.getContent(), new Message(a, msg));
         return a;
     }
@@ -192,4 +193,11 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
         }
     }
 
+    public IdGenerator getIdGenerator() {
+        return idGenerator;
+    }
+
+    public void setIdGenerator(IdGenerator idGenerator) {
+        this.idGenerator = idGenerator;
+    }
 }

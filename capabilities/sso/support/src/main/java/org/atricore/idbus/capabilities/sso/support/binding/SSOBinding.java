@@ -28,74 +28,77 @@ package org.atricore.idbus.capabilities.sso.support.binding;
 public enum SSOBinding {
     
     /** URI for SAML 2 Artifact binding. [SAMLBinding 3.6]*/
-    SAMLR2_ARTIFACT("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact", true),
+    SAMLR2_ARTIFACT("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact", true, true),
     
     /** URI for SAML 2 POST binding. [SAMLBinding 3.5]*/
-    SAMLR2_POST("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", true),
+    SAMLR2_POST("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", true, true),
     
     /** URI for SAML 2 HTTP redirect binding. [SAMLBinding 3.4]*/
-    SAMLR2_REDIRECT("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect", true),
+    SAMLR2_REDIRECT("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect", true, true),
     
     /** URI for SAML 2 SOAP binding. [SAMLBinding 3.2]*/
-    SAMLR2_SOAP("urn:oasis:names:tc:SAML:2.0:bindings:SOAP", false),
+    SAMLR2_SOAP("urn:oasis:names:tc:SAML:2.0:bindings:SOAP", false, true),
 
     /** URI for SAML2 Reverse SOAP (PAOS) binding [SAMLBinding 3.3]*/
-    SAMLR2_PAOS("urn:oasis:names:tc:SAML:2.0:bindings:PAOS", false),
+    SAMLR2_PAOS("urn:oasis:names:tc:SAML:2.0:bindings:PAOS", false, true),
 
     /** URI for SAML2 URI Binding (not really a binding) [SAMLBinding 3.7] */
-    SAMLR2_URI("urn:oasis:names:tc:SAML:2.0:bindings:URI", false),
+    SAMLR2_URI("urn:oasis:names:tc:SAML:2.0:bindings:URI", false, true),
 
     /** Non-normative, only useful between local providers, for perfomrance issues */
-    SAMLR2_LOCAL("urn:oasis:names:tc:SAML:2.0:bindings:LOCAL", false),
+    SAMLR2_LOCAL("urn:oasis:names:tc:SAML:2.0:bindings:LOCAL", false, false),
 
     /** Non-normative, only useful to receive SAML 2 MD Requests */
-    SAMLR2_MD("urn:oasis:names:tc:SAML:2.0:bindings:MD", true),
+    SAMLR2_MD("urn:oasis:names:tc:SAML:2.0:bindings:MD", true, false),
 
 
     // Extended SAMLR2 Bindings, because SAMLR2 is a core capability, we call this extensions IDBUS
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
-    SSO_ARTIFACT("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact", true),
+    SSO_ARTIFACT("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact", true, false),
 
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
-    SSO_REDIRECT("urn:org:atricore:idbus:sso:bindings:HTTP-Redirect", true),
+    SSO_REDIRECT("urn:org:atricore:idbus:sso:bindings:HTTP-Redirect", true, false),
 
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
-    SSO_POST("urn:org:atricore:idbus:sso:bindings:HTTP-POST", true),
+    SSO_POST("urn:org:atricore:idbus:sso:bindings:HTTP-POST", true, false),
 
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
-    AJAX_POST("urn:org:atricore:idbus:sso:bindings:AJAX-POST", true),
+    AJAX_POST("urn:org:atricore:idbus:sso:bindings:AJAX-POST", true, false),
 
 
     /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
-    SSO_SOAP("urn:org:atricore:idbus:sso:bindings:SOAP", false),
+    SSO_SOAP("urn:org:atricore:idbus:sso:bindings:SOAP", false, false),
 
     /** URI for IDBUS LOCAL binding, this is NOT SAML Normative */
-    SSO_LOCAL("urn:org:atricore:idbus:sso:bindings:LOCAL", false),
+    SSO_LOCAL("urn:org:atricore:idbus:sso:bindings:LOCAL", false, false),
 
     /** URI for SAML 2.0 IdP initiated bindings */
-    SSO_IDP_INITIATED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http", true),
+    SSO_IDP_INITIATED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http", true, false),
 
     /** URI for SAML 2.0 IdP initiated bindings */
-    SSO_PREAUTHN("urn:org:atricore:idbus:sso:bindings:HTTP-PreAuthn", true),
+    SSO_PREAUTHN("urn:org:atricore:idbus:sso:bindings:HTTP-PreAuthn", true, false),
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
-    SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.0:bindings:HTTP-Artifact", true),
+    SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.0:bindings:HTTP-Artifact", true, false),
 
     /** URI for SAML 2 SOAP binding. [SAMLBinding 3.2]*/
-    SAMLR11_SOAP("urn:oasis:names:tc:SAML:1.1:bindings:SOAP", false),
+    SAMLR11_SOAP("urn:oasis:names:tc:SAML:1.1:bindings:SOAP", false, true),
 
     /** URI for SAML 1.1 IdP initiated endpoints */
-    SSO_IDP_INITIATED_SSO_HTTP_SAML11("urn:org:atricore:idbus:sso:bindings:SAML:1:1:IDP-Initiated-SSO-http", true),
+    SSO_IDP_INITIATED_SSO_HTTP_SAML11("urn:org:atricore:idbus:sso:bindings:SAML:1:1:IDP-Initiated-SSO-http", true, false),
 
     ;
 
     private String binding;
     boolean frontChannel;
 
-    SSOBinding(String binding, boolean frontChannel) {
+    boolean normative;
+
+    SSOBinding(String binding, boolean frontChannel, boolean normative) {
         this.binding = binding;
         this.frontChannel = frontChannel;
+        this.normative = normative;
     }
 
     public String getValue() {
@@ -109,6 +112,10 @@ public enum SSOBinding {
 
     public boolean isFrontChannel() {
         return frontChannel;
+    }
+
+    public boolean isNormative() {
+        return normative;
     }
 
     public static SSOBinding asEnum(String binding) {

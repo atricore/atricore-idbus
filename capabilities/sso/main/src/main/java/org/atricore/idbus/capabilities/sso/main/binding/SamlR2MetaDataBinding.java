@@ -82,7 +82,7 @@ public class SamlR2MetaDataBinding extends AbstractMediationHttpBinding {
             MetadataEntry md = (MetadataEntry) out.getContent();
             EntityDescriptorType saml2Md = (EntityDescriptorType) md.getEntry();
 
-            String xmlMd = XmlUtils.masrhalSamlR2Metadata(saml2Md, false);
+            String xmlMd = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + XmlUtils.masrhalSamlR2Metadata(saml2Md, false);
 
             ByteArrayInputStream baos = new ByteArrayInputStream(xmlMd.getBytes());
             httpOut.setBody(baos);
