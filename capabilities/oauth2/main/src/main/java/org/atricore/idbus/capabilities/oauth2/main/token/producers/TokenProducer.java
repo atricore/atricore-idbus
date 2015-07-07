@@ -36,6 +36,9 @@ import javax.xml.namespace.QName;
 import java.math.BigInteger;
 
 /**
+ * This emits an access, using a previously requested authorization token.
+ * In this case, the authorization token can also be user credentials.
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange> {
@@ -54,8 +57,6 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         AccessTokenRequestType atReq = (AccessTokenRequestType) in.getMessage().getContent();
 
         // We are acting as OAUTH 2.0 Authorization server, we consider it an IDP role.
-
-        // TODO : Use identity planning
         AccessTokenResponseType atRes = new AccessTokenResponseType();
 
         // ---------------------------------------------------------
@@ -72,6 +73,8 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
                 throw new OAuth2ServerException(ErrorCodeType.UNAUTHORIZED_CLIENT, "Invalid clientId/clientSecret");
             }
 
+            // TODO : Determine if we have user credentials, or an authorization token
+
             // Authenticate the client, unless an error has occurred.
             authenticateRequest(client, atReq, atRes);
 
@@ -83,6 +86,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
 
             // TODO : Support : EMIT ACCESS TOKEN From AUTHORIZATION TOKEN
+            // TODO : Support JWT (OpenID Connect)
             emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
 
             // Call STS and wait for OAuth AccessToken
@@ -169,7 +173,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
 
-        // Recover emission context, to retrive Subject information
+        // Recover emission context, to retrieve Subject information
         accessAccessTokenEmissionCtx = (OAuth2SecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
 
         /// Obtain assertion from STS Response

@@ -81,6 +81,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
     private HttpClient httpClient;
 
+    private int connectionTimeoutMillis = 5000; // Five seconds
+    private int socketTimeoutMillis = 300000; // Five minutes
+
+
     public OsgiIDBusServlet2() {
         super();
     }
@@ -103,6 +107,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             secureCookies = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.secureCookies", "false"));
             followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "true"));
             reuseHttpClient = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.reuseHttpClient", "false"));
+
+            socketTimeoutMillis = Integer.parseInt(kernelConfig.getProperty("binding.http.socketTimeoutMillis", "300000"));
+            connectionTimeoutMillis = Integer.parseInt(kernelConfig.getProperty("binding.http.connectionTimeoutMillis", "5000"));
+
             localTargetBaseUrl = kernelConfig.getProperty("binding.http.localTargetBaseUrl");
 
             logger.info("Following Redirects internally : " + followRedirects);
@@ -566,9 +574,6 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         // Configure client, disable following redirects, we want to be in control of redirecting
         newHttpClient.getParams().setParameter(ClientPNames.HANDLE_REDIRECTS, false);
         newHttpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-
-        int connectionTimeoutMillis = 5000;
-        int socketTimeoutMillis = 30000;
 
         HttpConnectionParams.setConnectionTimeout(newHttpClient.getParams(), connectionTimeoutMillis);
         HttpConnectionParams.setSoTimeout(newHttpClient.getParams(), socketTimeoutMillis);

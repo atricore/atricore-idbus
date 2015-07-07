@@ -29,9 +29,7 @@ import java.util.List;
 
 /**
  * Receives an OAuth2 authorization code and requests the proper access token (back-channel)
- * Then an authn response is sent to the IdP proxy party
- *
- * Created by sgonzalez on 3/12/14.
+ * Then an authentication response is sent to the IdP proxy party
  */
 public abstract class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
 
