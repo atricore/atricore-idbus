@@ -172,6 +172,8 @@ public class LDAPIdentityStore extends AbstractStore  {
     private String _ldapSearchScope;
     private String _updateableCredentialAttribute;
 
+    private String _referrals = "follow";
+
     // ----------------------------------------------------- Constructors
 
     public LDAPIdentityStore(){}
@@ -799,7 +801,7 @@ public class LDAPIdentityStore extends AbstractStore  {
             env.put(Context.SECURITY_CREDENTIALS, securityCredential);
 
         // always follow referrals transparently
-        env.put(Context.REFERRAL, "follow");
+        env.put(Context.REFERRAL, _referrals);
 
         // Logon into LDAP server
         if (logger.isDebugEnabled())
@@ -1015,5 +1017,13 @@ public class LDAPIdentityStore extends AbstractStore  {
 
     public void setUpdateableCredentialAttribute ( String updateableCredentialAttribute ) {
         this._updateableCredentialAttribute = updateableCredentialAttribute;
+    }
+
+    public String getReferrals() {
+        return _referrals;
+    }
+
+    public void setReferrals(String referrals) {
+        this._referrals = referrals;
     }
 }
