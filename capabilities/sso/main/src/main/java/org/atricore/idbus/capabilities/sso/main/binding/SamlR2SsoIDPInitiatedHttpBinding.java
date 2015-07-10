@@ -89,7 +89,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
 
             String rememberMe = state.getTransientVariable("remember_me");
             if (rememberMe != null) {
-                // TODO : idpInitReq.setRememberMe(Boolean.parseBoolean(rememberMe));
+                ((PreAuthenticatedIDPInitiatedAuthnRequestType) idpInitReq).setRememberMe(Boolean.parseBoolean(rememberMe));
             }
         } else {
             idpInitReq = new IDPInitiatedAuthnRequestType();
@@ -128,7 +128,7 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         if (passive != null) {
             idpInitReq.setPassive(Boolean.parseBoolean(passive));
         }
-       
+
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
                         idpInitReq,
                         null,
