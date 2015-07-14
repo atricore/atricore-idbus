@@ -41,10 +41,10 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     private Random randomGenerator = new Random();
 
-    // Default to 30 days
+    // Default to 30 days (in minutes)
     private long rememberMeTokenValidityMins = 60L * 24L * 30L;
 
-    // Default to 10 minutes
+    // Default to 10 minutes (in seconds)
     private long tokenValiditySecs = 60L * 10L;
 
     @Override
@@ -145,9 +145,26 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         OAuth2AccessToken at = new OAuth2AccessToken();
         SSOUser user = ssoUsers.iterator().next();
         at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.USERID.toString(), user.getName()));
-
         // Just a temporary work-around.
         at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.UNKNOWN.toString(), "UNKNOWN"));
+
+        boolean rememberMe = false;
+        // Set token expiration, in millis
+        long expiresIn = tokenValiditySecs * 1000L;
+        if (requestToken instanceof UsernameTokenType) {
+
+            UsernameTokenType ut = (UsernameTokenType) requestToken;
+            // When the requested token has a remember-me attribute, we must persist the token and set a longer expiration
+            String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            if (rememberMeStr != null && Boolean.parseBoolean(rememberMeStr)) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Emitting OAuth2 token for remember-me for user " + user.getName());
+
+                rememberMe = true;
+            }
+        }
+
 
         // Roles
         Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
@@ -174,7 +191,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                     String name = attr.getName();
                     if (name != null) {
                         int idx = name.lastIndexOf(':');
-                        if (idx >=0) name = name.substring(idx + 1);
+                        if (idx >= 0) name = name.substring(idx + 1);
                     }
 
                     String value = attr.getValue();
@@ -193,36 +210,25 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             }
         }
 
-
-        long expiresIn = tokenValiditySecs;
-        if (requestToken instanceof UsernameTokenType) {
-
-            UsernameTokenType ut = (UsernameTokenType) requestToken;
-
-            // When the requested token has a remember-me attribute, we must persist the token
-            String rememberMe = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
-            if (rememberMe != null && Boolean.parseBoolean(rememberMe)) {
-                // 30 days for remember-me tokens
-                // Mark the token as used for remember-me.
-                expiresIn = 1000L * 60L * rememberMeTokenValidityMins;
-                at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), Constants.REMEMBERME_NS, "TRUE"));
-
-            }
+        if (rememberMe) {
+            //
+            // Mark the token as used for remember-me.
+            expiresIn = 1000L * 60L * rememberMeTokenValidityMins;
+            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), Constants.REMEMBERME_NS, "TRUE"));
         }
 
+        if (logger.isDebugEnabled())
+            logger.debug("Token expires in millis " + expiresIn);
+
+        // Create some random information, to make every token unique!
+        at.setTimeStamp(System.currentTimeMillis());
+        at.setRnd(randomGenerator.nextInt());
         at.setExpiresOn(at.getTimeStamp() + expiresIn);
 
         // Set SSO Session ID
         if (ssoSessionId != null) {
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), "idpSsoSession", ssoSessionId));
         }
-
-        // User properties
-        // TODO:
-
-        // Create some random information, to make every token unique!
-        at.setTimeStamp(System.currentTimeMillis());
-        at.setRnd(randomGenerator.nextInt());
 
         return at;
     }
