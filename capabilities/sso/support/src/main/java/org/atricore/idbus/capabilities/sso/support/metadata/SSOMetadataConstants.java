@@ -29,6 +29,7 @@ import javax.xml.namespace.QName;
  */
 public interface SSOMetadataConstants {
 
+    final static QName MetadataService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "MetadataService");
 
     final static QName SPInitiatedSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnService");
 

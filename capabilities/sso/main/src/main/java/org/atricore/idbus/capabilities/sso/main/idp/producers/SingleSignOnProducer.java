@@ -1721,7 +1721,19 @@ public class SingleSignOnProducer extends SSOProducer {
         assert ssoSessionId.equals(st.getId()) : "SSO Session Manager MUST use security token ID as session ID";
 
         boolean rememberMe = false;
-        if (claims != null) {
+
+        // Check if the remember me option is requested as part of an extension
+        AuthenticationState authnState = getAuthnState(exchange);
+        if (authnState != null) {
+            AuthnRequestType authnRequest = authnState.getAuthnRequest();
+            if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
+                rememberMe = ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() != null ?
+                        ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() : false;
+            }
+        }
+
+        // Check if the remember me option is requested as one of the claims
+        if (!rememberMe && claims != null) {
             for (Claim c : claims.getClaims()) {
                 if (c instanceof CredentialClaim) {
                     CredentialClaim cc = (CredentialClaim) c;
@@ -1735,10 +1747,11 @@ public class SingleSignOnProducer extends SSOProducer {
             }
         }
 
+        // Create RememberMe security token
         if (rememberMe) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Creating remember-me security contenxt information");
+                logger.debug("Creating remember-me security context information");
 
             String preAuthnTokenId = null;
 

@@ -89,6 +89,7 @@
             <extension base="ssop:IDPInitiatedAuthnRequestType">
                 <attribute name="SecurityToken" type="string" use="required"/>
                 <attribute name="AuthnCtxClass" type="string" use="optional"/>
+                <attribute name="RememberMe" type="boolean" use="optional"/>
             </extension>
         </complexContent>
     </complexType>

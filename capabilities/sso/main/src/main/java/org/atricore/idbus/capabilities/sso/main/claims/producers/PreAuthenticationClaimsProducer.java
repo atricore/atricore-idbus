@@ -170,7 +170,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         // No pre-authn token received, looking for remember-me token id
         if (preAuthnToken == null && mediator.isRememberMe()) {
             if (logger.isDebugEnabled())
-                logger.debug("Pre-authn token not found in CredentialClaimsRequest, using remember me" + claimsRequest.getId());
+                logger.debug("Pre-authn token not found in CredentialClaimsRequest, trying remember me" + claimsRequest.getId());
 
                 preAuthnToken = resolveRememberMeToken(state, mediator);
 
@@ -180,7 +180,8 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         if (!authnCtx.isPassive() &&
                 preAuthnToken == null &&
-                mediator.getBasicAuthnUILocation() != null) {
+                mediator.getBasicAuthnUILocation() != null &&
+                !"".equals(mediator.getBasicAuthnUILocation())) {
 
             if (logger.isTraceEnabled())
                 logger.trace("Non-passive OAuth2 pre-authentication endpoint ["+endpoint.getName()+"] without a token, " +

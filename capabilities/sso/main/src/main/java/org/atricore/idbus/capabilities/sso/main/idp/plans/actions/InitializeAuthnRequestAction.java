@@ -69,9 +69,11 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         RequestedAuthnContextType reqAuthnCtx = null;
 
         String securityToken = null;
+        Boolean rememberMe = null;
         if (ssoAuthnReq instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthnReq = (PreAuthenticatedIDPInitiatedAuthnRequestType) ssoAuthnReq;
             securityToken = preAuthnReq.getSecurityToken();
+            rememberMe = preAuthnReq.getRememberMe();
 
             // TODO : check if token must be resolved
 
@@ -154,6 +156,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         // Attach Security Token (in case any has been supplied)
         if (securityToken != null) {
             ((PreAuthenticatedAuthnRequestType) authn).setSecurityToken(securityToken);
+            ((PreAuthenticatedAuthnRequestType) authn).setRememberMe(rememberMe);
         }
 
         // AttributeConsumingServiceIndex [optional]
