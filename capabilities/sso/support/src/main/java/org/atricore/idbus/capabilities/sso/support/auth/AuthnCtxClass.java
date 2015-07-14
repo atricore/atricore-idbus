@@ -126,6 +126,9 @@ public enum AuthnCtxClass {
     /** URI for Preauthentication (OAuth2) authentication context. */
     OAUTH2_PREAUTHN_PASSIVE_CTX("urn:org:atricore:idbus:ac:classes:OAuth2:Passive", true),
 
+    /** URI for Certus authentication context. */
+    CERTUS_CTX("urn:org:atricore:idbus:ac:classes:Certus", false)
+
     ;
 
 

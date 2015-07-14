@@ -345,18 +345,18 @@
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
 
-        <!-- Codehaus 
+        <!-- Codehaus -->
         <repository>
-            <id>codehaus</id>
-            <name>Codehaus repository</name>
-            <url>http://repository.codehaus.org</url>
+            <id>codehaus-mule-repo</id>
+            <name>codehaus-mule-repo</name>
+            <url>https://repository-master.mulesoft.org/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>-->
+        </repository>
         <!-- JBoss -->
         <repository>
             <id>jboss</id>
