@@ -22,15 +22,19 @@ public class IdPSecurityContext implements java.io.Serializable {
 
     private String sessionIndex;
 
+    private boolean sloInProgress;
+
     private AuthnStatementType authnStatement;
 
     private Set<ProviderSecurityContext> registry = new HashSet<ProviderSecurityContext>();
+
     private List<AbstractPrincipalType> proxyPrincipals;
 
     public IdPSecurityContext(Subject subject, String sessionIndex, AuthnStatementType authnStatement) {
         this.subject = subject;
         this.sessionIndex = sessionIndex;
         this.authnStatement = authnStatement;
+        this.sloInProgress = false;
     }
 
     public Subject getSubject() {
@@ -72,7 +76,8 @@ public class IdPSecurityContext implements java.io.Serializable {
         this.sessionIndex = null;
         this.subject = null;
         this.authnStatement = null;
-        registry.clear();
+        this.registry.clear();
+        this.sloInProgress = false;
     }
 
 
@@ -82,5 +87,13 @@ public class IdPSecurityContext implements java.io.Serializable {
 
     public List<AbstractPrincipalType> getProxyPrincipals() {
         return proxyPrincipals;
+    }
+
+    public boolean isSloInProgress() {
+        return sloInProgress;
+    }
+
+    public void setSloInProgress(boolean sloInProgress) {
+        this.sloInProgress = sloInProgress;
     }
 }
