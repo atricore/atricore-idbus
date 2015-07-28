@@ -15,7 +15,6 @@ import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.*;
-import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
@@ -23,7 +22,6 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.*;
 
 /**
@@ -32,8 +30,6 @@ import java.util.*;
 public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     private static final Log logger = LogFactory.getLog(OAuth2AccessTokenEmitter.class);
-
-    private SSOIdentityManager identityManager;
 
     private TokenSigner tokenSigner;
 
@@ -233,75 +229,6 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         return at;
     }
 
-    /**
-     * TODO : Use identity planning, and reuse some STS actions!
-     *
-     * @param subject
-     * @return
-     */
-    protected Subject resolveSubject(Subject subject) {
-        Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
-        Set<SimplePrincipal> simplePrincipals = subject.getPrincipals(SimplePrincipal.class);
-
-        if (ssoUsers != null && ssoUsers.size() > 0) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Emitting token for Subject with SSOUser");
-
-            // Build Subject
-            // s = new Subject(true, s.getPrincipals(), s.getPrivateCredentials(), s.getPublicCredentials());
-        } else {
-
-            try {
-
-                // Resolve SSOUser
-                SimplePrincipal sp = simplePrincipals.iterator().next();
-                String username = sp.getName();
-
-                SSOIdentityManager idMgr = getIdentityManager();
-
-                // Obtain SSOUser principal
-                SSOUser ssoUser = null;
-                SSORole[] ssoRoles = null;
-                if (idMgr != null) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Resolving SSOUser for " + username);
-                    ssoUser = idMgr.findUser(username);
-                    ssoRoles = idMgr.findRolesByUsername(username);
-                } else {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Not resolving SSOUser for " + username);
-                    ssoUser = new BaseUserImpl(username);
-                    ssoRoles = new BaseRoleImpl[0];
-                }
-
-                Set<Principal> principals = new HashSet<Principal>();
-
-                principals.add(ssoUser);
-                principals.addAll(Arrays.asList(ssoRoles));
-
-                // Use existing SSOPolicyEnforcement principals
-                Set<SSOPolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(SSOPolicyEnforcementStatement.class);
-                if (ssoPolicies != null) {
-                    if (logger.isDebugEnabled())
-                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");
-
-                    principals.addAll(ssoPolicies);
-                }
-
-                // Build Subject
-                subject = new Subject(true, principals, subject.getPublicCredentials(), subject.getPrivateCredentials());
-
-            } catch (Exception e) {
-                throw new SecurityTokenEmissionException(e);
-            }
-
-
-        }
-
-        return subject;
-    }
-
     private String marshalOAuthAccessEnvelopeToken(OAuth2AccessTokenEnvelope envelope) throws IOException {
         return JasonUtils.marshalAccessTokenEnvelope(envelope, true);
     }
@@ -309,14 +236,6 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     @Override
     protected IdentityArtifact createOutArtifact(Object requestToken, String tokenType) {
         throw new UnsupportedOperationException("Operation not available");
-    }
-
-    public SSOIdentityManager getIdentityManager() {
-        return identityManager;
-    }
-
-    public void setIdentityManager(SSOIdentityManager identityManager) {
-        this.identityManager = identityManager;
     }
 
     public TokenSigner getTokenSigner() {

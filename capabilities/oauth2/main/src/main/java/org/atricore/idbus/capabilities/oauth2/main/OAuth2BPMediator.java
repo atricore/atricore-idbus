@@ -36,7 +36,7 @@ public class OAuth2BPMediator extends AbstractCamelMediator {
         logger.info("OAuth2BPMediator Instantiated");
     }
 
-protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
+    protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
         // Create routes based on endpoints!
 
         return new RouteBuilder() {
@@ -54,7 +54,7 @@ protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) 
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
-                    OAuth2Binding binding = OAuth2Binding .asEnum(endpoint.getBinding());
+                    OAuth2Binding binding = OAuth2Binding.asEnum(endpoint.getBinding());
 
                     EndpointDescriptor ed = resolveEndpoint(bindingChannel, endpoint);
 

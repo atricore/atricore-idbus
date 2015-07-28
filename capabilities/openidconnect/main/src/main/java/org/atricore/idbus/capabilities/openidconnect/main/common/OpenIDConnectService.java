@@ -5,9 +5,26 @@ import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants
 import javax.xml.namespace.QName;
 
 /**
- * Created by sgonzalez on 3/11/14.
+ * OpenID Connect Service Types
  */
 public enum OpenIDConnectService {
+
+    // Provider Related Services
+
+    SSOSingleSignOnService(OpenIDConnectConstants.SSOSingleSignOnService_QNAME),
+
+    SSOSingleLogoutService(OpenIDConnectConstants.SSOSingleLogoutService_QNAME),
+
+    AuthorizationService(OpenIDConnectConstants.AuthorizationService_QNAME),
+
+    SSOAssertionConsumerService(OpenIDConnectConstants.SSOAssertionConsumerService_QNAME),
+
+    TokenService(OpenIDConnectConstants.TokenService_QNAME),
+
+    // Relaying Party Services
+    AuthorizationConsumerService(OpenIDConnectConstants.AuthorizationConsumerService_QNAME),
+
+    // Proxy Related Services
 
     SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
 

@@ -1,7 +1,8 @@
-package org.atricore.idbus.capabilities.openidconnect.main.binding;
+package org.atricore.idbus.capabilities.openidconnect.main.op.binding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.binding.OpenIDConnectHttpAuthzBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
@@ -16,9 +17,9 @@ import org.springframework.context.ApplicationContextAware;
 /**
  *
  */
-public class OpenIDConnectBindingFactory extends MediationBindingFactory implements ApplicationContextAware {
+public class OpenIDConnectOPBindingFactory extends MediationBindingFactory implements ApplicationContextAware {
 
-    private static final Log logger = LogFactory.getLog(OpenIDConnectBindingFactory.class);
+    private static final Log logger = LogFactory.getLog(OpenIDConnectOPBindingFactory.class);
 
     protected ApplicationContext applicationContext;
 
@@ -42,19 +43,19 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
 
         MediationBinding mb = null;
         switch (b) {
-            // TODO: Factor out SSO binding to SSO capability
+
             case SSO_REDIRECT:
                 mb = new SsoHttpRedirectBinding(channel);
                 break;
             case SSO_ARTIFACT:
                 mb = new SsoHttpArtifactBinding(channel);
                 break;
-            case OPENID_HTTP_POST:
+            case OPENID_PROVIDER_AUTHZ_HTTP:
 
-                // mb = new OpenIDConnectHttpPostBinding(channel);
+                mb = new AuthnHttpBinding(channel);
                 break;
-            case OPENIDCONNECT_AUTHZ:
-                mb = new OpenIDConnectHttpAuthzBinding(channel);
+            case OPENID_PROVIDER_TOKEN_RESTFUL:
+                mb = new TokenRestfulBinding(channel);
                 break;
             default:
         }
@@ -65,4 +66,3 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
         return mb;
     }
 }
-

@@ -152,11 +152,14 @@
     </feature>
 
     <feature name="atricore-openidconnect" version="${version}">
+
         <bundle>mvn:org.atricore.idbus.capabilities.openidconnect/org.atricore.idbus.capabilities.openidconnect.main/${idbus.cap.openidconnect.version}</bundle>
     </feature>
 
 
     <feature name="atricore-oauth2" version="${version}">
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v3_10/${idbus.bundle.nimbus-jose-jwt-v3_10.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1/${idbus.bundle.oauth2-oidc-sdk-v4_14_1.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.common/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.rserver/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.main/${idbus.cap.oauth2.version}</bundle>
@@ -337,7 +340,8 @@
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-vfs/${commons-vfs.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
-        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io-bundle.version}</bundle>
+        <bundle start-level="35">mvn:commons-io/commons-io/${commons-io.version}</bundle>
         <bundle start-level="35">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimo.annotation.version}</bundle>
         <bundle start-level="35">mvn:org.apache.geronimo.specs/geronimo-ws-metadata_2.0_spec/${geronimo.wsmetadata.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${servicemix.specs.version}</bundle>
@@ -366,6 +370,7 @@
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-codec/${commons-codec.bundle.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/${commons-httpclient.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-lang/${commons-lang.bundle.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.commons/commons-lang3/${commons-lang3.version}</bundle>
         <bundle start-level="35">mvn:commons-digester/commons-digester/${commons-digester.version}</bundle>
         <bundle start-level="35">mvn:org.apache.commons/commons-compress/${commons-compress.version}</bundle>
         <!--<bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.version}</bundle>-->
@@ -376,11 +381,13 @@
         <bundle start-level="35">mvn:commons-jxpath/commons-jxpath/${commons-jxpath.version}</bundle>
         <bundle start-level="35">mvn:org.apache.commons/com.springsource.org.apache.commons.fileupload/${commons-fileupload.version}</bundle>
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.wadi-v2_1_2/${idbus.bundle.wadi-v2_1_2.version}</bundle>
-        <bundle start-level="34">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ini4j-v0_5_1/${idbus.bundle.ini4j-v0_5_1.version}</bundle>
-        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-core-asl/1.9.1</bundle>
-        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.1</bundle>
-        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-jaxrs/1.9.1</bundle>
-        <bundle start-level="34">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}</bundle>
+        <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ini4j-v0_5_1/${idbus.bundle.ini4j-v0_5_1.version}</bundle>
+        <bundle start-level="35">mvn:org.codehaus.jackson/jackson-core-asl/1.9.1</bundle>
+        <bundle start-level="35">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.1</bundle>
+        <bundle start-level="35">mvn:org.codehaus.jackson/jackson-jaxrs/1.9.1</bundle>
+        <bundle start-level="35">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}</bundle>
+        <bundle start-level="35">mvn:org.bouncycastle/bcprov-jdk15on/${bcprov.version}</bundle>
+        <bundle start-level="35">mvn:net.minidev/json-smart/${json-smart.version}</bundle>
     </feature>
 
     <feature name="scala" version="${version}">

@@ -33,6 +33,9 @@ public interface WSTConstants {
     static final String WST_OAUTH2_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#OAUTH2.0";
 
+    static final String WST_OAUTH2_GRANT_CODE_TYPE =
+            "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_grant_profile_1_1#OAUTH2.0";
+
     static final String WST_JWT_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#JWT1.0";
 

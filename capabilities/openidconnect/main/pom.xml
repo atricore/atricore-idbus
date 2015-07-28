@@ -130,6 +130,17 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.nimbus-jose-jwt-v3_10</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
@@ -146,6 +157,12 @@
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sts</groupId>
             <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
             <scope>provided</scope>
         </dependency>
 

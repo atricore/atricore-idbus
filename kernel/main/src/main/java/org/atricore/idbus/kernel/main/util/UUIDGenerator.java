@@ -36,11 +36,22 @@ public class UUIDGenerator extends AbstractIdGenerator {
 
     private int artifactLength = 8;
 
+    private boolean jdkIdGen = false;
+
+    public UUIDGenerator(boolean jdkIdGen) {
+        this.jdkIdGen = jdkIdGen;
+    }
+
+    public UUIDGenerator() {
+        this.jdkIdGen = false;
+    }
+
+
     /**
      * Generates a string identifier
      */
     public synchronized String generateId() {
-        if (System.getProperty("org.atricore.idbus.uuid.jdk") != null) {
+        if (System.getProperty("org.atricore.idbus.uuid.jdk") != null || jdkIdGen) {
             return jdkUUID();
         }
 
