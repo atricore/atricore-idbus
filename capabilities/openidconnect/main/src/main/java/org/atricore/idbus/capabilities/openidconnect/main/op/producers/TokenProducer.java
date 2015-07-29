@@ -28,7 +28,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
  */
 public class TokenProducer extends AbstractOpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(AuthorizationProducer.class);
+    private static final Log logger = LogFactory.getLog(TokenProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
@@ -50,9 +50,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // TODO : Support other grant types
 
         EndpointDescriptor responseLocation = null;
-
-
-
 
         // Issue Access Token
 
@@ -97,7 +94,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         if (logger.isDebugEnabled())
             logger.debug("Processing TokenRequest for " + expectedClientId.getValue());
 
-        OIDCClientInformation clientMD  = mediator.getClients().get(expectedClientId.getValue());
+        OIDCClientInformation clientMD  = mediator.getClient();
 
         // Verify that the Client support the Authorization Grant
         AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();

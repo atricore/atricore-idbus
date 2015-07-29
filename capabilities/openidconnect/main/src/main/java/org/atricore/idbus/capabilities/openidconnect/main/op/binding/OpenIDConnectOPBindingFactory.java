@@ -51,7 +51,6 @@ public class OpenIDConnectOPBindingFactory extends MediationBindingFactory imple
                 mb = new SsoHttpArtifactBinding(channel);
                 break;
             case OPENID_PROVIDER_AUTHZ_HTTP:
-
                 mb = new AuthnHttpBinding(channel);
                 break;
             case OPENID_PROVIDER_TOKEN_RESTFUL:
