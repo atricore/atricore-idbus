@@ -20,9 +20,9 @@ import java.util.List;
 /**
  * Emit an authorization grant that can be later exchanged for an Access Token
  */
-public class AuthorizationGrantEmitter extends AbstractSecurityTokenEmitter {
+public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
 
-    private static final Log logger = LogFactory.getLog(AuthorizationGrantEmitter.class);
+    private static final Log logger = LogFactory.getLog(AuthorizationCodeEmitter.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator(true);
 
@@ -32,7 +32,7 @@ public class AuthorizationGrantEmitter extends AbstractSecurityTokenEmitter {
     @Override
     public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
-                WSTConstants.WST_OAUTH2_GRANT_CODE_TYPE.equals(tokenType);
+                WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE.equals(tokenType);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class AuthorizationGrantEmitter extends AbstractSecurityTokenEmitter {
                 System.currentTimeMillis() + tokenValiditySecs * 1000L);
 
         SecurityTokenImpl st = new SecurityTokenImpl(grantId,
-                WSTConstants.WST_OAUTH2_GRANT_CODE_TYPE,
+                WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE,
                 authzGrant,
                 grantId);
 

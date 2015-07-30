@@ -8,6 +8,9 @@ import javax.xml.namespace.QName;
 public interface OpenIDConnectConstants {
 
 
+    // Open ID Connect
+    final static QName AuthorizationGrant_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "AuthorizationGrant");
+
     // Open ID Connect Identity Provider Services
     final static QName AuthorizationService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "AuthorizationService");
 
@@ -32,7 +35,7 @@ public interface OpenIDConnectConstants {
 
     final static QName AuthzCodeProviderService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "AuthzCodeProviderService");
 
-    final static QName IDPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "IDPDescriptor");
+    final static QName IDPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "ProviderDescriptor");
 
-    final static QName SPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "RelayingParty");
+    final static QName SPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "RelayingPartyDesriptor");
 }

@@ -50,10 +50,8 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         BindingChannel bChannel = (BindingChannel) channel;
 
         AuthenticationRequest authnReq = (AuthenticationRequest) in.getMessage().getContent();
-
-
-
-        OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:authnCtx");
+        OpenIDConnectAuthnContext authnCtx =
+                (OpenIDConnectAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:authnCtx");
 
         try {
             validateRequest(authnReq);
@@ -69,7 +67,6 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
             } else {
                 idpAlias = new String(Base64.decodeBase64(idpAliasB64.getBytes("UTF-8")));
             }
-
 
             // SSO endpoint
             BindingChannel spChannel = resolveSpBindingChannel(bChannel);

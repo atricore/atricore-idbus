@@ -1,27 +1,47 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
-import com.nimbusds.jwt.EncryptedJWT;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.PlainJWT;
+import com.nimbusds.jose.JWEDecrypter;
+import com.nimbusds.jose.Payload;
+import com.nimbusds.jose.crypto.DirectDecrypter;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.*;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
 import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMediator;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectOPMediator;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
+import java.text.*;
+import java.util.Arrays;
 
 /**
  *
@@ -44,12 +64,52 @@ public class TokenProducer extends AbstractOpenIDProducer {
         TokenRequest tokenRequest = (TokenRequest) in.getMessage().getContent();
         MediationState state = in.getMessage().getState();
 
+
+        OpenIDConnectBinding binding = OpenIDConnectBinding.asEnum(endpoint.getBinding());
+        EndpointDescriptor errorEndpoint = new EndpointDescriptorImpl("rp-error",
+                OpenIDConnectService.TokenService.toString(),
+                binding.getValue(), null, null);
+
+        // If we have an authorization_code , the state MUST have the proper alternate key.
+
+        AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
+        if (grant instanceof AuthorizationCodeGrant) {
+            String authzCode = state.getLocalState().getAlternativeId("authorization_code");
+            if (authzCode == null) {
+                // TODO : Send error response
+                TokenErrorResponse errorResponse = buildErrorResponse(OAuth2Error.INVALID_REQUEST);
+                // Send response back (this is a back-channel request)
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        errorResponse,
+                        "AccessTokenResponse",
+                        null,
+                        errorEndpoint,
+                        in.getMessage().getState()));
+
+                exchange.setOut(out);
+                return;
+            }
+        }
+
         validateRequest(exchange, tokenRequest);
 
-        String grantType = null; // TODO : tokenRequest.getGrantType();
-        // TODO : Support other grant types
+        // Depending on the authorization grant, we perform different emissions
 
-        EndpointDescriptor responseLocation = null;
+        if (grant.getType().equals(GrantType.JWT_BEARER)) {
+            JWTBearerGrant jwtBearerGrant = (JWTBearerGrant) grant;
+
+            JWT assertion = jwtBearerGrant.getJWTAssertion();
+            ReadOnlyJWTClaimsSet claimsSet = assertion.getJWTClaimsSet();
+
+            if (claimsSet.getClaim("cred") != null) {
+                // Now, if the cred claim is available, and the grant is supported, use basic auth for the user.
+            }
+
+
+
+        }
+
+        // TODO : Support other grant types
 
         // Issue Access Token
 
@@ -60,14 +120,18 @@ public class TokenProducer extends AbstractOpenIDProducer {
         TokenResponse tokenResponse = buildAccessTokenResponse();
 
         // Send response back (this is a back-channel request)
+        /*
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 tokenResponse,
                 "AccessTokenResponse",
                 null,
-                responseLocation,
+                null, // TODO
                 in.getMessage().getState()));
 
         exchange.setOut(out);
+        */
+
+        throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:" + grant.getType().getValue());
 
     }
 
@@ -87,19 +151,38 @@ public class TokenProducer extends AbstractOpenIDProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         MediationState state = in.getMessage().getState();
-        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
+        OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
 
-        // Client ID
-        ClientID expectedClientId = tokenRequest.getClientID();
+        // Client ID (also taken from parameter
+        ClientID clientID = tokenRequest.getClientAuthentication() != null ?
+                tokenRequest.getClientAuthentication().getClientID() : tokenRequest.getClientID();
+
+        if (clientID == null)
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST, "client_id:n/a");
+
         if (logger.isDebugEnabled())
-            logger.debug("Processing TokenRequest for " + expectedClientId.getValue());
+            logger.debug("Processing TokenRequest for " + clientID.getValue());
 
-        OIDCClientInformation clientMD  = mediator.getClient();
+        OIDCClientInformation clientMD  = resolveClient(clientID);
+        if (clientMD == null) {
+            throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "client_id:" + clientID.getValue());
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Processing TokenRequest for " + clientID.getValue());
+
+        ClientID expectedClientId = clientMD.getID();
 
         // Verify that the Client support the Authorization Grant
         AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
+        if (grant == null)
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:n/a");
+
         if (clientMD.getOIDCMetadata().getGrantTypes().contains(grant.getType())) {
-            throw new OpenIDConnectException("Invalid Authorization Grant ["+tokenRequest.getAuthorizationGrant()+"] for Client " + expectedClientId.getValue());
+            if (logger.isDebugEnabled())
+                logger.debug("Invalid Authorization Grant ["+tokenRequest.getAuthorizationGrant()+"] for Client " + expectedClientId.getValue());
+
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:" + grant.getType().getValue());
         }
 
         // Make Grant specific validations:
@@ -140,18 +223,32 @@ public class TokenProducer extends AbstractOpenIDProducer {
             if (logger.isTraceEnabled())
                 logger.trace("Validating JWT Bearer Grant [" + expectedClientId.getValue() + "]");
 
-            // This grant type is stateless, no authorization code is required
-            JWTBearerGrant jwtBearerGrant = (JWTBearerGrant) grant;
+            try {
+                // This grant type is stateless, no authorization code is required
+                JWTBearerGrant jwtBearerGrant = (JWTBearerGrant) grant;
+                EncryptedJWT assertion = (EncryptedJWT) jwtBearerGrant.getJWTAssertion();
 
-            JWT assertion = jwtBearerGrant.getJWTAssertion();
+                // TODO : Is this standard procedure ?!
+                byte[] key = clientMD.getSecret().getValueBytes();
+                MessageDigest sha = MessageDigest.getInstance("SHA-1");
+                key = sha.digest(key);
+                key = Arrays.copyOf(key, 32);
+                SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
 
-            // TODO : Check JWT Bearer options (i.e. is ecryption/signature required)
-            if (assertion instanceof EncryptedJWT) {
+                // Decrypt TODO : Configure encryption (AES), etc
+                JWEDecrypter decrypter = new DirectDecrypter(secretKey.getEncoded());
+                assertion.decrypt(decrypter);
+                ReadOnlyJWTClaimsSet claims = assertion.getJWTClaimsSet();
 
+                // Verify Signature : TODO : Configure Verifier
+
+            } catch (java.text.ParseException e) {
+                logger.error(e.getMessage(), e);
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, e.getMessage());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, e.getMessage());
             }
-
-            // This should be JWE
-
 
 
         } if (grant.getType().equals(GrantType.CLIENT_CREDENTIALS)) {
@@ -198,6 +295,47 @@ public class TokenProducer extends AbstractOpenIDProducer {
         }
 
 
+    }
+
+    protected OIDCClientInformation resolveClient(ClientID clientID) {
+        FederationChannel fChannel = (FederationChannel) channel;
+
+        for (FederatedProvider p : fChannel.getTrustedProviders()) {
+            // We are looking for a SAML 2 SP Proxy for the Relaying Party.
+            if (p instanceof ServiceProvider) {
+                ServiceProvider sp = (ServiceProvider) p;
+
+                String bpRole = sp.getBindingChannel().getFederatedProvider().getRole();
+
+                if (bpRole.equals(OpenIDConnectConstants.IDPSSODescriptor_QNAME.toString())) {
+                    // This is a relaying party facing channel.
+                    BindingChannel bc = sp.getBindingChannel();
+
+                    OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) bc.getIdentityMediator();
+                    OIDCClientInformation client = mediator.getClient();
+                    if (client.getID().equals(clientID))
+                        return client;
+
+                }
+            }
+        }
+        return null;
+
+    }
+
+    protected TokenErrorResponse buildErrorResponse(String code , String description) {
+        return buildErrorResponse(new ErrorObject(code, description, HTTPResponse.SC_BAD_REQUEST));
+    }
+
+
+    protected TokenErrorResponse buildErrorResponse(String code , String description, int httpStatusCode) {
+        return buildErrorResponse(new ErrorObject(code, description, httpStatusCode));
+    }
+
+    protected TokenErrorResponse buildErrorResponse(ErrorObject error) {
+        TokenErrorResponse r = new TokenErrorResponse(error);
+
+        return r;
     }
 
     protected TokenResponse buildAccessTokenResponse() {

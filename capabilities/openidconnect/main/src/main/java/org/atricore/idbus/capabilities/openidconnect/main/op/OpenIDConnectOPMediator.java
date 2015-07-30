@@ -26,9 +26,6 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
 
     private static final Log logger = LogFactory.getLog(OpenIDConnectOPMediator.class);
 
-    // List of trusted OAuth 2 clients
-    private Set<OIDCClientInformation> clients = new HashSet<OIDCClientInformation>();
-
     public OpenIDConnectOPMediator() {
         logger.info("OpenIDConnectOPMediator Instantiated");
     }
@@ -56,8 +53,6 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
                     EndpointDescriptor ed = resolveEndpoint(spChannel, endpoint);
 
                     switch (binding) {
-                        case OPENID_PROVIDER_AUTHZ_HTTP:
-                        case OPENID_PROVIDER_AUTHZ_RESTFUL:
                         case OPENID_PROVIDER_TOKEN_HTTP:
                         case OPENID_PROVIDER_TOKEN_RESTFUL:
 
@@ -66,12 +61,12 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
                                     process(new LoggerProcessor(getLogger())).
                                     to("direct:" + ed.getName());
 
-                            // FROM idbus-bind TO oauth2-svc
+                            // FROM idbus-bind TO oidc-svc
                             from("idbus-bind:camel://direct:" + ed.getName() +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + spChannel.getName()).
                                     process(new LoggerProcessor(getLogger())).
-                                    to("oauth2-svc:" + ed.getType() +
+                                    to("openidc-idp:" + ed.getType() +
                                             "?channelRef=" + spChannel.getName() +
                                             "&endpointRef=" + endpoint.getName());
 
@@ -160,6 +155,7 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
                             }
 
                             break;
+
                         default:
                             throw new OpenIDConnectException("Unsupported OAuth2 Binding " + binding.getValue());
                     }
@@ -225,11 +221,4 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
                 responseLocation);
     }
 
-    public Set<OIDCClientInformation> getClients() {
-        return clients;
-    }
-
-    public void setClients(Set<OIDCClientInformation> clients) {
-        this.clients = clients;
-    }
 }

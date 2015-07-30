@@ -49,6 +49,7 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -238,9 +239,18 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
                     "-" + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
         }
+
     }
 
     protected MediationState createMediationState(Exchange exchange) {
+        return createMediationState(exchange, null);
+    }
+
+    /**
+     * Useful if parameters must be read from a POST before creating the state
+     */
+    protected MediationState createMediationState(Exchange exchange, Map<String, String> requestParams) {
+
 
         if (logger.isDebugEnabled())
             logger.debug("Creating Mediation State from Exchange " + exchange.getExchangeId());
@@ -324,9 +334,10 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         try {
 
             java.util.Map<String, String> params = getParameters(exchange.getIn().getHeader("org.apache.camel.component.http.query", String.class));
-
             if (exchange.getIn().getHeader("http.requestMethod").equals("POST"))
                 params.putAll(getParameters((InputStream) exchange.getIn().getBody()));
+            if (requestParams != null)
+                params.putAll(requestParams);
 
             state.setTransientVars(params);
 

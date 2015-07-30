@@ -5,7 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
 import java.io.IOException;
@@ -16,7 +16,8 @@ import java.util.StringTokenizer;
 /**
  *
  */
-public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationBinding {
+public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttpBinding {
+
 
     private static final Log logger = LogFactory.getLog(AbstractOpenIDRestfulBinding.class);
 
@@ -32,11 +33,6 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationBind
 
     @Override
     public void copyMessageToExchange(CamelMediationMessage message, Exchange exchange) {
-
-    }
-
-    @Override
-    public void copyFaultMessageToExchange(CamelMediationMessage faultMessage, Exchange exchange) {
 
     }
 

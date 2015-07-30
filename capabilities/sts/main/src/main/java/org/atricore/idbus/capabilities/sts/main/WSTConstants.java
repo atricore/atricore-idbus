@@ -33,11 +33,17 @@ public interface WSTConstants {
     static final String WST_OAUTH2_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#OAUTH2.0";
 
-    static final String WST_OAUTH2_GRANT_CODE_TYPE =
-            "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_grant_profile_1_1#OAUTH2.0";
+    static final String WST_OIDC_AUTHZ_CODE_TYPE =
+            "urn:atricore:org:wss:atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0";
 
-    static final String WST_JWT_TOKEN_TYPE =
-            "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#JWT1.0";
+    static final String WST_OIDC_ID_TOKEN_TYPE =
+            "urn:atricore:org:wss:atricore_wss_oidc_id_token_profile_1_1#JWT1.0";
+
+    static final String WST_OIDC_ACCESS_TOKEN_TYPE =
+            "urn:atricore:org:wss:atricore_wss_oidc_access_token_profile_1_1#JWT1.0";
+
+    static final String WST_OIDC_REFRESH_TOKEN_TYPE =
+            "urn:atricore:org:wss:atricore_wss_oidc_refresh_token_profile_1_1#JWT1.0";
 
     static final String WST_SAMLR2_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_saml_token_profile_1_1#SAMLV2.0";
@@ -58,7 +64,7 @@ public interface WSTConstants {
     /**
      * Request Token namespace (internal) 
      */
-    static final String REQUEST_TOKEN = "urn:org:atricore:idbus:kernel:main:sts:RequsetToken";
+    static final String REQUEST_TOKEN = "urn:org:atricore:idbus:kernel:main:sts:RequestToken";
 
     /**
      * Subject property name
