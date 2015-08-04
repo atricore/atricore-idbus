@@ -3,10 +3,7 @@ package org.atricore.idbus.capabilities.oauth2.main.sso;
 import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenAuthenticator;
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
-
-import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>

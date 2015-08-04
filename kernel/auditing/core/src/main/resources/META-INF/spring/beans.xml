@@ -3,7 +3,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <service id="BuiltinAuditingServer"  interface="org.atricore.idbus.kernel.auditing.core.AuditingServer">
-        <bean class="org.atricore.idbus.kernel.auditing.builtin.LoggerAuditingHandler" />
+        <bean class="org.atricore.idbus.kernel.auditing.core.BaseAuditingServer" />
     </service>
 
 </blueprint>

@@ -17,6 +17,7 @@
 <%@ page import="com.nimbusds.jose.crypto.DirectEncrypter" %>
 <%@ page import="com.nimbusds.jose.*" %>
 <%@ page import="com.nimbusds.jwt.EncryptedJWT" %>
+<%@ page import="com.nimbusds.jose.crypto.AESEncrypter" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -56,14 +57,6 @@
             SignedJWT clientAssertion = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
             clientAssertion.sign(signer);
 
-            // Create JWE object with signed JWT as payload
-            JWEObject jweObject = new JWEObject(
-                    new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A256GCM).contentType("JWT").build(),
-                    new Payload(clientAssertion));
-
-            // Perform encryption
-            jweObject.encrypt(new DirectEncrypter(secretKey.getEncoded()));
-
             // TODO : Set encrypted token as client authentication
             clientAuth = new ClientSecretJWT(clientAssertion);
         }
@@ -75,12 +68,13 @@
 
             // Prepare JWT with claims set
             JWTClaimsSet claimsSet = new JWTClaimsSet();
-            claimsSet.setSubject("alice");
+            claimsSet.setSubject("user1");
             claimsSet.setIssuer(props.getProperty("oidc.client.id"));
             claimsSet.setAudience(Arrays.asList(props.getProperty("oidc.client.audience")));
             claimsSet.setJWTID("#001"); // TODO : RND
             claimsSet.setExpirationTime(new Date(System.currentTimeMillis() + (5L * 60L * 1000L)));
             claimsSet.setIssueTime(new Date());
+            claimsSet.setClaim("cred", "user1pwd");
 
             SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
 

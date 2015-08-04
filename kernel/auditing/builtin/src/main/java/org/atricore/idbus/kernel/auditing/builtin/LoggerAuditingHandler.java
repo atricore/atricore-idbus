@@ -10,15 +10,11 @@ import java.util.*;
 /**
  * Auditing server based on commons logging
  */
-public class BuiltinAuditingServer extends BaseAuditingServer {
+public class LoggerAuditingHandler implements AuditHandler {
 
-    private static Log logger = LogFactory.getLog(BuiltinAuditingServer.class);
+    private static Log logger = LogFactory.getLog(LoggerAuditingHandler.class);
 
     private Map<String, Log> auditLogs = new HashMap<String, Log>();
-
-    public void processAuditTrail(String category, String severity, String action, ActionOutcome outcome, String subject, Date time, Throwable error, Properties props) {
-        processAuditTrail(new BaseAuditTrail(category, severity, action, outcome, subject, time, error, props));
-    }
 
     public void processAuditTrail(AuditTrail at) {
         AuditEntry ae = buildAuditEntry(at);

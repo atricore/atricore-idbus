@@ -5,12 +5,11 @@ import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectOPMediator;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectTokenType;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectOPMediator;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -18,10 +17,6 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Producer that receives an assertion
