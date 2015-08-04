@@ -46,6 +46,49 @@
         <attribute name="state" type="string" use="optional"/>
     </complexType>
 
+    <element name="TokenRequest" type="oauth2p:TokenRequestType"/>
+    <complexType name="TokenRequestType">
+        <complexContent>
+            <extension base="oauth2p:OAuthRequestAbstractType">
+                <sequence>
+                    <element name="clientAuthenthincation" type="oauth2p:ClientAuthenticationType" minOccurs="0" maxOccurs="1"/>
+                </sequence>
+                <attribute name="grantType" use="required"/>
+                <attribute name="code" use="required"/>
+                <attribute name="redirectUri" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="ClientAuthenticationType" abstract="true">
+
+    </complexType>
+
+    <complexType name="ClientSecret">
+        <complexContent>
+            <extension base="oauth2p:ClientAuthenticationType">
+                <attribute name="clientId" type="string" use="required"/>
+                <attribute name="clientSecret" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="ClientSecretJWT">
+        <complexContent>
+            <extension base="oauth2p:ClientAuthenticationType">
+                <attribute name="jwt" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="ClientPrivateKeyJWT">
+        <complexContent>
+            <extension base="oauth2p:ClientAuthenticationType">
+                <attribute name="jwt" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
     <element name="AuthorizationRequest" type="oauth2p:AuthorizationRequestType"/>
     <complexType name="AuthorizationRequestType">
         <complexContent>
@@ -53,20 +96,22 @@
                 <attribute name="scope" type="string" use="required"/>
                 <attribute name="responseType" type="string" use="required" default="code"/>
                 <attribute name="clientId" type="string" use="required"/>
-                <!-- this attribute is non-normative -->
-                <attribute name="clientSecret" type="string" use="optional"/>
 
                 <attribute name="redirectUri" type="string" use="optional"/>
                 <attribute name="state" type="string" use="optional"/>
                 <attribute name="responseMode" type="string" use="optional"/>
                 <attribute name="nonce" type="string" use="optional"/>
                 <attribute name="display" type="string" use="optional"/>
-                <attribute name="propmt" type="string" use="optional"/>
+                <attribute name="prompt" type="string" use="optional"/>
                 <attribute name="maxAget" type="string" use="optional"/>
                 <attribute name="uiLocales" type="string" use="optional"/>
                 <attribute name="idTokenHint" type="string" use="optional"/>
                 <attribute name="loginHint" type="string" use="optional"/>
                 <attribute name="acrValues" type="string" use="optional"/>
+
+                <!-- this attribute is non-normative -->
+                <attribute name="clientSecret" type="string" use="optional"/>
+                <attribute name="idpAlias" type="string" use="optional"/>
 
             </extension>
         </complexContent>
@@ -76,7 +121,12 @@
     <complexType name="AuthorizationResponseType">
         <complexContent>
             <extension base="oauth2p:OAuthResponseAbstractType">
-                <attribute name="code" type="string" use="required"/>
+                <attribute name="code" type="string" use="optional"/>
+                <attribute name="accessToken" type="string" use="optional"/>
+                <attribute name="refreshToken" type="string" use="optional"/>
+                <attribute name="idToken" type="string" use="optional"/>
+                <attribute name="tokenType" type="string" use="optional"/>
+                <attribute name="expiresIn" type="long" use="optional"/>
             </extension>
         </complexContent>
     </complexType>
@@ -104,11 +154,12 @@
                     <element name="oauthAttributes" type="oauth2p:OauthAttributeType" minOccurs="0"
                              maxOccurs="unbounded"/>
                 </sequence>
-                <attribute name="tokeyType" type="string" use="required"/>
-                <attribute name="accessToken" type="string" use="required"/>
-                <attribute name="expiresIn" type="integer"/>
-                <attribute name="refreshToken" type="string" use="optional"/>
 
+                <attribute name="accessToken" type="string" use="optional"/>
+                <attribute name="refreshToken" type="string" use="optional"/>
+                <attribute name="idToken" type="string" use="optional"/>
+                <attribute name="tokenType" type="string" use="optional"/>
+                <attribute name="expiresIn" type="long" use="optional"/>
             </extension>
         </complexContent>
     </complexType>
@@ -135,6 +186,17 @@
             <enumeration value="invalid_scope"/>
             <enumeration value="server_error"/>
             <enumeration value="temporary_unavailable"/>
+
+            <!-- OpenID Connect values -->
+            <enumeration value="interaction_required"/>
+            <enumeration value="login_required"/>
+            <enumeration value="account_selection_required"/>
+            <enumeration value="consent_required"/>
+            <enumeration value="invalid_request_uri"/>
+            <enumeration value="invalid_request_object"/>
+            <enumeration value="request_not_supported"/>
+            <enumeration value="request_uri_not_supported"/>
+            <enumeration value="registration_not_supported"/>
         </restriction>
     </simpleType>
 

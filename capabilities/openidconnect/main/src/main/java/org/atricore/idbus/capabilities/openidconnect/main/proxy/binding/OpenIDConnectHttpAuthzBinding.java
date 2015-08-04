@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.openidconnect.main.binding;
+package org.atricore.idbus.capabilities.openidconnect.main.proxy.binding;
 
 import com.google.api.client.auth.oauth.OAuthCallbackUrl;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
@@ -8,6 +8,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.openidconnect.main.binding.AuthorizationCodeTokenIdRequest;
+import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
@@ -36,7 +38,8 @@ public class OpenIDConnectHttpAuthzBinding extends AbstractMediationHttpBinding 
 
         // The nested exchange contains HTTP information
         Exchange exchange = message.getExchange().getExchange();
-        logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
+        if (logger.isDebugEnabled())
+            logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 
         Message httpMsg = exchange.getIn();
 

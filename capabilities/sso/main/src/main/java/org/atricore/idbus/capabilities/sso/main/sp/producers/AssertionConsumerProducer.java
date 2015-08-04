@@ -55,6 +55,7 @@ import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefin
 import org.atricore.idbus.common.sso._1_0.protocol.CurrentEntityRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
@@ -191,7 +192,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             Properties auditProps = new Properties();
             auditProps.put("idpAlias", issuerAlias);
             auditProps.put("passive", "true");
-            recordInfoAuditTrail("SP-SSOR", ActionOutcome.FAILURE, null, exchange, auditProps);
+            recordInfoAuditTrail(Action.SP_SSOR.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
             // Send a 'no-passive' status response
             SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, null, destination);
@@ -305,7 +306,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (principals.size() == 1) {
             principal = principals.iterator().next();
         }
-        recordInfoAuditTrail("SP-SSOR", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+        recordInfoAuditTrail(Action.SP_SSOR.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
         Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(fChannel.getFederatedProvider(),
                 SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());

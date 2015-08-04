@@ -96,8 +96,8 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
 
             // build response
             atRes.setAccessToken(at.getAccessToken());
-            atRes.setExpiresIn(BigInteger.valueOf(at.getExpiresIn()));
-            atRes.setTokeyType(at.getTokenType());
+            atRes.setExpiresIn(at.getExpiresIn());
+            atRes.setTokenType(at.getTokenType());
 
         } catch (OAuth2ServerException e) {
             // Send oauth error in response

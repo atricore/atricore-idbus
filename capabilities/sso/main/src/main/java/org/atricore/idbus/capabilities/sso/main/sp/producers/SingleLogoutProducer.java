@@ -49,6 +49,7 @@ import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
@@ -166,7 +167,7 @@ public class SingleLogoutProducer extends SSOProducer {
                 principal = principals.iterator().next();
             }
 
-            recordInfoAuditTrail("SP-SLOR", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+            recordInfoAuditTrail(Action.SP_SLOR.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
             SSOSessionManager sessionMgr = ((IdPChannel)channel).getSessionManager();
             try {

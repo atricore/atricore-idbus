@@ -78,7 +78,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         // ---------------------------------------------------------------
         EndpointDescriptor response_uri = resolveAccessTokenConsumerEndpoint(OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME.toString());
 
-        FacebookClient fb = new DefaultFacebookClient(Version.VERSION_2_2);
+        FacebookClient fb = new DefaultFacebookClient(Version.VERSION_2_3);
 
         int retry = 0;
         FacebookClient.AccessToken at = null;
@@ -104,7 +104,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         }
 
         // Now create a new instance with the token
-        fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_2);
+        fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_3);
 
         retry = 0;
         User user = null;

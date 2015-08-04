@@ -39,6 +39,7 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
@@ -470,7 +471,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                 // ?!
             }
         }
-        recordInfoAuditTrail("SP-SLO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+        recordInfoAuditTrail(Action.SP_SLO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
         if (binding.isFrontChannel()) {
 

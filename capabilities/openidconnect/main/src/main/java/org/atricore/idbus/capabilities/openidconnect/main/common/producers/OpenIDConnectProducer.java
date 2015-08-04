@@ -12,7 +12,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 
 /**
- * Created by sgonzalez on 3/11/14.
+ * Base OpenID Connect producer
  */
 public class OpenIDConnectProducer extends AbstractCamelProducer<CamelMediationExchange>
         implements OpenIDConnectConstants {

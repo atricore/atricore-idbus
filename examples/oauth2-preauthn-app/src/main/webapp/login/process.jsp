@@ -1,4 +1,4 @@
-1<%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2Client" %>
+<%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2Client" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2ClientException" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolver" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken" %>
