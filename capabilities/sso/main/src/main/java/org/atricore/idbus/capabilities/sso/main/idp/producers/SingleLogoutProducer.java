@@ -53,6 +53,7 @@ import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
@@ -203,7 +204,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         performBackChannelSlo(exchange, secCtx, null);
 
-        recordInfoAuditTrail("SLO-TOUT", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
+        recordInfoAuditTrail(Action.SLO_TOUT.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
 
         // Send status response!
         if (logger.isDebugEnabled())
@@ -330,7 +331,7 @@ public class SingleLogoutProducer extends SSOProducer {
             auditProps.put("spId", pSecCtxCurrent.getProviderId().getValue());
 
             pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_SUCCESS);
-            recordInfoAuditTrail("SLOR", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+            recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -339,7 +340,7 @@ public class SingleLogoutProducer extends SSOProducer {
             auditProps.put("spId", pSecCtxCurrent.getProviderId().getValue());
 
             pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_FAILED);
-            recordInfoAuditTrail("SLOR", ActionOutcome.FAILURE, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+            recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.FAILURE, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
         }
 
         // Keep sending SLO Requests
@@ -679,7 +680,7 @@ public class SingleLogoutProducer extends SSOProducer {
                 auditProps.put("spId", pSecCtx.getProviderId().getValue());
                 Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
                 pSecCtx.setSloStatus(IdentityProviderConstants.SP_SLO_SUCCESS);
-                recordInfoAuditTrail("SLOR", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+                recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
 
                 continue;
 
@@ -754,7 +755,7 @@ public class SingleLogoutProducer extends SSOProducer {
         secCtx.clear();
 
         // Audit information
-        recordInfoAuditTrail("SLO", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
+        recordInfoAuditTrail(Action.SLO.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
 
         // We can send the response using any front-channel binding                .
         // SSOBinding binding = SSOBinding.asEnum(endpoint.getBinding());
@@ -869,7 +870,7 @@ public class SingleLogoutProducer extends SSOProducer {
                     if (logger.isDebugEnabled())
                         logger.debug("SP requested SLO, avoid sending back-channel request" + sloRequest.getIssuer().getValue());
                     pSecCtx.setSloStatus(IdentityProviderConstants.SP_SLO_SUCCESS);
-                    recordInfoAuditTrail("SLOR", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+                    recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
                     continue;
 
                 }
@@ -945,10 +946,10 @@ public class SingleLogoutProducer extends SSOProducer {
                     if (logger.isDebugEnabled())
                         logger.debug("No back-channel SLO performed for " + pSecCtx.getProviderId());
                     pSecCtx.setSloStatus(IdentityProviderConstants.SP_SLO_FAILED);
-                    recordInfoAuditTrail("SLOR", ActionOutcome.FAILURE, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+                    recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.FAILURE, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
                 } else {
                     pSecCtx.setSloStatus(IdentityProviderConstants.SP_SLO_SUCCESS);
-                    recordInfoAuditTrail("SLOR", ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+                    recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
                 }
 
             }

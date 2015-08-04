@@ -87,6 +87,7 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailu
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.*;
@@ -808,7 +809,7 @@ public class SingleSignOnProducer extends SSOProducer {
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
-            recordInfoAuditTrail("SSO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+            recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
             if (((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
                 // --------------------------------------------------------------------
@@ -962,7 +963,7 @@ public class SingleSignOnProducer extends SSOProducer {
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
 
-            recordInfoAuditTrail("SSO", ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
+            recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
             // The authentication failed, let's see what needs to be done.
 

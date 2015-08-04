@@ -23,4 +23,7 @@ public interface AuditingServer {
      */
     void processAuditTrail(String category, String severity, String action, ActionOutcome outcome, String subject, Date time, Throwable error, Properties props);
 
+    void registerHandler(AuditHandler handler);
+
+    void unregisterHandler(AuditHandler handler);
 }

@@ -38,6 +38,7 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
@@ -238,7 +239,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
             Properties auditProps = new Properties();
             auditProps.put("idpAlias", idp.getAlias());
-            recordInfoAuditTrail("SP-SSO", ActionOutcome.SUCCESS, null, exchange, auditProps);
+            recordInfoAuditTrail(Action.SP_SSO.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP

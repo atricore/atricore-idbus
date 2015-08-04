@@ -32,11 +32,23 @@ public class BaseAuditingServer implements AuditingServer {
 
     @Override
     public void processAuditTrail(AuditTrail at) {
-        // TODO : Call all handlers
+        for (AuditHandler handler : handlers) {
+            handler.processAuditTrail(at);
+        }
     }
 
     @Override
     public void processAuditTrail(String category, String severity, String action, ActionOutcome outcome, String subject, Date time, Throwable error, Properties props) {
         processAuditTrail(new BaseAuditTrail(category, severity, action, outcome, subject, time, error, props));
+    }
+
+    @Override
+    public void registerHandler(AuditHandler handler) {
+        handlers.add(handler);
+    }
+
+    @Override
+    public void unregisterHandler(AuditHandler handler) {
+        handlers.remove(handler);
     }
 }
