@@ -51,7 +51,7 @@
         <google-http-client-jackson.version>1.17.0-rc</google-http-client-jackson.version>
         <google-jsr305.version>1.3.9</google-jsr305.version>
         <httpclient.version>4.0.1</httpclient.version>
-        <facebook.restfb.version>1.8.0</facebook.restfb.version>
+        <facebook.restfb.version>1.14.0</facebook.restfb.version>
 
         <idbus.kernel.version>1.4.1-SNAPSHOT</idbus.kernel.version>
         <idbus.sts.version>1.4.1-SNAPSHOT</idbus.sts.version>
