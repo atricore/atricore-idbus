@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.openidconnect.main.binding;
+package org.atricore.idbus.capabilities.openidconnect.main.proxy.binding;
 
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
