@@ -7,7 +7,7 @@ public enum SamlR2AttributeProfileType {
 
     BASIC("Basic", "urn:oasis:names:tc:SAML:2.0:profiles:attribute:basic"),
     JOSSO("JOSSO", "urn:org:atricore:SAML:2.0:profiles:attribute:josso"),
-    ONE_TO_ONE("JOSSO", "urn:org:atricore:SAML:2.0:profiles:attribute:one-to-one"),
+    ONE_TO_ONE("One To One", "urn:org:atricore:SAML:2.0:profiles:attribute:one-to-one"),
     CUSTOM("CUSTOM", "urn:org:atricore:SAML:2.0:profiles:attribute:custom");
 
     private String displayName;

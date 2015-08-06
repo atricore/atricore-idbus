@@ -1,77 +1,90 @@
 package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes;
 
-
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
-import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-/**
- *
- */
-public class OneToOneAttributeProfileMapper extends BaseAttributeProfileMapper {
+public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
-    private static final Log logger = LogFactory.getLog(JOSSOAttributeProfileMapper.class);
+    private static final Log logger = LogFactory.getLog(DynamicAttributeProfileMapper.class);
 
-    public OneToOneAttributeProfileMapper() {
-        setType(SamlR2AttributeProfileType.ONE_TO_ONE);
+    private static final String PRINCIPAL_ATTR_NAME = "_principal";
+    private static final String GROUPS_ATTR_NAME = "_groups";
+
+    private Map<String, AttributeMapping> attributeMaps = new HashMap<String, AttributeMapping>();
+
+    public DynamicAttributeProfileMapper() {
+        setType(SamlR2AttributeProfileType.CUSTOM);
     }
 
     @Override
     protected Collection<AttributeType> userToAttributes(SSOUser ssoUser) {
 
-        List<AttributeType> attrProps = new ArrayList<AttributeType>();
+        List<AttributeType> userAttrs = new ArrayList<AttributeType>();
+
+        AttributeMapping principalAttributeMapping = getAttributeMapping(PRINCIPAL_ATTR_NAME);
+        if (principalAttributeMapping != null) {
+            // Add an attribute for the principal
+            AttributeType attrPrincipal = new AttributeType();
+            attrPrincipal.setName((principalAttributeMapping.getReportedAttrName() != null &&
+                                  !principalAttributeMapping.getReportedAttrName().equals("")) ?
+                    principalAttributeMapping.getReportedAttrName() : "principal");
+            attrPrincipal.setNameFormat(principalAttributeMapping.getReportedAttrNameFormat());
+            attrPrincipal.getAttributeValue().add(ssoUser.getName());
+        }
 
         // This will add SSO User properties as attribute statements.
-
         if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
 
+            // Keep attributes simple, if they are URIs, remove prefixes
             for (SSONameValuePair property : ssoUser.getProperties()) {
-                AttributeType attrProp = new AttributeType();
+                AttributeMapping attributeMapping = getAttributeMapping(property.getName());
+                if (attributeMapping != null) {
+                    AttributeType attrProp = new AttributeType();
 
-                // Only qualify property names if needed
-                attrProp.setName(property.getName());
-                if (property.getName().indexOf(':') >= 0) {
-                    attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
-                } else {
-                    attrProp.setNameFormat(AttributeNameFormat.BASIC.getValue());
+                    attrProp.setName((attributeMapping.getReportedAttrName() != null &&
+                                     !attributeMapping.getReportedAttrName().equals("")) ?
+                            attributeMapping.getReportedAttrName() : property.getName());
+
+                    attrProp.setFriendlyName(attrProp.getName());
+
+                    attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
+                    attrProp.getAttributeValue().add(property.getValue());
+
+                    userAttrs.add(attrProp);
                 }
-
-                attrProp.getAttributeValue().add(property.getValue());
-                attrProps.add(attrProp);
             }
         }
 
-        return attrProps;
-
+        return userAttrs;
     }
 
     @Override
     protected Collection<AttributeType> rolesToAttributes(Set<SSORole> ssoRoles) {
-        // Groups
+
         List<AttributeType> attrRoles = new ArrayList<AttributeType>();
 
-        AttributeType attrRole = new AttributeType();
+        AttributeMapping groupsAttributeMapping = getAttributeMapping(GROUPS_ATTR_NAME);
+        if (groupsAttributeMapping != null) {
+            AttributeType attrRole = new AttributeType();
 
-        attrRole.setName("groups");
-        attrRole.setNameFormat(AttributeNameFormat.BASIC.getValue());
-        for (SSORole role : ssoRoles)
-            attrRole.getAttributeValue().add(role.getName());
+            attrRole.setName((groupsAttributeMapping.getReportedAttrName() != null &&
+                    !groupsAttributeMapping.getReportedAttrName().equals("")) ?
+                    groupsAttributeMapping.getReportedAttrName() : "groups");
+            attrRole.setFriendlyName(attrRole.getName());
+            attrRole.setNameFormat(AttributeNameFormat.BASIC.getValue());
+            for(SSORole role : ssoRoles)
+                attrRole.getAttributeValue().add( role.getName() );
 
-        attrRoles.add(attrRole);
+            attrRoles.add(attrRole);
+        }
 
         return attrRoles;
-
-
     }
 
     @Override
@@ -80,15 +93,15 @@ public class OneToOneAttributeProfileMapper extends BaseAttributeProfileMapper {
         // TODO : Can we use SAML Authn context information ?!
         List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
 
-        for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicies) {
+        for (SSOPolicyEnforcementStatement ssoPolicy : ssoPolicies) {
             AttributeType attrPolicy = new AttributeType();
 
-            attrPolicy.setFriendlyName(ssoPolicyEnforcement.getName());
-            attrPolicy.setName(ssoPolicyEnforcement.getNs() + ":" + ssoPolicyEnforcement.getName());
+            attrPolicy.setFriendlyName(ssoPolicy.getName());
+            attrPolicy.setName(ssoPolicy.getNs() + ":" + ssoPolicy.getName());
             attrPolicy.setNameFormat(AttributeNameFormat.URI.getValue());
 
-            if (ssoPolicyEnforcement.getValues().size() > 0) {
-                for (Object v : ssoPolicyEnforcement.getValues())
+            if (ssoPolicy.getValues().size() > 0) {
+                for (Object v : ssoPolicy.getValues())
                     attrPolicy.getAttributeValue().add(v);
             }
 
@@ -96,13 +109,14 @@ public class OneToOneAttributeProfileMapper extends BaseAttributeProfileMapper {
         }
 
         return attrPolicies;
-
     }
 
     @Override
     protected Collection<AttributeType> tokenToAttributes(SecurityToken securityToken) {
+
         // Additional tokens
         List<AttributeType> attrTokens = new ArrayList<AttributeType>();
+
         if (securityToken.getSerializedContent() != null &&
                 securityToken.getNameIdentifier() != null) {
 
@@ -152,6 +166,15 @@ public class OneToOneAttributeProfileMapper extends BaseAttributeProfileMapper {
         }
 
         return attrTokens;
+    }
 
+    private AttributeMapping getAttributeMapping(String attrName) {
+        return attributeMaps.get(attrName);
+    }
+
+    public void setAttributeMaps(List<AttributeMapping> attributeMaps) {
+        for (AttributeMapping attributeMapping : attributeMaps) {
+            this.attributeMaps.put(attributeMapping.getAttrName(), attributeMapping);
+        }
     }
 }

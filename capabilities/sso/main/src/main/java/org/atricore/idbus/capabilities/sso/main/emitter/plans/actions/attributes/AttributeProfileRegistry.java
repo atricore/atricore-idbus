@@ -20,14 +20,14 @@ public class AttributeProfileRegistry {
         return mappers.get(name);
     }
 
-    public void register(SamlR2AttributeProfileMapper mapper) {
+    public void register(final SamlR2AttributeProfileMapper mapper, final Map<String, ?> properties) {
         if (mappers.get(mapper.getName()) != null)
             throw new RuntimeException("Mapper already registered for name " + mapper.getName());
 
         mappers.put(mapper.getName(), mapper);
     }
 
-    public void unregister(SamlR2AttributeProfileMapper mapper) {
+    public void unregister(final SamlR2AttributeProfileMapper mapper, final Map<String, ?> properties) {
         mappers.remove(mapper.getName());
     }
 
@@ -37,7 +37,7 @@ public class AttributeProfileRegistry {
 
     public void setBuiltInMappers(List<SamlR2AttributeProfileMapper> builtInStrategies) {
         for (SamlR2AttributeProfileMapper mapper : builtInStrategies) {
-            register(mapper);
+            register(mapper, null);
         }
     }
 }
