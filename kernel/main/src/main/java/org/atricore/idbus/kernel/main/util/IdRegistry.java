@@ -14,7 +14,7 @@ public interface IdRegistry {
     /**
      *
      * @param id new ID to be added to the registry
-     * @param timeToLive time to live in seconds, the time the ID will be stored in the registry.
+     * @param timeToLiveInSecs time to live in seconds, the time the ID will be stored in the registry.
      */
-    void register(String id, int timeToLive);
+    void register(String id, int timeToLiveInSecs);
 }

@@ -1,12 +1,16 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWEDecrypter;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.*;
+import com.nimbusds.oauth2.sdk.AuthorizationGrant;
 import com.nimbusds.oauth2.sdk.auth.*;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
@@ -14,10 +18,7 @@ import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.JWTID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
-import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
-import com.nimbusds.openid.connect.sdk.OIDCScopeValue;
-import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,12 +26,16 @@ import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectB
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMediator;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
+import org.atricore.idbus.capabilities.openidconnect.main.op.*;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
+import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.Artifact;
+import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
+import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -39,13 +44,20 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
+import org.atricore.idbus.kernel.main.util.IdRegistry;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.*;
+import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
+import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
+import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
+import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.*;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -57,6 +69,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
     private static final Log logger = LogFactory.getLog(TokenProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
+    
+    // Ten seconds (TODO : Get from mediator/console)
+    private long timeToleranceInMillis = 10L * 1000L;
 
     public TokenProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
         super(endpoint);
@@ -70,8 +85,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
         TokenRequest tokenRequest = (TokenRequest) in.getMessage().getContent();
         MediationState state = in.getMessage().getState();
 
-
         OpenIDConnectBinding binding = OpenIDConnectBinding.asEnum(endpoint.getBinding());
+
         EndpointDescriptor errorEndpoint = new EndpointDescriptorImpl("rp-error",
                 OpenIDConnectService.TokenService.toString(),
                 binding.getValue(), null, null);
@@ -93,35 +108,42 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Validate the incoming request
         OIDCClientInformation clientInfo = validateRequest(exchange, tokenRequest);
 
-        // Depending on the authorization grant, we perform different emissions
-        // TODO : Support other grant types
-        if (grant.getType().equals(GrantType.JWT_BEARER) ||
+        // ----------------------------------------------
+        // Emit tokens from Grant
+        // ----------------------------------------------
+        ClientID clientID = clientInfo.getID();
+        long now = System.currentTimeMillis();
+        AccessToken at = null;
+        RefreshToken rt = null;
+        String idToken = null;
+        OpenIDConnectSecurityTokenEmissionContext ctx = new OpenIDConnectSecurityTokenEmissionContext();
+
+        // Make Grant specific validations
+        // ----------------------------------------------
+        if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
+
+            ctx = emitAccessTokenFromAuthzCode(clientInfo, (AuthorizationCodeGrant) grant, ctx);
+            at = ctx.getAccessToken();
+            rt = ctx.getRefreshToken();
+            idToken = ctx.getIDToken();
+
+
+        } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
                 grant.getType().equals(JWT_BEARER_PWD)) {
 
-            JWTBearerGrant jwtBearerGrant = (JWTBearerGrant) grant;
 
-            JWT assertion = jwtBearerGrant.getJWTAssertion();
-            ReadOnlyJWTClaimsSet claimsSet = assertion.getJWTClaimsSet();
+            ctx = emitTokensForJWTBearer(clientInfo, (JWTBearerGrant) grant, ctx);
+            at = ctx.getAccessToken();
+            rt = ctx.getRefreshToken();
+            idToken = ctx.getIDToken();
 
-            // Is this bearer with pwd ?
-            if (claimsSet.getClaim("cred") != null) {
-                // Now, if the cred claim is available, and the grant is supported, use basic auth for the user.
-                String username = claimsSet.getSubject();
-                String password = (String) claimsSet.getClaim("cred");
 
-                //emitTokensFrom
-            }
+        } else {
+            logger.warn("Unsupported grant_type : " + grant.getType().getValue());
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
         }
 
-
-
-        // Issue Access Token
-
-        // Issue Refresh Token (optional)
-
-        // Issue ID Token
-
-        TokenResponse tokenResponse = buildAccessTokenResponse();
+        TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, at, idToken, rt);
 
         // Send response back (this is a back-channel request)
         /*
@@ -135,8 +157,89 @@ public class TokenProducer extends AbstractOpenIDProducer {
         exchange.setOut(out);
         */
 
+    }
+
+    protected OpenIDConnectSecurityTokenEmissionContext emitTokensWithBasicAuthn(
+            ClientInformation clientInfo,
+            OpenIDConnectSecurityTokenEmissionContext ctx,
+            String username,
+            String password) throws Exception {
+
+        MessageQueueManager aqm = getArtifactQueueManager();
+
+        // -------------------------------------------------------
+        // Emit a new security token
+        // -------------------------------------------------------
+
+        // TODO : Improve communication mechanism between STS and IDP!
+        // Queue this contenxt and send the artifact as RST context information
+        Artifact emitterCtxArtifact = aqm.pushMessage(ctx);
+
+        SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
+        // Send artifact id as RST context information, similar to relay state.
+        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, username, password, emitterCtxArtifact.getContent());
+
+        if (logger.isDebugEnabled())
+            logger.debug("Requesting OAuth 2 Access Token (RST) w/context " + rst.getContext());
+
+        // Send request to STS
+        try {
+            RequestSecurityTokenResponseType rstrt = sts.requestSecurityToken(rst);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
+
+            // Recover emission context, to retrieve Subject information
+            ctx = (OpenIDConnectSecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
+
+            // Obtain access token from STS Response
+            JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
+            AccessToken accessToken = (AccessToken) token.getValue().getAny();
+            if (logger.isDebugEnabled())
+                logger.debug("Generated OAuth Access Token [" + accessToken.getValue() + "]");
+
+            ctx.setAccessToken(accessToken);
+
+            // Return context with Assertion and Subject
+            return ctx;
+        } catch (SecurityTokenAuthenticationFailure e) {
+            logger.error(e.getMessage());
+            throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED, "authn_failure");
+        }
 
 
+    }
+
+    private RequestSecurityTokenType buildRequestSecurityToken(ClientInformation client,
+                                                               String username,
+                                                               String password,
+                                                               String context) throws OpenIDConnectException {
+        logger.debug("generating RequestSecurityToken...");
+        org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
+
+        RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
+
+        rstRequest.getAny().add(of.createTokenType(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE));
+        rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
+
+        org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
+
+        // Send credentials with authn request:
+        UsernameTokenType usernameToken = new UsernameTokenType ();
+        org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString usernameString = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString();
+        usernameString.setValue( username );
+
+        usernameToken.setUsername(usernameString);
+        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password);
+        usernameToken.getOtherAttributes().put(CLIENT_ID, client.getID().getValue());
+
+        rstRequest.getAny().add(ofwss.createUsernameToken(usernameToken));
+
+        if (context != null)
+            rstRequest.setContext(context);
+
+        logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+        return rstRequest;
     }
 
     /**
@@ -198,111 +301,88 @@ public class TokenProducer extends AbstractOpenIDProducer {
         }
 
 
-        // Emit tokens from Grant
-        AccessToken at = null;
-        RefreshToken rt = null;
-        JWT idToken = null;
-
-        // ----------------------------------------------
-        // Make Grant specific validations
-        // ----------------------------------------------
-        if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
-
-            at = emitAccessTokenFromAuthzCode(clientInfo, (AuthorizationCodeGrant) grant);
-            idToken = emitIDTokenFromAuthzCode(clientInfo, (AuthorizationCodeGrant) grant);
-
-        } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
-                grant.getType().equals(JWT_BEARER_PWD)) {
-
-            at = emitAccessTokenFromJWTWith(clientInfo, (JWTBearerGrant) grant);
-            //idToken = emitIDTokenFromJWT(clientInfo, (JWTBearerGrant) grant);
-
-            if (logger.isTraceEnabled())
-                logger.trace("Validating JWT Bearer Grant [" + expectedClientId.getValue() + "]");
-
-            try {
-                // This grant type is stateless, no authorization code is required
-                JWTBearerGrant jwtBearerGrant = (JWTBearerGrant) grant;
-                SignedJWT clientAssertion = (SignedJWT) jwtBearerGrant.getJWTAssertion();
-
-                // TODO : Configure HMAC Algorithm ?!
-                SecretKey secretKey = getKey(clientInfo);
-                if (!clientAssertion.verify(new MACVerifier(secretKey.getEncoded())))
-                    throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "invalid signature");
-
-                ReadOnlyJWTClaimsSet claims = clientAssertion.getJWTClaimsSet();
-
-                if (claims.getExpirationTime().getTime() < now)
-                    throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "exp: error");
-
-                if (claims.getNotBeforeTime().getTime() > now)
-                    throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "nbt: error");
-
-            } catch (java.text.ParseException e) {
-                logger.error(e.getMessage(), e);
-                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, e.getMessage());
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, e.getMessage());
-            }
-
-
-        } else {
-            logger.warn("Unsupported grant_type : " + grant.getType().getValue());
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Client ["+clientID.getValue()+"] grant validated: " + grant.getType().getValue());
-
-
         return clientInfo;
 
     }
 
-    protected AccessToken emitAccessTokenFromJWTWith(ClientInformation clientInfo, JWTBearerGrant grant) throws OpenIDConnectProviderException {
+    /**
+     * For now this only works for JWT Bearer PWD gratn (josso extension)
+     */
+    protected OpenIDConnectSecurityTokenEmissionContext emitTokensForJWTBearer(ClientInformation clientInfo,
+                                                                               JWTBearerGrant grant,
+                                                                               OpenIDConnectSecurityTokenEmissionContext ctx) throws OpenIDConnectProviderException {
 
         try {
 
+            if (logger.isTraceEnabled())
+                logger.trace("Validating JWT Bearer Grant [" + clientInfo.getID().getValue() + "]");
+
+            long now = System.currentTimeMillis();
+
             // Authenticate User with JWT
             JWT assertion = grant.getJWTAssertion();
+            if (!(assertion instanceof EncryptedJWT)) {
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "not-encrypted");
+            }
 
-            ReadOnlyJWTClaimsSet claims = assertion.getJWTClaimsSet();
+            EncryptedJWT encryptedAssertion = (EncryptedJWT) assertion;
 
-            // Decrypt?!
+            // Decrypt :  TODO : Verify encrypt options (configure in cosole)
+            JWEDecrypter decrypter = new DirectDecrypter(getKey(clientInfo));
+            encryptedAssertion.decrypt(decrypter);
+
+            ReadOnlyJWTClaimsSet claims = encryptedAssertion.getJWTClaimsSet();
+
+            // Unique JWT ID
+            String jit = claims.getJWTID();
+            OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
+            IdRegistry idRegistry = mediator.getIdRegistry();
+            if (jit == null || idRegistry.isUsed(jit)) {
+                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, grant.getType() + " : invalid jti");
+            }
+
+            // Get user credentials (only jwt-bearer-pwd supported for now).
             String username = claims.getSubject();
+            if (username == null)
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "no subject");
+
             String password = (String) claims.getClaim("cred");
+            if (password == null)
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "no password");
 
-            // TODO : Make configurable
-            long lifetimeInSecs = 600L;
+            if (claims.getExpirationTime() != null && claims.getExpirationTime().getTime() < now + getTimeToleranceInMillis())
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "exp: error");
 
-            // TODO : Make supported/available scopes configurable, and request based (token/authorization requests)
-            // TODO : Link with attribute profiles ?!
-            Scope scopes = new Scope();
-            scopes.add(OIDCScopeValue.OPENID);
-            scopes.add(OIDCScopeValue.EMAIL);
-            scopes.add(OIDCScopeValue.PROFILE);
+            if (claims.getNotBeforeTime() != null && claims.getNotBeforeTime().getTime() > now + getTimeToleranceInMillis())
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "nbt: error");
 
-            BearerAccessToken token = new BearerAccessToken(64, lifetimeInSecs, scopes);
+            // Actually emit the tokens
+            emitTokensWithBasicAuthn(clientInfo, ctx, username, password);
 
-            return token;
+            if (ctx.getAccessToken() == null) {
+                logger.error("No AccessToken found for " + grant.getType().getValue());
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+            }
 
+            return ctx;
+        } catch (OpenIDConnectProviderException e) {
+            throw e;
         } catch (java.text.ParseException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+        } catch (JOSEException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+        } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
         }
     }
 
-    protected JWT emitIDTokenFromJWTWith(ClientInformation clientInfo, JWTBearerGrant grant) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-
-    protected AccessToken emitAccessTokenFromAuthzCode(ClientInformation clientInfo, AuthorizationCodeGrant grant) {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-
-    protected JWT emitIDTokenFromAuthzCode(ClientInformation clientInfo, AuthorizationCodeGrant grant) {
+    protected OpenIDConnectSecurityTokenEmissionContext emitAccessTokenFromAuthzCode(ClientInformation clientInfo, AuthorizationCodeGrant grant, OpenIDConnectSecurityTokenEmissionContext ctx) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -313,6 +393,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             Secret secret = null;
             ClientID clientId = null;
+            long now = System.currentTimeMillis();
 
             ClientAuthenticationMethod enabledAuthnMethod = clientInfo.getMetadata().getTokenEndpointAuthMethod();
             ClientAuthentication clientAuthn = tokenRequest.getClientAuthentication();
@@ -381,18 +462,38 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 clientId = clientJWTAuthn.getClientID();
 
                 // Verify signature w/secret
-                JWSVerifier verifier = new MACVerifier(clientInfo.getSecret().getValueBytes());
+                JWSVerifier verifier = new MACVerifier(getKey(clientInfo).getEncoded());
                 SignedJWT assertion = clientJWTAuthn.getClientAssertion();
                 if (!assertion.verify(verifier)) {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid signature");
                 }
 
-                // TODO : Verify other JWT Token attributes
+                // Audience
+                FederationChannel fChannel = (FederationChannel) channel;
                 Audience aud = clientJWTAuthn.getJWTAuthenticationClaimsSet().getAudience();
-                Date exp = clientJWTAuthn.getJWTAuthenticationClaimsSet().getExpirationTime();
-                Date iat = clientJWTAuthn.getJWTAuthenticationClaimsSet().getIssueTime();
-                JWTID jit = clientJWTAuthn.getJWTAuthenticationClaimsSet().getJWTID();
+                String expectedAudience = fChannel.getMember().getAlias();
+                if (!aud.getValue().equals(expectedAudience))
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_audience " + aud.getValue());
 
+                // Expiration date
+                Date exp = clientJWTAuthn.getJWTAuthenticationClaimsSet().getExpirationTime();
+                if (exp == null || exp.getTime() < now + getTimeToleranceInMillis())
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : expired JWT");
+
+                // Issue At time
+                Date iat = clientJWTAuthn.getJWTAuthenticationClaimsSet().getIssueTime();
+                if (iat == null || iat.getTime() > now + getTimeToleranceInMillis())
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid iat");
+
+                // Unique JWT ID
+                JWTID jti = clientJWTAuthn.getJWTAuthenticationClaimsSet().getJWTID();
+                OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
+                IdRegistry idRegistry = mediator.getIdRegistry();
+                if (jti == null || idRegistry.isUsed(jti.getValue())) {
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid jti");
+                }
+
+                idRegistry.register(jti.getValue(), 60 * 60); // Mark the JIT used for an hour.
 
             } else if (clientAuthn instanceof PrivateKeyJWT) {
                 // TODO : Implement this
@@ -406,6 +507,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
             }
 
         } catch (JOSEException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_CLIENT, "client authentication error");
+        } catch (NoSuchAlgorithmException e) {
             logger.error(e.getMessage(), e);
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_CLIENT, "client authentication error");
         }
@@ -488,7 +592,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
         return r;
     }
 
-    protected TokenResponse buildAccessTokenResponse() {
+    protected TokenResponse buildAccessTokenResponse(OIDCClientInformation clientInfo, AccessToken at, String idToken, RefreshToken rt) {
+
         return null;
     }
 
@@ -501,4 +606,16 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     }
 
+    /**
+     * Only works for OpenID Provider channels, using OpenIDConnectOPMediator mediator instances.
+     * @return
+     */
+    protected MessageQueueManager getArtifactQueueManager() {
+        OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator ) channel.getIdentityMediator();
+        return mediator.getArtifactQueueManager();
+    }
+
+    public long getTimeToleranceInMillis() {
+        return timeToleranceInMillis;
+    }
 }

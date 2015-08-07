@@ -9,6 +9,8 @@ import javax.xml.namespace.QName;
  */
 public interface OpenIDConnectConstants {
 
+    QName CLIENT_ID = new QName("urn:org:atricore:idbus:openidconnect:op", "clientID");
+
     // Open ID Connect
     QName AuthorizationGrant_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "AuthorizationGrant");
 

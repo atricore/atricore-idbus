@@ -40,7 +40,7 @@ public class AtricoreIDAccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     @Override
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
-        // We can emit for any context with a valid subject when Token Type is SAMLR2!
+        // We can emit for any context with a valid subject when Token Type is OAuth2!
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
                 WSTConstants.WST_OAUTH2_TOKEN_TYPE.equals(tokenType);
     }
