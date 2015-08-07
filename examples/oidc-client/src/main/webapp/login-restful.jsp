@@ -34,9 +34,13 @@
 
         // use SHA-1 to generate a hash from your key and trim the result to 256 bit (32 bytes)
         byte[] key = props.getProperty("oidc.client.secret").getBytes("UTF-8");
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        key = sha.digest(key);
-        key = Arrays.copyOf(key, 32);
+
+        if (key.length != 32) {
+            // We need a 32 byte length key, so  ...
+            MessageDigest sha = MessageDigest.getInstance("SHA-1");
+            key = sha.digest(key);
+            key = Arrays.copyOf(key, 32);
+        }
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
 
         URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));

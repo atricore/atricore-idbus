@@ -19,6 +19,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.JWTID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,10 +33,7 @@ import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
-import org.atricore.idbus.kernel.main.mediation.Artifact;
-import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
-import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -108,6 +106,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Validate the incoming request
         OIDCClientInformation clientInfo = validateRequest(exchange, tokenRequest);
 
+        FederationChannel fChannel = (FederationChannel) channel;
+
         // ----------------------------------------------
         // Emit tokens from Grant
         // ----------------------------------------------
@@ -116,7 +116,12 @@ public class TokenProducer extends AbstractOpenIDProducer {
         AccessToken at = null;
         RefreshToken rt = null;
         String idToken = null;
+
+        // Prepare emission context
         OpenIDConnectSecurityTokenEmissionContext ctx = new OpenIDConnectSecurityTokenEmissionContext();
+        ctx.setIssuer(fChannel.getMember().getAlias());
+
+        // TODO : Session information ?
 
         // Make Grant specific validations
         // ----------------------------------------------
@@ -146,16 +151,16 @@ public class TokenProducer extends AbstractOpenIDProducer {
         TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, at, idToken, rt);
 
         // Send response back (this is a back-channel request)
-        /*
+
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 tokenResponse,
                 "AccessTokenResponse",
-                null,
+                "application/json",
                 null, // TODO
                 in.getMessage().getState()));
 
         exchange.setOut(out);
-        */
+
 
     }
 
@@ -328,7 +333,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             EncryptedJWT encryptedAssertion = (EncryptedJWT) assertion;
 
             // Decrypt :  TODO : Verify encrypt options (configure in cosole)
-            JWEDecrypter decrypter = new DirectDecrypter(getKey(clientInfo));
+            JWEDecrypter decrypter = new DirectDecrypter(KeyUtils.getKey(clientInfo));
             encryptedAssertion.decrypt(decrypter);
 
             ReadOnlyJWTClaimsSet claims = encryptedAssertion.getJWTClaimsSet();
@@ -462,7 +467,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 clientId = clientJWTAuthn.getClientID();
 
                 // Verify signature w/secret
-                JWSVerifier verifier = new MACVerifier(getKey(clientInfo).getEncoded());
+                JWSVerifier verifier = new MACVerifier(KeyUtils.getKey(clientInfo).getEncoded());
                 SignedJWT assertion = clientJWTAuthn.getClientAssertion();
                 if (!assertion.verify(verifier)) {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid signature");
@@ -514,19 +519,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_CLIENT, "client authentication error");
         }
 
-    }
-
-    protected SecretKey getKey(ClientInformation clientInfo) throws NoSuchAlgorithmException {
-
-        // TODO : Is this standard procedure ?!
-        byte[] key = clientInfo.getSecret().getValueBytes();
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        key = sha.digest(key);
-        key = Arrays.copyOf(key, 32);
-
-        SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-
-        return secretKey;
     }
 
     /**
@@ -593,8 +585,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
     }
 
     protected TokenResponse buildAccessTokenResponse(OIDCClientInformation clientInfo, AccessToken at, String idToken, RefreshToken rt) {
-
-        return null;
+        return new OIDCAccessTokenResponse(at, rt, idToken);
     }
 
     protected void validateRequest(TokenRequest tokenRequest, OpenIDConnectAuthnContext authnCtx) throws OpenIDConnectException {

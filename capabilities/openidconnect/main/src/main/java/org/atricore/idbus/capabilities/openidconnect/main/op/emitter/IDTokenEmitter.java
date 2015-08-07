@@ -13,6 +13,7 @@ import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
+import org.atricore.idbus.capabilities.openidconnect.main.op.KeyUtils;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectSecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
@@ -91,13 +92,15 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
                     throw new SecurityTokenEmissionException("Cannot find OIDC Client " + clientId);
                 }
 
-                IDTokenClaimsSet claimsSet = buildClaimSet(subject, null, client);
+                OpenIDConnectSecurityTokenEmissionContext ctx = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
+
+                IDTokenClaimsSet claimsSet = buildClaimSet(ctx, subject, null, client);
                 if (claimsSet == null) {
                     logger.debug("No claim set created for subject, probably no SSOUser principal found. " + subject);
                     return null;
                 }
 
-                SecretKey secretKey = getKey(client);
+                SecretKey secretKey = KeyUtils.getKey(client);
                 SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet.toJWTClaimsSet());
 
                 // Apply the HMAC
@@ -143,7 +146,8 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
         return null;
     }
 
-    protected IDTokenClaimsSet buildClaimSet(Subject subject,
+    protected IDTokenClaimsSet buildClaimSet(OpenIDConnectSecurityTokenEmissionContext ctx,
+                                             Subject subject,
                                              List<AbstractPrincipalType> proxyPrincipals,
                                              OIDCClientInformation client) {
 
@@ -155,13 +159,11 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
         SSOUser user = ssoUsers.iterator().next();
 
-        String idpAlias = null;
-
         // sub : subject
         com.nimbusds.oauth2.sdk.id.Subject sub = new com.nimbusds.oauth2.sdk.id.Subject(user.getName());
 
         // iss : issuer
-        Issuer iss = new Issuer(idpAlias);
+        Issuer iss = new Issuer(ctx.getIssuer());
 
         // aud : audience
         List<Audience> aud = Arrays.asList(new Audience(client.getID().getValue()));
@@ -246,19 +248,6 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
     protected OIDCClientInformation resolveClientInformation(String clientId) {
         return clients.get(clientId);
-    }
-
-    protected SecretKey getKey(ClientInformation clientInfo) throws NoSuchAlgorithmException {
-
-        // TODO : Is this standard procedure ?!
-        byte[] key = clientInfo.getSecret().getValueBytes();
-        MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        key = sha.digest(key);
-        key = Arrays.copyOf(key, 32);
-
-        SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-
-        return secretKey;
     }
 
 }

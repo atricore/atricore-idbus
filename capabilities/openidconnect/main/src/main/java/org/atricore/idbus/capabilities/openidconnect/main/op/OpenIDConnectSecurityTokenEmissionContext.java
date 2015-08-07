@@ -18,17 +18,13 @@ public class OpenIDConnectSecurityTokenEmissionContext implements Serializable {
 
         private String sessionIndex;
 
-        private SSOSession ssoSession;
-
-        private String identityPlanName;
-
-        private CircleOfTrustMemberDescriptor member;
-
         private AccessToken accessToken;
 
         private RefreshToken refreshToken;
 
         private String idToken;
+
+        private String issuer;
 
         public Subject getSubject() {
                 return subject;
@@ -44,30 +40,6 @@ public class OpenIDConnectSecurityTokenEmissionContext implements Serializable {
 
         public void setSessionIndex(String sessionIndex) {
                 this.sessionIndex = sessionIndex;
-        }
-
-        public SSOSession getSsoSession() {
-                return ssoSession;
-        }
-
-        public void setSsoSession(SSOSession ssoSession) {
-                this.ssoSession = ssoSession;
-        }
-
-        public String getIdentityPlanName() {
-                return identityPlanName;
-        }
-
-        public void setIdentityPlanName(String identityPlanName) {
-                this.identityPlanName = identityPlanName;
-        }
-
-        public CircleOfTrustMemberDescriptor getMember() {
-                return member;
-        }
-
-        public void setMember(CircleOfTrustMemberDescriptor member) {
-                this.member = member;
         }
 
         public void setAccessToken(AccessToken accessToken) {
@@ -92,5 +64,13 @@ public class OpenIDConnectSecurityTokenEmissionContext implements Serializable {
 
         public void setRefreshToken(RefreshToken refreshToken) {
                 this.refreshToken = refreshToken;
+        }
+
+        public String getIssuer() {
+                return issuer;
+        }
+
+        public void setIssuer(String issuer) {
+                this.issuer = issuer;
         }
 }
