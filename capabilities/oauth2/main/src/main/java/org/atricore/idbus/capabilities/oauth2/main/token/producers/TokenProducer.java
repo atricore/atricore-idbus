@@ -73,8 +73,6 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
                 throw new OAuth2ServerException(ErrorCodeType.UNAUTHORIZED_CLIENT, "Invalid clientId/clientSecret");
             }
 
-            // TODO : Determine if we have user credentials, or an authorization token
-
             // Authenticate the client, unless an error has occurred.
             authenticateRequest(client, atReq, atRes);
 
@@ -85,8 +83,6 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
             //securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
 
-            // TODO : Support : EMIT ACCESS TOKEN From AUTHORIZATION TOKEN
-            // TODO : Support JWT (OpenID Connect)
             emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
 
             // Call STS and wait for OAuth AccessToken

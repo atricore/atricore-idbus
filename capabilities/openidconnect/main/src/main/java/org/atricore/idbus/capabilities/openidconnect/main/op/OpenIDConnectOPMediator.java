@@ -14,6 +14,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.util.IdRegistry;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,6 +26,8 @@ import java.util.Set;
 public class OpenIDConnectOPMediator extends AbstractCamelMediator {
 
     private static final Log logger = LogFactory.getLog(OpenIDConnectOPMediator.class);
+
+    private IdRegistry idRegistry;
 
     public OpenIDConnectOPMediator() {
         logger.info("OpenIDConnectOPMediator Instantiated");
@@ -99,73 +102,6 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
         };
     }
 
-    protected RouteBuilder createClaimRoutes(final ClaimChannel claimChannel) throws Exception {
-        logger.info("Creating OAuth2 Claim Routes");
-
-        return new RouteBuilder() {
-
-            @Override
-            public void configure() throws Exception {
-
-                // --------------------------------------------------
-                // Process configured endpoints for this channel
-                // --------------------------------------------------
-                Collection<IdentityMediationEndpoint> endpoints = claimChannel.getEndpoints();
-
-                if (endpoints == null)
-                    throw new IdentityMediationException("No endpoints defined for claims channel : " + claimChannel.getName());
-
-                for (IdentityMediationEndpoint endpoint : endpoints) {
-
-                    OpenIDConnectBinding binding = OpenIDConnectBinding.asEnum(endpoint.getBinding());
-                    EndpointDescriptor ed = resolveEndpoint(claimChannel, endpoint);
-
-                    switch (binding) {
-                        case SSO_ARTIFACT:
-                            // FROM idbus-http TO idbus-bind
-                            from("idbus-http:" + ed.getLocation()).
-                                    process(new LoggerProcessor(getLogger())).
-                                    to("direct:" + ed.getName());
-
-                            // FROM idbus-bind TO domino (claim processing)
-                            from("idbus-bind:camel://direct:" + ed.getName() +
-                                    "?binding=" + ed.getBinding() +
-                                    "&channelRef=" + claimChannel.getName()).
-                                    process(new LoggerProcessor(getLogger())).
-                                    to("domino:" + ed.getType() +
-                                            "?channelRef=" + claimChannel.getName() +
-                                            "&endpointRef=" + endpoint.getName());
-
-                            if (ed.getResponseLocation() != null) {
-
-                                // FROM idbus-http TO idbus-bind
-                                from("idbus-http:" + ed.getResponseLocation()).
-                                        process(new LoggerProcessor(getLogger())).
-                                        to("direct:" + ed.getName() + "-response");
-
-                                // FROM idbus-bind TO domino (token negotiation)
-                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
-                                        "?binding=" + ed.getBinding() +
-                                        "&channelRef=" + claimChannel.getName()).
-                                        process(new LoggerProcessor(getLogger())).
-                                        to("domino:" + ed.getType() +
-                                                "?channelRef=" + claimChannel.getName() +
-                                                "&endpointRef=" + endpoint.getName() +
-                                                "&response=true");
-                            }
-
-                            break;
-
-                        default:
-                            throw new OpenIDConnectException("Unsupported OAuth2 Binding " + binding.getValue());
-                    }
-
-                }
-            }
-        };
-
-    }
-
 
     public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
         // SAMLR2 Endpoint springmetadata definition
@@ -221,4 +157,11 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
                 responseLocation);
     }
 
+    public IdRegistry getIdRegistry() {
+        return idRegistry;
+    }
+
+    public void setIdRegistry(IdRegistry idRegistry) {
+        this.idRegistry = idRegistry;
+    }
 }

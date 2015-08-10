@@ -23,8 +23,7 @@ package org.atricore.idbus.capabilities.sts.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.Constants;
-import org.atricore.idbus.kernel.main.authn.SecurityToken;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
@@ -35,6 +34,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.FindSecurityToken
 import org.atricore.idbus.kernel.main.provisioning.spi.request.RemoveSecurityTokenRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.AddSecurityTokenResponse;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityTokensByExpiresOnBeforeResponse;
+import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
@@ -44,8 +44,8 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenServiceImpl;
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.security.Principal;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -71,6 +71,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     private MessageQueueManager artifactQueueManager;
 
     private String name;
+
+    private SSOIdentityManager identityManager;
 
     /**
      * The provisioning target selected for this STS instance.
@@ -144,6 +146,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             subject = authenticate(requestToken.getValue(), tokenType.getValue());
             if (logger.isTraceEnabled())
                 logger.trace( "User " + subject + " authenticated successfully" );
+
+            // Resolve subject
+
+            subject = resolveSubject(subject);
 
             processingContext.setProperty(SUBJECT_PROP, subject);
 
@@ -345,6 +351,74 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     }
 
+    protected Subject resolveSubject(Subject subject) {
+        Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+        Set<SimplePrincipal> simplePrincipals = subject.getPrincipals(SimplePrincipal.class);
+
+        if (ssoUsers != null && ssoUsers.size() > 0) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Emitting token for Subject with SSOUser");
+
+            // Build Subject
+            // s = new Subject(true, s.getPrincipals(), s.getPrivateCredentials(), s.getPublicCredentials());
+        } else {
+
+            try {
+
+                // Resolve SSOUser
+                SimplePrincipal sp = simplePrincipals.iterator().next();
+                String username = sp.getName();
+
+                SSOIdentityManager idMgr = getIdentityManager();
+
+                if (idMgr == null) {
+                    logger.trace("No IdentityManger configured, using default subject");
+                    return subject;
+                }
+
+                // Obtain SSOUser principal
+                SSOUser ssoUser = null;
+                SSORole[] ssoRoles = null;
+                if (idMgr != null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Resolving SSOUser for " + username);
+                    ssoUser = idMgr.findUser(username);
+                    ssoRoles = idMgr.findRolesByUsername(username);
+                } else {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Not resolving SSOUser for " + username);
+                    ssoUser = new BaseUserImpl(username);
+                    ssoRoles = new BaseRoleImpl[0];
+                }
+
+                Set<Principal> principals = new HashSet<Principal>();
+
+                principals.add(ssoUser);
+                principals.addAll(Arrays.asList(ssoRoles));
+
+                // Use existing SSOPolicyEnforcement principals
+                Set<SSOPolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(SSOPolicyEnforcementStatement.class);
+                if (ssoPolicies != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");
+
+                    principals.addAll(ssoPolicies);
+                }
+
+                // Build Subject
+                subject = new Subject(true, principals, subject.getPublicCredentials(), subject.getPrivateCredentials());
+
+            } catch (Exception e) {
+                throw new SecurityTokenEmissionException(e);
+            }
+
+
+        }
+
+        return subject;
+    }
+
     /**
      * @org.apache.xbean.Property alias="artifact-queue-mgr"
      * @return
@@ -403,6 +477,14 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         this.name = name;
     }
 
+    public SSOIdentityManager getIdentityManager() {
+        return identityManager;
+    }
+
+    public void setIdentityManager(SSOIdentityManager identityManager) {
+        this.identityManager = identityManager;
+    }
+
     protected void checkExpiredTokens() {
 
         try {
@@ -430,4 +512,6 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
     }
+
+
 }
