@@ -232,7 +232,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     protected boolean validatePassword(String inputPassword, String expectedPassword) {
 
         if (logger.isDebugEnabled())
-            logger.debug("Validating passwords [" + inputPassword + "/" + expectedPassword + "]");
+            logger.debug("Validating passwords...");
 
         // Validate input and expected passwords.
         if (inputPassword == null && expectedPassword == null)
@@ -284,7 +284,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("Creating password hash for [" + password + "] with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
+            logger.debug("Creating password hash with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
 
         // Check for special encryption mechanisms, not supported by the JDK
         if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {

@@ -145,7 +145,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             // -----------------------------------------
             subject = authenticate(requestToken.getValue(), tokenType.getValue());
             if (logger.isTraceEnabled())
-                logger.trace( "User " + subject + " authenticated successfully" );
+                logger.trace( "User " + subjectToString(subject) + " authenticated successfully" );
 
             // Resolve subject
 
@@ -417,6 +417,27 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
         return subject;
+    }
+
+    protected String subjectToString(Subject subject) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Subject:\n");
+
+        Iterator<Principal> principalIter = subject.getPrincipals().iterator();
+        while (principalIter.hasNext()) {
+            sb.append("\tPrincipal: ");
+            sb.append(principalIter.next().toString());
+            sb.append("\n");
+        }
+
+        Iterator<Object> publicCredentialIter = subject.getPublicCredentials().iterator();
+        while (publicCredentialIter.hasNext()) {
+            sb.append("\tPublic Credential: ");
+            sb.append(publicCredentialIter.next().toString());
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
     /**

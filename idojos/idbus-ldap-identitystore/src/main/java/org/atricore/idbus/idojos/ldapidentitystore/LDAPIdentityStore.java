@@ -171,6 +171,7 @@ public class LDAPIdentityStore extends AbstractStore  {
     private String _userPropertiesQueryString;
     private String _ldapSearchScope;
     private String _updateableCredentialAttribute;
+    private boolean _includeOperationalAttributes;
 
     private String _referrals = "follow";
 
@@ -805,7 +806,7 @@ public class LDAPIdentityStore extends AbstractStore  {
 
         // Logon into LDAP server
         if (logger.isDebugEnabled())
-            logger.debug("Logging into LDAP server, env=" + env);
+            logger.debug("Logging into LDAP server...");
 
         InitialLdapContext ctx = new InitialLdapContext(env, null);
 
@@ -881,6 +882,8 @@ public class LDAPIdentityStore extends AbstractStore  {
         SearchControls sc = new SearchControls();
         sc.setSearchScope(_ldapSearchScope == null || _ldapSearchScope.equalsIgnoreCase("ONELEVEL") ?
                 SearchControls.ONELEVEL_SCOPE : SearchControls.SUBTREE_SCOPE);
+        if (isIncludeOperationalAttributes())
+            sc.setReturningAttributes(new String[] { "*", "+" });
         return sc;
     }
 
@@ -1025,5 +1028,13 @@ public class LDAPIdentityStore extends AbstractStore  {
 
     public void setReferrals(String referrals) {
         this._referrals = referrals;
+    }
+
+    public boolean isIncludeOperationalAttributes() {
+        return _includeOperationalAttributes;
+    }
+
+    public void setIncludeOperationalAttributes(boolean includeOperationalAttributes) {
+        this._includeOperationalAttributes = includeOperationalAttributes;
     }
 }

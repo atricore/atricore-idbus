@@ -41,6 +41,8 @@ import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 
 import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
+import java.security.Principal;
+import java.util.Iterator;
 
 /**
  * <p>
@@ -140,7 +142,7 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
         if (samlr2EmissionCtx != null) {
             // Propagate authenticated subject to samlr2 security token emitter context
             samlr2EmissionCtx.setSubject((Subject) context.getProperty(WSTConstants.SUBJECT_PROP));
-            logger.debug("Propagating Subject " + samlr2EmissionCtx.getSubject() + " to Security Token Emission Context");
+            logger.debug("Propagating Subject " + subjectToString(samlr2EmissionCtx.getSubject()) + " to Security Token Emission Context");
 
             // Propagate generated assertion to context.
             AssertionType assertion = (AssertionType) st.getContent();
@@ -151,7 +153,28 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
         }
 
         return st;
-   }
+    }
+
+    protected String subjectToString(Subject subject) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Subject:\n");
+
+        Iterator<Principal> principalIter = subject.getPrincipals().iterator();
+        while (principalIter.hasNext()) {
+            sb.append("\tPrincipal: ");
+            sb.append(principalIter.next().toString());
+            sb.append("\n");
+        }
+
+        Iterator<Object> publicCredentialIter = subject.getPublicCredentials().iterator();
+        while (publicCredentialIter.hasNext()) {
+            sb.append("\tPublic Credential: ");
+            sb.append(publicCredentialIter.next().toString());
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
 
     public SamlR2Signer getSigner() {
         return signer;

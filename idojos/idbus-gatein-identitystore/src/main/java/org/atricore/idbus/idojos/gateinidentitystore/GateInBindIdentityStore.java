@@ -95,7 +95,6 @@ public class GateInBindIdentityStore implements BindableCredentialStore {
             // return this.portalIdentityService.authenticate(username, password);
             log.debug("Performing Authentication........................");
             log.debug("Username: " + username);
-            log.debug("Password: " + password);
 
             /*
             String authnPath = URIUtil.encodePath(
