@@ -97,6 +97,7 @@
         <module>examples/custom-identity-mapper</module>
         <module>examples/custom-identity-vault</module>
         <module>examples/custom-accountlink-emitter</module>
+        <module>examples/custom-audit-handler</module>
         <module>examples/oidc-client</module>
 
         <module>distributions</module>
