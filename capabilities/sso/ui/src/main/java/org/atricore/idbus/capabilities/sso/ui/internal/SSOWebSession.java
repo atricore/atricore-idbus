@@ -29,6 +29,7 @@ import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsReques
 import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
 import org.atricore.idbus.kernel.main.mediation.claim.CredentialClaimsRequest;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsRequest;
+import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
 
 
@@ -42,6 +43,8 @@ public class SSOWebSession extends WebSession {
     private CredentialClaimsRequest credentialClaimsRequest;
 
     private UserClaimsRequest userClaimsRequest;
+
+    private PolicyEnforcementRequest policyEnforcementRequest;
 
     private String lastAppErrorId;
 
@@ -134,5 +137,13 @@ public class SSOWebSession extends WebSession {
 
     public String getLastUsername() {
         return lastUsername;
+    }
+
+    public PolicyEnforcementRequest getPolicyEnforcementRequest() {
+        return policyEnforcementRequest;
+    }
+
+    public void setPolicyEnforcementRequest(PolicyEnforcementRequest policyEnforcementRequest) {
+        this.policyEnforcementRequest = policyEnforcementRequest;
     }
 }

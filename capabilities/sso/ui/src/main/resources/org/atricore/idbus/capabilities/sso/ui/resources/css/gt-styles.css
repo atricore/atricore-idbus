@@ -925,6 +925,49 @@ ul li {
 }
 /* @end */
 
+/* Warning */
+#warning {
+    margin:100px auto 250px;
+}
+
+#warning .highlight {
+    width:510px; float:left;
+}
+#warning .highlight .footer {
+    width:528px; right:0px;
+}
+
+#warning .button {
+    float:right;
+}
+
+#warning #login-options {
+    clear:both; padding-top:10px; width:100%; overflow:hidden;
+}
+
+#warning #login-options #col1  {
+    margin:0 38px 0 0;
+}
+
+#warning #login-options #col1,
+#warning #login-options #col2  {
+    float:left; width:320px;
+}
+
+#warning #login-options h3 {
+    display:block; border-bottom:1px solid #DDDDDD; margin:0 0 5px 0;
+}
+#warning #login-options h4 {
+    float:left; padding:0 5px 0 0; clear:left;
+}
+#warning #login-options p {
+    margin:0; float:left; line-height:1.4;font-size:0.9em;
+}
+#warning #login-options a {
+    font-size:1em;
+}
+/* @end */
+
 /* @group Links - link visited hover active */
 a:link, a:visited {
 	color: #365b6d;
