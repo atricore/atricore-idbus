@@ -100,6 +100,7 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
                     return null;
                 }
 
+                // TODO : Get JWE/JWS options/algorithms from client MD or OP Default settings
                 SecretKey secretKey = KeyUtils.getKey(client);
                 SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet.toJWTClaimsSet());
 
@@ -107,18 +108,7 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
                 JWSSigner signer = new MACSigner(secretKey.getEncoded());
                 signedJWT.sign(signer);
 
-                // TODO : Get JWE/JWS options/algorithms from client MD
-                // TODO : Use signedJWT nested in JWE
-
-                // Create JWE object with signed JWT as payload
-                JWEObject jweObject = new JWEObject(
-                        new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A256GCM).contentType("JWT").build(),
-                        new Payload(signedJWT));
-
-                // Perform encryption
-                jweObject.encrypt(new DirectEncrypter(secretKey.getEncoded()));
-
-                String idTokenStr = jweObject.serialize();
+                String idTokenStr = signedJWT.serialize();
 
                 SecurityTokenImpl st = new SecurityTokenImpl<String>(uuidGenerator.generateId(), idTokenStr);
 

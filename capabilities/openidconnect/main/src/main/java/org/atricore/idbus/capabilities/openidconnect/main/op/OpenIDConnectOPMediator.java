@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -28,6 +29,10 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
     private static final Log logger = LogFactory.getLog(OpenIDConnectOPMediator.class);
 
     private IdRegistry idRegistry;
+
+    private SSOKeystoreKeyResolver signKeyResolver;
+
+    private SSOKeystoreKeyResolver encryptKeyResolver;
 
     public OpenIDConnectOPMediator() {
         logger.info("OpenIDConnectOPMediator Instantiated");
@@ -163,5 +168,21 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
 
     public void setIdRegistry(IdRegistry idRegistry) {
         this.idRegistry = idRegistry;
+    }
+
+    public SSOKeystoreKeyResolver getSignKeyResolver() {
+        return signKeyResolver;
+    }
+
+    public void setSignKeyResolver(SSOKeystoreKeyResolver signKeyResolver) {
+        this.signKeyResolver = signKeyResolver;
+    }
+
+    public SSOKeystoreKeyResolver getEncryptKeyResolver() {
+        return encryptKeyResolver;
+    }
+
+    public void setEncryptKeyResolver(SSOKeystoreKeyResolver encryptKeyResolver) {
+        this.encryptKeyResolver = encryptKeyResolver;
     }
 }
