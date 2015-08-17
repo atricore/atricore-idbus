@@ -610,7 +610,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         // Title :
         Title title = new Title();
-        title.setContent("JOSSO 2 - Processing ..."); // TODO : i18n
+        String customTitle = getConfigurationContext().getProperty("idbus.protocol.page.title");
+        if (customTitle != null) {
+            title.setContent(customTitle);
+        } else {
+            title.setContent("JOSSO 2 - Processing ..."); // TODO : i18n
+        }
         head.getContent().add(title);
 
         html.setHead(head);
