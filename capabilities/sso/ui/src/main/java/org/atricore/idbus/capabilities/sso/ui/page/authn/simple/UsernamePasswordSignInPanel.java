@@ -36,13 +36,16 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.*;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
+import org.atricore.idbus.kernel.main.mediation.Artifact;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
+import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 /**
  * Sign-in panel for simple authentication for collecting username and password credentials.
@@ -262,7 +265,15 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      * The received request contains previous error information
      */
     protected void onPreviousError() {
-        displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
+        Set<SSOPolicyEnforcementStatement> policyStatements = ((SSOWebSession) getSession()).
+                getCredentialClaimsRequest().getSsoPolicyEnforcements();
+        if (policyStatements != null && policyStatements.size() > 0) {
+            for (SSOPolicyEnforcementStatement stmt : policyStatements) {
+                displayFeedbackMessage(getString("claims.text." + stmt.getName(), null, "Unknown Policy Enforcement error"));
+            }
+        } else {
+            displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
+        }
     }
 
     /**

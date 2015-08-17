@@ -306,14 +306,18 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
                 container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
                 ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
-                decoder.decode(ldapControl.getEncodedValue(), container.getPasswordPolicyControl());
+                if (ldapControl.getEncodedValue() != null) {
+                    decoder.decode(ldapControl.getEncodedValue(), container.getPasswordPolicyControl());
 
-                PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+                    PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Password Policy Control : " + ctrl.toString());
+                    if (logger.isDebugEnabled())
+                        logger.debug("Password Policy Control : " + ctrl.toString());
 
-                return ctrl;
+                    return ctrl;
+                } else {
+                    return null;
+                }
             }
         }
 

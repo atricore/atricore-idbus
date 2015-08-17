@@ -16,6 +16,7 @@ import org.atricore.idbus.capabilities.sso.ui.page.authn.twofactor.TwoFactorLogi
 import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.IdBusErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
+import org.atricore.idbus.capabilities.sso.ui.page.warn.PolicyEnforcementWarningsPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdchange.PwdChangePage;
@@ -88,6 +89,7 @@ public class SSOIdPApplication extends BaseWebApplication {
         addPageMount("AGENT/LOGOUT", JossoLogoutPage.class);
         addPageMount("AGENT/SECURITY_CHECK", JossoSecurityCheckPage.class);
 
+        addPageMount("WARN/POLICY-ENFORCEMENT", PolicyEnforcementWarningsPage.class);
     }
 
     /**
