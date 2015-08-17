@@ -89,6 +89,11 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
                 clientAuthn = ClientSecretBasic.parse(authorization);
             }
 
+            if (clientAuthn == null) {
+                logger.error("Client Authentication is required");
+                throw new RuntimeException(OAuth2Error.UNAUTHORIZED_CLIENT.getCode());
+            }
+
             // Authorization Grant
             AuthorizationGrant authzGrant = AuthorizationGrant.parse(params);
 

@@ -23,6 +23,7 @@ package org.atricore.idbus.kernel.main.mediation.camel;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.ErrorHandlerBuilder;
 import org.apache.camel.component.cxf.transport.CamelTransportFactory;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.JndiRegistry;
@@ -199,7 +200,9 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
     }
 
     protected CamelContext createCamelContext() throws Exception {
-        return new DefaultCamelContext(createRegistry());
+        DefaultCamelContext defaultCtx = new DefaultCamelContext(createRegistry());
+        // TODO : Modify Redelivery policy. Set retries to 1 (default is 3)
+        return defaultCtx;
     }
 
     protected JndiRegistry createRegistry() throws Exception {

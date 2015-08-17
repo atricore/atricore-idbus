@@ -1,10 +1,7 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWEDecrypter;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.DirectDecrypter;
-import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
@@ -21,6 +18,7 @@ import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
@@ -28,6 +26,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.Constants;
@@ -44,6 +43,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.IdRegistry;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.bouncycastle.crypto.tls.EncryptionAlgorithm;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.*;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
@@ -56,8 +56,10 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPrivateKey;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 
 /**
  *
@@ -232,7 +234,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Send credentials with authn request:
         UsernameTokenType usernameToken = new UsernameTokenType ();
         org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString usernameString = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString();
-        usernameString.setValue( username );
+        usernameString.setValue(username);
 
         usernameToken.setUsername(usernameString);
         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password);
@@ -298,7 +300,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
         if (grant == null)
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:n/a");
-        if (clientInfo.getOIDCMetadata().getGrantTypes().contains(grant.getType())) {
+        if (!clientInfo.getOIDCMetadata().getGrantTypes().contains(grant.getType())) {
             if (logger.isDebugEnabled())
                 logger.debug("Invalid Authorization Grant ["+tokenRequest.getAuthorizationGrant()+"] for Client " + expectedClientId.getValue());
 
@@ -330,17 +332,33 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "not-encrypted");
             }
 
-            EncryptedJWT encryptedAssertion = (EncryptedJWT) assertion;
+            OIDCClientMetadata md = (OIDCClientMetadata) clientInfo.getMetadata();
 
-            // Decrypt :  TODO : Verify encrypt options (configure in cosole)
-            JWEDecrypter decrypter = new DirectDecrypter(KeyUtils.getKey(clientInfo));
-            encryptedAssertion.decrypt(decrypter);
+            OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
 
-            ReadOnlyJWTClaimsSet claims = encryptedAssertion.getJWTClaimsSet();
+            ReadOnlyJWTClaimsSet claims = null;
+            if (md.getRequestObjectJWEEnc() != null) {
+                EncryptedJWT encryptedAssertion = (EncryptedJWT) assertion;
+                JWEDecrypter decrypter = getDecrypter(mediator, clientInfo);
+                if (decrypter == null)
+                    throw new OpenIDConnectProviderException(OAuth2Error.SERVER_ERROR, "invalid JWE Encryption setup");
+                encryptedAssertion.decrypt(decrypter);
+
+                // This must be a nested JWS
+                Payload payload = encryptedAssertion.getPayload();
+                SignedJWT signedAssertion = payload.toSignedJWT();
+
+                // TODO : Verify signature !
+                JWSVerifier verifier = getVerifier(mediator, clientInfo);
+
+                signedAssertion.verify(verifier);
+
+                // Todo Verify signature of nested JWT ?!
+                claims = signedAssertion.getJWTClaimsSet();
+            }
 
             // Unique JWT ID
             String jit = claims.getJWTID();
-            OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
             IdRegistry idRegistry = mediator.getIdRegistry();
             if (jit == null || idRegistry.isUsed(jit)) {
                 throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, grant.getType() + " : invalid jti");
@@ -609,4 +627,101 @@ public class TokenProducer extends AbstractOpenIDProducer {
     public long getTimeToleranceInMillis() {
         return timeToleranceInMillis;
     }
+
+
+    protected JWEDecrypter getDecrypter(OpenIDConnectOPMediator mediator, ClientInformation clientInfo)
+            throws SSOKeyResolverException, NoSuchAlgorithmException, JOSEException {
+
+        OIDCClientMetadata md = (OIDCClientMetadata) clientInfo.getMetadata();
+
+        if (isEncryptionMethodSupported(DirectDecrypter.SUPPORTED_ENCRYPTION_METHODS, md.getRequestObjectJWEEnc()) &&
+            isEncryptionAlgorithmSupported(DirectDecrypter.SUPPORTED_ALGORITHMS, md.getRequestObjectJWEAlg())) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using Direct Decrypter, Shared Secret");
+                return new DirectDecrypter(KeyUtils.getKey(clientInfo));
+        }
+
+        if (isEncryptionMethodSupported(RSADecrypter.SUPPORTED_ENCRYPTION_METHODS, md.getRequestObjectJWEEnc()) &&
+            isEncryptionAlgorithmSupported(RSADecrypter.SUPPORTED_ALGORITHMS, md.getRequestObjectJWEAlg())) {
+            RSAPrivateKey pkey = (RSAPrivateKey) mediator.getEncryptKeyResolver().getPrivateKey();
+            if (logger.isDebugEnabled())
+                logger.debug("Using RSA Decrypter, Private Key " + pkey.getFormat());
+            return new RSADecrypter(pkey);
+        }
+
+        if (isEncryptionMethodSupported(AESDecrypter.SUPPORTED_ENCRYPTION_METHODS, md.getRequestObjectJWEEnc()) &&
+                isEncryptionAlgorithmSupported(AESDecrypter.SUPPORTED_ALGORITHMS, md.getRequestObjectJWEAlg())) {
+            if (logger.isDebugEnabled())
+                logger.debug("Using AES Decrypter, Shared Secret");
+            return new AESDecrypter(KeyUtils.getKey(clientInfo));
+        }
+
+        logger.warn("No JWE Decrypter created for " + md.getRequestObjectJWEEnc().getName() + "/" + md.getRequestObjectJWEAlg().getName());
+        return null;
+    }
+
+    protected JWSVerifier getVerifier(OpenIDConnectOPMediator mediator, ClientInformation clientInfo)
+            throws NoSuchAlgorithmException {
+
+        OIDCClientMetadata md = (OIDCClientMetadata) clientInfo.getMetadata();
+        if (isSigngingAlgorithmSupported(MACVerifier.SUPPORTED_ALGORITHMS, md.getRequestObjectJWSAlg())) {
+            if (logger.isDebugEnabled())
+                logger.debug("Using MAC Verifier, Shared Secret");
+            return new MACVerifier(KeyUtils.getKey(clientInfo).getEncoded());
+        }
+
+        if (isSigngingAlgorithmSupported(RSASSAVerifier.SUPPORTED_ALGORITHMS, md.getRequestObjectJWSAlg())) {
+            throw new IllegalArgumentException("RSA Singature not supported");
+            // TODO : return new RSASSAVerifier(/*public key*/)
+        }
+
+        if (isSigngingAlgorithmSupported(ECDSAVerifier.SUPPORTED_ALGORITHMS, md.getRequestObjectJWSAlg())) {
+            throw new IllegalArgumentException("RSA Singature not supported");
+            // TODO : return new ECDSAVerifier(/*??*/)
+        }
+
+        logger.warn("No JWS Verifier created for " + md.getRequestObjectJWSAlg());
+        return null;
+
+    }
+
+    protected boolean isSigngingAlgorithmSupported(Set<JWSAlgorithm> supportedALgorithms, JWSAlgorithm jwsAlg) {
+        if (supportedALgorithms == null)
+            return false;
+
+        for (JWSAlgorithm sa : supportedALgorithms) {
+            if (sa.getName().equals(jwsAlg.getName()))
+                return true;
+        }
+
+        return false;
+    }
+
+    protected boolean isEncryptionMethodSupported(Set<EncryptionMethod> supportedEncryptionMethods,
+                                            EncryptionMethod jweEnc) {
+        if (supportedEncryptionMethods == null) {
+            return false;
+        }
+
+        for(EncryptionMethod em : supportedEncryptionMethods) {
+            if (em.getName().equals(jweEnc.getName()))
+                return true;
+        }
+
+        return false;
+    }
+
+    protected boolean isEncryptionAlgorithmSupported(Set<JWEAlgorithm> supportedAlgorithms,
+                                                     JWEAlgorithm jweAlg) {
+        if (supportedAlgorithms == null)
+            return false;
+
+        for (JWEAlgorithm ea : supportedAlgorithms) {
+            if (ea.getName().equals(jweAlg.getName()))
+                return true;
+        }
+        return false;
+    }
+
+
 }
