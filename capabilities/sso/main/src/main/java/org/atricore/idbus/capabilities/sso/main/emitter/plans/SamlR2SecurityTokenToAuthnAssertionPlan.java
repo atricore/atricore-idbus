@@ -78,10 +78,19 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
             Set<SSOUser> ssoUsers = s.getPrincipals(SSOUser.class);
             Set<SimplePrincipal> simplePrincipals = s.getPrincipals(SimplePrincipal.class);
 
+            // User requested locale:
+            Locale locale = null;
+            if (ctx.getAuthnState() != null)
+                locale = ctx.getAuthnState().getLocale();
+
             if (ssoUsers != null && ssoUsers.size() > 0) {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Emitting token for Subject with SSOUser");
+
+                BaseUser ssoUser = (BaseUser) ssoUsers.iterator().next();
+                if (locale != null)
+                    ssoUser.addProperty("userLocale", locale.toString());
 
             } else if (simplePrincipals != null && simplePrincipals.size() > 0) {
 
@@ -111,6 +120,9 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                     ssoRoles = new BaseRoleImpl[0];
 
                 }
+
+                if (locale != null)
+                    ((BaseUser)ssoUser).addProperty("userLocale", locale.toString());
 
                 // Additional information
                 if (ctx.getProxyPrincipals() != null) {
@@ -171,8 +183,6 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
 
 
                 }
-
-
 
                 principals.add(ssoUser);
                 principals.addAll(Arrays.asList(ssoRoles));
