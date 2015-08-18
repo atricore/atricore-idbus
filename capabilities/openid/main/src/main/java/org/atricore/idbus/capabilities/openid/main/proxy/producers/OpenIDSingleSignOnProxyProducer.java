@@ -157,6 +157,9 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
                         endpoint,
                         channel.getClaimProviders().iterator().next(),
                         uuidGenerator.generateId());
+//      TODO: Add locale support
+//        if (locale != null)
+//            claimsRequest.setLocale(locale);
 
         // --------------------------------------------------------------------
         // Send claims request

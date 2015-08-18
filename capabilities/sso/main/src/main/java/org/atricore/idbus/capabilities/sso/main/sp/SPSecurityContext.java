@@ -26,6 +26,7 @@ import org.atricore.idbus.kernel.main.federation.AccountLink;
 
 import javax.security.auth.Subject;
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

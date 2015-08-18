@@ -26,6 +26,7 @@ import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -33,6 +34,8 @@ import java.util.Set;
  * @version $Id$
  */
 public class AuthenticationState implements java.io.Serializable {
+
+    private Locale locale;
 
     public AuthenticationState() {
 
@@ -164,5 +167,13 @@ public class AuthenticationState implements java.io.Serializable {
 
     public void setAuthnCtxClass(AuthnCtxClass authnCtxClass) {
         this.authnCtxClass = authnCtxClass;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public Locale getLocale() {
+        return this.locale;
     }
 }

@@ -25,10 +25,7 @@ import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -48,6 +45,8 @@ public class CredentialClaimsRequestImpl implements CredentialClaimsRequest {
     private String skin;
     private String preauthenticationSecurityToken;
     private Map<String, Object> params = new HashMap<String, Object>();
+    private Locale locale;
+
 
     public CredentialClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel) {
         this.id = id;
@@ -149,6 +148,15 @@ public class CredentialClaimsRequestImpl implements CredentialClaimsRequest {
 
     public void setPreauthenticationSecurityToken(String preauthenticationSecurityToken) {
         this.preauthenticationSecurityToken = preauthenticationSecurityToken;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
     public Map<String, Object> getParams() {

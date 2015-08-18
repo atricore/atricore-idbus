@@ -172,6 +172,8 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
 
                 }
 
+
+
                 principals.add(ssoUser);
                 principals.addAll(Arrays.asList(ssoRoles));
 

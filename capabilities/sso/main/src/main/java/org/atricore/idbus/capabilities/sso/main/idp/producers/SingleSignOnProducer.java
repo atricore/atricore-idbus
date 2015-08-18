@@ -425,6 +425,8 @@ public class SingleSignOnProducer extends SSOProducer {
         // Validate AuthnRequest
         validateRequest(authnRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
+        Locale locale = getLocaleFromAuthRequest(authnRequest);
+
         // -----------------------------------------------------------------------------
         // Keep track of request IDs
         // -----------------------------------------------------------------------------
@@ -471,6 +473,7 @@ public class SingleSignOnProducer extends SSOProducer {
         authnState.setReceivedRelayState(relayState);
         authnState.setResponseMode(responseMode);
         authnState.setResponseFormat(responseFormat);
+        authnState.setLocale(locale);
 
         if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
 
@@ -542,7 +545,8 @@ public class SingleSignOnProducer extends SSOProducer {
                 }
 
                 // TODO : Use a plan authnreq to claimsreq
-                logger.debug("Selected claims endpoint : " + claimEndpoint);
+                if (logger.isDebugEnabled())
+                    logger.debug("Selected claims endpoint : " + claimEndpoint);
 
                 // Create Claims Request
                 SSOCredentialClaimsRequest claimsRequest = null;
@@ -564,6 +568,9 @@ public class SingleSignOnProducer extends SSOProducer {
                             claimChannel,
                             uuidGenerator.generateId());
                 }
+
+                if (locale != null)
+                    claimsRequest.setLocale(locale);
 
                 // Send our state ID as relay
                 claimsRequest.setRelayState(mediationState.getLocalState().getId());
@@ -1003,6 +1010,8 @@ public class SingleSignOnProducer extends SSOProducer {
                     endpoint,
                     claimChannel,
                     uuidGenerator.generateId());
+
+            claimsRequest.setLocale(authnState.getLocale());
 
             // We're retrying the same endpoint type, mark the authentication as failed
             if (prevClaimsEndpoint != null && prevClaimsEndpoint.getType().equals(claimEndpoint.getType()))
@@ -1657,7 +1666,7 @@ public class SingleSignOnProducer extends SSOProducer {
         SSOUser ssoUser = null;
         Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
         if (p != null && p.size() > 0) {
-            // We have a simple princiapl, Look for an SSOUser instance
+            // We have a simple principal, Look for an SSOUser instance
             SimplePrincipal user = p.iterator().next();
             SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
             if (identityMgr != null)
@@ -2764,6 +2773,28 @@ public class SingleSignOnProducer extends SSOProducer {
             }
         } catch (IdentityMediationException e) {
             throw new SSOException(e);
+        }
+
+        return null;
+    }
+
+    protected Locale getLocaleFromAuthRequest(AuthnRequestType authnRequest){
+        if(authnRequest.getExtensions() != null)
+        {
+            // TODO : Look for a specific element
+            List localeElem =  authnRequest.getExtensions().getAny();
+            logger.debug("localeElem is found under Extensions element is: " + localeElem);
+
+            if(localeElem != null){
+                String localeCode = ((org.w3c.dom.Node)(localeElem.get(0))).getTextContent();
+                if (logger.isDebugEnabled())
+                    logger.debug("Using AuthnRequest locale: " + localeCode);
+                return new Locale(localeCode);
+
+            }
+
+        }else {
+            logger.trace("No extensions element in authnrequest");
         }
 
         return null;
