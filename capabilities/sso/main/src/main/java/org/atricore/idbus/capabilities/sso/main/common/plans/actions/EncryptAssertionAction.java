@@ -23,9 +23,12 @@ package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.Samlr2AssertionEmissionException;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
+import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -37,26 +40,18 @@ import java.util.Map;
  */
 public class EncryptAssertionAction extends AbstractSSOAssertionAction {
 
+    private static final Log logger = LogFactory.getLog(EncryptAssertionAction.class);
+
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
 
-        AssertionType assertion = null;
+        AssertionType assertion = (AssertionType) out.getContent();
+        SamlR2Encrypter encrypter = (SamlR2Encrypter) executionContext.getContextInstance().getTransientVariable(VAR_SAMLR2_ENCRYPTER);
 
-        // TODO : Get context variables required to encrypt the assertion, like SAMLR2 Metadata
-
-        try {
-             assertion = (AssertionType) out.getContent();
-        } catch (ClassCastException e) {
-            throw new Samlr2AssertionEmissionException( " Object of type [" + out.getContent().getClass().getCanonicalName() + "] can not be encrypted" );
-        }
-
-        Map encrypters = getAppliactionContext().getBeansOfType( SamlR2Encrypter.class );
-        if ( encrypters.values().size() != 1 )
-            throw new Samlr2AssertionEmissionException( "Cannot find a valid Samlr2 encrypter in application context" );
-
-        SamlR2Encrypter encrypter = (SamlR2Encrypter) encrypters.values().iterator().next();
-
+        if (logger.isDebugEnabled())
+            logger.debug("Encrypting assertion " + assertion.getID() + " with signer " + encrypter);
         EncryptedElementType eet = encrypter.encrypt( assertion );
 
-        out.replaceContent( eet );
+        // TODO : Add encrypted assertion as a separate value
+        out.replaceContent(eet);
     }
 }

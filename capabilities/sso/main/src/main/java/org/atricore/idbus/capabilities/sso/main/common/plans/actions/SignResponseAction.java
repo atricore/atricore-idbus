@@ -105,6 +105,8 @@ public class SignResponseAction extends AbstractSSOAction {
                         } else {
                             assertions.add(assertion);
                         }
+                    } else {
+                        // TODO :
                     }
                 }
 

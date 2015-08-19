@@ -71,7 +71,7 @@ import java.security.cert.*;
 import java.util.*;
 
 /**
- * This will sign and verify saml2 identity artifact (assertion, requet, response) signatures usign a JSR 105 Provider.
+ * This will sign and verify saml2 identity artifact (assertion, request, response) signatures usign a JSR 105 Provider.
  * <p/>
  * The provider can be injected or a FQCN can be specified as a system property. A default value will be used if no provider
  * is injected nor configured as system property.
