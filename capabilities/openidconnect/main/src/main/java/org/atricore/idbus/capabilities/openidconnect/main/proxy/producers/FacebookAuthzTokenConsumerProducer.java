@@ -36,6 +36,8 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
 
     private static final int MAX_NUM_OF_FB_API_CALL_RETRIES = 1;
 
+    private static final String TOKEN_FOR_BUSINESS_USER_ATTR_NAME = "fbBusinessToken";
+
     public FacebookAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
     }
@@ -218,6 +220,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         addUserAttribute(PROFILE_LINK_USER_ATTR_NAME, user.getLink(), attrs);
         addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.getVerified()), attrs);
         addUserAttribute(BIRTHDAY_USER_ATTR_NAME, user.getBirthday(), attrs);
+        addUserAttribute(TOKEN_FOR_BUSINESS_USER_ATTR_NAME, user.getTokenForBusiness(), attrs);
     }
 
     private String getUserFullName(User user) {
