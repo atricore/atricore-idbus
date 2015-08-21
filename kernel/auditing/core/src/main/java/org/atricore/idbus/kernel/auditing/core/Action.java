@@ -56,7 +56,7 @@ public enum Action {
     /**
      * SP SLO RESPONSE, SLO Response Processed by an SP
      */
-    SP_SLOR("SP-SLOR"),
+    SP_SLOR("SP-SLOR");
 
     private String value;
 
