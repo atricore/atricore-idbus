@@ -33,6 +33,9 @@ public interface WSTConstants {
     static final String WST_OAUTH2_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#OAUTH2.0";
 
+    static final String WST_OAUTH2_RM_TOKEN_TYPE =
+            "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#RM_OAUTH2.0";
+
     static final String WST_OIDC_AUTHZ_CODE_TYPE =
             "urn:atricore:org:wss:atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0";
 

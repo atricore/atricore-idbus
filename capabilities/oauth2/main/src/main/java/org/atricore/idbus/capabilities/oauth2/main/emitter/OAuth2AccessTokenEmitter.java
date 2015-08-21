@@ -16,6 +16,8 @@ import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 
@@ -43,10 +45,18 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     // Default to 10 minutes (in seconds)
     private long tokenValiditySecs = 60L * 10L;
 
+    private boolean rememberMeTokenEmitter = false;
+
     @Override
     public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
-                WSTConstants.WST_OAUTH2_TOKEN_TYPE.equals(tokenType);
+                WSTConstants.WST_OAUTH2_TOKEN_TYPE.equals(tokenType) && !rememberMeTokenEmitter;
+    }
+
+    @Override
+    public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
+        return super.canEmit(context, requestToken, tokenType) &&
+                (!rememberMeTokenEmitter || rememberMeAttributePresent(requestToken) );
     }
 
     @Override
@@ -55,6 +65,10 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                               String tokenType) throws SecurityTokenEmissionException {
 
         try {
+
+            // If this is a remember-me emitter , only process when requested
+            if (rememberMeTokenEmitter && !rememberMeAttributePresent(requestToken))
+                return null;
 
             Subject subject = (Subject) context.getProperty(WSTConstants.SUBJECT_PROP);
 
@@ -90,7 +104,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
             // Create a security token using the OUT artifact content.
             SecurityTokenImpl st = new SecurityTokenImpl(uuid,
-                    WSTConstants.WST_OAUTH2_TOKEN_TYPE,
+                    isRememberMeTokenEmitter() ? WSTConstants.WST_OAUTH2_RM_TOKEN_TYPE : WSTConstants.WST_OAUTH2_TOKEN_TYPE,
                     oauthToken,
                     tokenValue);
 
@@ -144,70 +158,61 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         // Just a temporary work-around.
         at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.UNKNOWN.toString(), "UNKNOWN"));
 
-        boolean rememberMe = false;
         // Set token expiration, in millis
         long expiresIn = tokenValiditySecs * 1000L;
-        if (requestToken instanceof UsernameTokenType) {
-
-            UsernameTokenType ut = (UsernameTokenType) requestToken;
-            // When the requested token has a remember-me attribute, we must persist the token and set a longer expiration
-            String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
-            if (rememberMeStr != null && Boolean.parseBoolean(rememberMeStr)) {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Emitting OAuth2 token for remember-me for user " + user.getName());
-
-                rememberMe = true;
-            }
-        }
-
 
         // Roles
-        Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
-        Set<String> usedRoles = new HashSet<String>();
+        if (!rememberMeTokenEmitter) {
 
-        for (SSORole ssoRole : ssoRoles) {
-            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
-            usedRoles.add(ssoRole.getName());
-        }
+            // Add all user information if this is not a remember-me token emitter
 
-        Set<String> usedProps = new HashSet<String>();
-        if (user.getProperties() != null) {
-            for (SSONameValuePair property : user.getProperties()) {
-                usedProps.add(property.getName());
-                at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
+            Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
+            Set<String> usedRoles = new HashSet<String>();
+
+            for (SSORole ssoRole : ssoRoles) {
+                at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
+                usedRoles.add(ssoRole.getName());
             }
-        }
 
-        // Add proxy principals (principals received from tho proxied provider), but only if we don't have such a principal yet.
-        if (proxyPrincipals != null) {
-            for (AbstractPrincipalType principal : proxyPrincipals) {
-                if (principal instanceof SubjectAttributeType) {
-                    SubjectAttributeType attr = (SubjectAttributeType) principal;
-                    String name = attr.getName();
-                    if (name != null) {
-                        int idx = name.lastIndexOf(':');
-                        if (idx >= 0) name = name.substring(idx + 1);
-                    }
-
-                    String value = attr.getValue();
-                    if (!usedProps.contains(name)) {
-                        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), name, value));
-                        usedProps.add(name);
-                    }
-                } else if (principal instanceof SubjectRoleType) {
-                    SubjectRoleType role = (SubjectRoleType) principal;
-                    if (!usedRoles.contains(role.getName())) {
-                        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), role.getName()));
-                        usedRoles.add(role.getName());
-                    }
+            Set<String> usedProps = new HashSet<String>();
+            if (user.getProperties() != null) {
+                for (SSONameValuePair property : user.getProperties()) {
+                    usedProps.add(property.getName());
+                    at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
                 }
-
             }
-        }
 
-        if (rememberMe) {
-            //
+            // Add proxy principals (principals received from tho proxied provider), but only if we don't have such a principal yet.
+            if (proxyPrincipals != null) {
+                for (AbstractPrincipalType principal : proxyPrincipals) {
+                    if (principal instanceof SubjectAttributeType) {
+                        SubjectAttributeType attr = (SubjectAttributeType) principal;
+                        String name = attr.getName();
+                        if (name != null) {
+                            int idx = name.lastIndexOf(':');
+                            if (idx >= 0) name = name.substring(idx + 1);
+                        }
+
+                        String value = attr.getValue();
+                        if (!usedProps.contains(name)) {
+                            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), name, value));
+                            usedProps.add(name);
+                        }
+                    } else if (principal instanceof SubjectRoleType) {
+                        SubjectRoleType role = (SubjectRoleType) principal;
+                        if (!usedRoles.contains(role.getName())) {
+                            at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), role.getName()));
+                            usedRoles.add(role.getName());
+                        }
+                    }
+
+                }
+            }
+
+        } else {
+
+            // Change validity if this is a remember me token emitter
+
             // Mark the token as used for remember-me.
             expiresIn = 1000L * 60L * rememberMeTokenValidityMins;
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), Constants.REMEMBERME_NS, "TRUE"));
@@ -268,5 +273,40 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     public void setTokenValiditySecs(long tokenValiditySecs) {
         this.tokenValiditySecs = tokenValiditySecs;
+    }
+
+    public boolean isRememberMeTokenEmitter() {
+        return rememberMeTokenEmitter;
+    }
+
+    public void setRememberMeTokenEmitter(boolean rememberMeTokenEmitter) {
+        this.rememberMeTokenEmitter = rememberMeTokenEmitter;
+    }
+
+    protected boolean rememberMeAttributePresent(Object requestToken) {
+        if (requestToken instanceof UsernameTokenType) {
+
+            UsernameTokenType ut = (UsernameTokenType) requestToken;
+            // When the requested token has a remember-me attribute, we must persist the token and set a longer expiration
+            String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            if (rememberMeStr != null && Boolean.parseBoolean(rememberMeStr)) {
+                return true;
+            }
+        } else if (requestToken instanceof PasswordString) {
+            PasswordString pt = (PasswordString) requestToken;
+            String rememberMeStr = pt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            if (rememberMeStr != null && Boolean.parseBoolean(rememberMeStr)) {
+                return true;
+            }
+        } else if (requestToken instanceof BinarySecurityTokenType) {
+            BinarySecurityTokenType bt = (BinarySecurityTokenType) requestToken;
+            String rememberMeStr = bt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            if (rememberMeStr != null && Boolean.parseBoolean(rememberMeStr)) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 }

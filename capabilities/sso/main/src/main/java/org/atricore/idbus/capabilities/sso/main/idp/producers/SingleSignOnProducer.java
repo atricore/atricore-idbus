@@ -1759,6 +1759,16 @@ public class SingleSignOnProducer extends SSOProducer {
                         String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
                         if (rememberMeStr != null)
                             rememberMe = Boolean.parseBoolean(rememberMeStr);
+                    } else if (cc.getValue() instanceof PasswordString) {
+                        PasswordString pt = (PasswordString) cc.getValue();
+                        String rememberMeStr = pt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                        if (rememberMeStr != null)
+                            rememberMe = Boolean.parseBoolean(rememberMeStr);
+                    } else if (cc.getValue() instanceof BinarySecurityTokenType) {
+                        BinarySecurityTokenType bt = (BinarySecurityTokenType) cc.getValue();
+                        String rememberMeStr = bt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                        if (rememberMeStr != null)
+                            rememberMe = Boolean.parseBoolean(rememberMeStr);
                     }
                 }
             }
@@ -1776,10 +1786,10 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (stmt instanceof AttributeStatementType) {
                     AttributeStatementType attrStmt = (AttributeStatementType) stmt;
                     for (Object o : attrStmt.getAttributeOrEncryptedAttribute()) {
-                        // TODO : What if assertion is encrypted ?! (improve!)
                         if (o instanceof AttributeType) {
                             AttributeType attr = (AttributeType) o;
-                            if (attr.getName().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE + "_ID")) {
+                            // The order is important!
+                            if (attr.getName().startsWith(WSTConstants.WST_OAUTH2_RM_TOKEN_TYPE + "_ID")) {
                                 preAuthnTokenId = (String) attr.getAttributeValue().get(0);
                             }
                         }

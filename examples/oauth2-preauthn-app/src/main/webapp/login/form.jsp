@@ -19,9 +19,13 @@ request.getSession().setAttribute("relay_state", relayState);
 <form action="<%=request.getContextPath()%>/login/process.jsp" method=post>
     <p><strong>User Name: </strong>
         <input type="text" name="username" size="25">
-    <p><p><strong>Password: </strong>
-    <input type="password" size="15" name="password">
-    <p><p>
+    </p>
+    <p><strong>Password: </strong>
+        <input type="password" size="15" name="password">
+    </p>
+    <p>
+        <input type="checkbox" name="rememberMe" value="true"> Remember Me<br>
+    </p>
     <input type="submit" value="Submit">
     <input type="reset" value="Reset">
 </form>

@@ -35,6 +35,8 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.RemoveSecurityTok
 import org.atricore.idbus.kernel.main.provisioning.spi.response.AddSecurityTokenResponse;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityTokensByExpiresOnBeforeResponse;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
@@ -318,32 +320,43 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
         // Check whether we have to persist the token or not.
+        boolean rememberMe = false;
         if (requestToken instanceof UsernameTokenType) {
 
             UsernameTokenType ut = (UsernameTokenType) requestToken;
+            String b = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            rememberMe = Boolean.parseBoolean(b);
 
-            // When the requested token has a remember-me attribute, we must persist the token
-            String rememberMe = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+        } else if (requestToken instanceof PasswordString) {
+            PasswordString ut = (PasswordString) requestToken;
+            String b = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            rememberMe = Boolean.parseBoolean(b);
 
-            if (rememberMe != null && Boolean.parseBoolean(rememberMe)) {
+        } else if (requestToken instanceof BinarySecurityTokenType) {
+            BinarySecurityTokenType ut = (BinarySecurityTokenType) requestToken;
+            String b = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+            rememberMe = Boolean.parseBoolean(b);
 
-                // User requested to be remembered, check weather this is the token to store.
-                String nm = emitted.getNameIdentifier();
+        }
 
-                if (nm != null && nm.equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
-                    // Persist this token
-                    AddSecurityTokenRequest req = new AddSecurityTokenRequest();
-                    req.setTokenId(emitted.getId());
-                    req.setNameIdentifier(emitted.getNameIdentifier());
-                    req.setContent(emitted.getContent());
-                    req.setSerializedContent(emitted.getSerializedContent());
-                    req.setIssueInstant(emitted.getIssueInstant());
+        if (rememberMe) {
 
-                    try {
-                        AddSecurityTokenResponse resp = provisioningTarget.addSecurityToken(req);
-                    } catch (ProvisioningException e) {
-                        logger.error("Cannot store emitted token " + emitted, e);
-                    }
+            // User requested to be remembered, check weather this is the token to store.
+            String nm = emitted.getNameIdentifier();
+
+            if (nm != null && nm.equals(WSTConstants.WST_OAUTH2_RM_TOKEN_TYPE)) {
+                // Persist this token
+                AddSecurityTokenRequest req = new AddSecurityTokenRequest();
+                req.setTokenId(emitted.getId());
+                req.setNameIdentifier(emitted.getNameIdentifier());
+                req.setContent(emitted.getContent());
+                req.setSerializedContent(emitted.getSerializedContent());
+                req.setIssueInstant(emitted.getIssueInstant());
+
+                try {
+                    AddSecurityTokenResponse resp = provisioningTarget.addSecurityToken(req);
+                } catch (ProvisioningException e) {
+                    logger.error("Cannot store emitted token " + emitted, e);
                 }
             }
 

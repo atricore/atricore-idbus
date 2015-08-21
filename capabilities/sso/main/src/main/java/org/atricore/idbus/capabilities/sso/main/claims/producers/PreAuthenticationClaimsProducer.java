@@ -39,6 +39,7 @@ import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.common.sso._1_0.protocol.PreAuthenticatedTokenRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.PreAuthenticatedTokenResponseType;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -54,6 +55,8 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.FindSecurityToken
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityTokenByTokenIdResponse;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
@@ -116,6 +119,9 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
     }
 
 
+    /**
+     * We received a pre-authenticated token, send it as a claims response to the IDP
+     */
     protected void doProcessPreAuthenticatedTokenResponse(CamelMediationExchange exchange, PreAuthenticatedTokenResponseType resp)
         throws Exception {
 
@@ -267,8 +273,15 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             logger.debug("Sending Pre-authn token to " +
                     (ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation()));
 
+        MediationState state = in.getMessage().getState();
+
+        // Create Password Token Claim with the received Pre-Authenticated Token
         PasswordString token = new PasswordString();
         token.setValue(preAuthnToken);
+
+        String rememberMe = state.getTransientVariable("remember_me");
+        if (rememberMe != null)
+            token.getOtherAttributes().put(new QName(Constants.REMEMBERME_NS), Boolean.parseBoolean(rememberMe) ? "TRUE" : "FALSE");
 
         // Endpoint type MUST be authn ctx class
         CredentialClaim credentialClaim = new CredentialClaimImpl(endpoint.getType(), token);
@@ -289,7 +302,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                 "ClaimsResponse",
                 null,
                 ed,
-                in.getMessage().getState()));
+                state));
 
         exchange.setOut(out);
     }

@@ -8,7 +8,7 @@ import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 public enum OpenIDConnectTokenType implements java.io.Serializable {
 
     AUTHZ_CODE ("code", WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE),
-    ACCESS_TOKEN("token", WSTConstants.WST_OAUTH2_TOKEN_TYPE),
+    ACCESS_TOKEN("token", WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE),
     ID_TOKEN("id_token", WSTConstants.WST_OIDC_ID_TOKEN_TYPE);
 
     private String name;
