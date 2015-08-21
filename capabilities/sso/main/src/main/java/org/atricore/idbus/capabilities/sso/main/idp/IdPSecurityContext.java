@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.main.idp;
 import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
+import org.atricore.idbus.kernel.main.authn.SSOUser;
 
 import javax.security.auth.Subject;
 import java.util.Collection;
@@ -95,5 +96,14 @@ public class IdPSecurityContext implements java.io.Serializable {
 
     public void setSloInProgress(boolean sloInProgress) {
         this.sloInProgress = sloInProgress;
+    }
+
+    @Override
+    public String toString() {
+        Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+        SSOUser ssoUser = ssoUsers.size() > 0 ? ssoUsers.iterator().next() : null;
+        String ssoUserName = ssoUser != null ? ssoUser.getName() : "N/A";
+
+        return "sessionIndex=["+sessionIndex+"] ssouser["+ssoUserName+"] authnStatement[" + (authnStatement != null ? authnStatement : "N/A") + "]" ;
     }
 }

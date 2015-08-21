@@ -795,10 +795,11 @@ public class SingleSignOnProducer extends SSOProducer {
             AssertionType assertion = securityTokenEmissionCtx.getAssertion();
             Subject authnSubject = securityTokenEmissionCtx.getSubject();
 
-            SimplePrincipal principal = authnSubject.getPrincipals(SimplePrincipal.class).iterator().next();
+            // Get Principal
+            Principal principal = getPrincipal(authnSubject);
 
             if (logger.isDebugEnabled())
-                logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+                logger.debug("New Assertion " + assertion.getID() + " ["+principal.getName()+"] emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
             // Generate audit trail
@@ -1217,6 +1218,18 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
+
+                Properties auditProps = new Properties();
+                auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+                if (authnState.getCurrentAuthnCtxClass() != null)
+                    auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
+                if (((SPChannel) channel).isProxyModeEnabled())
+                    auditProps.put("idpProxy", "true");
+
+                // Get Principal
+                Principal principal = getPrincipal(authnSubject);
+                recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
@@ -2764,6 +2777,19 @@ public class SingleSignOnProducer extends SSOProducer {
         }
 
         return null;
+    }
+
+    protected Principal getPrincipal(Subject authnSubject) {
+        Set<SimplePrincipal> principals = authnSubject.getPrincipals(SimplePrincipal.class);
+        if (principals != null && principals.size() > 0)
+            return principals.iterator().next();
+
+        Set<SSOUser> ssoUsers = authnSubject.getPrincipals(SSOUser.class);
+        if (ssoUsers != null && ssoUsers.size() > 0)
+            return ssoUsers.iterator().next();
+
+        return null;
+
     }
 
 }
