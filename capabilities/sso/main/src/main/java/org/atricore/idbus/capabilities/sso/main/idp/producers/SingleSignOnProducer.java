@@ -1224,12 +1224,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (authnState.getCurrentAuthnCtxClass() != null)
                     auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
 
-                if (((SPChannel) channel).isProxyModeEnabled())
-                    auditProps.put("idpProxy", "true");
-
                 // Get Principal
                 Principal principal = getPrincipal(authnSubject);
-                recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+                recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
@@ -1314,6 +1311,15 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
+
+            // Generate audit trail
+            Properties auditProps = new Properties();
+            auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+            if (authnState.getCurrentAuthnCtxClass() != null)
+                auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
+            recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
+
         }
 
 

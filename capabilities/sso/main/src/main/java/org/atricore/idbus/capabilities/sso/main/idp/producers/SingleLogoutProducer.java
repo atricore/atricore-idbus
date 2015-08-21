@@ -204,6 +204,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
         performBackChannelSlo(exchange, secCtx, null);
 
+        // TODO : Issue PXY_SLO_TOUT if necessary.
+
         recordInfoAuditTrail(Action.SLO_TOUT.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
 
         // Send status response!
