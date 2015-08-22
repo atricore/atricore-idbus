@@ -336,11 +336,11 @@ public class SingleLogoutProducer extends SSOProducer {
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-
             Properties auditProps = new Properties();
-            auditProps.put("spId", pSecCtxCurrent.getProviderId().getValue());
-
-            pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_FAILED);
+            if (pSecCtxCurrent != null) {
+                auditProps.put("spId", pSecCtxCurrent != null ? pSecCtxCurrent.getProviderId().getValue() : "N/A");
+                pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_FAILED);
+            }
             recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.FAILURE, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
         }
 

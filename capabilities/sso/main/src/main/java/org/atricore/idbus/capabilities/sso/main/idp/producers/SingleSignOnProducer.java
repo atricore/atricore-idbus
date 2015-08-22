@@ -317,11 +317,11 @@ public class SingleSignOnProducer extends SSOProducer {
     * This procedure will handle preauthenticated IdP-initiated (aka IdP unsolicited response) requests.
     */
     protected void doProcessPreAuthenticatedIDPInitiantedSSO(CamelMediationExchange exchange,
-                                                             PreAuthenticatedIDPInitiatedAuthnRequestType PreAuthIdpInitiatedAuthnRequest) throws SSOException {
+                                                             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthIdpInitiatedAuthnRequest) throws SSOException {
 
 
         logger.debug("Processing PreAuthenticated IDP Initiated Single Sign-On with " +
-                PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format"
+                preAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format"
         );
 
         try {
@@ -333,18 +333,21 @@ public class SingleSignOnProducer extends SSOProducer {
             // Resolve target IDP for relaying the Authentication Request
             // ------------------------------------------------------
 
-            logger.debug("Received Security Token [" + PreAuthIdpInitiatedAuthnRequest.getSecurityToken() + "]");
+            if (logger.isDebugEnabled())
+                logger.debug("Received Security Token [" + preAuthIdpInitiatedAuthnRequest.getSecurityToken() + "]");
 
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseMode", "unsolicited");
 
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseFormat",
-                    PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
+                    preAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
 
             //CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
             CircleOfTrustMemberDescriptor idp = ((FederationChannel) channel).getMember();
-            logger.debug("Using IdP " + idp.getAlias());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
             EndpointType idpSsoEndpoint = resolveIdpSsoEndpoint(idp);
@@ -556,6 +559,8 @@ public class SingleSignOnProducer extends SSOProducer {
                             claimChannel,
                             uuidGenerator.generateId(),
                             preAuthnRequest.getSecurityToken());
+                    if (preAuthnRequest.getRememberMe())
+                        claimsRequest.getParams().put("remember_me", "true");
                 } else {
                     claimsRequest = new SSOCredentialClaimsRequest(
                             authnRequest.getID(),

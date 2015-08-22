@@ -26,6 +26,7 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,4 +43,6 @@ public interface CredentialClaimsRequest extends ClaimsRequest {
     String getSkin();
     
     String getPreauthenticationSecurityToken();
+
+    Map<String, String> getParams();
 }
