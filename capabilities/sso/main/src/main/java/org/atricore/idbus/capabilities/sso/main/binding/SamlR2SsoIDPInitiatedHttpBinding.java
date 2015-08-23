@@ -147,27 +147,66 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         // Validate received message
         // ------------------------------------------------------------
         assert ed != null : "Mediation Response MUST Provide a destination";
-        if (out.getContent() != null)
-            throw new IllegalStateException("Content not supported for IDBUS HTTP Redirect bidning");
 
-        // ------------------------------------------------------------
-        // Create HTML Form for response body
-        // ------------------------------------------------------------
-        if (logger.isDebugEnabled())
-            logger.debug("Creating HTML Redirect to " + ed.getLocation());
-
-        String ssoQryString = "";
-
-        ssoQryString += "?ResponseMode=unsolicited";
-
-        if (out.getRelayState() != null) {
-            ssoQryString += "&relayState=" + out.getRelayState() ;
-        }
-
+        String ssoRedirLocation = null;
         Message httpOut = exchange.getOut();
         Message httpIn = exchange.getIn();
 
-        String ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed) + ssoQryString;
+        if (out.getContent() != null) {
+
+            if (out.getContent() instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
+
+                PreAuthenticatedIDPInitiatedAuthnRequestType req = (PreAuthenticatedIDPInitiatedAuthnRequestType) out.getContent();
+                // ------------------------------------------------------------
+                // Send redirect
+                // ------------------------------------------------------------
+                if (logger.isDebugEnabled())
+                    logger.debug("Creating HTML Redirect to " + ed.getLocation());
+
+                String ssoQryString = "";
+
+                ssoQryString += "?ResponseMode=unsolicited";
+
+                if (out.getRelayState() != null) {
+                    ssoQryString += "&relayState=" + out.getRelayState();
+                }
+
+                ssoQryString += "atricore_security_token=" + req.getSecurityToken();
+
+                if (req.getRememberMe() != null)
+                    ssoQryString += "remember_me=" + req.getRememberMe();
+
+                for (RequestAttributeType attr : req.getRequestAttribute()) {
+
+                    if (attr.getName().equals("atricore_sp_alias")) {
+                        ssoQryString += "atricore_sp_alias=" + attr.getValue();
+                    }
+                }
+
+                ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed) + ssoQryString;
+
+
+            } else {
+                throw new IllegalStateException("Content not supported for IDBUS HTTP Redirect bidning");
+            }
+        } else {
+
+            // ------------------------------------------------------------
+            // Send redirec
+            // ------------------------------------------------------------
+            if (logger.isDebugEnabled())
+                logger.debug("Creating HTML Redirect to " + ed.getLocation());
+
+            String ssoQryString = "";
+
+            ssoQryString += "?ResponseMode=unsolicited";
+
+            if (out.getRelayState() != null) {
+                ssoQryString += "&relayState=" + out.getRelayState();
+            }
+
+            ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed) + ssoQryString;
+        }
 
         if (logger.isDebugEnabled())
             logger.debug("Redirecting to " + ssoRedirLocation);
