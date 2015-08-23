@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.openidconnect.main.proxy.producers;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
+import com.restfb.Parameter;
 import com.restfb.Version;
 import com.restfb.types.User;
 import org.apache.commons.lang.StringUtils;
@@ -80,7 +81,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         // ---------------------------------------------------------------
         EndpointDescriptor response_uri = resolveAccessTokenConsumerEndpoint(OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME.toString());
 
-        FacebookClient fb = new DefaultFacebookClient(Version.VERSION_2_3);
+        FacebookClient fb = new DefaultFacebookClient(Version.VERSION_2_4);
 
         int retry = 0;
         FacebookClient.AccessToken at = null;
@@ -106,13 +107,13 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         }
 
         // Now create a new instance with the token
-        fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_3);
+        fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_4);
 
         retry = 0;
         User user = null;
         while (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
             try {
-                user = fb.fetchObject("me", User.class);
+                user = fb.fetchObject("me", User.class, Parameter.with("fields", mediator.getUserFields()));
                 break;
             } catch (Exception e) {
                 retry++;

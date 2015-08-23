@@ -47,6 +47,8 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private String googleAppsDomain;
 
+    private String userFields;
+
     /** Lock on the flow and credential. */
     private final Lock lock = new ReentrantLock();
 
@@ -275,5 +277,13 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public void setGoogleAppsDomain(String googleAppsDomain) {
         this.googleAppsDomain = googleAppsDomain;
+    }
+
+    public String getUserFields() {
+        return userFields;
+    }
+
+    public void setUserFields(String userFields) {
+        this.userFields = userFields;
     }
 }
