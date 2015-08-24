@@ -442,25 +442,21 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         AuditingServer aServer = mediator.getAuditingServer();
 
-        Properties props = null;
+        Properties props = new Properties();
+        String providerName = getProvider().getName();
+        props.setProperty("provider", providerName);
 
         String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
         if (remoteAddr != null) {
-            if (props == null) props = new Properties();
             props.setProperty("remoteAddress", remoteAddr);
         }
 
         String session = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie.JSESSIONID");
         if (session != null) {
-            if (props == null) props = new Properties();
             props.setProperty("httpSession", session);
         }
 
-        String providerName = getProvider().getName();
-        props.setProperty("provider", providerName);
-
         if (otherProps != null) {
-            if (props == null) props = new Properties();
             props.putAll(otherProps);
         }
 
