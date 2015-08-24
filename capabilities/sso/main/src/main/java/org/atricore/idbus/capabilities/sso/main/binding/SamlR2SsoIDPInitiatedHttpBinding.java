@@ -23,6 +23,7 @@ package org.atricore.idbus.capabilities.sso.main.binding;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
@@ -39,6 +40,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -171,15 +174,23 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
                     ssoQryString += "&relayState=" + out.getRelayState();
                 }
 
-                ssoQryString += "atricore_security_token=" + req.getSecurityToken();
+                try {
+                    ssoQryString += "&atricore_security_token=" + URLEncoder.encode(req.getSecurityToken(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
 
                 if (req.getRememberMe() != null)
-                    ssoQryString += "remember_me=" + req.getRememberMe();
+                    ssoQryString += "&remember_me=" + req.getRememberMe();
 
                 for (RequestAttributeType attr : req.getRequestAttribute()) {
 
                     if (attr.getName().equals("atricore_sp_alias")) {
-                        ssoQryString += "atricore_sp_alias=" + attr.getValue();
+                        try {
+                            ssoQryString += "&atricore_sp_alias=" +  URLEncoder.encode(attr.getValue(), "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
 

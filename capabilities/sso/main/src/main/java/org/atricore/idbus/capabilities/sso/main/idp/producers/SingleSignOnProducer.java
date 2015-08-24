@@ -495,11 +495,81 @@ public class SingleSignOnProducer extends SSOProducer {
                 // If this is a pre-authn request, the target IdP must be a local federated provider!
                 if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
 
+                    // SP Proxy (connected to internal IdP)
+                    IdPChannel idpChannelProxy = null;
+                    BindingChannel bChannel = (BindingChannel) spChannel.getProxy();
+                    ServiceProvider spProxy = (ServiceProvider) bChannel.getProvider();
+                    FederationService spProxySvc = spProxy.getDefaultFederationService();
+
+                    // Internal/Proxied IdP
+                    IdentityProvider idp = null;
+                    String idpAlias = ((SSOSPMediator) bChannel.getIdentityMediator()).getPreferredIdpAlias();
+
+                    // Look for the target IdP in an overrided channel
+                    for (FederationChannel fChannel : spProxySvc.getOverrideChannels()) {
+                        if (fChannel.getTargetProvider() == null) {
+                            logger.error("Channel MUST have a target provider " + fChannel.getName());
+                            continue;
+                        }
+
+                        FederatedProvider fp = fChannel.getTargetProvider();
+
+                        for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
+                            if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
+                                if (fp instanceof IdentityProvider) {
+                                    idp = (IdentityProvider) fp;
+                                    idpChannelProxy = (IdPChannel) fChannel;
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
+                                    break;
+                                } else {
+                                    logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                    throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                }
+
+                            }
+                        }
+
+                        if (idp != null)
+                            break;
+                    }
+
+
+                    // Look for target IdP in default channel:
+                    if (idp == null) {
+                        for (FederatedProvider fp : spProxySvc.getChannel().getTrustedProviders()) {
+                            // Default SP Channel on trusted provider, MUST be a local IdP
+
+                            for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
+                                if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
+                                    if (fp instanceof IdentityProvider) {
+                                        idp = (IdentityProvider) fp;
+                                        idpChannelProxy = (IdPChannel) spProxySvc.getChannel();
+                                        if (logger.isDebugEnabled())
+                                            logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
+                                        break;
+                                    } else {
+                                        logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                        throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                    }
+
+                                }
+                            }
+
+                            if (idp != null)
+                                break;
+                        }
+
+                    }
+
                     // Resolve IDP init endpoint
-                    EndpointDescriptor proxyEndpoint = resolveIDPInitiatedSSOProxyEndpointDescriptor(exchange, spChannel);
+                    EndpointDescriptor proxyEndpoint = resolveIDPInitiatedSSOProxyEndpointDescriptor(exchange, spProxy, idp);
 
                     // Send IdP initiated pre-authn request (using proxy SP as response-to
-                    PreAuthenticatedIDPInitiatedAuthnRequestType authnProxyRequest = buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(exchange, spChannel.getMember());
+                    PreAuthenticatedIDPInitiatedAuthnRequestType authnProxyRequest = buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(exchange,
+                            spProxy.getDefaultFederationService().getChannel().getMember(),  // Default SP alias
+                            (PreAuthenticatedAuthnRequestType) authnRequest);
+
                     in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
                     in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:IDPInitiatedAuthnRequest", authnProxyRequest);
 
@@ -1934,7 +2004,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
 
     protected PreAuthenticatedIDPInitiatedAuthnRequestType buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(CamelMediationExchange exchange,
-                                                                                                              CircleOfTrustMemberDescriptor sp) {
+                                                                                                              CircleOfTrustMemberDescriptor sp,
+                                                                                                              PreAuthenticatedAuthnRequestType authnRequest) {
 
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -1946,11 +2017,6 @@ public class SingleSignOnProducer extends SSOProducer {
         PreAuthenticatedIDPInitiatedAuthnRequestType idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
         idpInitReq.setSecurityToken(securityToken);
         idpInitReq.setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX.getValue());
-
-        String rememberMe = state.getTransientVariable("remember_me");
-        if (rememberMe != null) {
-            idpInitReq.setRememberMe(Boolean.parseBoolean(rememberMe));
-        }
 
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
@@ -1964,18 +2030,14 @@ public class SingleSignOnProducer extends SSOProducer {
             idpInitReq.getRequestAttribute().add(a);
         }
 
-        String idpAlias = state.getTransientVariable("atricore_idp_alias");
-        if (idpAlias != null) {
-            RequestAttributeType a = new RequestAttributeType();
-            a.setName("atricore_idp_alias");
-            a.setValue(idpAlias);
-            idpInitReq.getRequestAttribute().add(a);
-        }
+        if (authnRequest.getSecurityToken() != null)
+            idpInitReq.setSecurityToken(authnRequest.getSecurityToken());
 
-        String passive = state.getTransientVariable("passive");
-        if (passive != null) {
-            idpInitReq.setPassive(Boolean.parseBoolean(passive));
-        }
+        if (authnRequest.getIsPassive() != null)
+            idpInitReq.setPassive(authnRequest.getIsPassive());
+
+        if (authnRequest.getRememberMe() != null)
+            idpInitReq.setRememberMe(authnRequest.getRememberMe());
 
         return idpInitReq;
     }
@@ -2665,96 +2727,23 @@ public class SingleSignOnProducer extends SSOProducer {
     /**
      *
      * @param exchange
-     * @param spChannel this is the channel that received the preauthn request
+     * @param spProxy
      * @return
      * @throws SSOException
      */
     private EndpointDescriptor resolveIDPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
-                                                                            SPChannel spChannel) throws SSOException {
-
-        // We need to resolve the IdP that will receive the pre-authn request, there is NO IDP selection here, we MUST use the preferred.
-
-        // Get the internal SP, the one that acts as a proxy and connects to proxied IdPs
-        BindingChannel bChannel = (BindingChannel) spChannel.getProxy();
-        ServiceProvider spProxy = (ServiceProvider) bChannel.getProvider();
-
-        // Resolve the channel/endpoints for this IdP
-        String idpAlias = ((SSOSPMediator) bChannel.getIdentityMediator()).getPreferredIdpAlias();
-
-        // SAML 2.0 Service
-        FederationService svc = spProxy.getDefaultFederationService();
+                                                                             ServiceProvider spProxy,
+                                                                             IdentityProvider idp) throws SSOException {
 
         if (logger.isDebugEnabled())
             logger.debug("Looking for " + SSOService.SingleSignOnService + "/" +
-                    SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.toString() + " at " + idpAlias);
+                    SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.toString() + " at " + idp.getName());
 
-        // IdP
-        SPChannel spChannelProxy = null;
-        IdentityProvider idp = null;
-
-        // SPProxy
-        IdPChannel idpChannelProxy = null;
-
-        // Look for the target IdP in an overrided channel
-        for (FederationChannel fChannel : svc.getOverrideChannels()) {
-            if (fChannel.getTargetProvider() == null) {
-                logger.error("Channel MUST have a target provider " + fChannel.getName());
-                continue;
-            }
-
-            FederatedProvider fp = fChannel.getTargetProvider();
-
-            for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
-                if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
-                    if (fp instanceof IdentityProvider) {
-                        idp = (IdentityProvider) fp;
-                        idpChannelProxy = (IdPChannel) fChannel;
-                        if (logger.isDebugEnabled())
-                            logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
-                        break;
-                    } else {
-                        logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
-                        throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
-                    }
-
-                }
-            }
-
-            if (idp != null)
-                break;
-        }
-
-
-        // Look for target IdP in default channel:
-        if (idp == null) {
-            for (FederatedProvider fp : svc.getChannel().getTrustedProviders()) {
-                // Default SP Channel on trusted provider, MUST be a local IdP
-
-                for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
-                    if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
-                        if (fp instanceof IdentityProvider) {
-                            idp = (IdentityProvider) fp;
-                            idpChannelProxy = (IdPChannel) svc.getChannel();
-                            if (logger.isDebugEnabled())
-                                logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
-                            break;
-                        } else {
-                            logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
-                            throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
-                        }
-
-                    }
-                }
-
-                if (idp != null)
-                    break;
-            }
-
-        }
+        // Internal/proxied IdP
+        SPChannel targetSpChannel = null;
 
         // Look for the SP Channel this IdP uses to talk to us: idpChannelProxy.
         // We have IdP with SPChannel, and SP with IdP channel
-        SPChannel targetSpChannel = null;
         for (FederationChannel fChannel : idp.getDefaultFederationService().getOverrideChannels()) {
 
             if (fChannel.getTargetProvider().getName().equals(spProxy.getName())) {
@@ -2789,7 +2778,7 @@ public class SingleSignOnProducer extends SSOProducer {
             }
         }
 
-        throw new SSOException("No IDP Initiated SSO Endpoint found in SP Channel " + spChannelProxy.getName());
+        throw new SSOException("No IDP Initiated SSO Endpoint (proxy) found for " + spProxy.getName());
     }
 
 
