@@ -234,8 +234,8 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         for (String name : state.getRemovedRemoteVarNames()) {
             // Removed
-            Date exp = new Date(0);
-            String expirationStr = cookieDf.format(exp);
+            long exp = state.getRemovedRemoteVarExpiration(name);
+            String expirationStr = cookieDf.format(new Date(exp > 0 ? exp : 0));
             exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
                     "-" + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
         }
@@ -324,8 +324,15 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                 String varName = headerName.substring("org.atricore.idbus.http.Cookie.".length());
                 String varValue = exchange.getIn().getHeader(headerName, String.class);
 
-                logger.debug("Remote Variable from HTTP Cookie (" + headerName + ") " + varName + "=" + varValue);
-                state.setRemoteVariable(varName, varValue);
+                String expStr = (String) headers.get(varName + ".maxAge");
+                long exp = 0;
+                if (expStr != null)
+                    exp = Long.parseLong(expStr);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Remote Variable from HTTP Cookie (" + headerName + ") " + varName + "=" + varValue + " exp["+exp+"]");
+
+                state.setRemoteVariable(varName, varValue, exp);
             }
 
         }

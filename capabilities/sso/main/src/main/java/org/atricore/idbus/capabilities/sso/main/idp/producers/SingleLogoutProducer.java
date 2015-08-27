@@ -748,7 +748,9 @@ public class SingleLogoutProducer extends SSOProducer {
         state.getLocalState().removeAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
 
         // Remove pre-authn token
-        in.getMessage().getState().removeRemoteVariable(getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM");
+        in.getMessage().getState().setRemoteVariable(getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM",
+                "-",
+                System.currentTimeMillis() + (1000L * 60L * 60L * 24L * 30L));
 
         // Invalidate SSO Session
         SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
