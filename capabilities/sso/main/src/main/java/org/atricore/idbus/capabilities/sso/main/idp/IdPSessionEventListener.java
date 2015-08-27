@@ -69,7 +69,8 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
         try {
 
             if (logger.isTraceEnabled())
-                logger.trace("Invalidating SSO Session from IDP Session Listener. Session ID:" + sessionId);
+                logger.trace("Invalidating SSO Session from IDP Session Listener. Session ID:" + sessionId +
+                        " [IDP:"+identityProvider.getName()+"]");
 
             ProviderStateContext ctx = new ProviderStateContext(identityProvider, applicationContext.getClassLoader());
             LocalState state = ctx.retrieve(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, sessionId);
@@ -129,7 +130,7 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                 (SSOResponseType) mediator.sendMessage(sloRequest, ed, identityProvider.getChannel());
 
         if (logger.isTraceEnabled())
-            logger.trace("Recevied SLO Response " + sloResponse.getID() +
+            logger.trace("Received SLO Response " + sloResponse.getID() +
                     " from IDP " + identityProvider.getName() +
                     " using endpoint " + ed.getLocation());
 
@@ -144,7 +145,7 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
         IdentityMediationEndpoint e = null;
         for (IdentityMediationEndpoint endpoint : defaultChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SSOService.SingleLogoutService.toString())) {
+            if (endpoint.getType().equals(SSOService.IDPInitiatedSingleLogoutService.toString())) {
 
                 if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                     // We need to build an endpoint descriptor descriptor now ...
@@ -154,7 +155,7 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                             endpoint.getLocation();
 
                     return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-local",
-                            SSOService.SingleLogoutService.toString(),
+                            SSOService.IDPInitiatedSingleLogoutService.toString(),
                             SSOBinding.SSO_LOCAL.toString(),
                             location,
                             null);
@@ -170,13 +171,13 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                     defaultChannel.getLocation() + e.getLocation() :
                     e.getLocation();
 
-            return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-soap",
-                    SSOService.SingleLogoutService.toString(),
+            return new EndpointDescriptorImpl(e.getName(),
+                    e.getType(),
                     e.getBinding(),
                     location,
                     null);
         }
 
-        throw new SSOException("No IDP SLO endpoint using LOCAL/SOAP binding found!");
+        throw new SSOException("No IDP SLO endpoint using LOCAL binding found for channel " + defaultChannel.getName());
     }
 }

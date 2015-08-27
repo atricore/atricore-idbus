@@ -73,6 +73,7 @@ import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
@@ -93,10 +94,12 @@ import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel;
@@ -106,9 +109,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.*;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
@@ -317,12 +318,11 @@ public class SingleSignOnProducer extends SSOProducer {
     * This procedure will handle preauthenticated IdP-initiated (aka IdP unsolicited response) requests.
     */
     protected void doProcessPreAuthenticatedIDPInitiantedSSO(CamelMediationExchange exchange,
-                                                             PreAuthenticatedIDPInitiatedAuthnRequestType PreAuthIdpInitiatedAuthnRequest) throws SSOException {
+                                                             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthIdpInitiatedAuthnRequest) throws SSOException {
 
 
         logger.debug("Processing PreAuthenticated IDP Initiated Single Sign-On with " +
-                PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format"
-        );
+                preAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format");
 
         try {
 
@@ -333,18 +333,20 @@ public class SingleSignOnProducer extends SSOProducer {
             // Resolve target IDP for relaying the Authentication Request
             // ------------------------------------------------------
 
-            logger.debug("Received Security Token [" + PreAuthIdpInitiatedAuthnRequest.getSecurityToken() + "]");
+            if (logger.isDebugEnabled())
+                logger.debug("Received Security Token [" + preAuthIdpInitiatedAuthnRequest.getSecurityToken() + "]");
 
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseMode", "unsolicited");
 
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseFormat",
-                    PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
+                    preAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
 
-            //CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
             CircleOfTrustMemberDescriptor idp = ((FederationChannel) channel).getMember();
-            logger.debug("Using IdP " + idp.getAlias());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
             EndpointType idpSsoEndpoint = resolveIdpSsoEndpoint(idp);
@@ -359,7 +361,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             // Create PreAuthenticatedAuthnRequest using identity plan
             // ------------------------------------------------------
-            PreAuthenticatedAuthnRequestType preauthAuthnRequest = buildPreAuthIdPInitiatedAuthnRequest(exchange, idp, ed, (FederationChannel) channel);
+            PreAuthenticatedAuthnRequestType preauthAuthnRequest = buildPreAuthenticatedAuthnRequest(exchange, idp, ed, (FederationChannel) channel);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP
@@ -493,29 +495,121 @@ public class SingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             if (spChannel.isProxyModeEnabled()) {
 
-                Channel proxyChannel = spChannel.getProxy();
+                // If this is a pre-authn request, the target IdP must be a local federated provider!
+                if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
 
-                EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
+                    // SP Proxy (connected to internal IdP)
+                    IdPChannel idpChannelProxy = null;
+                    BindingChannel bChannel = (BindingChannel) spChannel.getProxy();
+                    ServiceProvider spProxy = (ServiceProvider) bChannel.getProvider();
+                    FederationService spProxySvc = spProxy.getDefaultFederationService();
 
-                logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
-                        proxyEndpoint.getLocation());
+                    // Internal/Proxied IdP
+                    IdentityProvider idp = null;
+                    String idpAlias = ((SSOSPMediator) bChannel.getIdentityMediator()).getPreferredIdpAlias();
 
-                // Get requested IDP and clear the variable
-                SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest,
-                        (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp"));
-                in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
+                    // Look for the target IdP in an overrided channel
+                    for (FederationChannel fChannel : spProxySvc.getOverrideChannels()) {
+                        if (fChannel.getTargetProvider() == null) {
+                            logger.error("Channel MUST have a target provider " + fChannel.getName());
+                            continue;
+                        }
 
-                in.getMessage().getState().setLocalVariable(
-                        "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
+                        FederatedProvider fp = fChannel.getTargetProvider();
 
-                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                        authnProxyRequest,
-                        "AuthnProxyRequest",
-                        relayState,
-                        proxyEndpoint,
-                        in.getMessage().getState()));
+                        for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
+                            if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
+                                if (fp instanceof IdentityProvider) {
+                                    idp = (IdentityProvider) fp;
+                                    idpChannelProxy = (IdPChannel) fChannel;
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
+                                    break;
+                                } else {
+                                    logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                    throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                }
 
-                exchange.setOut(out);
+                            }
+                        }
+
+                        if (idp != null)
+                            break;
+                    }
+
+
+                    // Look for target IdP in default channel:
+                    if (idp == null) {
+                        for (FederatedProvider fp : spProxySvc.getChannel().getTrustedProviders()) {
+                            // Default SP Channel on trusted provider, MUST be a local IdP
+
+                            for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
+                                if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
+                                    if (fp instanceof IdentityProvider) {
+                                        idp = (IdentityProvider) fp;
+                                        idpChannelProxy = (IdPChannel) spProxySvc.getChannel();
+                                        if (logger.isDebugEnabled())
+                                            logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
+                                        break;
+                                    } else {
+                                        logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                        throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                    }
+
+                                }
+                            }
+
+                            if (idp != null)
+                                break;
+                        }
+
+                    }
+
+                    // Resolve IDP init endpoint
+                    EndpointDescriptor proxyEndpoint = resolveIDPInitiatedSSOProxyEndpointDescriptor(exchange, spProxy, idp);
+
+                    // Send IdP initiated pre-authn request (using proxy SP as response-to
+                    PreAuthenticatedIDPInitiatedAuthnRequestType authnProxyRequest = buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(exchange,
+                            spProxy.getDefaultFederationService().getChannel().getMember(),  // Default SP alias
+                            (PreAuthenticatedAuthnRequestType) authnRequest);
+
+                    in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
+                    in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:IDPInitiatedAuthnRequest", authnProxyRequest);
+
+                    out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                            authnProxyRequest,
+                            "PreAuthenticatedIDPInitiatedAuthnRequest",
+                            relayState,
+                            proxyEndpoint,
+                            in.getMessage().getState()));
+
+                    exchange.setOut(out);
+
+                } else {
+
+                    Channel proxyChannel = spChannel.getProxy();
+                    EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
+
+                    logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
+                            proxyEndpoint.getLocation());
+
+                    // Get requested IDP and clear the variable
+                    SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest,
+                            (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp"));
+                    in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
+                    in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
+
+                    out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                            authnProxyRequest,
+                            "AuthnProxyRequest",
+                            relayState,
+                            proxyEndpoint,
+                            in.getMessage().getState()));
+
+                    exchange.setOut(out);
+                }
+
+
             } else {
                 // ------------------------------------------------------------------------------
                 // Handle Invalid SSO Session
@@ -560,6 +654,8 @@ public class SingleSignOnProducer extends SSOProducer {
                             claimChannel,
                             uuidGenerator.generateId(),
                             preAuthnRequest.getSecurityToken());
+                    if (preAuthnRequest.getRememberMe())
+                        claimsRequest.getParams().put("remember_me", "true");
                 } else {
                     claimsRequest = new SSOCredentialClaimsRequest(
                             authnRequest.getID(),
@@ -804,10 +900,11 @@ public class SingleSignOnProducer extends SSOProducer {
             AssertionType assertion = securityTokenEmissionCtx.getAssertion();
             Subject authnSubject = securityTokenEmissionCtx.getSubject();
 
-            SimplePrincipal principal = authnSubject.getPrincipals(SimplePrincipal.class).iterator().next();
+            // Get Principal
+            Principal principal = getPrincipal(authnSubject);
 
             if (logger.isDebugEnabled())
-                logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+                logger.debug("New Assertion " + assertion.getID() + " ["+principal.getName()+"] emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
             // Generate audit trail
@@ -1230,6 +1327,15 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
+                Properties auditProps = new Properties();
+                auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+                if (authnState.getCurrentAuthnCtxClass() != null)
+                    auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
+                // Get Principal
+                Principal principal = getPrincipal(authnSubject);
+                recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
                 secCtx.setProxyPrincipals(stsCtx.getProxyPrincipals());
@@ -1313,6 +1419,15 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
+
+            // Generate audit trail
+            Properties auditProps = new Properties();
+            auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+            if (authnState.getCurrentAuthnCtxClass() != null)
+                auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
+            recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
+
         }
 
 
@@ -1752,6 +1867,16 @@ public class SingleSignOnProducer extends SSOProducer {
                         String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
                         if (rememberMeStr != null)
                             rememberMe = Boolean.parseBoolean(rememberMeStr);
+                    } else if (cc.getValue() instanceof PasswordString) {
+                        PasswordString pt = (PasswordString) cc.getValue();
+                        String rememberMeStr = pt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                        if (rememberMeStr != null)
+                            rememberMe = Boolean.parseBoolean(rememberMeStr);
+                    } else if (cc.getValue() instanceof BinarySecurityTokenType) {
+                        BinarySecurityTokenType bt = (BinarySecurityTokenType) cc.getValue();
+                        String rememberMeStr = bt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                        if (rememberMeStr != null)
+                            rememberMe = Boolean.parseBoolean(rememberMeStr);
                     }
                 }
             }
@@ -1769,10 +1894,10 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (stmt instanceof AttributeStatementType) {
                     AttributeStatementType attrStmt = (AttributeStatementType) stmt;
                     for (Object o : attrStmt.getAttributeOrEncryptedAttribute()) {
-                        // TODO : What if assertion is encrypted ?! (improve!)
                         if (o instanceof AttributeType) {
                             AttributeType attr = (AttributeType) o;
-                            if (attr.getName().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE + "_ID")) {
+                            // The order is important!
+                            if (attr.getName().startsWith(WSTConstants.WST_OAUTH2_RM_TOKEN_TYPE + "_ID")) {
                                 preAuthnTokenId = (String) attr.getAttributeValue().get(0);
                             }
                         }
@@ -1889,13 +2014,55 @@ public class SingleSignOnProducer extends SSOProducer {
 
     }
 
+
+    protected PreAuthenticatedIDPInitiatedAuthnRequestType buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(CamelMediationExchange exchange,
+                                                                                                              CircleOfTrustMemberDescriptor sp,
+                                                                                                              PreAuthenticatedAuthnRequestType authnRequest) {
+
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
+
+        String relayState = state.getTransientVariable("RelayState");
+        String securityToken = state.getTransientVariable("atricore_security_token");
+
+        PreAuthenticatedIDPInitiatedAuthnRequestType idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
+        idpInitReq.setSecurityToken(securityToken);
+        idpInitReq.setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX.getValue());
+
+        idpInitReq.setID(uuidGenerator.generateId());
+        idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
+
+        // Alias or SP should be our SP proxy
+        // We can send several attributes within the request.
+        {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_sp_alias");
+            a.setValue(sp.getAlias());
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
+        if (authnRequest.getSecurityToken() != null)
+            idpInitReq.setSecurityToken(authnRequest.getSecurityToken());
+
+        if (authnRequest.getIsPassive() != null)
+            idpInitReq.setPassive(authnRequest.getIsPassive());
+
+        if (authnRequest.getRememberMe() != null)
+            idpInitReq.setRememberMe(authnRequest.getRememberMe());
+
+        return idpInitReq;
+    }
+
     /**
      * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
+     *
+     * IdP and SP channel used to connect to the target SP
      */
-    protected PreAuthenticatedAuthnRequestType buildPreAuthIdPInitiatedAuthnRequest(CamelMediationExchange exchange,
-                                                                                    CircleOfTrustMemberDescriptor idp,
-                                                                                    EndpointDescriptor ed,
-                                                                                    FederationChannel spChannel
+    protected PreAuthenticatedAuthnRequestType buildPreAuthenticatedAuthnRequest(CamelMediationExchange exchange,
+                                                                                 CircleOfTrustMemberDescriptor idp,
+                                                                                 EndpointDescriptor ed,
+                                                                                 FederationChannel spChannel
     ) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
@@ -2569,6 +2736,64 @@ public class SingleSignOnProducer extends SSOProducer {
         return null;
     }
 
+    /**
+     *
+     * @param exchange
+     * @param spProxy
+     * @return
+     * @throws SSOException
+     */
+    private EndpointDescriptor resolveIDPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
+                                                                             ServiceProvider spProxy,
+                                                                             IdentityProvider idp) throws SSOException {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Looking for " + SSOService.SingleSignOnService + "/" +
+                    SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.toString() + " at " + idp.getName());
+
+        // Internal/proxied IdP
+        SPChannel targetSpChannel = null;
+
+        // Look for the SP Channel this IdP uses to talk to us: idpChannelProxy.
+        // We have IdP with SPChannel, and SP with IdP channel
+        for (FederationChannel fChannel : idp.getDefaultFederationService().getOverrideChannels()) {
+
+            if (fChannel.getTargetProvider().getName().equals(spProxy.getName())) {
+                targetSpChannel = (SPChannel) fChannel;
+                break;
+            }
+        }
+
+        if (targetSpChannel == null) {
+            targetSpChannel = (SPChannel) idp.getDefaultFederationService().getChannel();
+        }
+
+        for (IdentityMediationEndpoint ed : targetSpChannel.getEndpoints()) {
+            if (ed.getBinding().equals(SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue())) {
+                if (ed.getType().equals(SSOService.SingleSignOnService.toString())) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Found SSO IDP Initiated endpoint " + ed.getName());
+
+                    // WARN : Overrided locations not supported
+                    String location = targetSpChannel.getLocation() + ed.getLocation();
+                    String responseLocation = ed.getResponseLocation() != null ?
+                            targetSpChannel.getLocation() + ed.getResponseLocation() : null;
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Found SSO IDP Initiated endpoint [" + ed.getName() + "] location " + location);
+
+                    return new EndpointDescriptorImpl(ed.getName(), ed.getType(), ed.getBinding(),
+                            location, responseLocation);
+                }
+
+            }
+        }
+
+        throw new SSOException("No IDP Initiated SSO Endpoint (proxy) found for " + spProxy.getName());
+    }
+
+
     private EndpointDescriptor resolveSPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
                                                                             Channel proxyChannel) throws SSOException {
 
@@ -2798,6 +3023,19 @@ public class SingleSignOnProducer extends SSOProducer {
         }
 
         return null;
+    }
+
+    protected Principal getPrincipal(Subject authnSubject) {
+        Set<SimplePrincipal> principals = authnSubject.getPrincipals(SimplePrincipal.class);
+        if (principals != null && principals.size() > 0)
+            return principals.iterator().next();
+
+        Set<SSOUser> ssoUsers = authnSubject.getPrincipals(SSOUser.class);
+        if (ssoUsers != null && ssoUsers.size() > 0)
+            return ssoUsers.iterator().next();
+
+        return null;
+
     }
 
 }

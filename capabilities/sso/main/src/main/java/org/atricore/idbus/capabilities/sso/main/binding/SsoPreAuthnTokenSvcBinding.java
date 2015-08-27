@@ -56,6 +56,7 @@ public class SsoPreAuthnTokenSvcBinding extends AbstractMediationHttpBinding {
         String scope = state.getTransientVariable("scope");
         String authnCtx = state.getTransientVariable("authn_ctx");
         String reply = state.getTransientVariable("reply");
+        String rememberMe = state.getTransientVariable("remember_me");
 
         Object content = null;
 

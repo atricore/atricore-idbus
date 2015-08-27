@@ -84,7 +84,8 @@ public interface MediationState {
 
     Collection<String> getRemovedRemoteVarNames();
 
-    
+    long getRemovedRemoteVarExpiration(String name);
+
     LocalState getLocalState();
 
 

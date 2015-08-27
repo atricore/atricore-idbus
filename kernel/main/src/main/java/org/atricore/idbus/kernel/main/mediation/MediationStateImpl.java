@@ -42,7 +42,7 @@ public class MediationStateImpl implements MediationState {
 
     private Map<String, RemoteVar> remoteVars = new HashMap<String, RemoteVar>();
 
-    private Set<String> removedRemoteVars = new HashSet<String>();
+    private Map<String, RemoteVar> removedRemoteVars = new HashMap<String, RemoteVar>();
 
     private LocalState localState;
 
@@ -52,32 +52,39 @@ public class MediationStateImpl implements MediationState {
         this.localState = localState;
     }
 
+    @Override
     public boolean isLocalStateAvailable() {
         return localState != null;
     }
 
+    @Override
     public String getTransientVariable(String name) {
         return transientVars.get(name);
     }
 
+    @Override
     public Object getAttribute(String name) {
         return transientAttribute.get(name);
     }
 
+    @Override
     public Object setAttribute(String name, Object value) {
         return transientAttribute.put(name, value);
     }
 
+    @Override
     public Object removeAttribute(String name) {
         return transientAttribute.remove(name);
     }
 
+    @Override
     public Object getLocalVariable(String name) {
         if (localState == null)
             throw new IllegalStateException("Local state not supported for this message");
         return localState.getValue(name);
     }
 
+    @Override
     public void setLocalVariable(String name, Object value) {
         if (localState == null)
             throw new IllegalStateException("Local state not supported for this message");
@@ -88,12 +95,14 @@ public class MediationStateImpl implements MediationState {
         localState.setValue(name, value);
     }
 
+    @Override
     public void removeLocalVariable(String name) {
         if (localState == null)
             throw new IllegalStateException("Local state not supported for this message");
         localState.removeValue(name);
     }
 
+    @Override
     public String getRemoteVariable(String name) {
         RemoteVar v = remoteVars.get(name);
         if (v != null)
@@ -101,6 +110,7 @@ public class MediationStateImpl implements MediationState {
         return null;
     }
 
+    @Override
     public long getRemoteVarExpiration(String name) {
         RemoteVar v = remoteVars.get(name);
         if (v != null)
@@ -108,42 +118,65 @@ public class MediationStateImpl implements MediationState {
         return -1;
     }
 
+    @Override
     public void setRemoteVariable(String name, String value) {
-        setRemoteVariable(name, value, 0);
+        RemoteVar v = remoteVars.get(name);
+        if (v == null) {
+            v = new RemoteVar(name, value, 0);
+        } else {
+            v.setValue(value);
+            // Don't update expires property since we don't have a value
+        }
+
+        remoteVars.put(name, v);
     }
 
+    @Override
     public void setRemoteVariable(String name, String value, long expires) {
         RemoteVar v = remoteVars.get(name);
         if (v == null) {
             v = new RemoteVar(name, value, expires);
         } else {
             v.setValue(value);
-            // Do not replace expiration value
-            // v.setExpires(expires);
+            v.setExpires(expires);
         }
 
         remoteVars.put(name, v);
     }
 
+    @Override
     public void removeRemoteVariable(String name) {
-        remoteVars.remove(name);
-        removedRemoteVars.add(name);
+        RemoteVar v = remoteVars.remove(name);
+        removedRemoteVars.put(name, v);
     }
 
+    @Override
     public Collection<String> getLocalVarNames() {
         return localState.getKeys();
     }
 
+    @Override
     public Collection<String> getRemoteVarNames() {
         return remoteVars.keySet();
     }
 
+    @Override
     public Collection<String> getTransientVarNames() {
         return transientVars.keySet();
     }
 
+    @Override
     public Collection<String> getRemovedRemoteVarNames() {
-        return removedRemoteVars;
+        return removedRemoteVars.keySet();
+    }
+
+    @Override
+    public long getRemovedRemoteVarExpiration(String name) {
+        RemoteVar v = removedRemoteVars.get(name);
+        if (v != null)
+            return v.getExpires();
+
+        return -1;
     }
 
     public void setTransientVar(String name, String value) {
@@ -154,6 +187,7 @@ public class MediationStateImpl implements MediationState {
         transientVars.putAll(vars);
     }
 
+    @Override
     public LocalState getLocalState() {
         return localState;
     }

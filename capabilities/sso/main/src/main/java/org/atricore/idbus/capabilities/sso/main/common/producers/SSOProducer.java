@@ -52,10 +52,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.*;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -445,22 +442,21 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         AuditingServer aServer = mediator.getAuditingServer();
 
-        Properties props = null;
+        Properties props = new Properties();
+        String providerName = getProvider().getName();
+        props.setProperty("provider", providerName);
 
         String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
         if (remoteAddr != null) {
-            if (props == null) props = new Properties();
             props.setProperty("remoteAddress", remoteAddr);
         }
 
         String session = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie.JSESSIONID");
         if (session != null) {
-            if (props == null) props = new Properties();
             props.setProperty("httpSession", session);
         }
 
         if (otherProps != null) {
-            if (props == null) props = new Properties();
             props.putAll(otherProps);
         }
 

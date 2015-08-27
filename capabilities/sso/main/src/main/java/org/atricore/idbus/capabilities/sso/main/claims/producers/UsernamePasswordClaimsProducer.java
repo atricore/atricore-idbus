@@ -165,7 +165,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
         String username = null;
         boolean rememberMe = false;
 
-        // Addapt received simple claims to SAMLR Required token
+        // Adapt received simple claims to SAMLR Required token
         for (Claim c : receivedClaims.getClaims()) {
 
             if (c instanceof CredentialClaim) {

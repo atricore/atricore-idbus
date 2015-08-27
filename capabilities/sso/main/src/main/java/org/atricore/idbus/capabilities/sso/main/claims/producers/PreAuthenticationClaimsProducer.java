@@ -39,6 +39,7 @@ import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
 import org.atricore.idbus.common.sso._1_0.protocol.PreAuthenticatedTokenRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.PreAuthenticatedTokenResponseType;
+import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -54,6 +55,8 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.FindSecurityToken
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityTokenByTokenIdResponse;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
@@ -116,6 +119,9 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
     }
 
 
+    /**
+     * We received a pre-authenticated token, send it as a claims response to the IDP
+     */
     protected void doProcessPreAuthenticatedTokenResponse(CamelMediationExchange exchange, PreAuthenticatedTokenResponseType resp)
         throws Exception {
 
@@ -141,9 +147,16 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         String preAuthToken = resp.getSecurityToken();
 
         if (logger.isDebugEnabled())
-            logger.debug("Received pre-authn token ["+preAuthToken+"]");
+            logger.debug("Received pre-authn token [" + preAuthToken + "]");
 
-        sendClaimsResponse(exchange, preAuthToken);
+        MediationState state = in.getMessage().getState();
+        boolean rememberMe = false;
+        String b = state.getTransientVariable("remember_me");
+        if (b != null)
+            rememberMe = Boolean.parseBoolean(b);
+
+        // In this case, let the token as is
+        sendClaimsResponse(exchange, preAuthToken, rememberMe);
 
     }
 
@@ -168,11 +181,13 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         MediationState state = in.getMessage().getState();
 
         // No pre-authn token received, looking for remember-me token id
+        boolean provided = true;
         if (preAuthnToken == null && mediator.isRememberMe()) {
             if (logger.isDebugEnabled())
                 logger.debug("Pre-authn token not found in CredentialClaimsRequest, trying remember me" + claimsRequest.getId());
 
-                preAuthnToken = resolveRememberMeToken(state, mediator);
+            preAuthnToken = resolveRememberMeToken(state, mediator);
+            provided = false;
 
         }
 
@@ -225,11 +240,18 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         }
 
-        sendClaimsResponse(exchange, preAuthnToken);
+        // Provided tokens (not remember me tokens) can be used to generate remember me tokens ...
+        boolean rememberMe = provided &&
+                claimsRequest.getParams().get("remember_me") != null &&
+                Boolean.parseBoolean((String) claimsRequest.getParams().get("remember_me"));
+
+        sendClaimsResponse(exchange, preAuthnToken, rememberMe);
 
     }
 
-    protected void sendClaimsResponse(CamelMediationExchange exchange, String preAuthnToken) throws SSOException, IdentityMediationException {
+    protected void sendClaimsResponse(CamelMediationExchange exchange,
+                                      String preAuthnToken,
+                                      boolean allowRememberMe) throws SSOException, IdentityMediationException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
@@ -267,8 +289,17 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             logger.debug("Sending Pre-authn token to " +
                     (ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation()));
 
+        MediationState state = in.getMessage().getState();
+
+        // Create Password Token Claim with the received Pre-Authenticated Token
+
+        // Let's mark this claim to be used when emitting remember me tokens
+
         PasswordString token = new PasswordString();
         token.setValue(preAuthnToken);
+
+        if (allowRememberMe)
+            token.getOtherAttributes().put(new QName(Constants.REMEMBERME_NS), "TRUE");
 
         // Endpoint type MUST be authn ctx class
         CredentialClaim credentialClaim = new CredentialClaimImpl(endpoint.getType(), token);
@@ -289,7 +320,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                 "ClaimsResponse",
                 null,
                 ed,
-                in.getMessage().getState()));
+                state));
 
         exchange.setOut(out);
     }

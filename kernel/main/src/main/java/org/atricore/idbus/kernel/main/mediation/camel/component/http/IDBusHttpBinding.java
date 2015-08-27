@@ -66,6 +66,9 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
                     logger.debug("Setting IDBus Cookie header for " + cookie.getName() + "=" + cookie.getValue());
 
                 httpMessage.getHeaders().put("org.atricore.idbus.http.Cookie." + cookie.getName(), cookie.getValue());
+                if (cookie.getMaxAge() > 0)
+                    httpMessage.getHeaders().put("org.atricore.idbus.http.Cookie." + cookie.getName() + ".maxAge", cookie.getValue());
+
             }
         }
 

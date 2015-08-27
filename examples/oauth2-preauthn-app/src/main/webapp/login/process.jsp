@@ -33,6 +33,10 @@
 
         String idpUrl = client.buildIdPPreAuthnResponseUrl(relayState, accessToken);
 
+        boolean rememberMe = Boolean.parseBoolean(request.getParameter("rememberMe"));
+        if (rememberMe)
+            idpUrl = idpUrl + "&remember_me=true";
+
         // Redirect the user to the received URL
         response.sendRedirect(idpUrl);
 

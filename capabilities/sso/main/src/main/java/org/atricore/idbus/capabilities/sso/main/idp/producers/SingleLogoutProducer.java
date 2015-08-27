@@ -204,6 +204,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         performBackChannelSlo(exchange, secCtx, null);
 
+        // TODO : Issue PXY_SLO_TOUT if necessary.
         recordInfoAuditTrail(Action.SLO_TOUT.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
 
         // Send status response!
@@ -335,11 +336,11 @@ public class SingleLogoutProducer extends SSOProducer {
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-
             Properties auditProps = new Properties();
-            auditProps.put("spId", pSecCtxCurrent.getProviderId().getValue());
-
-            pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_FAILED);
+            if (pSecCtxCurrent != null) {
+                auditProps.put("spId", pSecCtxCurrent != null ? pSecCtxCurrent.getProviderId().getValue() : "N/A");
+                pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_FAILED);
+            }
             recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.FAILURE, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
         }
 
@@ -747,7 +748,9 @@ public class SingleLogoutProducer extends SSOProducer {
         state.getLocalState().removeAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
 
         // Remove pre-authn token
-        in.getMessage().getState().removeRemoteVariable(getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM");
+        in.getMessage().getState().setRemoteVariable(getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM",
+                "-",
+                System.currentTimeMillis() + (1000L * 60L * 60L * 24L * 30L));
 
         // Invalidate SSO Session
         SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
