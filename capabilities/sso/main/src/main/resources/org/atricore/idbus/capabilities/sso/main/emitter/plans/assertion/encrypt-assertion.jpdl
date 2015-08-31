@@ -26,9 +26,9 @@
     <description>Secure a SAMLR2 Assertion</description>
 
     <start-state name="start">
-        <transition to="samlr2EncryptAssertion" />
+        <transition to="end" />
     </start-state>
-
+<!--
     <state name="samlr2EncryptAssertion">
         <transition to="end" />
         <event type="node-enter">
@@ -38,7 +38,7 @@
         </event>
 
     </state>
-
+-->
     <end-state name="end"/>
 
 </process-definition>
