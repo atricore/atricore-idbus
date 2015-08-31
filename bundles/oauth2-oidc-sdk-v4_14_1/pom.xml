@@ -90,8 +90,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Bundle : Apache Derby Client v${oauth2-oidc-sdk.vesrion}</Bundle-Name>
-                        <Bundle-Description>This bundle includes Apache Derby Client ${oauth2-oidc-sdk.vesrion}
+                        <Bundle-Name>Atricore IDBus :: Bundle : Nimbus OAuth 2.0 SDK v${oauth2-oidc-sdk.vesrion}</Bundle-Name>
+                        <Bundle-Description>This bundle includes Nimbus OAuth 2.0 SDK ${oauth2-oidc-sdk.vesrion}
                         </Bundle-Description>
                         <!-- Bundle Symbolic name is hard coded in datanucleus code! -->
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>

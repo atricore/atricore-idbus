@@ -150,6 +150,7 @@
 
         <idbus.bundle.nimbus-jose-jwt-v3_10.version>1.4.2-SNAPSHOT</idbus.bundle.nimbus-jose-jwt-v3_10.version>
         <idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>1.4.2-SNAPSHOT</idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>
+        <idbus.bundle.jasypt-v1_9_2.version>1.4.2-SNAPSHOT</idbus.bundle.jasypt-v1_9_2.version>
 
         <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.2-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
         <idbus.connectors.jdoidentityvault.version>1.4.2-SNAPSHOT</idbus.connectors.jdoidentityvault.version>
@@ -1521,6 +1522,18 @@
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1</artifactId>
             <version>${idbus.bundle.oauth2-oidc-sdk-v4_14_1.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.jasypt-v1_9_2</artifactId>
+            <version>${idbus.bundle.jasypt-v1_9_2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.jasypt-spring31-v1_9_2</artifactId>
+            <version>${idbus.bundle.jasypt-v1_9_2.version}</version>
         </dependency>
 
         <dependency>
