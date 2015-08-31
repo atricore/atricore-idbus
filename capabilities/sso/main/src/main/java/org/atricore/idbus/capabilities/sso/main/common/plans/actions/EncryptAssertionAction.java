@@ -41,7 +41,9 @@ public class EncryptAssertionAction extends AbstractSSOAssertionAction {
 
         AssertionType assertion = null;
 
-        // TODO : Get context variables required to encrypt the assertion, like SAMLR2 Metadata
+        // TODO : Get context variables required to encrypt the assertion, like SAMLR2 Metadata.
+
+        // TODO : Determine whether the assertion must be encrypted or not!
 
         try {
              assertion = (AssertionType) out.getContent();

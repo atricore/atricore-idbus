@@ -60,7 +60,6 @@ public class SignResponseAction extends AbstractSSOAction {
         CircleOfTrustMemberDescriptor dest =
                 (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
-
         // If the Response can contains assertions
         if (response instanceof ResponseType) {
 
@@ -105,28 +104,27 @@ public class SignResponseAction extends AbstractSSOAction {
                         } else {
                             assertions.add(assertion);
                         }
+                    } else {
+                        // Keep encrypted assertions as they are
+                        assertions.add(o);
                     }
-                }
 
-                // Replace assertions
+                }
+                // Replace the assertions (should be only one!)
                 ((ResponseType)response).getAssertionOrEncryptedAssertion().clear();
                 ((ResponseType)response).getAssertionOrEncryptedAssertion().addAll(assertions);
+
 
             }
         }
 
-        // Let's see the type of response:
-
+        // Let's check the type of response
         String element = "Response";
-
         EndpointDescriptor ed = (EndpointDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_ENDPOINT_DESCRIPTOR);
-
         if (ed != null && ed.getType() != null) {
             if (SSOService.SingleLogoutService.toString().equals(ed.getType()))
                 element = "LogoutResponse";
         }
-
-        // TODO : Support other type of responses,
 
         // Always Sign responses
         if (logger.isDebugEnabled())

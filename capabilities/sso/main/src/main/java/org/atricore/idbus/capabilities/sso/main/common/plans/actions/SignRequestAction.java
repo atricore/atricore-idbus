@@ -53,14 +53,14 @@ public class SignRequestAction extends AbstractSSOAction {
         Channel channel = (Channel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
 
-        // TODO : Support signin some requests: i.e. when IdP requires authn. requests to be signed
+        // TODO : Support signing some requests: i.e. when IdP requires authn. requests to be signed
 
         boolean signRequest = false;
 
         if (request instanceof AuthnRequestType) {
             CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable( VAR_DESTINATION_COT_MEMBER );
             if (idp != null) {
-                signRequest = wantAssertionSigned(idp);
+                signRequest = wantAuthnRequestsSigned(idp);
             }
         }
 
@@ -88,7 +88,7 @@ public class SignRequestAction extends AbstractSSOAction {
 
 
 
-    protected boolean wantAssertionSigned(CircleOfTrustMemberDescriptor idp) {
+    protected boolean wantAuthnRequestsSigned(CircleOfTrustMemberDescriptor idp) {
 
         MetadataEntry idpMd = idp.getMetadata();
 
