@@ -57,6 +57,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
     private SSOBinding preferredIdpSLOBinding = SSOBinding.SAMLR2_ARTIFACT;
 
     private String claimEndpointSelection;
+
     private String idpSelector;
 
     @Override

@@ -752,10 +752,12 @@ public class SingleLogoutProducer extends SSOProducer {
                 "-",
                 System.currentTimeMillis() + (1000L * 60L * 60L * 24L * 30L));
 
-        // Invalidate SSO Session
-        SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
-        sessionMgr.invalidate(secCtx.getSessionIndex());
-        secCtx.clear();
+        // Invalidate SSO Session, if available
+        if (secCtx != null) {
+            SSOSessionManager sessionMgr = ((SPChannel) channel).getSessionManager();
+            sessionMgr.invalidate(secCtx.getSessionIndex());
+            secCtx.clear();
+        }
 
         // Audit information
         recordInfoAuditTrail(Action.SLO.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);

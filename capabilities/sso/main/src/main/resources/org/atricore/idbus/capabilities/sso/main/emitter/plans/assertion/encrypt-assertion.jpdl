@@ -28,17 +28,16 @@
     <start-state name="start">
         <transition to="end" />
     </start-state>
-    <!--
+<!--
     <state name="samlr2EncryptAssertion">
-    <transition to="end" />
-    <event type="node-enter">
-        <action class="org.atricore.idbus.capabilities.sso.main.common.plans.actions.EncryptAssertionAction"
-                name="SAMLR2 Encrypt Assertion">
-        </action>
-    </event>
-
+        <transition to="end" />
+        <event type="node-enter">
+            <action class="org.atricore.idbus.capabilities.sso.main.common.plans.actions.EncryptAssertionAction"
+                    name="SAMLR2 Encrypt Assertion">
+            </action>
+        </event>
+-->
     </state>
-    -->
 
     <end-state name="end"/>
 

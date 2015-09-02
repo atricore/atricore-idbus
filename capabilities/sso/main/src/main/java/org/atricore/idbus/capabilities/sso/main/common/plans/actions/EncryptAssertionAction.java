@@ -47,6 +47,9 @@ public class EncryptAssertionAction extends AbstractSSOAssertionAction {
         AssertionType assertion = (AssertionType) out.getContent();
         SamlR2Encrypter encrypter = (SamlR2Encrypter) executionContext.getContextInstance().getTransientVariable(VAR_SAMLR2_ENCRYPTER);
 
+        // TODO : Get context variables required to encrypt the assertion, like SAMLR2 Metadata.
+        // TODO : Determine whether the assertion must be encrypted or not!
+
         if (logger.isDebugEnabled())
             logger.debug("Encrypting assertion " + assertion.getID() + " with signer " + encrypter);
         EncryptedElementType eet = encrypter.encrypt( assertion );

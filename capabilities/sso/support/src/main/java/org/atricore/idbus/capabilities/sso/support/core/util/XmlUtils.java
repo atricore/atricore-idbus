@@ -23,6 +23,7 @@ package org.atricore.idbus.capabilities.sso.support.core.util;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
+import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
@@ -35,6 +36,7 @@ import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
+import org.w3._2001._04.xmlenc_.EncryptedDataType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -663,5 +665,19 @@ public class XmlUtils {
 
     public static Document marshalSamlR2AssertionAsDom(AssertionType assertion) throws Exception {
         return marshalSamlR2AsDom(assertion, SAMLR2Constants.SAML_ASSERTION_NS, "Assertion", new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
+    }
+
+    public static Document marshalSamlR2EncryptedAssertionAsDom(EncryptedElementType assertion) throws Exception {
+        return marshalSamlR2AsDom(assertion, SAMLR2Constants.SAML_ASSERTION_NS, "EncryptedAssertion", new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
+    }
+
+    public static AssertionType unmarshalSamlR2Assertion(Document doc) throws Exception {
+        return (AssertionType ) unmarshal(doc, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG,
+                SAMLR2Constants.SAML_IDBUS_PKG});
+    }
+
+    public static EncryptedDataType unmarshalSamlR2EncryptedAssertion(Document doc) throws Exception {
+        return (EncryptedDataType) unmarshal(doc, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG,
+                SAMLR2Constants.SAML_IDBUS_PKG});
     }
 }
