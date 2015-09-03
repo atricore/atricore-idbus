@@ -40,6 +40,8 @@ public interface OpenIDConnectConstants {
 
     QName FacebookAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "FacebookAuthzTokenConsumerService");
 
+    QName LinkedInAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "LinkedInAuthzTokenConsumerService");
+
     QName IDPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "ProviderDescriptor");
 
     QName SPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "RelayingPartyDesriptor");

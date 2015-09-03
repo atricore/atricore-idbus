@@ -143,7 +143,9 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Setting scopes URL parameter to [" + scopes + "]");
 
-            ((AuthorizationCodeRequestUrl) authorizationUrl).setScopes(Collections.singleton(scopes));
+            if (scopes != null) {
+                ((AuthorizationCodeRequestUrl) authorizationUrl).setScopes(Collections.singleton(scopes));
+            }
 
             ((AuthorizationCodeRequestUrl) authorizationUrl).setRedirectUri(responseLocation.getLocation());
         }
@@ -176,12 +178,14 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         String googleSvc = OpenIDConnectConstants.GoogleAuthzTokenConsumerService_QNAME.toString();
         String fbSvc = OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME.toString();
         String twSvc = OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME.toString();
+        String linkedInSvc = OpenIDConnectConstants.LinkedInAuthzTokenConsumerService_QNAME.toString();
         String binding = OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.toString();
 
         for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
             if (endpoint.getType().equals(googleSvc) ||
                     endpoint.getType().equals(fbSvc) ||
                     endpoint.getType().equals(twSvc) ||
+                    endpoint.getType().equals(linkedInSvc) ||
                     endpoint.getType().endsWith("AuthzTokenConsumerService")) { // Kind of a hack
 
                 if (endpoint.getBinding().equals(binding))

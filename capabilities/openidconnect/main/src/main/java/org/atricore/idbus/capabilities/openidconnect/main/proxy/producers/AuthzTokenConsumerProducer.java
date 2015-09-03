@@ -24,7 +24,11 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.codehaus.jackson.map.ObjectMapper;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -47,6 +51,8 @@ public abstract class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
     protected static final String BIRTHDAY_USER_ATTR_NAME = "birthday";
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
+
+    protected ObjectMapper mapper = new ObjectMapper();
 
     public AuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -190,5 +196,57 @@ public abstract class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
             userAttr.setValue(value);
             attrs.add(userAttr);
         }
+    }
+
+    protected String toJsonString(Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+            mapper.writeValue(baos, value);
+            return new String(baos.toByteArray());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    protected String listToJsonString(List list) {
+        if (list == null || list.size() == 0) {
+            return null;
+        }
+        return toJsonString(list);
+    }
+
+    protected Object fromJsonString(String value, Class objClass) {
+        try {
+            return mapper.readValue(new ByteArrayInputStream(value.getBytes()), objClass);
+        } catch (IOException e) {
+            logger.debug("Unable to convert JSON string to JAVA object [" + objClass.getName() + "]", e);
+            return null;
+        }
+    }
+
+    protected String toJavaName(String attrName) {
+        // It handles only "_" characters
+        String javaAttrName = attrName;
+        int index;
+        String nextChar;
+        while ((index = javaAttrName.indexOf("_")) != -1) {
+            if (index == 0) {
+                javaAttrName = javaAttrName.substring(1);
+            } else if (index == (javaAttrName.length() - 1)) {
+                javaAttrName = javaAttrName.substring(0, index);
+            } else {
+                nextChar = javaAttrName.substring(index + 1, index + 2);
+                if ("_".equals(nextChar)) {
+                    javaAttrName = javaAttrName.substring(0, index) + javaAttrName.substring(index + 1);
+                } else {
+                    javaAttrName = javaAttrName.substring(0, index) + nextChar.toUpperCase() + javaAttrName.substring(index + 2);
+                }
+            }
+        }
+        return javaAttrName;
     }
 }

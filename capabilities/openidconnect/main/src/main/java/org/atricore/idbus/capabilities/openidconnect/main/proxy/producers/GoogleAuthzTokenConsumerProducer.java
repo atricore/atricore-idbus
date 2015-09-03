@@ -29,6 +29,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sgonzalez on 2/25/15.
@@ -225,5 +226,13 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
         addUserAttribute(PICTURE_USER_ATTR_NAME, user.getPicture(), attrs);
         addUserAttribute(PROFILE_LINK_USER_ATTR_NAME, user.getLink(), attrs);
         addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.isVerifiedEmail()), attrs);
+
+        addUserAttribute("hostedDomain", user.getHd(), attrs);
+
+        for (Map.Entry<String, Object> entry : user.getUnknownKeys().entrySet()) {
+            if (entry.getValue() != null) {
+                addUserAttribute(entry.getKey(), toJsonString(entry.getValue()), attrs);
+            }
+        }
     }
 }

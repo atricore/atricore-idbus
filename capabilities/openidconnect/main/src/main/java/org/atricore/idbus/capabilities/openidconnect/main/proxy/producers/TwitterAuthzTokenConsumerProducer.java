@@ -5,12 +5,9 @@ import com.google.api.client.auth.oauth.OAuthCredentialsResponse;
 import com.google.api.client.auth.oauth.OAuthGetAccessToken;
 import com.google.api.client.auth.oauth.OAuthHmacSigner;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.services.oauth2.model.Userinfoplus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.oauth.OAuthGetAccessTokenUsingPost;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
@@ -25,20 +22,19 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
+import twitter4j.TwitterObjectFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TwitterAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer {
 
     private static final Log logger = LogFactory.getLog(TwitterAuthzTokenConsumerProducer.class);
-
-    protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     public TwitterAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -127,6 +123,7 @@ public class TwitterAuthzTokenConsumerProducer extends AuthzTokenConsumerProduce
         confBuilder.setOAuthConsumerSecret(mediator.getClientSecret());
         confBuilder.setOAuthAccessToken(accessToken);
         confBuilder.setOAuthAccessTokenSecret(accessTokenSecret);
+        confBuilder.setJSONStoreEnabled(true);
         TwitterFactory factory = new TwitterFactory(confBuilder.build());
         Twitter twitter = factory.getInstance();
         User user = twitter.verifyCredentials();
@@ -219,5 +216,20 @@ public class TwitterAuthzTokenConsumerProducer extends AuthzTokenConsumerProduce
         addUserAttribute(LANGUAGE_USER_ATTR_NAME, user.getLang(), attrs);
         addUserAttribute(PICTURE_USER_ATTR_NAME, user.getProfileImageURL(), attrs);
         addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.isVerified()), attrs);
+
+        String userJSON = TwitterObjectFactory.getRawJSON(user);
+        if (userJSON != null) {
+            String attrName;
+            Map<String, Object> map = (Map<String, Object>) fromJsonString(userJSON, Map.class);
+            if (map != null) {
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    attrName = entry.getKey();
+                    if (entry.getValue() != null && !(attrName.equals("name") || attrName.equals("screen_name") ||
+                            attrName.equals("lang") || attrName.equals("profile_image_url") || attrName.equals("verified"))) {
+                        addUserAttribute(toJavaName(attrName), String.valueOf(entry.getValue()), attrs);
+                    }
+                }
+            }
+        }
     }
 }

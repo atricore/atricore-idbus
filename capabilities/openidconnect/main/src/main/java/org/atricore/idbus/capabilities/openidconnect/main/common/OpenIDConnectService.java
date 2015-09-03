@@ -32,7 +32,9 @@ public enum OpenIDConnectService {
 
     FacebookAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME),
 
-    TwitterAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME);
+    TwitterAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME),
+
+    LinkedInAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.LinkedInAuthzTokenConsumerService_QNAME);
 
     private QName qname;
 
