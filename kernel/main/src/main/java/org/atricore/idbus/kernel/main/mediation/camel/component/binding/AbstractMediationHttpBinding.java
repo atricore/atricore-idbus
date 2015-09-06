@@ -62,7 +62,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     private static DateFormat cookieDf = null;
 
     static {
-        cookieDf = new SimpleDateFormat("dd MMM yyyy kk:mm:ss z");
+        cookieDf = new SimpleDateFormat("EEE, dd-MMM-yyyy kk:mm:ss z");
         cookieDf.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
