@@ -110,9 +110,13 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     // Some spetial configuration attributes,
 
     /**
-     * This attribute is only used when CRYPT hasing is configued.  The default value is 2.
+     * This attribute is only used when CRYPT hashing is configured.  The default value is 2.
      */
     private int _saltLength = 2;
+
+    private String _saltSuffix;
+
+    private String _saltPrefix;
 
     public UsernamePasswordAuthScheme() {
         this.setName("basic-authentication");
@@ -298,10 +302,33 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
         // If SALT is available, use it
         String salt = getSalt(knowCredentials);
-        if (salt != null)
+        if (salt != null) {
+            if (logger.isTraceEnabled())
+                logger.trace("Using random/user specific salt value as prefix");
+
             password = salt + password;
 
-        // TODO : Support other LDAP prefixes !!!!
+        } else {
+
+            // Look for fixed salts:
+
+            if (_saltSuffix != null) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Using fixed salt value as suffix");
+
+                password = password + _saltSuffix;
+            }
+
+            if (_saltPrefix != null) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Using fixed salt value as prefix");
+
+                password = password + _saltPrefix;
+
+            }
+        }
 
         byte[] passBytes;
         String passwordHash = null;
@@ -505,6 +532,21 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         _saltLength = sl;
     }
 
+    public String getSaltSuffix() {
+        return _saltSuffix;
+    }
+
+    public void setSaltSuffix(String saltValue) {
+        _saltSuffix = saltValue;
+    }
+
+    public String getSaltPrefix() {
+        return _saltPrefix;
+    }
+
+    public void setSaltPrefix(String saltValue) {
+        _saltPrefix = saltValue;
+    }
 
     /**
      * Values : true , false,
