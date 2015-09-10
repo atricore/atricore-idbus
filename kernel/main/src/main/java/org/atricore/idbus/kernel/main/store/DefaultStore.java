@@ -1,6 +1,7 @@
 package org.atricore.idbus.kernel.main.store;
 
 import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordCredentialProvider;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
@@ -13,12 +14,11 @@ import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import java.util.Collection;
 
 /**
- * Created by sgonzalez on 3/20/15.
+ * Default Identity Store
  */
 public class DefaultStore extends AbstractStore {
 
     private IdentityPartition partition;
-
 
     public IdentityPartition getPartition() {
         return partition;
@@ -33,13 +33,12 @@ public class DefaultStore extends AbstractStore {
         try {
 
             User user = partition.findUserByUserName(key.toString());
-            // TODO : Support other type of credentials !
 
-            Credential usrCred = cp.newCredential("username", user.getUserName());
-            Credential pwdCred = cp.newCredential("password", user.getUserPassword());
+            Credential usrCred = cp.newCredential(UsernamePasswordCredentialProvider.USERNAME_CREDENTIAL_NAME, user.getUserName());
+            Credential pwdCred = cp.newCredential(UsernamePasswordCredentialProvider.PASSWORD_CREDENTIAL_NAME, user.getUserPassword());
             Credential saltCred = null;
             if (user.getSalt() != null)
-                saltCred = cp.newCredential("salt", user.getSalt());
+                saltCred = cp.newCredential(UsernamePasswordCredentialProvider.SALT_CREDENTIAL_NAME, user.getSalt());
 
             return saltCred == null ? new Credential[]{usrCred, pwdCred} : new Credential[]{usrCred, pwdCred, saltCred};
 
