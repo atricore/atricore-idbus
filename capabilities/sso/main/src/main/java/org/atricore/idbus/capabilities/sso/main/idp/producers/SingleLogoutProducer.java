@@ -186,7 +186,7 @@ public class SingleLogoutProducer extends SSOProducer {
     }
 
     /**
-     * For now, reserved for timeout only
+     * Reserved for timeout only
      *
      * @param exchange
      * @param sloRequest
