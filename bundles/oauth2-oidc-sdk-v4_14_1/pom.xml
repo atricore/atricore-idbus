@@ -43,7 +43,7 @@
     <properties>
         <oauth2-oidc-sdk.vesrion>4.14.1</oauth2-oidc-sdk.vesrion>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <nimbus-jose-jwt.version>1.4.1-SNAPSHOT</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>1.4.2-SNAPSHOT</nimbus-jose-jwt.version>
 
         <commons-codec.version>1.10</commons-codec.version>
     </properties>

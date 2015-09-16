@@ -41,9 +41,9 @@
     <properties>
         <idbus.cap.idconf.version>1.4.2-SNAPSHOT</idbus.cap.idconf.version>
         <idbus.cap.sso.version>1.4.2-SNAPSHOT</idbus.cap.sso.version>
-        <ops4j.paxwicket.version>2.1.0</ops4j.paxwicket.version>
+        <ops4j.paxwicket.version>2.1.1</ops4j.paxwicket.version>
         <!--apache-wicket.version>1.4.19</apache-wicket.version-->
-        <apache-wicket.version>6.5.0</apache-wicket.version>
+        <apache-wicket.version>6.7.0</apache-wicket.version>
         <pax.web.version>0.7.2</pax.web.version>
     </properties>
 

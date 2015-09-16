@@ -259,11 +259,11 @@
     </feature>
 
     <feature name="apache-wicket" version="${apache-wicket.version}">
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-util/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-request/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-core/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-auth-roles/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-extensions/6.5.0</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-util/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-request/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-core/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-auth-roles/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-extensions/${apache-wicket.version}</bundle>
     </feature>
 
     <feature name="web" version="${version}">
