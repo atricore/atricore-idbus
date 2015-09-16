@@ -77,6 +77,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         fontExtensions.add("ttf"); // TrueType font
         fontExtensions.add("eot"); // Embedded OpenType font
+        fontExtensions.add("woff"); // Web Open Font Format
+        fontExtensions.add("woff2"); // Web Open Font Format 2.0
 
         imageExtensions.add("bmp"); // Bitmap Image File
         imageExtensions.add("dds"); // DirectDraw Surface

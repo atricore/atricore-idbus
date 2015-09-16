@@ -113,9 +113,9 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             PropertyModel<String> m = new PropertyModel<String>(properties, "username");
 
             SSOWebSession s = (SSOWebSession) getSession();
-            if (s.getLastUsername() != null) {
+            /*if (s.getLastUsername() != null) {
                 m.setObject(s.getLastUsername());
-            }
+            }*/
 
             add(username = new RequiredTextField<String>("username", m));
             username.setType(String.class);
