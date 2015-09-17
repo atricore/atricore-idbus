@@ -36,8 +36,8 @@
                     name="SAMLR2 Encrypt Assertion">
             </action>
         </event>
--->
     </state>
+-->
 
     <end-state name="end"/>
 
