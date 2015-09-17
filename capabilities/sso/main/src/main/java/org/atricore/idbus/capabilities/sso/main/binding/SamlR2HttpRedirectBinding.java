@@ -157,7 +157,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
             assert ed != null : "Mediation Response MUST Provide a destination";
             if (out.getContent() == null) {
-                throw new NullPointerException("Cannot Create form with null content for action " + ed.getLocation());
+                throw new NullPointerException("Cannot Create message with null content for action " + ed.getLocation());
             }
             String location = ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation();
 

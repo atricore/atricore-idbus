@@ -372,7 +372,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         // Remove it from the store
         try {
             _store.remove(sessionId);
-
+        } catch(NoSuchSessionException e) {
+            logger.trace("Can't remove session from store: " + e.getMessage(), e);
         } catch (SSOSessionException e) {
             logger.warn("Can't remove session from store: " + e.getMessage(), e);
         } catch (Exception e) {

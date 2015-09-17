@@ -2,6 +2,8 @@ package org.atricore.idbus.capabilities.sso.main.idp;
 
 import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
 
@@ -18,6 +20,8 @@ import java.util.Set;
  * @version $Id$
  */
 public class IdPSecurityContext implements java.io.Serializable {
+
+    private static final Log logger = LogFactory.getLog(IdPSecurityContext.class);
 
     private Subject subject;
 
@@ -51,11 +55,12 @@ public class IdPSecurityContext implements java.io.Serializable {
     }
 
     public void register(ProviderSecurityContext pSecCtx) {
+        if (logger.isDebugEnabled())
+            logger.debug("Register Provider Security Context for " + pSecCtx.getProviderId());
         registry.add(pSecCtx);
     }
 
     public void register(NameIDType id, String relayState) {
-
         register(new ProviderSecurityContext(id, relayState));
     }
 
@@ -74,6 +79,9 @@ public class IdPSecurityContext implements java.io.Serializable {
     }
 
     public void clear() {
+
+        logger.debug("Clear Security Context w/session " + sessionIndex);
+
         this.sessionIndex = null;
         this.subject = null;
         this.authnStatement = null;

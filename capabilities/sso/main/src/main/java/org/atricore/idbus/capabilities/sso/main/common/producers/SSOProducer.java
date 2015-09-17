@@ -208,9 +208,16 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             SPSSODescriptorType samlr2sp = (SPSSODescriptorType) md.getEntry();
 
             EndpointDescriptor ed = resolveEndpoint(samlr2sp.getSingleLogoutService(),
-                    preferredBindings, SSOService.SingleLogoutService, true);
-            if (ed == null)
-                logger.warn("No SLO Endpoint found for SP " + spAlias);
+                    preferredBindings, SSOService.SingleLogoutService, onlyPreferredBinding);
+
+            if (ed == null) {
+                String bindings = "";
+                for (SSOBinding preferredBinding : preferredBindings) {
+                    bindings += preferredBinding.getValue();
+                }
+                logger.warn("No SP SLO Endpoint found [" + spAlias + "] " +
+                    SSOService.SingleLogoutService.toString() + "/" + bindings);
+            }
 
             return ed;
 
@@ -256,8 +263,14 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             EndpointDescriptor ed = resolveEndpoint(samlr2idp.getSingleLogoutService(),
                     preferredBindings, SSOService.SingleLogoutService, true);
 
-            if (ed == null)
-                throw new SSOException("No SLO Endpoint found for IDP " + idpAlias);
+            if (ed == null) {
+                String bindings = "";
+                for (SSOBinding preferredBinding : preferredBindings) {
+                    bindings += preferredBinding.getValue();
+                }
+                logger.warn("No IDP SLO Endpoint found [" + idpAlias + "] " +
+                        SSOService.SingleLogoutService.toString() + "/" + bindings);
+            }
 
             return ed;
 
