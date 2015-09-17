@@ -145,7 +145,7 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
         IdentityMediationEndpoint e = null;
         for (IdentityMediationEndpoint endpoint : defaultChannel.getEndpoints()) {
 
-            if (endpoint.getType().equals(SSOService.IDPInitiatedSingleLogoutService.toString())) {
+            if (endpoint.getType().equals(SSOService.SingleLogoutService.toString())) {
 
                 if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
                     // We need to build an endpoint descriptor descriptor now ...
@@ -155,7 +155,7 @@ public class IdPSessionEventListener implements SSOSessionEventListener, Applica
                             endpoint.getLocation();
 
                     return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-local",
-                            SSOService.IDPInitiatedSingleLogoutService.toString(),
+                            SSOService.SingleLogoutService.toString(),
                             SSOBinding.SSO_LOCAL.toString(),
                             location,
                             null);

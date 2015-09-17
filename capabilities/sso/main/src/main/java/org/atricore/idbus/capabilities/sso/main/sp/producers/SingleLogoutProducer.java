@@ -182,7 +182,9 @@ public class SingleLogoutProducer extends SSOProducer {
         }
 
         EndpointDescriptor destination = resolveIdPSloEndpoint(idp.getAlias(),
-                new SSOBinding[] {SSOBinding.asEnum(endpoint.getBinding()) },
+                new SSOBinding[] {SSOBinding.asEnum(endpoint.getBinding()),
+                        SSOBinding.SAMLR2_REDIRECT,
+                        SSOBinding.SAMLR2_POST },
                 true);
 
         ResponseType samlResponse = buildSamlSloResponse(exchange, sloRequest, idp, destination);

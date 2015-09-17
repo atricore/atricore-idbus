@@ -89,7 +89,7 @@ public class MediationStateImpl implements MediationState {
         if (localState == null)
             throw new IllegalStateException("Local state not supported for this message");
 
-        if (!(value instanceof java.io.Serializable))
+        if (value != null && !(value instanceof java.io.Serializable))
             logger.error("Non-serializable variable " + name);
 
         localState.setValue(name, value);

@@ -1,16 +1,23 @@
 package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
+import oasis.names.tc.saml._2_0.assertion.NameIDType;
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
-import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
+import org.atricore.idbus.capabilities.sso.support.profiles.slo.LogoutReason;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedLogoutRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
-import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.main.authn.SSOUser;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -19,8 +26,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+
+import java.util.Date;
+import java.util.Set;
 
 /**
  *
@@ -52,110 +61,118 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
 
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-            MediationState mediationState = in.getMessage().getState();
+            MediationState state = in.getMessage().getState();
             String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
+            IdPSecurityContext secCtx = (IdPSecurityContext) state.getLocalVariable(varName);
+            SPChannel spChannel = (SPChannel) channel;
+            String idpAlias = spChannel.getMember().getAlias();
+            String spAlias = state.getTransientVariable("atricore_sp_alias");
 
-            IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
-            if (secCtx != null && secCtx.getSessionIndex() != null) {
-                IdentityProvider idp = (IdentityProvider) ((SPChannel)channel).getFederatedProvider();
-                triggerIdPInitiatedSLO(idp, secCtx);
+            if (spAlias != null) {
+
+                CircleOfTrustManager cot = spChannel.getFederatedProvider().getCotManager();
+                CircleOfTrustMemberDescriptor sp = cot.lookupMemberByAlias(spAlias);
+
+                // SP that we should
+                EntityDescriptorType ed = (EntityDescriptorType) sp.getMetadata().getEntry();
+                NameIDType issuer = new NameIDType();
+                issuer.setFormat(NameIDFormat.ENTITY.getValue());
+                issuer.setValue(ed.getEntityID());
+
+                EndpointDescriptor slo = resolveIdPSloEndpoint(idpAlias, new SSOBinding[]{
+                        SSOBinding.SAMLR2_REDIRECT, SSOBinding.SAMLR2_POST, SSOBinding.SAMLR2_ARTIFACT}, true);
+
+                // TODO : Use a plan
+                LogoutRequestType sloRequest = new LogoutRequestType();
+                sloRequest.setID(uuidGenerator.generateId());
+                sloRequest.setVersion(SAMLR2Constants.SAML_VERSION);
+
+                // IssueInstant [required]
+                Date dateNow = new java.util.Date();
+                sloRequest.setIssueInstant(DateUtils.toXMLGregorianCalendar(dateNow));
+                sloRequest.setIssuer(issuer);
+                sloRequest.setDestination(slo.getLocation());
+                sloRequest.setReason(LogoutReason.SAMLR2_USER.toString());
+                Date notOnOrAfter = new java.util.Date(System.currentTimeMillis() + (1000L * 60L * 5L));
+                sloRequest.setNotOnOrAfter(DateUtils.toXMLGregorianCalendar(notOnOrAfter));
+
+                if (secCtx != null && secCtx.getSessionIndex() != null) {
+                    Set<SSOUser> ssoUsers = secCtx.getSubject().getPrincipals(SSOUser.class);
+                    if (ssoUsers.size() > 1) {
+                        SSOUser user = ssoUsers.iterator().next();
+                        NameIDType subjectNameID = new NameIDType();
+                        subjectNameID.setFormat(NameIDFormat.UNSPECIFIED.getValue());
+                        subjectNameID.setValue(user.getName());
+                        sloRequest.setNameID(subjectNameID);
+                    }
+                }
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Sending SAML SLO Request to " + slo);
+
+                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        sloRequest, "LogoutRequest", null, slo, in.getMessage().getState()));
+
+                exchange.setOut(out);
+
+            } else {
+
+                // If no SP was requested, we just perform an SLO and send the user to the default Dashboard URL
+                // (like the TOUT use case, but using front-channel)
+
+                IDPInitiatedLogoutRequestType sloRequest = new IDPInitiatedLogoutRequestType();
+                if (secCtx != null)
+                    sloRequest.setSsoSessionId(secCtx.getSessionIndex());
+                sloRequest.setID(uuidGenerator.generateId());
+
+                EndpointDescriptor slo = resolveIdpSloEndpoint((SPChannel) channel);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Sending new IdP-initiated SLO Request to " + slo);
+
+                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        sloRequest, "LogoutRequest", null, slo, in.getMessage().getState()));
+
+                exchange.setOut(out);
             }
-
-            // We'll send the user to the dashboard URL
-            String destinationLocation = ((SSOIDPMediator) channel.getIdentityMediator()).getDashboardUrl();
-
-            EndpointDescriptor destination =
-                    new EndpointDescriptorImpl("EmbeddedSPAcs",
-                            "SingleLogoutService",
-                            SSOBinding.SSO_REDIRECT.getValue(),
-                            destinationLocation, null);
-
-            if (logger.isDebugEnabled())
-                logger.debug("Sending IdP-init SLO Response to " + destination);
-
-            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                    null, "IdPLogoutResponse", null, destination, in.getMessage().getState()));
-
-            exchange.setOut(out);
 
         } catch (Exception e) {
             throw new IdentityMediationException(e.getMessage(), e);
         }
     }
 
-    protected void triggerIdPInitiatedSLO(IdentityProvider identityProvider, IdPSecurityContext secCtx) throws SSOException, IdentityMediationException {
-
-        if (logger.isTraceEnabled())
-            logger.trace("Triggering IDP Initiated SLO from IDP for Security Context " + secCtx);
-
-        EndpointDescriptor ed = resolveIdpInitiatedSloEndpoint(identityProvider);
-
-        if (logger.isDebugEnabled())
-            logger.debug("Using IDP Initiated SLO endpoint " + ed);
-
-        IDPInitiatedLogoutRequestType sloRequest = new IDPInitiatedLogoutRequestType();
-        sloRequest.setID(uuidGenerator.generateId());
-        sloRequest.setSsoSessionId(secCtx.getSessionIndex());
-
-        if (logger.isTraceEnabled())
-            logger.trace("Sending SLO Request " + sloRequest.getID() +
-                    " to IDP " + identityProvider.getName() +
-                    " using endpoint " + ed.getLocation());
-
-        IdentityMediator mediator = identityProvider.getChannel().getIdentityMediator();
-
-        // Response from SP
-        SSOResponseType sloResponse =
-                (SSOResponseType) mediator.sendMessage(sloRequest, ed, identityProvider.getChannel());
-
-        if (logger.isTraceEnabled())
-            logger.trace("Recevied SLO Response " + sloResponse.getID() +
-                    " from IDP " + identityProvider.getName() +
-                    " using endpoint " + ed.getLocation());
-
-
-    }
-
-    protected EndpointDescriptor resolveIdpInitiatedSloEndpoint(IdentityProvider idp) throws SSOException {
+    /**
+     * Looks for a SingleSignOn service using SSO ART binding.
+     */
+    protected EndpointDescriptor resolveIdpSloEndpoint(SPChannel spChannel) throws SSOException {
         // User default channel to signal SLO
-        Channel defaultChannel = idp.getChannel();
 
-        IdentityMediationEndpoint e = null;
-        for (IdentityMediationEndpoint endpoint : defaultChannel.getEndpoints()) {
+        // Look for local SLO endpoint, it will also receive SLO IDP Initiated requests
+        for (IdentityMediationEndpoint endpoint : spChannel.getEndpoints()) {
 
             if (endpoint.getType().equals(SSOService.SingleLogoutService.toString())) {
 
-                if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+                if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                     // We need to build an endpoint descriptor descriptor now ...
 
                     String location = endpoint.getLocation().startsWith("/") ?
-                            defaultChannel.getLocation() + endpoint.getLocation() :
+                            spChannel.getLocation() + endpoint.getLocation() :
                             endpoint.getLocation();
 
-                    return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-local",
+                    return new EndpointDescriptorImpl(spChannel.getName() + "-sso-slo-art",
                             SSOService.SingleLogoutService.toString(),
-                            SSOBinding.SSO_LOCAL.toString(),
+                            SSOBinding.SSO_ARTIFACT.toString(),
                             location,
                             null);
-                } else if (endpoint.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
-                    e = endpoint;
+
                 }
             }
         }
 
-        if (e != null) {
-            String location = e.getLocation().startsWith("/") ?
-                    defaultChannel.getLocation() + e.getLocation() :
-                    e.getLocation();
-
-            return new EndpointDescriptorImpl(idp.getName() + "-sso-slo-soap",
-                    SSOService.SingleLogoutService.toString(),
-                    e.getBinding(),
-                    location,
-                    null);
-        }
-
-        throw new SSOException("No IDP SLO endpoint using LOCAL/SOAP binding found!");
+        throw new SSOException("No IDP SLO endpoint for channel " + spChannel.getName());
     }
+
+
 }
