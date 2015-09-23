@@ -650,7 +650,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             claimChannel,
                             uuidGenerator.generateId(),
                             preAuthnRequest.getSecurityToken());
-                    if (preAuthnRequest.getRememberMe())
+                    if (preAuthnRequest.getRememberMe() != null && preAuthnRequest.getRememberMe())
                         claimsRequest.getParams().put("remember_me", "true");
                 } else {
                     claimsRequest = new SSOCredentialClaimsRequest(
