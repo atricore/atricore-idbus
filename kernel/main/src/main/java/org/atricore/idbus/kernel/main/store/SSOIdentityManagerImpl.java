@@ -35,6 +35,7 @@ import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStoreKeyAdapter;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 
 /**
  * @org.apache.xbean.XBean element="identity-manager"
@@ -50,10 +51,16 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
 
     private static final Log logger = LogFactory.getLog(SSOIdentityManagerImpl.class);
 
+    private MonitoringServer mServer;
+
     // Identity store used by the manager.
     private IdentityStore _store;
     private IdentityStoreKeyAdapter _keyAdapter;
     private SSOSessionManager _sessionManager;
+
+    private String metricPrefix;
+
+    private String metricBase = "/Store/Transactions";
 
     /**
      *
@@ -70,14 +77,25 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
     public SSOUser findUser(String name)
             throws NoSuchUserException, SSOIdentityException {
 
-        // Find user in store
-        UserKey key = getIdentityStoreKeyAdapter().getKeyForUsername(name);
-        BaseUser user = getIdentityStore().loadUser(key);
-        if (user == null)
-            throw new NoSuchUserException(key);
+        long s = System.currentTimeMillis();
+        String metric = metricPrefix + metricBase + "/findUser";
 
-        // Done ... user found.
-        return user;
+        try {
+
+
+            // Find user in store
+            UserKey key = getIdentityStoreKeyAdapter().getKeyForUsername(name);
+            BaseUser user = getIdentityStore().loadUser(key);
+            if (user == null)
+                throw new NoSuchUserException(key);
+
+            // Done ... user found.
+            return user;
+        } finally {
+            long e = System.currentTimeMillis();
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metric, e - s);
+        }
     }
 
     /**
@@ -92,9 +110,12 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
         BaseUser user = null;
         UserKey key = null;
 
+        long s = System.currentTimeMillis();
+        String metric = metricPrefix + metricBase + "/findUserInSession";
+
         try {
-            BaseSession s = (BaseSession) getSessionManager().getSession(sessionId);
-            key = new SimpleUserKey(s.getUsername());
+            BaseSession session = (BaseSession) getSessionManager().getSession(sessionId);
+            key = new SimpleUserKey(session.getUsername());
             user = getIdentityStore().loadUser(key);
 
             if (logger.isDebugEnabled())
@@ -107,6 +128,11 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
 
         } catch (SSOSessionException e) {
             throw new SSOIdentityException(e.getMessage(), e);
+        } finally {
+            long e = System.currentTimeMillis();
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metric, e - s);
+
         }
 
     }
@@ -122,8 +148,17 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
     public SSORole[] findRolesByUsername(String username)
             throws SSOIdentityException {
 
-        UserKey key = getIdentityStoreKeyAdapter().getKeyForUsername(username);
-        return getIdentityStore().findRolesByUserKey(key);
+        long s = System.currentTimeMillis();
+        String metric = metricPrefix + metricBase + "/findRolesByUsername";
+
+        try {
+            UserKey key = getIdentityStoreKeyAdapter().getKeyForUsername(username);
+            return getIdentityStore().findRolesByUserKey(key);
+        } finally {
+            long e = System.currentTimeMillis();
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metric, e - s);
+        }
     }
 
     /**
@@ -133,9 +168,19 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
      * @throws SSOIdentityException if an error occurs
      */
     public void userExists(String username) throws NoSuchUserException, SSOIdentityException {
-        UserKey key = getIdentityStoreKeyAdapter().getKeyForUsername(username);
-        if (!getIdentityStore().userExists(key))
-            throw new NoSuchUserException(key);
+        long s = System.currentTimeMillis();
+        String metric = metricPrefix + metricBase + "/userExists";
+
+        try {
+            UserKey key = getIdentityStoreKeyAdapter().getKeyForUsername(username);
+            if (!getIdentityStore().userExists(key))
+                throw new NoSuchUserException(key);
+        } finally {
+            long e = System.currentTimeMillis();
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metric, e - s);
+
+        }
     }
 
 
@@ -176,5 +221,19 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
         return _keyAdapter;
     }
 
+    public MonitoringServer getmServer() {
+        return mServer;
+    }
 
+    public void setmServer(MonitoringServer mServer) {
+        this.mServer = mServer;
+    }
+
+    public String getMetricPrefix() {
+        return metricPrefix;
+    }
+
+    public void setMetricPrefix(String metricPrefix) {
+        this.metricPrefix = metricPrefix;
+    }
 }
