@@ -221,11 +221,11 @@ public class SSOIdentityManagerImpl implements SSOIdentityManager {
         return _keyAdapter;
     }
 
-    public MonitoringServer getmServer() {
+    public MonitoringServer getMonitoringServer() {
         return mServer;
     }
 
-    public void setmServer(MonitoringServer mServer) {
+    public void setMonitoringServer(MonitoringServer mServer) {
         this.mServer = mServer;
     }
 
