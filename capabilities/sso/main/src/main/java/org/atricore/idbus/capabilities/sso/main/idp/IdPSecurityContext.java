@@ -27,6 +27,8 @@ public class IdPSecurityContext implements java.io.Serializable {
 
     private String sessionIndex;
 
+    private String idpProxySessionIndex;
+
     private boolean sloInProgress;
 
     private AuthnStatementType authnStatement;
@@ -104,6 +106,14 @@ public class IdPSecurityContext implements java.io.Serializable {
 
     public void setSloInProgress(boolean sloInProgress) {
         this.sloInProgress = sloInProgress;
+    }
+
+    public String getIdpProxySessionIndex() {
+        return idpProxySessionIndex;
+    }
+
+    public void setIdpProxySessionIndex(String idpProxySessionIndex) {
+        this.idpProxySessionIndex = idpProxySessionIndex;
     }
 
     @Override

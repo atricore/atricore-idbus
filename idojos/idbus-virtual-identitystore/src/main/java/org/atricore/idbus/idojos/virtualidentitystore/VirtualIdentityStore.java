@@ -78,10 +78,12 @@ public class VirtualIdentityStore extends AbstractStore {
 
             BaseUser sourceUser;
             try {
-            	sourceUser = identitySource.getBackingIdentityStore().loadUser(key);
-            	if (sourceUser != null) {
+                sourceUser = identitySource.getBackingIdentityStore().loadUser(key);
+                if (sourceUser != null) {
                     sourceUsers.add(sourceUser);
                 }
+            } catch (NoSuchUserException e) {
+                logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
             	logger.warn("Error loading user from embedded identity source", t);
             }
@@ -136,7 +138,8 @@ public class VirtualIdentityStore extends AbstractStore {
                 if (baseRoles != null) {
                     virtualUserRoles.addAll(Arrays.asList(baseRoles));
                 }
-
+            } catch (NoSuchUserException e) {
+                logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
                 logger.warn("Error find roles from embedded identity source", t);
                                 
@@ -191,6 +194,8 @@ public class VirtualIdentityStore extends AbstractStore {
                 if (Credentials != null) {
                     virtualUserCredentials.addAll(Arrays.asList(Credentials));
                 }
+            } catch (NoSuchUserException e) {
+                logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
                 logger.warn("Cannot load credentials from embedded identity source", t);
             }
