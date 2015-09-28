@@ -71,6 +71,9 @@ public class SessionHeartBeatProducer extends SSOProducer {
         SPSecurityContext secCtx =
                 (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
+        if (logger.isDebugEnabled())
+            logger.debug("SP Session heart-beat for " + request.getSsoSessionId() + " " + request.getIssuer());
+
         SPSessionHeartBeatResponseType response = new SPSessionHeartBeatResponseType();
         response.setID(uuidGenerator.generateId());
         response.setInReplayTo(request.getID());
@@ -87,9 +90,12 @@ public class SessionHeartBeatProducer extends SSOProducer {
         } else {
 
             if (logger.isDebugEnabled())
-                logger.debug("Security Context found " + secCtx);
+                logger.debug("Security Context found " + secCtx + " with sessions IDP:[" + secCtx.getIdpSsoSession() +
+                        "] SP:[" + secCtx.getSessionIndex()+ "], REQ:["+request.getSsoSessionId()+"]");
 
             try {
+
+
                 // Update local context and validate local session
                 updateSPSecurityContext(secCtx, exchange);
 

@@ -1327,6 +1327,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
                 secCtx.setProxyPrincipals(stsCtx.getProxyPrincipals());
+                secCtx.setIdpProxySessionIndex(proxyResponse.getSessionIndex());
 
                 // Associate the SP with the new session, including relay state!
                 // We already validated authn request issuer, so we can use it.
