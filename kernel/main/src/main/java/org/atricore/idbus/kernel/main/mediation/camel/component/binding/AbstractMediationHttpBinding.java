@@ -23,8 +23,11 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -107,15 +110,49 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
                 try {
                     AbstractCamelMediator mediator = (AbstractCamelMediator) getChannel().getIdentityMediator();
-                    Artifact a = mediator.getArtifactQueueManager().pushMessage(fault.getMessage());
 
-                    errorUrl += "?IDBusErrArt=" + a.getContent();
+                    ErrorBinding errorBinding = ErrorBinding.ARTIFACT;
+                    if (StringUtils.isNotBlank(mediator.getErrorBinding())) {
+                        errorBinding = ErrorBinding.asEnum(mediator.getErrorBinding());
+                    }
 
-                    if (logger.isDebugEnabled())
-                        logger.debug("Configured error URL " + errorUrl + ".  Redirecting.");
+                    if (ErrorBinding.JSON.equals(errorBinding)) {
+                        // Create JSON response
+                        IdentityMediationFault err = fault.getMessage().getFault();
+                        String stackTrace = getStackTrace(err);
+                        String jsonError = "{\n" +
+                                "  \"status_code\": " + getJsonValue(err.getFaultCode()) + ",\n" +
+                                "  \"secondary_status_code\": " + getJsonValue(err.getSecFaultCode()) + ",\n" +
+                                "  \"status_details_code\": " + getJsonValue(err.getStatusDetails()) + ",\n" +
+                                "  \"message\": " + getJsonValue((err.getFault() != null ? err.getFault().getMessage() : err.getMessage())) + ",\n" +
+                                "  \"stack_trace\": " + getJsonValue(stackTrace) + "\n" +
+                                "}";
 
-                    httpOut.getHeaders().put("http.responseCode", 302);
-                    httpOut.getHeaders().put("Location", errorUrl);
+                        Html htmlErr = createHtmlPostMessage(errorUrl, fault.getMessage().getRelayState(), "JOSSOError",
+                                CipherUtil.encodeBase64(jsonError.getBytes("UTF-8")));
+                        String htmlStr = this.marshal(htmlErr, "http://www.w3.org/1999/xhtml", "html",
+                                new String[]{"org.w3._1999.xhtml"});
+
+                        httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                        httpOut.getHeaders().put("Pragma", "no-cache");
+                        httpOut.getHeaders().put("http.responseCode", 200);
+                        httpOut.getHeaders().put("Content-Type", "text/html");
+
+                        ByteArrayInputStream baos = new ByteArrayInputStream(htmlStr.getBytes());
+                        httpOut.setBody(baos);
+                    } else {
+                        // Artifact binding
+                        Artifact a = mediator.getArtifactQueueManager().pushMessage(fault.getMessage());
+
+                        errorUrl += "?IDBusErrArt=" + a.getContent();
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Configured error URL " + errorUrl + ".  Redirecting.");
+
+                        httpOut.getHeaders().put("http.responseCode", 302);
+                        httpOut.getHeaders().put("Location", errorUrl);
+                    }
+
                     return;
                 } catch (Exception e) {
                     logger.error("Cannot forward error to error URL:" + errorUrl, e);
@@ -824,6 +861,30 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
     }
 
+    protected String getStackTrace(IdentityMediationFault fault) {
+        String stackTrace = null;
+        Throwable cause = fault;
+        Throwable rootCause = cause;
+        while (cause != null) {
+            rootCause = cause;
+            cause = cause.getCause();
+        }
+        Writer errorWriter = new StringWriter();
+        PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
+        if (rootCause != null) {
+            rootCause.printStackTrace(errorPrintWriter);
+            stackTrace = errorWriter.toString();
+        }
+        return stackTrace;
+    }
+
+    protected String getJsonValue(String value) {
+        String jsonValue = null;
+        if (value != null) {
+            jsonValue = "\"" + StringEscapeUtils.escapeJavaScript(value) + "\"";
+        }
+        return jsonValue;
+    }
 }
 
 
