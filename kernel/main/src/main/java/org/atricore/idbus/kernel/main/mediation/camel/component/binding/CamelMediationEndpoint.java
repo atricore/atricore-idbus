@@ -333,8 +333,19 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
                 
             } catch (Exception e) {
 
-                IdentityMediationFault f = new IdentityMediationFault("urn:org:atricore:idbus:error:fatal",
-                        null, "Fatal Error while processing requets", e.getMessage(), e);
+                IdentityMediationFault f = null;
+                Throwable cause = e.getCause();
+                while (cause != null) {
+                    if (cause instanceof IdentityMediationFault) {
+                        f = (IdentityMediationFault) cause;
+                        break;
+                    }
+                    cause = cause.getCause();
+                }
+                if (f == null) {
+                    f = new IdentityMediationFault("urn:org:atricore:idbus:error:fatal",
+                            null, "Fatal Error while processing request", e.getMessage(), e);
+                }
 
                 if (logger.isDebugEnabled())
                     logger.debug(e.getMessage(), e);
