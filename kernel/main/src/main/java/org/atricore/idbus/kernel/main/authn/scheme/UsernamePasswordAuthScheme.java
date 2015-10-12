@@ -325,7 +325,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
                 if (logger.isTraceEnabled())
                     logger.trace("Using fixed salt value as prefix");
 
-                password = password + _saltPrefix;
+                password = _saltPrefix + password;
 
             }
         }
