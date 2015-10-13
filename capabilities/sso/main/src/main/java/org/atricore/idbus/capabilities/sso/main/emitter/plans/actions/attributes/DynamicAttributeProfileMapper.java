@@ -61,6 +61,19 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
             }
         }
 
+        // Add constants
+        for (AttributeMapping attributeMapping : attributeMaps.values()) {
+            if (attributeMapping.getAttrName().startsWith("'") && attributeMapping.getAttrName().endsWith("'") &&
+                    attributeMapping.getReportedAttrName() != null && !attributeMapping.getReportedAttrName().equals("")) {
+                AttributeType attrProp = new AttributeType();
+                attrProp.setName(attributeMapping.getReportedAttrName());
+                attrProp.setFriendlyName(attrProp.getName());
+                attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
+                attrProp.getAttributeValue().add(attributeMapping.getAttrName().substring(1, attributeMapping.getAttrName().length() - 1));
+                userAttrs.add(attrProp);
+            }
+        }
+
         return userAttrs;
     }
 
