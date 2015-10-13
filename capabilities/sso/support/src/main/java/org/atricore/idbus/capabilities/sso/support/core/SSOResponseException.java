@@ -30,53 +30,53 @@ public class SSOResponseException extends IdentityMediationFault {
 
     private StatusCode topLevelStatusCode;
     private StatusCode secondLevelStatusCode;
-    private StatusDetails statusDtails;
+    private StatusDetails statusDetails;
 
     public SSOResponseException(StatusResponseType response,
                                 StatusCode topLevelStatusCode,
                                 StatusCode secondLevelStatusCode,
-                                StatusDetails statusDtails) {
+                                StatusDetails statusDetails) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : ""),
-              (statusDtails != null ? statusDtails.getValue() : ""),
+              (statusDetails != null ? statusDetails.getValue() : ""),
                 null,
                 null);
 
         this.response = response;
         this.topLevelStatusCode = topLevelStatusCode;
         this.secondLevelStatusCode = secondLevelStatusCode;
-        this.statusDtails = statusDtails;
+        this.statusDetails = statusDetails;
     }
 
     public SSOResponseException(StatusResponseType response,
                                 StatusCode topLevelStatusCode,
                                 StatusCode secondLevelStatusCode,
-                                StatusDetails statusDtails,
+                                StatusDetails statusDetails,
                                 String errorDetails) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : null),
-              (statusDtails != null ? statusDtails.getValue() : null),
+              (statusDetails != null ? statusDetails.getValue() : null),
                errorDetails,
                null);
 
         this.response = response;
         this.topLevelStatusCode = topLevelStatusCode;
         this.secondLevelStatusCode = secondLevelStatusCode;
-        this.statusDtails = statusDtails;
+        this.statusDetails = statusDetails;
     }
 
     public SSOResponseException(StatusResponseType response,
                                 StatusCode topLevelStatusCode,
                                 StatusCode secondLevelStatusCode,
-                                StatusDetails statusDtails,
+                                StatusDetails statusDetails,
                                 Throwable cause) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : null),
-              (statusDtails != null ? statusDtails.getValue() : null),
+              (statusDetails != null ? statusDetails.getValue() : null),
                null,
                cause);
         this.response = response;
-        this.statusDtails = statusDtails;
+        this.statusDetails = statusDetails;
         this.topLevelStatusCode = topLevelStatusCode;
         this.secondLevelStatusCode = secondLevelStatusCode;
     }
@@ -85,19 +85,19 @@ public class SSOResponseException extends IdentityMediationFault {
     public SSOResponseException(StatusResponseType response,
                                 StatusCode topLevelStatusCode,
                                 StatusCode secondLevelStatusCode,
-                                StatusDetails statusDtails,
+                                StatusDetails statusDetails,
                                 String errorDetails,
                                 Throwable cause) {
         super(topLevelStatusCode.getValue(),
               (secondLevelStatusCode != null ? secondLevelStatusCode.getValue() : null),
-              (statusDtails != null ? statusDtails.getValue() : null),
+              (statusDetails != null ? statusDetails.getValue() : null),
                errorDetails,
                cause);
 
         this.response = response;
         this.topLevelStatusCode = topLevelStatusCode;
         this.secondLevelStatusCode = secondLevelStatusCode;
-        this.statusDtails = statusDtails;
+        this.statusDetails = statusDetails;
     }
 
     public StatusResponseType  getResponse() {
@@ -113,7 +113,7 @@ public class SSOResponseException extends IdentityMediationFault {
     }
 
     public StatusDetails getSamlStatusDetails() {
-        return statusDtails;
+        return statusDetails;
     }
 
 }

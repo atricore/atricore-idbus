@@ -147,7 +147,7 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
                         errorDescr = URLEncoder.encode(errorDescr, "UTF-8"); // TODO JSON Escape
                         jsonError = "{\n" +
                                 "" +
-                                "  \"error\": \"" + error.getCode() + "\"\n" +
+                                "  \"error\": \"" + error.getCode() + "\",\n" +
                                 "  \"error_description\": \"" + errorDescr + "\"\n" +
                                 "}";
                     } catch (UnsupportedEncodingException e) {
