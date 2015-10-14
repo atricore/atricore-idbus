@@ -158,8 +158,19 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
 
             logger.error(err.getMessage(), err);
 
-            IdentityMediationFault f = new IdentityMediationFault("urn:org:atricore:idbus:error:fatal",
-                    null, null, err.getMessage(), err);
+            IdentityMediationFault f = null;
+            Throwable cause = err.getCause();
+            while (cause != null) {
+                if (cause instanceof IdentityMediationFault) {
+                    f = (IdentityMediationFault) cause;
+                    break;
+                }
+                cause = cause.getCause();
+            }
+            if (f == null) {
+                f = new IdentityMediationFault("urn:org:atricore:idbus:error:fatal",
+                        null, null, err.getMessage(), err);
+            }
 
             if (logger.isDebugEnabled())
                 logger.debug("Generating Fault message for " + f.getMessage(), f);
