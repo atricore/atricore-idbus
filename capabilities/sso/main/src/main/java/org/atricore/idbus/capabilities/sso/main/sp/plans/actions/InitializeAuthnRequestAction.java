@@ -295,7 +295,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                         if (preferredNameIdFormat != null && nameIdFormat.equals(preferredNameIdFormat))
                             selectedNameIdFormat = nameIdFormat;
 
-                        if (nameIdFormat.equals(NameIDFormat.TRANSIENT.toString()))
+                        if (nameIdFormat.equals(NameIDFormat.UNSPECIFIED.toString()))
                             defaultNameIdFormat = nameIdFormat;
 
                         if (defaultNameIdFormat == null)
