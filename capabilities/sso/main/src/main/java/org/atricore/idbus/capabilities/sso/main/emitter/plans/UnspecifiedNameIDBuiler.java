@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
@@ -30,9 +31,11 @@ public class UnspecifiedNameIDBuiler extends  AbstractSubjectNameIDBuilder  {
         SSOUser ssoUser = getSsoUser(s);
         String nameId = null;
 
-        if (ssoUserProperty != null) {
+        if (StringUtils.isNotBlank(ssoUserProperty)) {
             nameId = getPropertyValue(ssoUser, ssoUserProperty);
-            if (logger.isDebugEnabled())
+            if (nameId == null)
+                logger.error("NameID: No value for user property ("+ssoUserProperty+"). User name will be used instead.");
+            else if (logger.isDebugEnabled())
                 logger.debug("NameID ("+ssoUserProperty+")" + nameId);
         }
 
