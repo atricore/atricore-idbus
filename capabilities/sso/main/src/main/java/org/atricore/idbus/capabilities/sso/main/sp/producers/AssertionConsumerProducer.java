@@ -49,6 +49,7 @@ import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypt
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureValidationException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
@@ -78,7 +79,9 @@ import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 import org.w3._2001._04.xmlenc_.EncryptedType;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
@@ -160,7 +163,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Handle Proxy Mode
         // ------------------------------------------------------
 
-        validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
+        response = validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
         //
         if (mediator.isVerifyUniqueIDs())
             mediator.getIdRegistry().register(response.getID());
@@ -1147,24 +1150,39 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Validate also assertion contained in response!
         // --------------------------------------------------------
         AssertionType assertion = null;
+        EncryptedElementType encryptedAssertion = null;
+        boolean encrypted = false;
 
         // Decrypt if encrypted 
         List assertionObjects = response.getAssertionOrEncryptedAssertion();
         for (Object assertionObject : assertionObjects) {
 			if(assertionObject instanceof AssertionType){
-				assertion = (AssertionType) assertionObject;								
+				assertion = (AssertionType) assertionObject;
+                encrypted = false;
 			} else if(assertionObject instanceof EncryptedElementType){
 
 				try {
-					assertion = encrypter.decryptAssertion((EncryptedElementType)assertionObject);
+                    // Decrypt the assertion
+                    encryptedAssertion = (EncryptedElementType) assertionObject;
+                    assertion = encrypter.decryptAssertion(encryptedAssertion);
+                    response.getAssertionOrEncryptedAssertion().clear();
+                    response.getAssertionOrEncryptedAssertion().add(assertion);
+                    encrypted = true;
+
 				} catch (SamlR2EncrypterException e) {
                     logger.error(e.getMessage(), e);
 					throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_ENCRYPTION, e);
-				}
-			}
+				} catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    throw new SSOResponseException(response,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_ASSERTION_ENCRYPTION, e);
+                }
+            }
 
 			// XML Signature, saml core, section 5
             /* NOT WORKING OK ... */
@@ -1202,9 +1220,22 @@ public class AssertionConsumerProducer extends SSOProducer {
                 }
 
 				try {
-
+                    // If the assertion was encrypted, validate the decrypted value's signature
                     if (originalResponse != null)
-                        signer.validateDom(idpMd, originalResponse, assertion.getID());
+                        if (!encrypted)
+                            signer.validateDom(idpMd, originalResponse, assertion.getID());
+                        else {
+                            try {
+                                Document decryptedDoc = encrypter.decryptAssertionAsDOM(encryptedAssertion);
+                                signer.validateDom(idpMd, decryptedDoc, assertion.getID());
+                            } catch (SamlR2EncrypterException e) {
+                                logger.error(e.getMessage(), e);
+                                throw new SSOResponseException(response,
+                                        StatusCode.TOP_REQUESTER,
+                                        StatusCode.REQUEST_DENIED,
+                                        StatusDetails.INVALID_ASSERTION_ENCRYPTION, e);
+                            }
+                        }
                     else
                         signer.validate(idpMd, assertion);
 

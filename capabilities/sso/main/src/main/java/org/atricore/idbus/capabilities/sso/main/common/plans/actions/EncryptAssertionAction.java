@@ -23,15 +23,22 @@ package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
+import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.Samlr2AssertionEmissionException;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
+import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,16 +52,55 @@ public class EncryptAssertionAction extends AbstractSSOAssertionAction {
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
 
         AssertionType assertion = (AssertionType) out.getContent();
-        SamlR2Encrypter encrypter = (SamlR2Encrypter) executionContext.getContextInstance().getTransientVariable(VAR_SAMLR2_ENCRYPTER);
 
-        // TODO : Get context variables required to encrypt the assertion, like SAMLR2 Metadata.
-        // TODO : Determine whether the assertion must be encrypted or not!
+        CircleOfTrustMemberDescriptor sp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
+        Channel channel = (Channel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
+        SSOIDPMediator mediator = (SSOIDPMediator) channel.getIdentityMediator();
 
+        // Determine whether the assertion must be encrypted or not!
+        if (!mediator.isEncryptAssertion(channel.getName()))
+            return;
+
+        // Get context variables required to encrypt the assertion, like SAMLR2 Metadata.
+
+        SamlR2Encrypter encrypter = mediator.getEncrypter();
         if (logger.isDebugEnabled())
-            logger.debug("Encrypting assertion " + assertion.getID() + " with signer " + encrypter);
-        EncryptedElementType eet = encrypter.encrypt( assertion );
+            logger.debug("Encrypting SAMLR2 Assertion : " + assertion.getID() + " in channel " + channel.getName());
+
+        KeyDescriptorType encKey = getEncryptionKey(sp);
+
+        EncryptedElementType eet = encrypter.encrypt(assertion, encKey);
 
         // TODO : Add encrypted assertion as a separate value
-        out.replaceContent(eet);
+        //out.replaceContent(eet);
+        eet.getEncryptedData();
+
+    }
+
+    protected KeyDescriptorType getEncryptionKey(CircleOfTrustMemberDescriptor sp) throws SSOException {
+        EntityDescriptorType ed = (EntityDescriptorType) sp.getMetadata().getEntry();
+
+        List<RoleDescriptorType> ssoRoles = ed.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor();
+        if (ssoRoles == null)
+            throw new SSOException("No Role descriptors found in metadata " + ed.getID());
+
+        for (RoleDescriptorType ssoRole : ssoRoles) {
+            if (ssoRole instanceof SPSSODescriptorType) {
+
+                SPSSODescriptorType spRole = (SPSSODescriptorType) ssoRole;
+                List<KeyDescriptorType> keyDescriptors = spRole.getKeyDescriptor();
+                if (keyDescriptors == null)
+                    throw new SSOException("No encryption key configured in SAML metadata ID:" + ed.getID());
+
+                for (KeyDescriptorType keyDescriptor : keyDescriptors) {
+                    if (keyDescriptor.getUse() != null && keyDescriptor.getUse().equals(KeyTypes.ENCRYPTION))
+                        return keyDescriptor;
+                }
+
+            }
+        }
+
+        throw new SSOException("No encryption key configured in SAML metadata ID:" + ed.getID());
+
     }
 }

@@ -25,6 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.assertion.ObjectFactory;
+import oasis.names.tc.saml._2_0.metadata.KeyDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
@@ -43,6 +44,7 @@ import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.w3._2001._04.xmlenc_.*;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.crypto.KeyGenerator;
@@ -53,6 +55,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
@@ -106,14 +109,14 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         org.apache.xml.security.Init.init();
     }
 
-    public EncryptedElementType encrypt(AssertionType assertion) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key) throws SamlR2EncrypterException {
         if (keyResolver != null)
-            return encrypt(assertion, keyResolver);
+            return encrypt(assertion, key, keyResolver);
 
         throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
     }
 
-    public EncryptedElementType encrypt(AssertionType assertion, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
 
         try {
             // Marshall the Assertion object as a DOM tree:
@@ -128,8 +131,33 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
             if (logger.isDebugEnabled())
                 logger.debug("Obtaining encryption Key for assertion " + assertion.getID());
 
+            // TODO : Generate key using algorithm/length from other party/provider
+
+            String keyEncAlgorithmURI = null;
+            int keySize = 0;
+            if (key.getEncryptionMethod() != null) {
+                List<EncryptionMethodType> encMethods = key.getEncryptionMethod();
+
+                for(EncryptionMethodType encMethod : encMethods) {
+                    if (isSupported(encMethod.getAlgorithm())) {
+                        keyEncAlgorithmURI = encMethod.getAlgorithm();
+                        // TODO : KeySize
+                        break;
+                    }
+                }
+            }
+
+            if (keyEncAlgorithmURI == null) {
+                logger.debug("Using default key-enc-algorithm, none provided/supported in key " + key);
+                keyEncAlgorithmURI = getSymmetricKeyAlgorithmURI();
+                keySize = JCEMapper.getKeyLengthFromURI(keyEncAlgorithmURI);
+            }
+
+            if (logger.isDebugEnabled())
+                logger.debug("Requested key-enc-algorithm [key-size]" + keyEncAlgorithmURI + " ["+keySize+"]");
+
             // TODO : CACHE Keys for SPs for some time to improve performance.
-            Key encryptionKey = generateDataEncryptionKey();
+            Key encryptionKey = generateDataEncryptionKey(keyEncAlgorithmURI, keySize);
 
             if (logger.isDebugEnabled())
                 logger.debug("Encrypt assertion " + assertion.getID());
@@ -139,7 +167,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
             if (logger.isDebugEnabled())
                 logger.debug("Encrypt Key " + assertion.getID());
 
-            // Build encrypted element type
+            // TODO : Encrypt Key using provided enc. algorithm from other party/provider
             EncryptedKeyType encKey = encryptKey(doc, encryptionKey, keyResolver);
 
             EncryptedElementType eet = of.createEncryptedElementType();
@@ -159,38 +187,97 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
     }
 
+    public Document decryptAssertionAsDOM(EncryptedElementType encryptedAssertion) throws SamlR2EncrypterException {
+        if (keyResolver != null)
+            return decryptAssertionAsDOM(encryptedAssertion, keyResolver);
+
+        throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+    }
+
+
     public AssertionType decryptAssertion(EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         try {
-            org.w3c.dom.Document doc = XmlUtils.marshalSamlR2EncryptedAssertionAsDom(encryptedAssertion);
-            Node assertionelement = decryptAssertion(doc, keyResolver);
-
-            AssertionType assertion = null;// TODO: XmlUtils.unmarshalSamlR2Assertion(assertionelement);
-
+            Document decryptedDoc = decryptAssertionAsDOM(encryptedAssertion, keyResolver);
+            AssertionType assertion = XmlUtils.unmarshalSamlR2Assertion(decryptedDoc);
             return assertion;
+
         } catch (Exception e) {
             throw new SamlR2EncrypterException(e);
         }
     }
 
-    public EncryptedElementType encrypt(RequestAbstractType request) throws SamlR2EncrypterException {
+    @Override
+    public Document decryptAssertionAsDOM(EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+        try {
+            org.w3c.dom.Document doc = XmlUtils.marshalSamlR2EncryptedAssertionAsDom(encryptedAssertion);
+            Document decryptedDoc = decryptAssertion(doc);
+
+            // Replace Encrypted Assertion with the Decrypted value
+            Node assertionNode = decryptedDoc.getElementsByTagNameNS(
+                    "urn:oasis:names:tc:SAML:2.0:assertion",
+                    "Assertion").item(0);
+
+            Node encryptedElement = decryptedDoc.getElementsByTagNameNS(
+                    "urn:oasis:names:tc:SAML:2.0:assertion",
+                    "EncryptedAssertion").item(0);
+            if (assertionNode == null) {
+                logger.error("Decryption error, assertion node is empty");
+                throw new SamlR2EncrypterException("Decryption error, assertion node is empty");
+            }
+            encryptedElement.removeChild(assertionNode);
+            decryptedDoc.replaceChild(assertionNode, encryptedElement);
+
+            return decryptedDoc;
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException(e.getMessage(), e);
+        }
+    }
+
+    protected Document decryptAssertion(Document document) throws SamlR2EncrypterException {
+        try {
+            if (keyResolver == null)
+                throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+
+            org.w3c.dom.Element encryptedDataElement =
+                    (org.w3c.dom.Element) document.getElementsByTagNameNS(
+                            EncryptionConstants.EncryptionSpecNS,
+                            EncryptionConstants._TAG_ENCRYPTEDDATA).item(0);
+
+            // TODO : Verify our MD, to make sure that the encryption used was the one we requested!
+
+            Key kek = loadKeyEncryptionKey(document, keyResolver);
+
+            XMLCipher xmlCipher = XMLCipher.getInstance();
+            xmlCipher.init(XMLCipher.DECRYPT_MODE, kek);
+
+            Document decryptedDoc = xmlCipher.doFinal(document, encryptedDataElement);
+
+            return decryptedDoc;
+
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException(e);
+        }
+    }
+
+    public EncryptedElementType encrypt(RequestAbstractType request, KeyDescriptorType key) throws SamlR2EncrypterException {
         if (keyResolver != null)
-            return encrypt(request, keyResolver);
+            return encrypt(request, key, keyResolver);
 
         throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
     }
 
-    public EncryptedElementType encrypt(RequestAbstractType request, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt(RequestAbstractType request, KeyDescriptorType key, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         throw new UnsupportedOperationException("Not implemented!");
     }
 
-    public EncryptedElementType encrypt(StatusResponseType response) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt(StatusResponseType response, KeyDescriptorType key) throws SamlR2EncrypterException {
         if (keyResolver != null)
-            return encrypt(response, keyResolver);
+            return encrypt(response, key, keyResolver);
 
         throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
     }
 
-    public EncryptedElementType encrypt(StatusResponseType response, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+    public EncryptedElementType encrypt(StatusResponseType response, KeyDescriptorType key, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         throw new UnsupportedOperationException("Not implemented!");
     }
 
@@ -282,29 +369,35 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         return ekt;
     }
 
-    protected Node decryptAssertion(Document document, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+    protected Document decryptAssertion(Document document, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         try {
             org.w3c.dom.Element encryptedDataElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(
                             EncryptionConstants.EncryptionSpecNS,
                             EncryptionConstants._TAG_ENCRYPTEDDATA).item(0);
 
+            // TODO : Verify our MD, to make sure that the encryption used was the one we requested!
 
             Key kek = loadKeyEncryptionKey(document, keyResolver);
 
             XMLCipher xmlCipher = XMLCipher.getInstance();
             xmlCipher.init(XMLCipher.DECRYPT_MODE, kek);
 
-            Document decDoc = xmlCipher.doFinal(document, encryptedDataElement);
+            Document decryptedDoc = xmlCipher.doFinal(document, encryptedDataElement);
 
-            Node assertionNode = decDoc.getElementsByTagNameNS(
+            Node assertionNode = decryptedDoc.getElementsByTagNameNS(
                     "urn:oasis:names:tc:SAML:2.0:assertion",
                     "Assertion").item(0);
 
-            if (assertionNode == null)
-                throw new SamlR2EncrypterException("No Assertion Node found in decrypted Document");
+            Element root = decryptedDoc.getDocumentElement();
+            if (assertionNode == null) {
+                logger.error("Decryption error, assertion node is empty");
+                throw new SamlR2EncrypterException("Decryption error, assertion node is empty");
+            }
+            root.removeChild(assertionNode);
+            decryptedDoc.replaceChild(assertionNode, root);
 
-            return assertionNode;
+            return decryptedDoc;
 
         } catch (Exception e) {
             throw new SamlR2EncrypterException("Error decrypting Assertion data", e);
@@ -322,23 +415,22 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         }
     }
 
-    protected SecretKey generateDataEncryptionKey() {
+    protected SecretKey generateDataEncryptionKey(String keyEncAlgorithmURI, int keySize) {
         try {
             if (logger.isTraceEnabled())
                 logger.trace("Using algorithm [" + getSymmetricKeyAlgorithmURI() + "]");
 
-            String jceAlgorithmName = JCEMapper.getJCEKeyAlgorithmFromURI(getSymmetricKeyAlgorithmURI());
-            int keyLength = JCEMapper.getKeyLengthFromURI(getSymmetricKeyAlgorithmURI());
+            String jceAlgorithmName = JCEMapper.getJCEKeyAlgorithmFromURI(keyEncAlgorithmURI);
 
             if (logger.isTraceEnabled())
-                logger.trace("Generating key [" + jceAlgorithmName + "] length:" + keyLength);
+                logger.trace("Generating key [" + jceAlgorithmName + "] length:" + keySize);
 
             KeyGenerator keyGenerator = KeyGenerator.getInstance(jceAlgorithmName);
-            keyGenerator.init(keyLength);
+            keyGenerator.init(keySize);
             SecretKey key = keyGenerator.generateKey();
 
             if (logger.isDebugEnabled())
-                logger.debug("Generated key [" + jceAlgorithmName + "] length:" + keyLength);
+                logger.debug("Generated key [" + jceAlgorithmName + "] length:" + keySize);
 
             return key;
         } catch (NoSuchAlgorithmException e) {
@@ -432,6 +524,10 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         } catch (Exception e) {
             throw new SamlR2EncrypterException("Error decrypting NameID data", e);
         }
+    }
+
+    protected boolean isSupported(String encAlgorithmURI) {
+        return JCEMapper.getAlgorithmClassFromURI(encAlgorithmURI) != null;
     }
 
 }

@@ -128,7 +128,7 @@ public interface SamlR2Signer {
 
     /**
      * @param md     The signer SAML 2.0 Metadata
-     * @param domStr The signed SAML 2.0 element, serialized
+     * @param domStr The signed SAML 2.0 document, serialized
      * @throws SamlR2SignatureValidationException
      *          if the assertion signature is invalid
      */
@@ -136,7 +136,7 @@ public interface SamlR2Signer {
 
     /**
      * @param md     The signer SAML 2.0 Metadata
-     * @param domStr The signed SAML 2.0 element, serialized
+     * @param domStr The signed SAML 2.0 document, serialized
      * @param elementId The dom element's ID
      * @throws SamlR2SignatureValidationException
      *          if the assertion signature is invalid
@@ -144,8 +144,17 @@ public interface SamlR2Signer {
     void validateDom(RoleDescriptorType md, String domStr, String elementId) throws SamlR2SignatureException;
 
     /**
+     * @param md     The signer SAML 2.0 Metadata
+     * @param doc The signed SAML 2.0 DOM document, serialized
+     * @param elementId The dom element's ID
+     * @throws SamlR2SignatureValidationException
+     *          if the assertion signature is invalid
+     */
+    void validateDom(RoleDescriptorType md, Document doc, String elementId) throws SamlR2SignatureException;
+
+    /**
      * @param md  The signer SAML 2.0 Metadata
-     * @param dom The signed SAML 2.0 element, DOM.
+     * @param dom The signed SAML 2.0 document, DOM.
      * @throws SamlR2SignatureValidationException
      *          if the assertion signature is invalid
      */
@@ -153,7 +162,7 @@ public interface SamlR2Signer {
 
     /**
      * @param md  The signer SAML 2.0 Metadata
-     * @param dom The signed SAML 2.0 element, DOM.
+     * @param dom The signed SAML 2.0 document, DOM.
      * @param root The signed SAML 2.0 element, DOM.
      * @throws SamlR2SignatureValidationException
      *          if the assertion signature is invalid

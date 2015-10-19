@@ -650,6 +650,19 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
+    public void validateDom(RoleDescriptorType md, Document doc, String elementId) throws SamlR2SignatureException {
+
+        NodeList nodes = evaluateXPath(doc, "//*[@ID='"+elementId+"']");
+        if (nodes.getLength() > 1)
+            throw new SamlR2SignatureException("Duplicate ID ["+elementId+"] in document ");
+
+        if (nodes.getLength() < 1)
+            throw new SamlR2SignatureException("Invalid element ID " + elementId);
+
+        validate(md, doc, nodes.item(0));
+
+    }
+
 
     public void validateDom(RoleDescriptorType md, String domStr, String elementId) throws SamlR2SignatureException {
         try {
@@ -660,15 +673,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new ByteArrayInputStream(domStr.getBytes()));
 
-            NodeList nodes = evaluateXPath(doc, "//*[@ID='"+elementId+"']");
-            if (nodes.getLength() > 1)
-                throw new SamlR2SignatureException("Duplicate ID ["+elementId+"] in document ");
-
-            if (nodes.getLength() < 1)
-                throw new SamlR2SignatureException("Invalid element ID " + elementId);
-
-            validate(md, doc, nodes.item(0));
-
+            validateDom(md, doc, elementId);
         } catch (ParserConfigurationException e) {
             throw new SamlR2SignatureException(e);
         } catch (SAXException e) {

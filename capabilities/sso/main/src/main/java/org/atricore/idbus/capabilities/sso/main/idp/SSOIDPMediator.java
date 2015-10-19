@@ -33,6 +33,8 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Saml v2.0 SP Mediator realizing IDP SSO Role for Single SignOn profiles.
@@ -59,6 +61,9 @@ public class SSOIDPMediator extends AbstractSSOMediator {
     private String claimEndpointSelection;
 
     private String idpSelector;
+
+    private Map<String, ChannelConfiguration> getChannelConfigs = new HashMap<String, ChannelConfiguration>();
+
 
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
@@ -413,4 +418,27 @@ public class SSOIDPMediator extends AbstractSSOMediator {
     public void setIdpSelector(String idpSelector) {
         this.idpSelector = idpSelector;
     }
+
+    public Map<String, ChannelConfiguration> getChannelConfigs() {
+        return getChannelConfigs;
+    }
+
+    public void getChannelConfigs(Map<String, ChannelConfiguration> channelCfgs) {
+        this.getChannelConfigs = channelCfgs;
+    }
+
+    public ChannelConfiguration getChannelConfig(String name) {
+        return this.getChannelConfigs.get(name);
+    }
+
+    public boolean isEncryptAssertion(String name) {
+        ChannelConfiguration cfg = getChannelConfig(name);
+        return cfg != null && cfg.isEncryptAssertion();
+    }
+
+    public String getEncryptAssertionAlgorithm(String name) {
+        ChannelConfiguration cfg = getChannelConfig(name);
+        return cfg != null ? cfg.getEncryptAssertionAlgorithm() : null;
+    }
+
 }
