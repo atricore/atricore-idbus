@@ -22,7 +22,9 @@
 package org.atricore.idbus.capabilities.sso.main.emitter;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
+import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
+import org.atricore.idbus.capabilities.sso.main.idp.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
@@ -63,11 +65,15 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     private AssertionType assertion;
 
+    private EncryptedElementType encryptedAssertion;
+
     private AuthenticationState authnState;
 
     private MetadataEntry issuerMetadata;
 
     private String attributeProfile;
+
+    private ChannelConfiguration spChannelConfig;
 
     public SamlR2SecurityTokenEmissionContext() {
     }
@@ -179,5 +185,21 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     public void setAttributeProfile(String attributeProfile) {
         this.attributeProfile = attributeProfile;
+    }
+
+    public ChannelConfiguration getSpChannelConfig() {
+        return spChannelConfig;
+    }
+
+    public void setSpChannelConfig(ChannelConfiguration spChannelConfig) {
+        this.spChannelConfig = spChannelConfig;
+    }
+
+    public EncryptedElementType getEncryptedAssertion() {
+        return encryptedAssertion;
+    }
+
+    public void setEncryptedAssertion(EncryptedElementType encryptedAssertion) {
+        this.encryptedAssertion = encryptedAssertion;
     }
 }

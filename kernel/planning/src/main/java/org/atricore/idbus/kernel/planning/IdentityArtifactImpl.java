@@ -35,29 +35,45 @@ public class IdentityArtifactImpl<E> implements IdentityArtifact<E>, Serializabl
     private IdentityArtifactStatus status;
     private E content;
 
+    private IdentityArtifact nested;
+
     public IdentityArtifactImpl(QName qname, E content) {
         this.qname = qname;
         this.content = content;
     }
 
+    @Override
     public QName getQName() {
         return qname;
     }
 
+    @Override
     public IdentityArtifactStatus getStatus() {
         return status;
     }
 
+    @Override
     public E getContent() {
         return content;
     }
 
+    @Override
     public void replaceContent(E newContent) {
         this.content = newContent;
+    }
+
+    @Override
+    public void setNested(IdentityArtifact nested) {
+        this.nested = nested;
+    }
+
+    public IdentityArtifact getNested() {
+        return nested;
     }
 
     @Override
     public String toString() {
         return (qname != null ? qname.toString() + ":" : "") + content;
     }
+
 }

@@ -42,6 +42,8 @@ import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
+import org.w3._2000._09.xmldsig_.KeyInfoType;
+import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3._2001._04.xmlenc_.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -52,8 +54,17 @@ import javax.crypto.SecretKey;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 import java.security.Key;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Iterator;
 import java.util.List;
 
@@ -131,22 +142,21 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
             if (logger.isDebugEnabled())
                 logger.debug("Obtaining encryption Key for assertion " + assertion.getID());
 
-            // TODO : Generate key using algorithm/length from other party/provider
-
+            // Generate a symmetric encryption key to encrypt DATA (assertion) using algorithm/key-size from other provider's MD descriptor
             String keyEncAlgorithmURI = null;
             int keySize = 0;
             if (key.getEncryptionMethod() != null) {
                 List<EncryptionMethodType> encMethods = key.getEncryptionMethod();
-
                 for(EncryptionMethodType encMethod : encMethods) {
                     if (isSupported(encMethod.getAlgorithm())) {
                         keyEncAlgorithmURI = encMethod.getAlgorithm();
-                        // TODO : KeySize
+                        keySize = getKeySize(encMethod);
                         break;
                     }
                 }
             }
 
+            // If no algorithm is found, use default (could cause problems)
             if (keyEncAlgorithmURI == null) {
                 logger.debug("Using default key-enc-algorithm, none provided/supported in key " + key);
                 keyEncAlgorithmURI = getSymmetricKeyAlgorithmURI();
@@ -167,8 +177,16 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
             if (logger.isDebugEnabled())
                 logger.debug("Encrypt Key " + assertion.getID());
 
-            // TODO : Encrypt Key using provided enc. algorithm from other party/provider
-            EncryptedKeyType encKey = encryptKey(doc, encryptionKey, keyResolver);
+            // Encrypt the symmetric key using provider's PUBLIC key
+            byte[] cert = getCertificate(key);
+
+            if (cert == null)
+                throw new SamlR2EncrypterException("No X.509 encryption certificate found");
+
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            X509Certificate x509Cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(cert));
+            PublicKey publicKey = x509Cert.getPublicKey();
+            EncryptedKeyType encKey = encryptKey(doc, encryptionKey, publicKey);
 
             EncryptedElementType eet = of.createEncryptedElementType();
             eet.setEncryptedData(encData);
@@ -319,16 +337,14 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         }
     }
 
-    protected EncryptedKeyType encryptKey(Document doc, Key symmetricKey, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+    protected EncryptedKeyType encryptKey(Document doc, Key symmetricKey, PublicKey publiKey) throws SamlR2EncrypterException {
         EncryptedKey encKey;
         try {
             XMLCipher keyCipher = XMLCipher.getInstance(getKekAlgorithmURI());
-            keyCipher.init(XMLCipher.WRAP_MODE, keyResolver.getCertificate().getPublicKey());
+            keyCipher.init(XMLCipher.WRAP_MODE, publiKey);
             encKey = keyCipher.encryptKey(doc, symmetricKey);
         } catch (XMLEncryptionException e) {
             throw new SamlR2EncrypterException("Encryption Error generating encrypted key", e);
-        } catch (SSOKeyResolverException e) {
-            throw new SamlR2EncrypterException("Encryption Error retrieving private key", e);
         }
 
 
@@ -421,6 +437,8 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
                 logger.trace("Using algorithm [" + getSymmetricKeyAlgorithmURI() + "]");
 
             String jceAlgorithmName = JCEMapper.getJCEKeyAlgorithmFromURI(keyEncAlgorithmURI);
+            if (keySize < 1)
+                keySize = JCEMapper.getKeyLengthFromURI(getSymmetricKeyAlgorithmURI());
 
             if (logger.isTraceEnabled())
                 logger.trace("Generating key [" + jceAlgorithmName + "] length:" + keySize);
@@ -528,6 +546,62 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
 
     protected boolean isSupported(String encAlgorithmURI) {
         return JCEMapper.getAlgorithmClassFromURI(encAlgorithmURI) != null;
+    }
+
+    protected int getKeySize(EncryptionMethodType encMethod) {
+        int keySize = 0;
+        if (encMethod.getContent() != null) {
+            for (Object e : encMethod.getContent()) {
+                if (e instanceof JAXBElement) {
+                    JAXBElement jaxbElement = (JAXBElement) e;
+                    if (jaxbElement.getName() != null && jaxbElement.getName().getLocalPart().endsWith("KeySize")) {
+                        Object v = jaxbElement.getValue();
+
+                        if (v != null) {
+                            if (v instanceof BigInteger)
+                                keySize = ((BigInteger) v).intValue();
+                            else if (v instanceof String)
+                                keySize = Integer.parseInt((String)v);
+                            else if (v instanceof Integer)
+                                keySize = (Integer)v;
+                            else if (v instanceof Long)
+                                keySize = ((Long)v).intValue();
+                            else
+                                logger.error("Unknown keySize value type " + v.getClass());
+                        }
+
+                    }
+                }
+            }
+        }
+        return keySize;
+    }
+
+    protected byte[] getCertificate(KeyDescriptorType key) {
+        KeyInfoType keyInfo = key.getKeyInfo();
+
+        PublicKey publicKey = null;
+        if (keyInfo.getContent() != null) {
+
+            for (Object o : keyInfo.getContent()) {
+
+                if (o instanceof JAXBElement) {
+                    JAXBElement e = (JAXBElement) o;
+                    if (e.getValue() instanceof X509DataType) {
+                        X509DataType x509data = (X509DataType) e.getValue();
+                        for (Object x509dataContent : x509data.getX509IssuerSerialOrX509SKIOrX509SubjectName()) {
+                            if (x509dataContent instanceof JAXBElement) {
+                                JAXBElement x509cert = (JAXBElement) x509dataContent;
+                                if (x509cert.getName().getLocalPart().equals("X509Certificate")) {
+                                    return (byte[]) x509cert.getValue();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
 }

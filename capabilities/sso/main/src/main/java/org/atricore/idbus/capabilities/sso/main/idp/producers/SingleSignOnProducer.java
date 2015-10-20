@@ -766,6 +766,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
             securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
+            securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)mediator).getChannelConfig(channel.getName()));
 
             // Add any proxy principals available
             if (secCtx.getProxyPrincipals() != null)
@@ -886,6 +887,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
             securityTokenEmissionCtx.setSpAcs(ed);
             securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
+            securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)channel.getIdentityMediator()).getChannelConfig(channel.getName()));
 
             // ----------------------------------------------------------------------------------------
             // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
@@ -1250,6 +1252,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
                 securityTokenEmissionCtx.setSpAcs(ed);
                 securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
+                securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)mediator).getChannelConfig(channel.getName()));
 
                 // in order to request a security token we need to map the claims sent by the proxy to
                 // STS claims

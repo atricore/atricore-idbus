@@ -62,7 +62,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     private String idpSelector;
 
-    private Map<String, ChannelConfiguration> getChannelConfigs = new HashMap<String, ChannelConfiguration>();
+    private Map<String, ChannelConfiguration> channelConfigs = new HashMap<String, ChannelConfiguration>();
 
 
     @Override
@@ -410,6 +410,13 @@ public class SSOIDPMediator extends AbstractSSOMediator {
         this.claimEndpointSelection = claimEndpointSelection;
     }
 
+    public Map<String, ChannelConfiguration> getChannelConfigs() {
+        return channelConfigs;
+    }
+
+    public void setChannelConfigs(Map<String, ChannelConfiguration> channelConfigs) {
+        this.channelConfigs = channelConfigs;
+    }
 
     public String getIdpSelector() {
         return idpSelector;
@@ -419,16 +426,9 @@ public class SSOIDPMediator extends AbstractSSOMediator {
         this.idpSelector = idpSelector;
     }
 
-    public Map<String, ChannelConfiguration> getChannelConfigs() {
-        return getChannelConfigs;
-    }
-
-    public void getChannelConfigs(Map<String, ChannelConfiguration> channelCfgs) {
-        this.getChannelConfigs = channelCfgs;
-    }
 
     public ChannelConfiguration getChannelConfig(String name) {
-        return this.getChannelConfigs.get(name);
+        return this.channelConfigs.get(name);
     }
 
     public boolean isEncryptAssertion(String name) {

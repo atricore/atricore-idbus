@@ -41,6 +41,8 @@
                 <value>samlr2-idp-authnresponse-init-process-fragment</value>
                 <value>samlr2-idp-authnresponse-addassertion-process-fragment</value>
                 <value>samlr2-idp-authnresponse-setstatus-process-fragment</value>
+                <value>samlr2-idp-authnresponse-sign-assertion-process-fragment</value>
+                <value>samlr2-idp-authnresponse-encrypt-process-fragment</value>
                 <value>samlr2-idp-authnresponse-sign-process-fragment</value>
             </list>
         </property>

@@ -1,9 +1,11 @@
 package org.atricore.idbus.capabilities.sso.main.idp;
 
+import java.io.Serializable;
+
 /**
  *
  */
-public class ChannelConfiguration {
+public class ChannelConfiguration implements Serializable {
 
     private String name;
 

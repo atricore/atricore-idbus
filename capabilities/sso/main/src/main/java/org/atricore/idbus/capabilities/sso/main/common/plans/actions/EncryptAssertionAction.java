@@ -28,16 +28,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.Samlr2AssertionEmissionException;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
+import org.atricore.idbus.capabilities.sso.main.idp.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
+import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
+import org.atricore.idbus.kernel.planning.IdentityArtifactImpl;
+import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 
+import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.Map;
 
@@ -50,30 +57,40 @@ public class EncryptAssertionAction extends AbstractSSOAssertionAction {
     private static final Log logger = LogFactory.getLog(EncryptAssertionAction.class);
 
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
+        /* !!!! Encryption is done when building the response !!!!
 
         AssertionType assertion = (AssertionType) out.getContent();
+        ContextInstance ctx = executionContext.getContextInstance();
 
-        CircleOfTrustMemberDescriptor sp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
-        Channel channel = (Channel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
-        SSOIDPMediator mediator = (SSOIDPMediator) channel.getIdentityMediator();
+        Object rstCtx = ctx.getVariable(RST_CTX);
+        if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
+            SamlR2SecurityTokenEmissionContext saml2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+            CircleOfTrustMemberDescriptor sp = saml2Ctx.getMember();
+            SamlR2Encrypter encrypter = (SamlR2Encrypter) ctx.getTransientVariable(VAR_SAMLR2_ENCRYPTER);
 
-        // Determine whether the assertion must be encrypted or not!
-        if (!mediator.isEncryptAssertion(channel.getName()))
-            return;
+            ChannelConfiguration channelCfg = saml2Ctx.getSpChannelConfig();
 
-        // Get context variables required to encrypt the assertion, like SAMLR2 Metadata.
+            if (channelCfg != null) {
 
-        SamlR2Encrypter encrypter = mediator.getEncrypter();
-        if (logger.isDebugEnabled())
-            logger.debug("Encrypting SAMLR2 Assertion : " + assertion.getID() + " in channel " + channel.getName());
+                if (!channelCfg.isEncryptAssertion())
+                    return;
 
-        KeyDescriptorType encKey = getEncryptionKey(sp);
+                if (logger.isDebugEnabled())
+                    logger.debug("Encrypting SAMLR2 Assertion : " + assertion.getID() + " for SP " + sp.getAlias());
 
-        EncryptedElementType eet = encrypter.encrypt(assertion, encKey);
+                KeyDescriptorType encKey = getEncryptionKey(sp);
+                if (encKey == null) {
+                    logger.warn("No Encryption Key found, try disabling assertion encryption (SP : " + sp.getAlias() + ")");
+                    return;
+                }
 
-        // TODO : Add encrypted assertion as a separate value
-        //out.replaceContent(eet);
-        eet.getEncryptedData();
+                // Add encrypted assertion as nested element
+                EncryptedElementType encryptedAssertion = encrypter.encrypt(assertion, encKey);
+                IdentityArtifact encrypted = new IdentityArtifactImpl(new QName(SAMLR2Constants.SAML_ASSERTION_NS, "EncryptedElement"), encryptedAssertion);
+                out.setNested(encrypted);
+            }
+        }
+        */
 
     }
 
@@ -90,7 +107,7 @@ public class EncryptAssertionAction extends AbstractSSOAssertionAction {
                 SPSSODescriptorType spRole = (SPSSODescriptorType) ssoRole;
                 List<KeyDescriptorType> keyDescriptors = spRole.getKeyDescriptor();
                 if (keyDescriptors == null)
-                    throw new SSOException("No encryption key configured in SAML metadata ID:" + ed.getID());
+                    return null;
 
                 for (KeyDescriptorType keyDescriptor : keyDescriptors) {
                     if (keyDescriptor.getUse() != null && keyDescriptor.getUse().equals(KeyTypes.ENCRYPTION))
@@ -100,7 +117,7 @@ public class EncryptAssertionAction extends AbstractSSOAssertionAction {
             }
         }
 
-        throw new SSOException("No encryption key configured in SAML metadata ID:" + ed.getID());
+        return null;
 
     }
 }

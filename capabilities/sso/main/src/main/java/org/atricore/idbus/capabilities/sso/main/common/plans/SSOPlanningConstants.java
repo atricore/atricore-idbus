@@ -60,6 +60,8 @@ public interface SSOPlanningConstants {
 
     static final String VAR_SAMLR2_AUTHN_REQUEST = SAMLR2Constants.SAML_PROTOCOL_NS + ":AuthnRequest";
 
+    static final String VAR_SAMLR2_SP_CHANNEL_CONFIG = "urn:org:atricore:idbus:samlr2:support:SPChannelConfig";
+
     static final String VAR_SAMLR2_ASSERTION = SAMLR2Constants.SAML_ASSERTION_NS + ":Assertion";
 
     static final String VAR_SAMLR2_RESPONSE =  SAMLR2Constants.SAML_PROTOCOL_NS + ":Response";

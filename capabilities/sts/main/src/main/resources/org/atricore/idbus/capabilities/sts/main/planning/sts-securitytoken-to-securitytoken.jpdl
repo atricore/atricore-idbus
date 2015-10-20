@@ -82,23 +82,6 @@
     </process-fragment-state>
 
     <!--
-    Encrypt token content (attributes, etc)
-    -->
-    <process-fragment-state name="ensureConfidentiality">
-        <process-fragment lifecycle="emit-st" phase="ensure-confidentiality"/>
-        <transition to="ensureAuthenticity"/>
-        <!-- IN/OUT Artifacts are automatically propagated! -->
-        <!-- Subject -->
-        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
-                  access="read"/>
-        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
-                  access="read"/>
-        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
-                  access="read"/>
-
-    </process-fragment-state>
-
-    <!--
     Add authenticity mechanism like checksums, signatures, etc
     -->
     <process-fragment-state name="ensureAuthenticity">
@@ -108,6 +91,23 @@
         <!-- Subject -->
         <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
                   access="read" />
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"
+                  access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Encrypt token content (attributes, etc)
+    -->
+    <process-fragment-state name="ensureConfidentiality">
+        <process-fragment lifecycle="emit-st" phase="ensure-confidentiality"/>
+        <transition to="ensureAuthenticity"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read"/>
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
         <variable name="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext"

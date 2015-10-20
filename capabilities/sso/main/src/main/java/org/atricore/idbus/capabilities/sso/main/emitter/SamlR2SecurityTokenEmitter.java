@@ -101,6 +101,7 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
         // Signing and Encryption tools
         ex.setTransientProperty(VAR_SAMLR2_SIGNER, signer);
         ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, encrypter);
+        
 
         // Publish emission context
         ex.setTransientProperty(WSTConstants.VAR_EMISSION_CTX, context);
@@ -118,6 +119,7 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
             ex.setProperty(VAR_RESPONSE_MODE, ctx.getAuthnState().getResponseMode());
             ex.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ctx.getSpAcs());
             ex.setProperty(VAR_ATTRIBUTE_PROFILE, ctx.getAttributeProfile());
+            ex.setProperty(VAR_SAMLR2_SP_CHANNEL_CONFIG, ctx.getSpChannelConfig());
 
 
         } else {
