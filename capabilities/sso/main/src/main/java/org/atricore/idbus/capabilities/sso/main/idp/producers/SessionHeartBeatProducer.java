@@ -215,29 +215,5 @@ public class SessionHeartBeatProducer extends SSOProducer {
 
     }
 
-    protected EndpointDescriptor resolveAccessSSOSessionEndpoint(Channel myChannel, BindingChannel spBindingChannel) throws IdentityMediationException {
-
-        IdentityMediationEndpoint soapEndpoint = null;
-
-        for (IdentityMediationEndpoint endpoint : spBindingChannel.getEndpoints()) {
-
-            if (endpoint.getType().equals(SSOService.SPSessionHeartBeatService.toString())) {
-
-                if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
-                    return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, endpoint);
-                } else if (endpoint.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
-                    soapEndpoint = endpoint;
-                }
-
-
-            }
-
-        }
-
-        if (soapEndpoint != null)
-            return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, soapEndpoint);
-
-        return null;
-    }
 
 }

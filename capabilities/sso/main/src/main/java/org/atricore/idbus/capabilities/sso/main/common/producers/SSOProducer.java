@@ -43,6 +43,8 @@ import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
+import org.atricore.idbus.kernel.main.mediation.Channel;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
@@ -615,6 +617,31 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
 
         return idp.getDefaultFederationService().getChannel().getMember();
 
+    }
+
+    protected EndpointDescriptor resolveAccessSSOSessionEndpoint(Channel myChannel, BindingChannel spBindingChannel) throws IdentityMediationException {
+
+        IdentityMediationEndpoint soapEndpoint = null;
+
+        for (IdentityMediationEndpoint endpoint : spBindingChannel.getEndpoints()) {
+
+            if (endpoint.getType().equals(SSOService.SPSessionHeartBeatService.toString())) {
+
+                if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+                    return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, endpoint);
+                } else if (endpoint.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
+                    soapEndpoint = endpoint;
+                }
+
+
+            }
+
+        }
+
+        if (soapEndpoint != null)
+            return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, soapEndpoint);
+
+        return null;
     }
 
     

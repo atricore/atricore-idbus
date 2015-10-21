@@ -34,11 +34,6 @@ import org.springframework.beans.factory.InitializingBean;
 import java.util.Collection;
 
 /**
- *
- * TODO : Move to components
- *
- * @org.apache.xbean.XBean element="mediation-logger"
- *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: DefaultMediationLogger.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
@@ -165,7 +160,8 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
 
         for (LogMessageBuilder builder: builders) {
 
-            logger.debug("Builder: " + builders);
+            if (logger.isDebugEnabled())
+                logger.debug("Builder: " + builder);
 
             if (builder.canHandle(message)) {
 
@@ -173,7 +169,8 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
 
                 String logMsg = builder.buildLogMessage(message);
                 if (logMsg == null || logMsg.length() == 0) {
-                    logger.debug("Log Message Builder " + builder+ " produced null or empty log message");
+                    if (logger.isDebugEnabled())
+                        logger.debug("Log Message Builder " + builder+ " produced null or empty log message");
                 }
 
                 logEntry.append("\n\t<message-detail type=\"").append(builder.getType()).append("\">");
