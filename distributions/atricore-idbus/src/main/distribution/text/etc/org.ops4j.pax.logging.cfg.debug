@@ -68,15 +68,6 @@ log4j.category.net=INFO
 log4j.category.sun=INFO
 log4j.category.javax=INFO
 
-# Specific Atricore components
-#log4j.category.org.atricore.idbus.kernel=TRACE
-#log4j.category.org.atricore.idbus.kernel.planning=TRACE
-#log4j.category.org.atricore.idbus.capabilities=TRACE
-#log4j.category.org.atricore.idbus.capabilities.samlr2=TRACE
-#log4j.category.org.atricore.idbus.capabilities.josso=TRACE
-#log4j.category.org.atricore.idbus.applications=TRACE
-#log4j.category.org.atricore.idbus.idojos=TRACE
-
 # IDBus Infrastructure
 #log4j.category.org.springframework.osgi=TRACE
 #log4j.category.org.apache.camel=TRACE
@@ -106,9 +97,22 @@ log4j.category.org.atricore=TRACE
 log4j.category.com.atricore=TRACE
 log4j.category.org.josso=TRACE
 
+log4j.category.org.atricore.idbus.kernel.main=INFO
+log4j.category.org.atricore.idbus.kernel.main.authn=TRACE
+#log4j.category.org.atricore.idbus.kernel=TRACE
+log4j.category.org.atricore.idbus.kernel.planning=INFO
+#log4j.category.org.atricore.idbus.capabilities=TRACE
+#log4j.category.org.atricore.idbus.capabilities.samlr2=TRACE
+#log4j.category.org.atricore.idbus.capabilities.josso=TRACE
+#log4j.category.org.atricore.idbus.applications=TRACE
+#log4j.category.org.atricore.idbus.idojos=TRACE
+
+log4j.category.com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker=INFO
 log4j.category.org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl=INFO
 log4j.category.org.atricore.idbus.kernel.main.session.service.SessionMonitor=INFO
 log4j.category.org.atricore.idbus.kernel.main.databinding.JAXBUtils=INFO
+log4j.category.org.atricore.idbus.kernel.main.authn=TRACE
+
 # Special category to log Flex client/server messages
 log4j.category.com.atricore.idbus.console.web.eventlog=INFO
 

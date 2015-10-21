@@ -196,14 +196,14 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         // Check if sessions should be auto-invalidated.
         if (_invalidateExceedingSessions && _maxSessionsPerUser != -1) {
 
-            // Number of sessions to invalidate
-            int invalidate = sessions.length - _maxSessionsPerUser;
+            // Number of sessions to invalidate, since we're about to create a new session, add one to the result
+            int invalidate = sessions.length - _maxSessionsPerUser + 1;
             if (logger.isDebugEnabled())
                 logger.debug("Auto-invalidating " + invalidate + " sessions for user : " + username);
 
             for (int i = 0; i < sessions.length; i++) {
 
-                if (invalidate < 0)
+                if (invalidate < 1)
                     break;
 
                 BaseSession session = sessions[i];
