@@ -238,7 +238,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             AuthnRequestType authnRequest = buildAuthnRequest(exchange, idp, ed, idpChannel, ssoAuthnReq);
 
             Properties auditProps = new Properties();
-            auditProps.put("idpAlias", idp.getAlias());
+            auditProps.put("federatedProvider", idp.getAlias());
             recordInfoAuditTrail(Action.SP_SSO.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
 
             // ------------------------------------------------------

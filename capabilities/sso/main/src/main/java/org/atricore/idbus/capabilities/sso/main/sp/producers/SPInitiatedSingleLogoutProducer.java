@@ -459,7 +459,7 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
         LogoutRequestType sloRequest = buildSLORequest(exchange, idp, idpChannel, ed, secCtx, ssoLogoutRequest);
 
         Properties auditProps = new Properties();
-        auditProps.put("idpAlias", idp.getAlias());
+        auditProps.put("federatedProvider", idp.getAlias());
         auditProps.put("idpSession", secCtx != null ? secCtx.getIdpSsoSession() : "N/A");
 
         SubjectNameID principal = null;

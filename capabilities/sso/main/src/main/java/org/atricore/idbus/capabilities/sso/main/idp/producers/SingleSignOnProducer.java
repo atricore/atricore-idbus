@@ -928,6 +928,7 @@ public class SingleSignOnProducer extends SSOProducer {
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+            auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
             recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
             if (((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
@@ -1081,6 +1082,8 @@ public class SingleSignOnProducer extends SSOProducer {
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
+            auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
 
             recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
@@ -1348,6 +1351,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Get Principal
                 Principal principal = getPrincipal(authnSubject);
+                auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
                 recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
                 // Create a new SSO Session
@@ -1440,7 +1444,7 @@ public class SingleSignOnProducer extends SSOProducer {
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
-
+            auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
             recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
         }

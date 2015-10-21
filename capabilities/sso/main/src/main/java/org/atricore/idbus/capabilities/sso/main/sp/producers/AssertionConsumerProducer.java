@@ -193,7 +193,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
 
             Properties auditProps = new Properties();
-            auditProps.put("idpAlias", issuerAlias);
+            auditProps.put("federatedProvider", issuerAlias);
             auditProps.put("passive", "true");
             recordInfoAuditTrail(Action.SP_SSOR.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
@@ -301,7 +301,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                 (AssertionType) response.getAssertionOrEncryptedAssertion().get(0));
 
         Properties auditProps = new Properties();
-        auditProps.put("idpAlias", spSecurityCtx.getIdpAlias());
+        auditProps.put("federatedProvider", spSecurityCtx.getIdpAlias());
         auditProps.put("idpSession", spSecurityCtx.getIdpSsoSession());
 
         Set<SubjectNameID> principals = federatedSubject.getPrincipals(SubjectNameID.class);

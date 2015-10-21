@@ -397,6 +397,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
             Properties auditProps = new Properties();
             auditProps.put("spId", pSecCtxCurrent.getProviderId().getValue());
+            if (issuer != null)
+                auditProps.put("federatedProvider", issuer.getValue());
 
             pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_SUCCESS);
             recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
@@ -408,6 +410,9 @@ public class SingleLogoutProducer extends SSOProducer {
                 auditProps.put("spId", pSecCtxCurrent != null ? pSecCtxCurrent.getProviderId().getValue() : "N/A");
                 pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_FAILED);
             }
+
+            if (sloResponse.getIssuer() != null)
+                auditProps.put("federatedProvider", sloResponse.getIssuer().getValue());
             recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.FAILURE, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
         }
 

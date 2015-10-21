@@ -158,7 +158,7 @@ public class SingleLogoutProducer extends SSOProducer {
         } else {
 
             Properties auditProps = new Properties();
-            auditProps.put("idpAlias", secCtx.getIdpAlias());
+            auditProps.put("federatedProvider", secCtx.getIdpAlias());
             auditProps.put("idpSession", secCtx.getIdpSsoSession());
 
             Set<SubjectNameID> principals = secCtx.getSubject().getPrincipals(SubjectNameID.class);
