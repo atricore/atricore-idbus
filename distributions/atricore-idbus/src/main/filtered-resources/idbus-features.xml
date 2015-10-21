@@ -41,11 +41,11 @@
     </feature>
 
     <feature name="atricore-auditing-core" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.4.1-SNAPSHOT</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.4.1</bundle>
     </feature>
 
     <feature name="atricore-auditing-builtin" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.4.1-SNAPSHOT</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.4.1</bundle>
     </feature>
 
     <feature name="atricore-ha" version="${version}">
@@ -130,11 +130,11 @@
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.ui/${idbus.cap.sso.version}</bundle>
     </feature>
 
-    <feature name="atricore-idconfirmation" version="1.4.1-SNAPSHOT">
+    <feature name="atricore-idconfirmation" version="1.4.1">
         <feature version="${version}">scala</feature>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.main/1.4.1-SNAPSHOT</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.ui/1.4.1-SNAPSHOT</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.component.builtin/1.4.1-SNAPSHOT</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.main/1.4.1</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.ui/1.4.1</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.component.builtin/1.4.1</bundle>
     </feature>
 
     <feature name="atricore-spml2" version="${version}">

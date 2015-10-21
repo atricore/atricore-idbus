@@ -30,19 +30,19 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.1</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.josso-ws-v1_2</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.4.1</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : JOSSO 1.8.3+ WS v1.2 OSGi</name>
 
     <properties>
-        <josso.version>1.8.10-SNAPSHOT</josso.version>
+        <josso.version>1.8.10</josso.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
     </properties>

@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.1</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -39,14 +39,14 @@
 
     <properties>
 
-        <idbus.bundle.datanucleus-v2_1_2.version>1.4.1-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.4.1-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.4.1-SNAPSHOT
+        <idbus.bundle.datanucleus-v2_1_2.version>1.4.1</idbus.bundle.datanucleus-v2_1_2.version>
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.4.1</idbus.bundle.javax-jdo2-v2_3-ec.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.4.1
         </idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.4.1-SNAPSHOT
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.4.1
         </idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
 
-        <idbus.kernel.version>1.4.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.kernel.version>1.4.1</idbus.kernel.version>
 
         <commons-codec.version>1.3</commons-codec.version>
         <commons-beautils.version>1.8.0</commons-beautils.version>
