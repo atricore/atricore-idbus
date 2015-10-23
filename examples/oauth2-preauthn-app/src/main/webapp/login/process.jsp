@@ -22,23 +22,40 @@
         String relayState = (String) session.getAttribute("relay_state");
 
         // This requests a token from the JOSSO server using the configured SOAP response endpoint
-        String accessToken = client.requestToken(request.getParameter("username"), request.getParameter("password"));
+
 
         // Resolve the token to get user details
-        OAuth2AccessToken at = tokenResolver.resolve(accessToken);
-        String userId = at.getUserId();
-        String email = at.getAttribute("email");
 
-        // Build the idpUrl based on the received token
+        if (relayState != null) {
+            String accessToken = client.requestToken(request.getParameter("username"), request.getParameter("password"));
 
-        String idpUrl = client.buildIdPPreAuthnResponseUrl(relayState, accessToken);
+            // Build the idpUrl based on the received token
+            OAuth2AccessToken at = tokenResolver.resolve(accessToken);
+            String userId = at.getUserId();
+            String email = at.getAttribute("email");
 
-        boolean rememberMe = Boolean.parseBoolean(request.getParameter("rememberMe"));
-        if (rememberMe)
-            idpUrl = idpUrl + "&remember_me=true";
+            String idpUrl = client.buildIdPPreAuthnResponseUrl(relayState, accessToken);
 
-        // Redirect the user to the received URL
-        response.sendRedirect(idpUrl);
+            boolean rememberMe = Boolean.parseBoolean(request.getParameter("rememberMe"));
+            if (rememberMe)
+                idpUrl = idpUrl + "&remember_me=true";
+
+
+            session.removeAttribute("relay_state");
+
+            // Redirect the user to the received URL
+            response.sendRedirect(idpUrl);
+        } else {
+            String defaultSPAlias = "https://josso.atricore.com/IDBUS/IDA-1/SP-APP-1/SAML2/MD";
+            String idpUrl = client.buildIdPInitPreAuthnUrl(defaultSPAlias, request.getParameter("username"), request.getParameter("password"));
+
+            boolean rememberMe = Boolean.parseBoolean(request.getParameter("rememberMe"));
+            if (rememberMe)
+                idpUrl = idpUrl + "&remember_me=true";
+
+            // Redirect the user to the received URL
+            response.sendRedirect(idpUrl);
+        }
 
         return;
     } catch (OAuth2ClientException e) {

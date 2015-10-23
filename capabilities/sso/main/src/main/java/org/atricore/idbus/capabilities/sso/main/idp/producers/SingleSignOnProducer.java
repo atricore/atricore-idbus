@@ -442,7 +442,17 @@ public class SingleSignOnProducer extends SSOProducer {
         // Validate SSO Session
         // -----------------------------------------------------------------------------
         boolean isSsoSessionValid = false;
-        if (secCtx != null && secCtx.getSessionIndex() != null) {
+
+        if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Forcing authentication for request " + authnRequest.getID());
+
+            // Discard current SSO Session
+            isSsoSessionValid = false;
+
+        } else if (secCtx != null && secCtx.getSessionIndex() != null) {
+
             try {
                 sessionMgr.accessSession(secCtx.getSessionIndex());
                 isSsoSessionValid = true;
@@ -481,7 +491,12 @@ public class SingleSignOnProducer extends SSOProducer {
             if (logger.isTraceEnabled())
                 logger.trace("Using existing AuthnState, if any");
 
+            // Clear endpoint information
             authnState = getAuthnState(exchange);
+            authnState.setCurrentIdConfirmationEndpoint(null);
+            authnState.setCurrentIdConfirmationEndpointTryCount(0);
+            authnState.setCurrentClaimsEndpoint(null);
+            authnState.setCurrentClaimsEndpointTryCount(0);
         }
 
         authnState.setAuthnRequest(authnRequest);
@@ -490,14 +505,6 @@ public class SingleSignOnProducer extends SSOProducer {
         authnState.setResponseFormat(responseFormat);
         authnState.setLocale(locale);
 
-        if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Forcing authentication for request " + authnRequest.getID());
-
-            isSsoSessionValid = false;
-            // Discard current SSO Session
-        }
 
         if (!isSsoSessionValid) {
 
@@ -1874,6 +1881,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 rememberMe = ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() != null ?
                         ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() : false;
             }
+            // Reset claims endpoint information.
+            authnState.setCurrentClaimsEndpointTryCount(0);
+            authnState.setCurrentClaimsEndpoint(null);
         }
 
         // Check if the remember me option is requested as one of the claims
