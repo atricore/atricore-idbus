@@ -128,13 +128,13 @@
         <repository>
             <id>atricore-m2-deploy-repo</id>
             <name>Atricore Release Distribution Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
+            <url>sftp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
         </repository>
 
         <snapshotRepository>
             <id>atricore-m2-snapshot-deploy-repo</id>
             <name>Atricore Development Snapshot Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
+            <url>sftp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
         </snapshotRepository>
 
     </distributionManagement>
@@ -584,7 +584,7 @@
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>2.4</version>
+                <version>2.6</version>
             </extension>
         </extensions>
 
