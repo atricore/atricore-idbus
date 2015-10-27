@@ -177,8 +177,6 @@ public class SingleLogoutProducer extends SSOProducer {
             }
             secCtx.clear();
             in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-
-
         }
 
         EndpointDescriptor destination = resolveIdPSloEndpoint(idp.getAlias(),

@@ -412,6 +412,8 @@ public class SingleSignOnProducer extends SSOProducer {
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
+        SPChannel spChannel = (SPChannel) channel;
+
         String responseMode = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseMode");
         String responseFormat = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseFormat");
 
@@ -438,20 +440,41 @@ public class SingleSignOnProducer extends SSOProducer {
         // Validate SSO Session
         // -----------------------------------------------------------------------------
         boolean isSsoSessionValid = false;
-        if (secCtx != null && secCtx.getSessionIndex() != null) {
+
+        if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Forcing authentication for request " + authnRequest.getID());
+
+            // Discard current SSO Session
+            isSsoSessionValid = false;
+
+        } else if (secCtx != null && secCtx.getSessionIndex() != null) {
+
             try {
                 sessionMgr.accessSession(secCtx.getSessionIndex());
                 isSsoSessionValid = true;
-
                 if (logger.isDebugEnabled())
                     logger.debug("SSO Session is valid : " + secCtx.getSessionIndex());
-
             } catch (NoSuchSessionException e) {
-
                 if (logger.isDebugEnabled())
                     logger.debug("SSO Session is not valid : " + secCtx.getSessionIndex() + " " + e.getMessage(), e);
-
             }
+
+            // Check with remote IdP
+            if (spChannel.isProxyModeEnabled()) {
+                // We need to check the session with the proxied IdP
+                try {
+                    SPSessionHeartBeatResponseType resp = performIdPProxySessionHeartBeat(exchange, secCtx);
+                    isSsoSessionValid = resp.isValid();
+                } catch (SSOException e) {
+                    logger.error(e.getMessage(), e);
+                    isSsoSessionValid = false;
+                }
+                if (logger.isDebugEnabled())
+                    logger.debug("Proxy SSO Session is "+(isSsoSessionValid ? "" : "not" + " valid : ") + secCtx.getSessionIndex());
+            }
+
         }
 
         // IF SSO Session is not valid, create a new authn state object
@@ -466,7 +489,12 @@ public class SingleSignOnProducer extends SSOProducer {
             if (logger.isTraceEnabled())
                 logger.trace("Using existing AuthnState, if any");
 
+            // Clear endpoint information
             authnState = getAuthnState(exchange);
+            authnState.setCurrentIdConfirmationEndpoint(null);
+            authnState.setCurrentIdConfirmationEndpointTryCount(0);
+            authnState.setCurrentClaimsEndpoint(null);
+            authnState.setCurrentClaimsEndpointTryCount(0);
         }
 
         authnState.setAuthnRequest(authnRequest);
@@ -474,18 +502,8 @@ public class SingleSignOnProducer extends SSOProducer {
         authnState.setResponseMode(responseMode);
         authnState.setResponseFormat(responseFormat);
 
-        if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Forcing authentication for request " + authnRequest.getID());
-
-            isSsoSessionValid = false;
-            // Discard current SSO Session
-        }
 
         if (!isSsoSessionValid) {
-
-            SPChannel spChannel = (SPChannel) channel;
 
             // ------------------------------------------------------
             // Handle proxy mode
@@ -1844,6 +1862,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 rememberMe = ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() != null ?
                         ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() : false;
             }
+            // Reset claims endpoint information.
+            authnState.setCurrentClaimsEndpointTryCount(0);
+            authnState.setCurrentClaimsEndpoint(null);
         }
 
         // Check if the remember me option is requested as one of the claims
@@ -3004,5 +3025,41 @@ public class SingleSignOnProducer extends SSOProducer {
         return null;
 
     }
+
+    protected SPSessionHeartBeatResponseType performIdPProxySessionHeartBeat(CamelMediationExchange exchange,
+                                                                             IdPSecurityContext secCtx) throws SSOException {
+
+        try {
+
+            SPChannel spChannel = (SPChannel) channel;
+
+            // Send SP SSO Access Session, using SOAP Binding
+            BindingChannel spBindingChannel = (BindingChannel) spChannel.getProxy();
+            if (spBindingChannel == null) {
+                logger.error("No SP Binding channel found for channel " + channel.getName());
+                throw new SSOException("No proxy channel configured");
+            }
+
+            EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
+            if (logger.isTraceEnabled())
+                logger.trace("Using SP Session Heart-Beat endpoint " + ed + " for partner " + spBindingChannel.getProvider().getName());
+
+            SPSessionHeartBeatRequestType heartBeatReq = new SPSessionHeartBeatRequestType();
+            heartBeatReq.setID(uuidGenerator.generateId());
+            heartBeatReq.setSsoSessionId(secCtx.getIdpProxySessionIndex());
+            heartBeatReq.setIssuer(spChannel.getProvider().getName());
+
+            // Send message to SP Binding Channel
+            SPSessionHeartBeatResponseType heartBeatRes =
+                    (SPSessionHeartBeatResponseType) spBindingChannel.getIdentityMediator().sendMessage(heartBeatReq, ed, channel);
+
+            return heartBeatRes;
+
+        } catch (IdentityMediationException e) {
+            throw new SSOException(e.getMessage(), e);
+        }
+
+    }
+
 
 }

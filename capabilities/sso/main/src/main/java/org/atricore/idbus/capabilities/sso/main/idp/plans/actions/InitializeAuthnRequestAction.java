@@ -70,6 +70,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         String securityToken = null;
         Boolean rememberMe = null;
+        Boolean forceAuthn = false;
         if (ssoAuthnReq instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthnReq = (PreAuthenticatedIDPInitiatedAuthnRequestType) ssoAuthnReq;
             securityToken = preAuthnReq.getSecurityToken();
@@ -79,6 +80,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
             reqAuthnCtx = new RequestedAuthnContextType();
             reqAuthnCtx.getAuthnContextClassRef().add(preAuthnReq.getAuthnCtxClass());
+            forceAuthn = true;
             log.trace("Issuing SAML2 Authentication Request for Preauthenticated Token [" + securityToken  + "] and " +
                       "Authentication Context Class " + preAuthnReq.getAuthnCtxClass());
         }
@@ -123,7 +125,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         // Scoping [optional]
 
         // ForceAuthn [optional] --> re-establish identity
-        authn.setForceAuthn(false);
+        authn.setForceAuthn(forceAuthn);
 
         // IsPassive [optional] --> automatic login!
         authn.setIsPassive(ssoAuthnReq != null && ssoAuthnReq.isPassive());
