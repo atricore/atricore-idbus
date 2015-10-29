@@ -139,6 +139,11 @@ public class JossoSoapBinding extends AbstractMediationSoapBinding {
                         } else {
                             lState = ctx.retrieve("ssoSessionId", ssoSessionId);
                         }
+
+                        if (lState == null) {
+                            if (logger.isDebugEnabled())
+                                logger.debug("No state found for SSO Session ID " + ssoSessionId);
+                        }
                     }
 
                     if (lState == null && assertionId != null) {
@@ -150,6 +155,11 @@ public class JossoSoapBinding extends AbstractMediationSoapBinding {
                             lState = ctx.retrieve("assertionId", assertionId, retryCount, getRetryDelay());
                         } else {
                             lState = ctx.retrieve("assertionId", assertionId);
+                        }
+
+                        if (lState == null) {
+                            if (logger.isDebugEnabled())
+                                logger.debug("No state found for Assertion ID " + assertionId);
                         }
 
                     }
