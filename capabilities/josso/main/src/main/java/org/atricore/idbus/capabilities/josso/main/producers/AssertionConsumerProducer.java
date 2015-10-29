@@ -122,6 +122,9 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
             state.getLocalState().addAlternativeId("ssoSessionId", response.getSessionIndex());
             state.getLocalState().addAlternativeId("assertionId", aa.getId());
 
+            if (logger.isDebugEnabled())
+                logger.debug("Storing Assertion ID/Session ID " + aa.getId() + "/" + response.getSessionIndex());
+
             // We've issued a new assertion, record some stats
             mediator.increaseUnresolvedAssertionsCount();
             if (mediator.getMaxUnresolvedAssertionsCount() == 0) {
