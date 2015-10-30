@@ -188,6 +188,11 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                     if (principal instanceof SubjectAttributeType) {
                         SubjectAttributeType attr = (SubjectAttributeType) principal;
                         String name = attr.getName();
+
+                        // Do not embedd other OAuth2 related tokens
+                        if (name.startsWith(WSTConstants.WST_OAUTH2_TOKEN_TYPE))
+                            continue;
+
                         if (name != null) {
                             int idx = name.lastIndexOf(':');
                             if (idx >= 0) name = name.substring(idx + 1);
