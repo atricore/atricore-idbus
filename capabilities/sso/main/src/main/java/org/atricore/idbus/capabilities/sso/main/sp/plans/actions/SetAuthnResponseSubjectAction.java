@@ -26,10 +26,20 @@ public class SetAuthnResponseSubjectAction extends AbstractSSOAction {
         // Response subject is simpler, we add authentication information as subject attributes:
         if (spSecurityContext != null) {
 
-            // Add IdP related information
+            // Add IdP related information for the application.
             SubjectType subject = ProtocolUtils.toSubjectType(spSecurityContext.getSubject());
+            ssoResponse.setSubject(subject);
+            ssoResponse.setSessionIndex(spSecurityContext.getSessionIndex());
 
-            // TODO : check for these attributes, they may already be there
+/* No app should need the IDP SSO Session through agents (keep-alive can be performed using SP Session)
+
+            // Adding idpSsoSession property (required by JOSSO capability, but only available through back channel)
+            SubjectAttributeType idpSsoSessionIdx = new SubjectAttributeType();
+            idpSsoSessionIdx.setName("idpSsoSession");
+            idpSsoSessionIdx.setValue(spSecurityContext.getIdpSsoSession());
+            ssoResponse.getSubjectAttributes().add(idpSsoSessionIdx);
+
+
             SubjectAttributeType authnCtxAttr = new SubjectAttributeType();
             authnCtxAttr.setName("authnCtxClass");
             authnCtxAttr.setValue(spSecurityContext.getAuthnCtxClass().getValue());
@@ -39,14 +49,8 @@ public class SetAuthnResponseSubjectAction extends AbstractSSOAction {
             idpAlias.setName("idpAlias");
             idpAlias.setValue(spSecurityContext.getIdpAlias());
             ssoResponse.getSubjectAttributes().add(idpAlias);
+*/
 
-            SubjectAttributeType idpSsoSessionIdx = new SubjectAttributeType();
-            idpSsoSessionIdx.setName("idpSsoSession");
-            idpSsoSessionIdx.setValue(spSecurityContext.getIdpSsoSession());
-            ssoResponse.getSubjectAttributes().add(idpSsoSessionIdx);
-
-            ssoResponse.setSubject(subject);
-            ssoResponse.setSessionIndex(spSecurityContext.getSessionIndex());
 
         }
 

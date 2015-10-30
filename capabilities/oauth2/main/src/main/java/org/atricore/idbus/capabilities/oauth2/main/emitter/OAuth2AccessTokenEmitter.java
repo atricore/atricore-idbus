@@ -193,9 +193,6 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                         if (name.startsWith(WSTConstants.WST_OAUTH2_TOKEN_TYPE))
                             continue;
 
-                        // TODO : Do not embedd other OAUTH2 tokens
-                        // TODO : Verify idpAlias/idpName for proxied IDPs (use proxiedIdPAlias ? )
-
                         String value = attr.getValue();
                         if (!usedProps.contains(name)) {
                             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), name, value));

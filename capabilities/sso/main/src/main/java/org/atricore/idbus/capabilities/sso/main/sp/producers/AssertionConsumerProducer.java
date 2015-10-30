@@ -640,6 +640,10 @@ public class AssertionConsumerProducer extends SSOProducer {
                                 )
                         );
 
+                        SubjectAttribute authnCtxAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:authnCtxClass", (String) authnContext.getValue());
+                        if (authnCtxAttr != null)
+                            outSubject.getPrincipals().add(authnCtxAttr);
+
                     }
 
                     if (authnStmt.getAuthnInstant() != null) {
@@ -790,6 +794,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.warn("No Assertion present within Response [" + response.getID() + "]");
         }
 
+        // Add IDP Information as subject attributes.
         SubjectAttribute idpAliasAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
         SubjectAttribute idpNameAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
 
@@ -813,13 +818,13 @@ public class AssertionConsumerProducer extends SSOProducer {
         boolean multiValued = false;
         // TODO : This depends on the attribute profile, make it dynamic!
         if (name.equals(DCEPACAttributeDefinition.GROUPS.getValue()) ||
-                name.equals("groups")) {
+                name.equals("groups") ||
+                name.equals(DCEPACAttributeDefinition.GROUP.getValue())) {
             multiValued = true;
         }
 
         // Check if the name has been used
         SubjectAttribute old = subjectAttrs.get(name);
-
 
         int i = 0;
         boolean found = false;
@@ -829,10 +834,10 @@ public class AssertionConsumerProducer extends SSOProducer {
                 found = true;
 
             i++;
-            old = subjectAttrs.get(name + "#" + i);
+            old = subjectAttrs.get(name + "_" + i);
         }
 
-        String newName = i > 0 ? name + "#" + i : name;
+        String newName = i > 0 ? name + "_" + i : name;
 
         SubjectAttribute attr = null;
         if (multiValued) {
