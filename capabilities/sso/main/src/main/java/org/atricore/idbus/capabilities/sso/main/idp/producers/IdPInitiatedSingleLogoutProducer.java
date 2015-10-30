@@ -73,6 +73,10 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
                 CircleOfTrustManager cot = spChannel.getFederatedProvider().getCotManager();
                 CircleOfTrustMemberDescriptor sp = cot.lookupMemberByAlias(spAlias);
 
+                if (sp == null) {
+                    throw new IdentityMediationException("Unknown SP Alias " + spAlias);
+                }
+
                 // SP that we should
                 EntityDescriptorType ed = (EntityDescriptorType) sp.getMetadata().getEntry();
                 NameIDType issuer = new NameIDType();

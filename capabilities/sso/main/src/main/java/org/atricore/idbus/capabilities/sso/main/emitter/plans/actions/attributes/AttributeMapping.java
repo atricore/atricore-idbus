@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes;
 
-import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
+// TODO : add new Attribute Mapping based on Groovy expressions!
 
 public class AttributeMapping {
 

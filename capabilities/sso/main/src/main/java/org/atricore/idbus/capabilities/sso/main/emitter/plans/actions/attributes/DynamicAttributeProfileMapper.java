@@ -63,7 +63,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
         // Add constants
         for (AttributeMapping attributeMapping : attributeMaps.values()) {
-            if (attributeMapping.getAttrName().startsWith("'") && attributeMapping.getAttrName().endsWith("'") &&
+            if (attributeMapping.getAttrName().startsWith("\"") && attributeMapping.getAttrName().endsWith("\"") &&
                     attributeMapping.getReportedAttrName() != null && !attributeMapping.getReportedAttrName().equals("")) {
                 AttributeType attrProp = new AttributeType();
                 attrProp.setName(attributeMapping.getReportedAttrName());

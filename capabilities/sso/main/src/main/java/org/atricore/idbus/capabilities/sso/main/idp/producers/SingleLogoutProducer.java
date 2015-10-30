@@ -285,12 +285,15 @@ public class SingleLogoutProducer extends SSOProducer {
 
     protected void doProcessSLORequest(CamelMediationExchange exchange, LogoutRequestType sloRequest, String relayState) throws Exception {
 
+        CircleOfTrustMemberDescriptor targetSp = resolveProviderDescriptor(sloRequest.getIssuer());
+        SPChannel requiredSpChannel = (SPChannel) resolveSpChannel(targetSp);
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         MediationState state = in.getMessage().getState();
 
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) state.getLocalVariable(varName);
-        AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        AbstractSSOMediator mediator = (AbstractSSOMediator) requiredSpChannel.getIdentityMediator();
 
         String ssoSessionId = secCtx != null ? secCtx.getSessionIndex() : "<NONE>";
         Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
@@ -923,6 +926,8 @@ public class SingleLogoutProducer extends SSOProducer {
                                           LogoutRequestType sloRequest,
                                           String relayState) throws Exception {
 
+        CircleOfTrustMemberDescriptor targetSp = resolveProviderDescriptor(sloRequest.getIssuer());
+        SPChannel requiredSpChannel = (SPChannel) resolveSpChannel(targetSp);
 
         // Get security context information
         String ssoSessionId = secCtx != null ? secCtx.getSessionIndex() : "<NONE>";
@@ -931,7 +936,6 @@ public class SingleLogoutProducer extends SSOProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         MediationState state = in.getMessage().getState();
-        SPChannel spChannel = (SPChannel) channel;
 
         // Remove the SSO security context from state
         state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
@@ -944,7 +948,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // Invalidate SSO Session, if available
         if (secCtx != null) {
-            SSOSessionManager sessionMgr = spChannel.getSessionManager();
+            SSOSessionManager sessionMgr = requiredSpChannel.getSessionManager();
             sessionMgr.invalidate(secCtx.getSessionIndex());
             secCtx.clear();
         }
@@ -955,7 +959,7 @@ public class SingleLogoutProducer extends SSOProducer {
         EndpointDescriptor destination = null;
         StatusResponseType ssoResponse = null;
         if (sloRequest == null) {
-            SSOIDPMediator mediator = (SSOIDPMediator) spChannel.getIdentityMediator();
+            SSOIDPMediator mediator = (SSOIDPMediator) requiredSpChannel.getIdentityMediator();
             String dashboardUrl = mediator.getDashboardUrl();
             destination = new EndpointDescriptorImpl("user-slo-url",
                     SSOMetadataConstants.IdPInitiatedSingleLogoutServiceProxy_QNAME.toString(),
@@ -963,7 +967,7 @@ public class SingleLogoutProducer extends SSOProducer {
                     dashboardUrl, null);
 
             if (dashboardUrl == null)
-                logger.error("User Dashboard not available for " + spChannel.getName());
+                logger.error("User Dashboard not available for " + requiredSpChannel.getName());
 
 
         } else {
@@ -983,8 +987,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // Check if we have to notify the idp selector
 
-        FederationChannel fChannel = (FederationChannel) channel;
-        EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
+        EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, requiredSpChannel);
 
         if (idpSelectorCallbackEndpoint != null) {
             if (logger.isDebugEnabled())
@@ -1004,7 +1007,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
             entityRequest.setID(uuidGenerator.generateId());
             entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
-            entityRequest.setEntityId(fChannel.getMember().getAlias());
+            entityRequest.setEntityId(requiredSpChannel.getMember().getAlias());
 
             entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
                     idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
