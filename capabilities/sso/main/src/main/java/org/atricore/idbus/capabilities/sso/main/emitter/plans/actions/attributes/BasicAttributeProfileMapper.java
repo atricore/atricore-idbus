@@ -38,17 +38,17 @@ public class BasicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
             // Keep attributes simple, if they are URIs, remove prefixes
             for (SSONameValuePair property : ssoUser.getProperties()) {
-                AttributeType attrProp = new AttributeType();
 
                 // Only qualify property names if needed
                 int idx = property.getName().indexOf(':');
+                String name = property.getName();
                 if (idx >= 0)
-                    attrProp.setName(property.getName().substring(idx + 1));
-                else
-                    attrProp.setName(property.getName());
+                    name = property.getName().substring(idx + 1);
 
+                // Build Attribute:
+                AttributeType attrProp = new AttributeType();
+                attrProp.setName(name);
                 attrProp.setFriendlyName(attrProp.getName());
-
                 attrProp.setNameFormat(AttributeNameFormat.BASIC.getValue());
                 attrProp.getAttributeValue().add(property.getValue());
 

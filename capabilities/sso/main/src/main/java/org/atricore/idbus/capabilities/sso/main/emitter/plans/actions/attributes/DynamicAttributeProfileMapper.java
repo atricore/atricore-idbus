@@ -13,6 +13,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
     private static final Log logger = LogFactory.getLog(DynamicAttributeProfileMapper.class);
 
+    // TODO : Add other special attributes (i.e. idpAlias)
     private static final String PRINCIPAL_ATTR_NAME = "_principal";
     private static final String GROUPS_ATTR_NAME = "_groups";
 

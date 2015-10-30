@@ -56,7 +56,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     @Override
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return super.canEmit(context, requestToken, tokenType) &&
-                (!rememberMeTokenEmitter || rememberMeAttributePresent(requestToken) );
+                (!rememberMeTokenEmitter || rememberMeAttributePresent(requestToken));
     }
 
     @Override
@@ -144,7 +144,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             sigAlg = tokenSigner.getSignAlg();
         }
 
-        return new OAuth2AccessTokenEnvelope (encryptAlg, sigAlg, sigValue, tokenValue, true);
+        return new OAuth2AccessTokenEnvelope(encryptAlg, sigAlg, sigValue, tokenValue, true);
     }
 
     protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject, List<AbstractPrincipalType> proxyPrincipals, Object requestToken, String ssoSessionId) {
@@ -182,17 +182,19 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                 }
             }
 
-        // Add proxy principals (principals received from the proxied provider), but only if we don't have such a principal yet.
-        if (proxyPrincipals != null) {
-            for (AbstractPrincipalType principal : proxyPrincipals) {
-                if (principal instanceof SubjectAttributeType) {
-                    SubjectAttributeType attr = (SubjectAttributeType) principal;
-                    String name = attr.getName();
-                    /*
-                    if (name != null) {
-                        int idx = name.lastIndexOf(':');
-                        if (idx >=0) name = name.substring(idx + 1);
-                    } */
+            // Add proxy principals (principals received from the proxied provider), but only if we don't have such a principal yet.
+            if (proxyPrincipals != null) {
+                for (AbstractPrincipalType principal : proxyPrincipals) {
+                    if (principal instanceof SubjectAttributeType) {
+                        SubjectAttributeType attr = (SubjectAttributeType) principal;
+                        String name = attr.getName();
+
+                        // Do not embedd other OAuth2 related tokens
+                        if (name.startsWith(WSTConstants.WST_OAUTH2_TOKEN_TYPE))
+                            continue;
+
+                        // TODO : Do not embedd other OAUTH2 tokens
+                        // TODO : Verify idpAlias/idpName for proxied IDPs (use proxiedIdPAlias ? )
 
                         String value = attr.getValue();
                         if (!usedProps.contains(name)) {
