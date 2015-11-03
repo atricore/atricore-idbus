@@ -360,9 +360,6 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         
         Set<String> resourcePaths = new HashSet<String>();
 
-//        getSharedResources().add("idp", new FolderContentResource(new File("/tmp/idp")));
-//        mountResource("/", new SharedResourceReference("idp"));
-
         // TODO : Instead of taking resources list from branding, also support scanning specific packages of specific bundles !!!!
         if (branding != null) {
             
@@ -420,8 +417,32 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
             }
 
-        }
+            {
+                WebAppConfig appConfig = getAppConfig();
 
+                String exteranlResourcesPath = System.getProperty("karaf.home") + File.separator + "data" + File.separator + "branding";
+
+                if (branding.getExternalResourcesPath() != null)
+                    exteranlResourcesPath = branding.getExternalResourcesPath();
+
+                String unitName = appConfig.getUnitName();
+                String applianceName = unitName.substring(0, unitName.length() - "-mediation-unit".length());
+
+                String brandingExternalResources = exteranlResourcesPath + File.separator + applianceName;
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Loading external branding resources from : " + brandingExternalResources);
+
+                FolderContentResource extResourcesFolder = new FolderContentResource(new File(brandingExternalResources));
+                Collection<String> extResources = extResourcesFolder.scan();
+                getSharedResources().add(applianceName, extResourcesFolder);
+
+                for (String extResource : extResources) {
+                    mountResource(extResource, new SharedResourceReference(applianceName));
+                }
+            }
+
+        }
 
     }
     

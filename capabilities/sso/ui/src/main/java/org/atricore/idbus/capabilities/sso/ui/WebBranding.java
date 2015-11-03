@@ -20,6 +20,8 @@ public class WebBranding implements IClusterable, BundleContextAware {
     private String bundleId;
 
     private String bundleContextId;
+
+    private String externalResourcesPath;
     
     private Properties properties = new Properties();
     
@@ -160,6 +162,14 @@ public class WebBranding implements IClusterable, BundleContextAware {
 
     public void setSsoIdPAppClazz(String ssoIdPAppClazz) {
         this.ssoIdPAppClazz = ssoIdPAppClazz;
+    }
+
+    public String getExternalResourcesPath() {
+        return externalResourcesPath;
+    }
+
+    public void setExternalResourcesPath(String externalResourcesPath) {
+        this.externalResourcesPath = externalResourcesPath;
     }
 
     public class ResourcesBundle {
