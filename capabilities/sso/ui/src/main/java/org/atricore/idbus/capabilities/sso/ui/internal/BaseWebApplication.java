@@ -13,6 +13,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.IRequestCycleSettings;
 import org.atricore.idbus.capabilities.sso.ui.*;
 import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
@@ -29,6 +30,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.*;
@@ -208,7 +210,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     }
 
     public Class resolvePage(String path) {
-        PageMountPoint m = resolveMoutnPoint(path);
+        PageMountPoint m = resolveMountPoint(path);
         if (m == null) {
             logger.warn("Page not found for " + path);
             return null;
@@ -216,7 +218,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         return m.getPageClass();
     }
 
-    public PageMountPoint resolveMoutnPoint(String path)  {
+    public PageMountPoint resolveMountPoint(String path)  {
         PageMountPoint m = mountsByPath.get(path);
         if (m == null) {
             logger.warn("page Mount point not found for " + path);
@@ -358,6 +360,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         
         Set<String> resourcePaths = new HashSet<String>();
 
+//        getSharedResources().add("idp", new FolderContentResource(new File("/tmp/idp")));
+//        mountResource("/", new SharedResourceReference("idp"));
+
         // TODO : Instead of taking resources list from branding, also support scanning specific packages of specific bundles !!!!
         if (branding != null) {
             
@@ -373,7 +378,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                     mountResource("/" + resource.getPath(), ref);
                     resourcePaths.add(resource.getPath());
                     if (logger.isTraceEnabled())
-                        logger.trace("Mounting EXPLICITY shared resource ["+resource.getId()+"] at /" + resource.getPath());
+                        logger.trace("Mounting EXPLICITLY shared resource ["+resource.getId()+"] at /" + resource.getPath());
                 }
             }
             
@@ -387,23 +392,23 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 URL location = (URL) e.nextElement();
                 String path = location.getPath();
                 String mountPath = path.substring(basePath.length() + 1);
-                
+
                 if (resourcePaths.contains(mountPath)) {
                     if (logger.isDebugEnabled())
-                        logger.debug("Resource declared EXPLICITLY : "+ path);
+                        logger.debug("Resource declared EXPLICITLY : " + path);
                     continue;
                 }
 
                 BrandingResourceType type = getTypeFromPath(path);
                 if (type == null || type.equals(BrandingResourceType.OTHER))
                     continue;
-                
+
                 String id = mountPath.replace('/', '-');
                 id = id.replace('.', '-');
-                
+
                 if (logger.isTraceEnabled())
-                    logger.trace("Mounting DISCOVERED shared resource ["+id+"] at /" + mountPath);
-                
+                    logger.trace("Mounting DISCOVERED shared resource [" + id + "] at /" + mountPath);
+
                 BrandingResource resource = new BrandingResource(id, mountPath, null, type);
 
                 PackageResourceReference ref = new PackageResourceReference(AppResourceLocator.class, resource.getPath());
@@ -411,12 +416,12 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 mountResource("/" + resource.getPath(), ref);
                 resourcePaths.add(resource.getPath());
                 if (logger.isTraceEnabled())
-                    logger.trace("Mounting shared resource ["+resource.getId()+"] at /" + resource.getPath());
-                
+                    logger.trace("Mounting shared resource [" + resource.getId() + "] at /" + resource.getPath());
+
             }
-            
 
         }
+
 
     }
     

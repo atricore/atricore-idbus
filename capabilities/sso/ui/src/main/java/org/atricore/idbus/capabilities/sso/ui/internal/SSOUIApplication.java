@@ -71,6 +71,12 @@ public class SSOUIApplication extends BaseWebApplication {
         addPageMount("IDPS", SelectIdPPage.class);
     }
 
+    @Override
+    public void refreshBranding() {
+        super.refreshBranding();
+
+    }
+
     /**
      * @see org.apache.wicket.Application#getHomePage()
      */
