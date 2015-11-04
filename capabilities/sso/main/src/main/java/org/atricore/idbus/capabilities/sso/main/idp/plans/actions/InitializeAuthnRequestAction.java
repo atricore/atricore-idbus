@@ -347,22 +347,28 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         } else {
 
             // Try to get SP Alias from request:
-            String spAlias = mediator.getPreferredSpAlias();
+            String preferredSpAlias = mediator.getPreferredSpAlias();
+            String spAlias = null;
+            String spId = null;
             CircleOfTrustManager cotManager = spChannel.getFederatedProvider().getCotManager();
 
             if (ssoAuthnReq != null) {
                 for (RequestAttributeType a : ssoAuthnReq.getRequestAttribute()) {
                     if (a.getName().equals("atricore_sp_id")) {
                         // get cot manager
-                        spDescr = cotManager.lookupMemberById(a.getValue());
+                        spId = a.getValue();
+                        spDescr = cotManager.lookupMemberById(spId);
                         break;
                     }
 
                     if (a.getName().equals("atricore_sp_alias")) {
-                        String decodedAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
+
+                        spAlias = a.getValue();
                         spDescr = cotManager.lookupMemberByAlias(a.getValue());
-                        if (spDescr == null)
-                            spDescr = cotManager.lookupMemberByAlias(decodedAlias);
+                        if (spDescr == null) {
+                            spAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
+                            spDescr = cotManager.lookupMemberByAlias(spAlias);
+                        }
                         break;
                     }
 
@@ -370,13 +376,19 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                 }
             }
 
-            if (spDescr == null)
-                spDescr = cotManager.lookupMemberByAlias(spAlias);
-
+            if (spDescr == null) {
+                spDescr = cotManager.lookupMemberByAlias(preferredSpAlias);
+            }
             if (logger.isTraceEnabled())
-                logger.trace("Using Preferred SP Alias " + spAlias);
+                logger.trace("Using Preferred SP Alias " + preferredSpAlias);
 
             if (spDescr == null) {
+
+                String sp = spId;
+                if (sp == null) sp = spAlias;
+                if (sp == null) sp = preferredSpAlias;
+
+                logger.error("Cannot find SP for alias or id " + sp + " SP Channel " + spChannel.getName());
                 throw new SSOException("Cannot find SP for AuthnRequest ");
             }
 
@@ -384,7 +396,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("Resolved SP " + (spDescr != null ? spDescr.getAlias() : "NULL"));
+            logger.debug("Resolved SP (SP Channel:"+spChannel.getName()+") " + (spDescr != null ? spDescr.getAlias() : "NULL"));
 
         return spDescr;
     }

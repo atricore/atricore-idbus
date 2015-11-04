@@ -53,6 +53,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
           class="org.atricore.idbus.kernel.main.mediation.MemoryMessageQueueManager"
           init-method="init"
           destroy-method="shutDown">
+        <property name="monitorInterval" value="${aqm.monitorInterval}"/>
+        <property name="artifactTTL" value="${aqm.artifactTTL}"/>
     </bean>
 
     <!--

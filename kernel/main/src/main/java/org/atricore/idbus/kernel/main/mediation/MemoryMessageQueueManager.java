@@ -20,9 +20,9 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
 
     private IdGenerator idGenerator = new ArtifactGeneratorImpl();
 
-    private int artifactTTL = 600; // seconds
+    private int artifactTTL = 60 * 60; // 1hr, in seconds
 
-    private int monitorInterval = 600; // seconds
+    private int monitorInterval = 60; // 1 min, in seconds
 
     private OldArtifactsMonitor monitor;
 
