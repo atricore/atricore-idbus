@@ -193,6 +193,11 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                         if (name.startsWith(WSTConstants.WST_OAUTH2_TOKEN_TYPE))
                             continue;
 
+                        if (name != null) {
+                            int idx = name.lastIndexOf(':');
+                            if (idx >= 0) name = name.substring(idx + 1);
+                        }
+
                         String value = attr.getValue();
                         if (!usedProps.contains(name)) {
                             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), name, value));
