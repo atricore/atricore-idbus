@@ -164,6 +164,10 @@ public class WebBranding implements IClusterable, BundleContextAware {
         this.ssoIdPAppClazz = ssoIdPAppClazz;
     }
 
+    /**
+     * Resources located in this path plus the identity appliance name can override those embedded in a branding plug-in.
+     * Use the same resource structure defined in the plug-in file.
+     */
     public String getExternalResourcesPath() {
         return externalResourcesPath;
     }
