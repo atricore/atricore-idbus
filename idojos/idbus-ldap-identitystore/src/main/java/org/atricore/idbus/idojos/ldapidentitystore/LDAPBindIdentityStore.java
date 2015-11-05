@@ -28,11 +28,19 @@ import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyC
 import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyResponseControl;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
+import org.atricore.idbus.kernel.main.store.SimpleUserKey;
+import org.atricore.idbus.kernel.main.store.UserKey;
+import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.BindContext;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
 import javax.naming.ldap.BasicControl;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
@@ -141,6 +149,8 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
     private boolean passwordPolicySupport = false;
 
+    private boolean updatePasswordEnabled = false;
+
     public boolean isValidateBindWithSearch() {
         return this.validateBindWithSearch;
     }
@@ -168,6 +178,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
     public boolean bind(String username, String password, BindContext bindCtx) throws SSOAuthenticationException {
 
         String dn = null;
+        boolean error = false;
 
         try {
 
@@ -231,12 +242,19 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                     if (ppolicyCtrl != null)
                         addPasswordPolicyToBindCtx(ppolicyCtrl, bindCtx);
 
+                    // Check for errors
+                    for (SSOPolicyEnforcementStatement policyStatement : bindCtx.getSSOPolicies()) {
+                        if (policyStatement instanceof PasswordPolicyEnforcementError) {
+                            error = true;
+                            break;
+                        }
+                    }
                 }
 
                 ctx.close();
             }
 
-            return true;
+            return !error;
 
 
         } catch (Exception e) {
@@ -326,5 +344,53 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
         return null;
     }
 
+    @Override
+    public boolean isUpdatePasswordEnabled() {
+        return updatePasswordEnabled;
+    }
 
+    public void setUpdatePasswordEnabled(boolean updatePasswordEnabled) {
+        this.updatePasswordEnabled = updatePasswordEnabled;
+    }
+
+    @Override
+    public void updatePassword(UserKey key, String currentPassword, String newPassword) throws SSOIdentityException {
+        if (!(key instanceof SimpleUserKey)) {
+            throw new SSOIdentityException("Unsupported key type : " + key.getClass().getName());
+        }
+
+        InitialLdapContext ctx = null;
+
+        try {
+            String dn = selectUserDN(((SimpleUserKey) key).getId());
+
+            ctx = this.createLdapInitialContext(dn, currentPassword);
+
+            // Set new password
+            String userPasswordAttribute = getUpdateableCredentialAttribute();
+            if (userPasswordAttribute == null || userPasswordAttribute.trim().equals("")) {
+                userPasswordAttribute = "userPassword";
+            }
+            Attributes attrs = new BasicAttributes();
+            Attribute pwdAttr = new BasicAttribute(userPasswordAttribute, newPassword);
+            attrs.put(pwdAttr);
+            ctx.modifyAttributes(dn, InitialLdapContext.REPLACE_ATTRIBUTE, attrs);
+
+            // Remove pwdReset attribute
+            ctx = this.createLdapInitialContext();
+            Attributes attrs1 = new BasicAttributes();
+            Attribute pwdResetAttr = new BasicAttribute("pwdReset", false);
+            attrs1.put(pwdResetAttr);
+            ctx.modifyAttributes(dn, InitialLdapContext.REPLACE_ATTRIBUTE, attrs1);
+        } catch (NamingException e) {
+            throw new SSOIdentityException(e);
+        } finally {
+            try {
+                if (ctx != null)
+                    ctx.close();
+            } catch (NamingException e) {
+                throw new SSOIdentityException(e);
+            }
+        }
+    }
 }

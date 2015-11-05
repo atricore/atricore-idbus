@@ -67,5 +67,7 @@ public interface IdentityStore {
      */
     boolean userExists(UserKey key) throws SSOIdentityException;
 
+    boolean isUpdatePasswordEnabled();
 
+    void updatePassword(UserKey key, String currentPassword, String newPassword) throws SSOIdentityException;
 }

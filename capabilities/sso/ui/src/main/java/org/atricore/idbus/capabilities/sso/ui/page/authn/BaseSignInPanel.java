@@ -26,12 +26,21 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * Convenience Panel to be implemented by concrete sign-in panels.
@@ -103,4 +112,28 @@ public class BaseSignInPanel extends Panel {
         return null;
     }
 
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal) {
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        IdentityProvider idp = app.getIdentityProvider();
+        if (idp != null) {
+            AbstractSSOMediator mediator = (AbstractSSOMediator) app.getIdentityProvider().getDefaultFederationService().getChannel().getIdentityMediator();
+            AuditingServer aServer = mediator.getAuditingServer();
+
+            Properties props = new Properties();
+            String providerName = app.getIdentityProvider().getName();
+            props.setProperty("provider", providerName);
+
+            String remoteAddr = ((HttpServletRequest) getWebRequest().getContainerRequest()).getRemoteAddr();
+            if (remoteAddr != null) {
+                props.setProperty("remoteAddress", remoteAddr);
+            }
+
+            String sessionId = getSession().getId();
+            if (sessionId != null) {
+                props.setProperty("httpSession", sessionId);
+            }
+
+            aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", action, actionOutcome, principal, new Date(), null, props);
+        }
+    }
 }

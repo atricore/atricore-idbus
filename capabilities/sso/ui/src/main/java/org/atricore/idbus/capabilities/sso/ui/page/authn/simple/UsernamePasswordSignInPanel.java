@@ -22,6 +22,7 @@ package org.atricore.idbus.capabilities.sso.ui.page.authn.simple;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -34,14 +35,19 @@ import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsReques
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
+import org.atricore.idbus.kernel.main.authn.PasswordPolicyEnforcementError;
+import org.atricore.idbus.kernel.main.authn.PasswordPolicyErrorType;
 import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
+import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -269,6 +275,14 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                 getCredentialClaimsRequest().getSsoPolicyEnforcements();
         if (policyStatements != null && policyStatements.size() > 0) {
             for (SSOPolicyEnforcementStatement stmt : policyStatements) {
+                if (stmt instanceof PasswordPolicyEnforcementError &&
+                        PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED.equals(((PasswordPolicyEnforcementError) stmt).getType())) {
+                    BaseWebApplication app = (BaseWebApplication) getApplication();
+                    IdentityStore identityStore = ((SPChannel) app.getIdentityProvider().getDefaultFederationService().getChannel()).getIdentityManager().getIdentityStore();
+                    if (identityStore.isUpdatePasswordEnabled()) {
+                        throw new RestartResponseAtInterceptPageException(app.resolvePage("POLICY/PWDRESET"));
+                    }
+                }
                 displayFeedbackMessage(getString("claims.text." + stmt.getName(), null, "Unknown Policy Enforcement error"));
             }
         } else {

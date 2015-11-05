@@ -56,7 +56,12 @@ public enum Action {
     /**
      * SP SLO RESPONSE, SLO Response Processed by an SP
      */
-    SP_SLOR("SP-SLOR");
+    SP_SLOR("SP-SLOR"),
+
+    /**
+     * Password Reset
+     */
+    PWD_RESET("PWD-RESET");
 
     private String value;
 

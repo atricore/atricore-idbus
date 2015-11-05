@@ -286,7 +286,32 @@ public class VirtualIdentityStore extends AbstractStore {
         
         return virtualUserExistsOutcome.isExists();
 	}
-    
+
+    @Override
+    public boolean isUpdatePasswordEnabled() {
+        for (Iterator<IdentitySource> identitySourceIterator = getIdentitySources().iterator(); identitySourceIterator.hasNext();) {
+            IdentitySource identitySource = identitySourceIterator.next();
+            if (identitySource.getBackingIdentityStore().isUpdatePasswordEnabled())
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void updatePassword(UserKey key, String currentPassword, String newPassword) throws SSOIdentityException {
+        IdentitySource identitySource = null;
+        for (Iterator<IdentitySource> identitySourceIterator = getIdentitySources().iterator(); identitySourceIterator.hasNext();) {
+            identitySource = identitySourceIterator.next();
+            if (identitySource.getBackingIdentityStore().isUpdatePasswordEnabled())
+                break;
+        }
+        if (identitySource != null) {
+            identitySource.getBackingIdentityStore().updatePassword(key, currentPassword, newPassword);
+        } else {
+            throw new SSOIdentityException("Password update isn't enabled on any identity source");
+        }
+    }
+
     /**
      * @return
      * @org.apache.xbean.Property alias="sources"

@@ -26,6 +26,7 @@ import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.VerifyPwdRe
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationStartedPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.ReqRegistrationPage;
+import org.atricore.idbus.capabilities.sso.ui.page.policy.pwdreset.PolicyPwdResetPage;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 /**
@@ -90,6 +91,7 @@ public class SSOIdPApplication extends BaseWebApplication {
         addPageMount("AGENT/SECURITY_CHECK", JossoSecurityCheckPage.class);
 
         addPageMount("WARN/POLICY-ENFORCEMENT", PolicyEnforcementWarningsPage.class);
+        addPageMount("POLICY/PWDRESET", PolicyPwdResetPage.class);
     }
 
     /**
