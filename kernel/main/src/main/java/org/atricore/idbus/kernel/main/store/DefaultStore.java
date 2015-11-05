@@ -34,6 +34,9 @@ public class DefaultStore extends AbstractStore {
 
             User user = partition.findUserByUserName(key.toString());
 
+            if (user.getUserPassword() == null)
+                return new Credential[0];
+
             Credential usrCred = cp.newCredential(UsernamePasswordCredentialProvider.USERNAME_CREDENTIAL_NAME, user.getUserName());
             Credential pwdCred = cp.newCredential(UsernamePasswordCredentialProvider.PASSWORD_CREDENTIAL_NAME, user.getUserPassword());
             Credential saltCred = null;
