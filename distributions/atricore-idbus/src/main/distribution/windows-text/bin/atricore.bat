@@ -255,7 +255,10 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     goto :RUN_LOOP
 
 :EXECUTE_CLEAN
-    rmdir /S /Q %KARAF_DATA%
+    rmdir /S /Q %KARAF_BASE%\data\tmp\ 2> nul
+    rmdir /S /Q %KARAF_BASE%\data\ehcache\ 2> nul
+    rmdir /S /Q %KARAF_BASE%\data\cache\ 2> nul
+    mkdir %KARAF_BASE%\data\tmp\ 2> nul
     shift
     goto :RUN_LOOP
 

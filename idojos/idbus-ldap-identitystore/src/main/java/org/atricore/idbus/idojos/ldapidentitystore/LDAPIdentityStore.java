@@ -236,6 +236,10 @@ public class LDAPIdentityStore extends AbstractStore  {
             String dn = selectUserDN(((SimpleUserKey) key).getId());
             userProperties.add(new SSONameValuePair("dn", dn));
 
+            // For backward compatibility
+            String jossoUserDn = selectUserDN(((SimpleUserKey) key).getId());
+            userProperties.add(new SSONameValuePair("josso.user.dn", jossoUserDn));
+
             SSONameValuePair[] props = (SSONameValuePair[])
                     userProperties.toArray(new SSONameValuePair[userProperties.size()]);
             bu.setProperties(props);

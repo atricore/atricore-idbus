@@ -21,6 +21,10 @@
 DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
 
+# Uncomment in develomnent environments
+#IDBUS_CLEANUP="all"
+IDBUS_CLEANUP="fast"
+
 #
 # Check/Set up some easily accessible MIN/MAX params for JVM mem usage
 #
@@ -31,7 +35,7 @@ if [ "x$JAVA_MIN_MEM" = "x" ]; then
 fi
 
 if [ "x$JAVA_MAX_MEM" = "x" ]; then
-    JAVA_MAX_MEM=1024M
+    JAVA_MAX_MEM=768M
     export JAVA_MAX_MEM
 fi
 
@@ -299,21 +303,30 @@ setupDefaults() {
 
 
 cleanUp() {
+    if [ "x$IDBUS_CLEANUP" == "xall" ]; then
+        cleanUpAll
+    else 
+        cleanUpFast
+    fi
+}
+
+cleanUpAll() {
     rm -rf $KARAF_BASE/data/activemq-idbus
     rm -rf $KARAF_BASE/data/tmp/
     mkdir -p $KARAF_BASE/data/tmp
-
+    warn "Clearing OSGi plug-ins cache ..." 
     # Clear persistent state
     rm -rf $KARAF_BASE/data/ehcache
-
     # Clear bundles cache
     rm -rf $KARAF_BASE/data/cache
+    
 }
 
 cleanUpFast() {
     rm -rf $KARAF_BASE/data/activemq-idbus
     rm -rf $KARAF_BASE/data/tmp
     mkdir -p $KARAF_BASE/data/tmp
+    warn "Keeping OSGi plug-ins cache ..." 
 }
 
 
@@ -352,9 +365,6 @@ init() {
     setupMonitoringOptions
 
     # Clean up state from previous runs
-
-    # For faster restart on production servers
-    # cleanUpFast
     cleanUp
 
 }
@@ -379,7 +389,7 @@ run() {
             shift
             ;;
         'clean')
-            rm -Rf $KARAF_DATA
+            cleanUpAll
             shift
             ;;
     esac
