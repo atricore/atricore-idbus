@@ -389,7 +389,7 @@ run() {
             shift
             ;;
         'clean')
-            cleanUpAll`
+            cleanUpAll
             shift
             ;;
     esac
