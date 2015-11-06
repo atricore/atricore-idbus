@@ -6,8 +6,10 @@ import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
-import org.atricore.idbus.capabilities.openidconnect.main.proxy.endpoints.AuthzTokenConsumerEndpoint;
+import org.atricore.idbus.capabilities.openidconnect.main.proxy.endpoints.FacebookAuthzTokenConsumerEndpoint;
+import org.atricore.idbus.capabilities.openidconnect.main.proxy.endpoints.GoogleAuthzTokenConsumerEndpoint;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.endpoints.SingleSignOnProxyEndpoint;
+import org.atricore.idbus.capabilities.openidconnect.main.proxy.endpoints.TwitterAuthzTokenConsumerEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
 import java.util.Map;
@@ -39,9 +41,18 @@ public class OpenIDConnectProxyComponent extends DefaultComponent {
                 endpoint = new SingleSignOnProxyEndpoint(uri, this, parameters);
                 break;
 
-            case AuthzTokenConsumerServiceProxy:
-                endpoint = new AuthzTokenConsumerEndpoint(uri, this, parameters);
+            case GoogleAuthzTokenConsumerServiceProxy:
+                endpoint = new GoogleAuthzTokenConsumerEndpoint(uri, this, parameters);
                 break;
+
+            case FacebookAuthzTokenConsumerServiceProxy:
+                endpoint = new FacebookAuthzTokenConsumerEndpoint(uri, this, parameters);
+                break;
+
+            case TwitterAuthzTokenConsumerServiceProxy:
+                endpoint = new TwitterAuthzTokenConsumerEndpoint(uri, this, parameters);
+                break;
+
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID Connect endpoint " + remaining );
         }

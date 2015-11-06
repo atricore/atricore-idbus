@@ -39,6 +39,8 @@ public class VerifyPwdResetPanel extends Panel {
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    private static final int SEC_QUESTIONS_PER_USER = 3;
+
     private Form form;
 
     private SubmitLink submit;
@@ -53,6 +55,12 @@ public class VerifyPwdResetPanel extends Panel {
 
     private VerifyPwdResetModel model;
 
+    public VerifyPwdResetPanel(String id, User user, String hashAlgorithm, String hashEncoding) {
+        this(id, user);
+        this.hashAlgorithm = hashAlgorithm;
+        this.hashEncoding = hashEncoding;
+    }
+
     public VerifyPwdResetPanel(String id, User user) {
         super(id);
         this.user = user;
@@ -61,13 +69,10 @@ public class VerifyPwdResetPanel extends Panel {
 
         model = new VerifyPwdResetModel();
 
+        // Get three security questions to recover the password:
         Map<Integer, UserSecurityQuestion>  q = new HashMap<Integer, UserSecurityQuestion>();
         for (int i = 0 ;  i < 3 ; i ++) {
-            int idx = rg.nextInt(5);
-            while (q.containsKey(idx))
-                idx = rg.nextInt(5);
-
-            q.put(idx, user.getSecurityQuestions()[idx]);
+            q.put(i, user.getSecurityQuestions()[i]);
         }
 
         SSOWebSession session = (SSOWebSession) getSession();
@@ -152,17 +157,17 @@ public class VerifyPwdResetPanel extends Panel {
 
         // Verify each question
 
-        String a1 = PasswordUtil.createPasswordHash(model.getAnswer1(), getHashAlgorithm(), getHashEncoding(), getDigest());
+        String a1 = model.getAnswer1();
         if (!a1.equals(questions[0].getAnswer())) {
             return false;
         }
 
-        String a2 = PasswordUtil.createPasswordHash(model.getAnswer2(), getHashAlgorithm(), getHashEncoding(), getDigest());
+        String a2 = model.getAnswer2();
         if (!a2.equals(questions[1].getAnswer())) {
             return false;
         }
 
-        String a3 = PasswordUtil.createPasswordHash(model.getAnswer3(), getHashAlgorithm(), getHashEncoding(), getDigest());
+        String a3 = model.getAnswer3();
         if (!a3.equals(questions[2].getAnswer())) {
             return false;
         }

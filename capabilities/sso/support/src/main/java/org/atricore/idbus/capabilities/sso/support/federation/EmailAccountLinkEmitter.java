@@ -76,7 +76,8 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
             if ( subjectAttribute.getName().startsWith("/UserAttribute[@ldap:targetAttribute=\"mail\"]") ||
                  subjectAttribute.getName().equalsIgnoreCase("emailaddress") ||
                  subjectAttribute.getName().equalsIgnoreCase("email") ||
-                 subjectAttribute.getName().equalsIgnoreCase("mail")) {
+                 subjectAttribute.getName().equalsIgnoreCase("mail") ||
+                 subjectAttribute.getName().equalsIgnoreCase("urn:org:atricore:idbus:user:property:email")) {
 
                 // Need to map email to local user name!
                 String email = subjectAttribute.getValue();

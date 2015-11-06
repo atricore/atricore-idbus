@@ -75,6 +75,7 @@ public class SpnegoHttpInitiatorBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", isn.getSpnegoInitiationEndpoint());
+            handleCrossOriginResourceSharing(exchange);
         }
 
     }

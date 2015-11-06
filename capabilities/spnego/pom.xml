@@ -27,25 +27,25 @@
 
     <parent>
             <groupId>org.atricore.idbus</groupId>
-            <artifactId>all</artifactId>
-            <version>1.4.1-SNAPSHOT</version>
+            <artifactId>idbus-all</artifactId>
+            <version>1.5.0-SNAPSHOT</version>
             <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.spnego</groupId>
     <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SPNEGO</name>
 
     <properties>
-        <idbus.kernel.version>1.4.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.samlr2.version>1.4.1-SNAPSHOT</idbus.samlr2.version>
-        <idbus.sts.version>1.4.1-SNAPSHOT</idbus.sts.version>
-        <idbus.bundle.ini4j-v0_5_1.version>1.4.1-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
+        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.samlr2.version>1.5.0-SNAPSHOT</idbus.samlr2.version>
+        <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.5.0-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
         <karaf.version>2.2.3</karaf.version>
         <camel.version>1.6.1</camel.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <spring.version>3.1.0.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
    </properties>
@@ -66,6 +66,12 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.sso</artifactId>
             <version>${idbus.kernel.version}</version>
             <scope>provided</scope>
         </dependency>

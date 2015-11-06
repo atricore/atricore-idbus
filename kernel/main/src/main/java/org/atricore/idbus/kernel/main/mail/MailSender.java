@@ -28,20 +28,35 @@ public class MailSender {
     private String password;
 
     private Properties properties;
+    private String port;
+
+    private String auth;
+
+    private String starttlsEnable;
 
     private void init() {
 
         properties = new Properties();
 
-        logger.info("Initializing mail sender ["+name+"] with host [" + host + "], username ["+username+"], password [*]");
+        logger.info("Initializing mail sender [" + name + "] with host [" + host + "], username [" + username + "], password [*]");
 
+        // SMTP Properties:
         properties.setProperty("mail.smtp.host", host);
+
+        if (port != null)
+            properties.setProperty("mail.smtp.port", port);
+
+        if (auth != null)
+            properties.setProperty("mail.smtp.auth", auth);
+
+        if (starttlsEnable != null)
+            properties.setProperty("mail.smtp.starttls.enable", starttlsEnable);
+
         if (username != null)
             properties.setProperty("mail.username", username);
+
         if (password != null)
             properties.setProperty("mail.password", password);
-
-
 
     }
 
@@ -79,10 +94,23 @@ public class MailSender {
 
     public void send(String from, String to, String subject, String messageText, String contentType) {
 
+        boolean tlsEnable = starttlsEnable != null ? Boolean.parseBoolean(starttlsEnable) : false;
+
         // Due to the 'mailcap' issue between javax.mail and javax.activation in OSGi, les't play with the classloaders
         ClassLoader tcl = Thread.currentThread().getContextClassLoader();
 
-        Session session = Session.getDefaultInstance(properties);
+        Session session = null;
+
+        if (!tlsEnable) {
+            session = Session.getDefaultInstance(properties);
+        } else {
+            session = Session.getInstance(properties,
+                    new javax.mail.Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(username, password);
+                        }
+                    });
+        }
 
         try{
             // Set the ClassLoader to the javax.mail bundle loader.
@@ -142,4 +170,27 @@ public class MailSender {
         }
     }
 
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setAuth(String auth) {
+        this.auth = auth;
+    }
+
+    public String getAuth() {
+        return auth;
+    }
+
+    public void setStarttlsEnable(String starttlsEnable) {
+        this.starttlsEnable = starttlsEnable;
+    }
+
+    public String getStarttlsEnable() {
+        return starttlsEnable;
+    }
 }

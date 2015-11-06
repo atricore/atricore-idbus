@@ -192,10 +192,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 doProcessPolicyEnforcementResponse(exchange, (PolicyEnforcementResponse) content);
 
             } else if (content instanceof SPAuthnResponseType) {
-
-                metric += "doProcessProxyResponse";
+                metric += "doProcessProxyACSResponse";
                 // Process proxy responses
-                doProcessProxyResponse(exchange, (SPAuthnResponseType) content);
+                doProcessProxyACSResponse(exchange, (SPAuthnResponseType) content);
 
             } else {
                 metric += "Unknown";
@@ -352,7 +351,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // Send Authn Request to IDP
             // ------------------------------------------------------
             in.getMessage().getState().setLocalVariable(
-                    SAMLR2Constants.SAML_PROTOCOL_NS + ":PreAuthenticatedAuthnRequest", preauthAuthnRequest);
+                    SAMLR2Constants.SAML_IDBUS_NS + ":PreAuthenticatedAuthnRequest", preauthAuthnRequest);
 
             // Send SAMLR2 Message back
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
@@ -615,6 +614,10 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
+
+            // Add any proxy principals available
+            if (secCtx.getProxyPrincipals() != null)
+                securityTokenEmissionCtx.getProxyPrincipals().addAll(secCtx.getProxyPrincipals());
 
             securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx);
 
@@ -996,11 +999,15 @@ public class SingleSignOnProducer extends SSOProducer {
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
+            if (logger.isDebugEnabled())
+                logger.debug("Security Token authentication failure : " + e.getMessage(), e);
+
             // Generate audit trail
             Properties auditProps = new Properties();
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
             recordInfoAuditTrail("SSO", ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
             // The authentication failed, let's see what needs to be done.
@@ -1010,9 +1017,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // Set of policies enforced during authentication
             Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
-
-            if (logger.isDebugEnabled())
-                logger.debug("Security Token authentication failure : " + e.getMessage(), e);
 
             // Ask for more claims, using other auth schemes
             ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState, exchange);
@@ -1094,8 +1098,8 @@ public class SingleSignOnProducer extends SSOProducer {
      * @param proxyResponse
      * @throws Exception
      */
-    protected void doProcessProxyResponse(CamelMediationExchange exchange,
-                                          SPAuthnResponseType proxyResponse) throws Exception {
+    protected void doProcessProxyACSResponse(CamelMediationExchange exchange,
+                                             SPAuthnResponseType proxyResponse) throws Exception {
 
         //------------------------------------------------------------
         // Process a proxy response
@@ -1163,7 +1167,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (proxyResponse.getSubject() == null) {
                 // The authentication failed!
-
+                if (logger.isDebugEnabled())
+                    logger.debug("Authentication failed, no subject received");
             } else {
 
                 // -------------------------------------------------------
@@ -1183,15 +1188,38 @@ public class SingleSignOnProducer extends SSOProducer {
                 securityTokenEmissionCtx.setAuthnState(authnState);
                 securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
                 securityTokenEmissionCtx.setSpAcs(ed);
-                securityTokenEmissionCtx.setProxyResponse(proxyResponse);
 
                 // in order to request a security token we need to map the claims sent by the proxy to
                 // STS claims
-                List<AbstractPrincipalType> proxyPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
+                List<AbstractPrincipalType> proxySubjectPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
+
+                List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
+
+                AuthnCtxClass authnCtx = null;
+
+                if (proxyResponse.getSubjectAttributes() != null) {
+                    for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
+                        if (attr.getName().equals("authnCtxClass")) {
+                            try {
+                                authnCtx = AuthnCtxClass.asEnum(attr.getValue());
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Using authnCtxClass " + attr.getValue());
+                                break;
+                            } catch (Exception e) {
+                                logger.error("Unknonw AuthnCtxClass type " + attr.getValue());
+                            }
+                        }
+                    }
+                }
+
+                // Just in case
+                if (authnCtx == null) {
+                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                }
 
                 ClaimSet claims = new ClaimSetImpl();
                 UsernameTokenType usernameToken = new UsernameTokenType();
-                for (Iterator<AbstractPrincipalType> iterator = proxyPrincipals.iterator(); iterator.hasNext(); ) {
+                for (Iterator<AbstractPrincipalType> iterator = proxySubjectPrincipals.iterator(); iterator.hasNext(); ) {
                     AbstractPrincipalType next = iterator.next();
 
                     if (next instanceof SubjectNameIDType) {
@@ -1206,32 +1234,42 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         // TODO : This is not accurate
                         // TODO : We should honor the provided authn. context if any
-                        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                        usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
 
                         // Also update authentication state
-                        authnState.setAuthnCtxClass(AuthnCtxClass.PASSWORD_AUTHN_CTX);
+                        authnState.setAuthnCtxClass(authnCtx);
 
                         usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
 
-                        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                        CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtx.getValue(), usernameToken);
                         claims.addClaim(credentialClaim);
+                    } else {
+                        securityTokenEmissionCtx.getProxyPrincipals().add(next);
                     }
 
                 }
 
-                SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange,
+                // Now, add all proxy principals stored in the response, different proxies may use different mechanisms
+                if (proxyResponse.getSubjectAttributes() != null)
+                    securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectAttributes());
+
+                if (proxyResponse.getSubjectRoles() != null)
+                    securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectRoles());
+
+                SamlR2SecurityTokenEmissionContext stsCtx = emitAssertionFromClaims(exchange,
                         securityTokenEmissionCtx,
                         claims,
                         sp);
 
-                assertion = cxt.getAssertion();
-                Subject authnSubject = cxt.getSubject();
+                assertion = stsCtx.getAssertion();
+                Subject authnSubject = stsCtx.getSubject();
 
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
+                secCtx.setPRoxyPrincipals(stsCtx.getProxyPrincipals());
 
                 // Associate the SP with the new session, including relay state!
                 // We already validated authn request issuer, so we can use it.
@@ -1547,11 +1585,7 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                                   IdPSecurityContext secCtx) throws Exception {
 
         // TODO : We need to use the STS ..., and get ALL the required tokens again.
-
         // TODO : Set in assertion AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX
-
-        MessageQueueManager aqm = getArtifactQueueManager();
-
         ClaimSet claims = new ClaimSetImpl();
         UsernameTokenType usernameToken = new UsernameTokenType();
 
@@ -1561,23 +1595,40 @@ public class SingleSignOnProducer extends SSOProducer {
 
             if (next instanceof SimplePrincipal) {
 
-                // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
                 SimplePrincipal principal = (SimplePrincipal) next;
+
+                // Get previously used authn-ctx class
+                AuthnCtxClass authnCtx = null;
+                List<JAXBElement<?>> c = secCtx.getAuthnStatement().getAuthnContext().getContent();
+                if (c != null && c.size() > 0) {
+                    for (JAXBElement e : c) {
+                        if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
+                            authnCtx = AuthnCtxClass.asEnum((String) e.getValue());
+                            break;
+                        }
+                    }
+                }
+
+                if (authnCtx == null) {
+                    logger.warn("No previous authentication context class, forcing Password");
+                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                }
 
                 AttributedString usernameString = new AttributedString();
                 usernameString.setValue(principal.getName());
                 usernameToken.setUsername(usernameString);
                 usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), principal.getName());
-                usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
+                usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
                 usernameToken.getOtherAttributes().put(new QName(Constants.PREVIOUS_SESSION_NS), "TRUE");
 
                 RequestedAuthnContextType reqAuthn = authnRequest.getRequestedAuthnContext();
                 if (reqAuthn != null) {
-                    // TODO : We should honor the requested authn!
-                    logger.warn("Requested Authentication context class ignored" + reqAuthn);
+                    // TODO : We should honor the originally requested authentication context!
+                    logger.warn("Requested Authentication context class ignored !!!! " + reqAuthn);
                 }
 
-                CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                //CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
+                CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtx.getValue(), usernameToken);
                 claims.addClaim(credentialClaim);
             }
 
@@ -1598,68 +1649,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         return securityTokenEmissionCtx;
 
-        /*
-
-        AssertionType assertion = null;
-
-        IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SecurityTokenToAuthnAssertionPlan.class);
-        IdentityPlanExecutionExchange ex = createIdentityPlanExecutionExchange();
-
-        // Publish SP SAMLR2 Metadata
-        CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(authnRequest.getIssuer());
-        ex.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
-        ex.setProperty(WSTConstants.RST_CTX, ctx);
-
-        ex.setTransientProperty(VAR_SAMLR2_SIGNER, ((SSOIDPMediator) channel.getIdentityMediator()).getSigner());
-        ex.setTransientProperty(VAR_SAMLR2_ENCRYPTER, ((SSOIDPMediator) channel.getIdentityMediator()).getEncrypter());
-
-        // Build Subject for SSOUser     HashSet
-        Set<Principal> principals = new HashSet<Principal>();
-
-        SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
-        SSOUser ssoUser = identityMgr.findUser(ctx.getSsoSession().getUsername());
-
-        principals.add(ssoUser);
-        SSORole[] roles = identityMgr.findRolesByUsername(ssoUser.getName());
-
-        principals.addAll(Arrays.asList(roles));
-
-        ex.setProperty(VAR_SUBJECT, new Subject(true,
-                principals,
-                new java.util.HashSet(),
-                new java.util.HashSet()));
-
-        // Create in/out artifacts
-        AuthnStatementType authnStmt = (AuthnStatementType) ctx.getSsoSession().getSecurityToken().getContent();
-        IdentityArtifact<AuthnStatementType> in =
-                new IdentityArtifactImpl<AuthnStatementType>(new QName(SAML_ASSERTION_NS, "AuthnStatement"),
-                        authnStmt);
-        ex.setIn(in);
-
-        IdentityArtifact<AssertionType> out =
-                new IdentityArtifactImpl<AssertionType>(new QName(SAML_ASSERTION_NS, "Assertion"),
-                        new AssertionType());
-        ex.setOut(out);
-
-        // Prepare execution
-        identityPlan.prepare(ex);
-
-        // Perform execution
-        identityPlan.perform(ex);
-
-        if (!ex.getStatus().equals(IdentityPlanExecutionStatus.SUCCESS)) {
-            throw new SecurityTokenEmissionException("Identity plan returned : " + ex.getStatus());
-        }
-
-        if (ex.getOut() == null)
-            throw new SecurityTokenEmissionException("Plan Exchange OUT must not be null!");
-
-        assertion = (AssertionType) ex.getOut().getContent();
-        ctx.setAssertion(assertion);
-
-        return ctx;
-        */
-
     }
 
     /**
@@ -1671,14 +1660,6 @@ public class SingleSignOnProducer extends SSOProducer {
                                                                          SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
                                                                          ClaimSet receivedClaims,
                                                                          CircleOfTrustMemberDescriptor sp) throws Exception {
-        return this.emitAssertionFromClaims(exchange, securityTokenEmissionCtx, receivedClaims, sp, (SPChannel) channel);
-    }
-
-    protected SamlR2SecurityTokenEmissionContext emitAssertionFromClaims(CamelMediationExchange exchange,
-                                                                         SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
-                                                                         ClaimSet receivedClaims,
-                                                                         CircleOfTrustMemberDescriptor sp, SPChannel spChannel) throws Exception {
-
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -1703,12 +1684,12 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
 
-        // Recover emission context, to retrieve Subject information
+        // Recover emission context, to get Subject information
         securityTokenEmissionCtx = (SamlR2SecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
 
         /// Obtain assertion from STS Response
         JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
-        Subject subject = (Subject) rstrt.getAny().get(2);
+        Subject subject = (Subject) rstrt.getAny().get(2); // Hard-coded subject position in response
         AssertionType assertion = (AssertionType) token.getValue().getAny();
         if (logger.isDebugEnabled())
             logger.debug("Generated SamlR2 Assertion " + assertion.getID());
@@ -1716,14 +1697,10 @@ public class SingleSignOnProducer extends SSOProducer {
         securityTokenEmissionCtx.setAssertion(assertion);
         securityTokenEmissionCtx.setSubject(subject);
 
-        // Some validations about the user !
-        //Subject subject = securityTokenEmissionCtx.getSubject();
-
-        // Look up SSO User (TODO : This could be disbled since it adds an additional access to the users repository)
         SSOUser ssoUser = null;
         Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
         if (p != null && p.size() > 0) {
-
+            // We have a simple princiapl, Look for an SSOUser instance
             SimplePrincipal user = p.iterator().next();
             SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
             if (identityMgr != null)
@@ -1732,6 +1709,7 @@ public class SingleSignOnProducer extends SSOProducer {
         } else {
             Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
             if (ssoUsers != null && ssoUsers.size() > 0) {
+                // We already have an SSOUser instance
                 ssoUser = ssoUsers.iterator().next();
             }
         }
@@ -1739,7 +1717,7 @@ public class SingleSignOnProducer extends SSOProducer {
         if (ssoUser != null) {
             // Make some validations on the SSO user
             for (SSONameValuePair nvp : ssoUser.getProperties()) {
-                if (nvp.getName().equals("accountDisabled")) {
+                if (nvp.getName().equalsIgnoreCase("accountDisabled")) {
                     boolean disabled = Boolean.parseBoolean(nvp.getValue());
                     if (disabled) {
                         throw new SecurityTokenAuthenticationFailure("Account disabled");
@@ -2274,7 +2252,9 @@ public class SingleSignOnProducer extends SSOProducer {
      */
     protected RequestSecurityTokenType buildRequestSecurityToken(ClaimSet claims, String context) throws Exception {
 
-        logger.debug("generating RequestSecurityToken...");
+        if (logger.isDebugEnabled())
+            logger.debug("generating RequestSecurityToken...");
+
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
 
         RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
@@ -2286,8 +2266,17 @@ public class SingleSignOnProducer extends SSOProducer {
 
         for (Claim c : claims.getClaims()) {
 
+            if (!(c instanceof CredentialClaim)) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Ignoring non-credential claim " + c);
+                continue;
+            }
+
             CredentialClaim credentialClaim = (CredentialClaim) c;
-            logger.debug("Adding Claim : " + credentialClaim.getQualifier() + " of type " + credentialClaim.getValue().getClass().getName());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Adding Claim : " + credentialClaim.getQualifier() + " of type " + credentialClaim.getValue().getClass().getName());
+
             Object claimObj = credentialClaim.getValue();
 
             if (claimObj instanceof UsernameTokenType) {
@@ -2305,7 +2294,9 @@ public class SingleSignOnProducer extends SSOProducer {
         if (context != null)
             rstRequest.setContext(context);
 
-        logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+        if (logger.isDebugEnabled())
+            logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+
         return rstRequest;
     }
 
@@ -2437,7 +2428,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                             String saml2authnCtxClassRef = (String) acc.getValue();
 
-                            if (saml2authnCtxClassRef.equals("urn:oasis:names:tc:SAML:2.0:ac:classes:Password")) {
+                            if (saml2authnCtxClassRef.equals(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue())) {
                                 saml11authnStatement.setAuthenticationMethod("urn:oasis:names:tc:SAML:1.0:am:password");
                             }
                             // TODO: map remaining authentication context classes types
@@ -2530,7 +2521,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             if (attr.getAttributeValue() != null) {
 
                                 if (logger.isTraceEnabled())
-                                    logger.trace("Processing Password Policy Warning statement values, total " + attr.getAttributeValue().size());
+                                    logger.trace("Processing password policy warning statement values, total " + attr.getAttributeValue().size());
 
                                 policy.getValues().addAll(attr.getAttributeValue());
                             }
@@ -2538,13 +2529,14 @@ public class SingleSignOnProducer extends SSOProducer {
                         } else if (attr.getName().startsWith(PasswordPolicyEnforcementError.NAMESPACE)) {
 
                             if (logger.isTraceEnabled())
-                                logger.trace("Processing Password Policy Error statement : " + attr.getFriendlyName());
+                                logger.trace("Processing password policy error statement : " + attr.getFriendlyName());
 
                             policy = new PasswordPolicyEnforcementError(PasswordPolicyErrorType.fromName(attr.getFriendlyName()));
 
                         } else {
                             // What other policies can we handle ?!?
-                            logger.trace("Ignoring attribute : " + attr.getName());
+                            if (logger.isTraceEnabled())
+                                logger.trace("Ignoring non-password policy statement : " + attr.getName());
                         }
 
                         if (policy != null)

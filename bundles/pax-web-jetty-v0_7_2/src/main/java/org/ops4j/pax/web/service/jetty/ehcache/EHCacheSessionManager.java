@@ -30,12 +30,14 @@ public class EHCacheSessionManager extends AbstractSessionManager {
 
     private CacheManager _cacheManager;
     private Cache _sessionsCache;
+    private boolean _secureCookies;
 
     private ConcurrentHashMap _sessions;
     protected long _saveIntervalMillis = 100; //only persist changes to session access times every 60 secs
 
-    public EHCacheSessionManager(Server server, Model model, Cache sessionsCache) {
+    public EHCacheSessionManager(Server server, Model model, Cache sessionsCache, boolean secureCookies) {
         this._sessionsCache = sessionsCache;
+        this._secureCookies = secureCookies;
     }
 
     /**

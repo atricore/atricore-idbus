@@ -34,16 +34,18 @@ public class PwdResetEMailTemplate extends WebPage {
         // TODO : Improve this, it must be a better way to create an external link to the PwdRegister.class page !
         String path = RequestCycle.get().getRequest().getFilterPath();
 
-        String pagePath = urlFor(((BaseWebApplication)getApplication()).resolvePage("SS/PWDRESET"), new PageParameters().add("transactionId", transactionId)).toString();
+        String pagePath = urlFor(((BaseWebApplication)getApplication()).resolvePage("SS/VFYPWDRESET"), new PageParameters().add("transactionId", transactionId)).toString();
         pagePath = pagePath.substring(1);
 
         path = path + "/SS" + pagePath;
 
         Url url  = RequestCycle.get().getRequest().getClientUrl();
 
-        String link = url.getProtocol() + "://" +
-                url.getHost() + (url.getPort() != 443 && url.getPort() != 80 ? ":" + url.getPort() + "" : "") +
-                path;
+        //String link = url.getProtocol() + "://" +
+        //        url.getHost() + (url.getPort() != 443 && url.getPort() != 80 ? ":" + url.getPort() + "" : "") +
+        //        path;
+
+        String link = "https://josso.atricore.com" + path;
 
         add(new ExternalLink("pwdResetLink", link));
 

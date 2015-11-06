@@ -20,7 +20,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 public class GroupModifyCommand extends SpmlCommandSupport {
 
     @Option(name = "-i", aliases = "--id", description = "Group ID", required = true, multiValued = false)
-    Long id;
+    String id;
 
     @Option(name = "-n", aliases = "--name", description = "Group name", required = false, multiValued = false)
     String name;

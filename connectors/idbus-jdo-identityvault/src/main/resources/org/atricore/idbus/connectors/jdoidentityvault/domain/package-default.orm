@@ -186,6 +186,10 @@
                 <column name="EMAILNEWPASSWORD" />
             </field>
 
+            <field name="changeLog">
+                <column name="CHANGELOG" jdbc-type="VARCHAR"/>
+            </field>
+
             <field name="acls" table="ATC_USER_ACL">
                 <join >
                     <column name="USER_ID"/>

@@ -68,11 +68,17 @@ public enum SSOService {
 
     SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
 
+    SPInitiatedSingleLogoutServiceProxy(SSOMetadataConstants.SPInitiatedSingleLogoutServiceProxy_QNAME),
+
     ProxyAssertionConsumerService(SSOMetadataConstants.ProxyAssertionConsumerService_QName),
+
+    ProxySingleLogoutService(SSOMetadataConstants.ProxySingleLogoutService_QName),
 
     SPCredentialsCallbackService(SSOMetadataConstants.SPCredentialsCallbackService_QNAME),
 
     IdPSelectorService(SSOMetadataConstants.IdPSelectorService_QNAME),
+
+    IdPSelectorCallbackService(SSOMetadataConstants.IdPSelectorCallbackService_QNAME),
 
     SPSelectorService(SSOMetadataConstants.SPSelectorService_QNAME);
 

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- * Extends the default 'RequestAddCookies' initializing the client cookie store with the recevied cookies from the browser
+ * Extends the default 'RequestAddCookies' initializing the client cookie store with the received cookies from the browser
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
@@ -33,15 +33,15 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         HttpServletRequest originalRequest = (HttpServletRequest) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest");
         String cookieDomain = (String) context.getAttribute("org.atricorel.idbus.kernel.main.binding.http.CookieDomain");
 
-        if (originalRequest != null) {
+        // Obtain cookie store
+        CookieStore cookieStore = (CookieStore) context.getAttribute(
+                ClientContext.COOKIE_STORE);
+        if (cookieStore == null) {
+            logger.error("Cookie store not specified in HTTP context");
+            throw new HttpException("No CookieStore attribute found in context: " + ClientContext.COOKIE_STORE);
+        }
 
-            // Obtain cookie store
-            CookieStore cookieStore = (CookieStore) context.getAttribute(
-                    ClientContext.COOKIE_STORE);
-            if (cookieStore == null) {
-                logger.error("Cookie store not specified in HTTP context");
-                return;
-            }
+        if (originalRequest != null) {
 
             // Convert received servlet cookies to HTTP client cookies
             if (originalRequest.getCookies() != null) {
@@ -53,10 +53,19 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
 
         }
 
+        for (Cookie c : cookieStore.getCookies()) {
+            if (c.isSecure()) {
+                logger.trace("Cookie: " + c + " is secure");
+            }
+        }
+
         super.process(request, context);
 
     }
 
+    /**
+     * Since internal connections (from our HTTP client) are non-secure, cookies must ALL be set to secure = false
+     */
     protected Cookie toClientCookie(HttpContext context, javax.servlet.http.Cookie svltCookie, String cookieDomain) {
 
         BasicClientCookie cookie = new BasicClientCookie(svltCookie.getName(), svltCookie.getValue());
@@ -64,11 +73,46 @@ public class IDBusRequestAddCookies extends RequestAddCookies {
         cookie.setDomain(svltCookie.getDomain() != null ? svltCookie.getDomain() : cookieDomain);
         // Path is not that important since we're already on the server and the cookie was received.
         cookie.setPath(svltCookie.getPath() != null ? svltCookie.getPath() : "/");
-        // TODO : FOR NOW WE ONLY SUPPORT SESSION COOKIES cookie.setExpiryDate();
+
+        // TODO : FOR NOW WE ONLY SUPPORT SESSION COOKIES
+        // cookie.setExpiryDate();
         cookie.setVersion(svltCookie.getVersion());
-        cookie.setSecure(svltCookie.getSecure());
+        // Send cookies as non-secure internally :
+        //cookie.setSecure(svltCookie.getSecure());
+        cookie.setSecure(false);
         cookie.setComment(svltCookie.getComment());
+        cookie.setExpiryDate(null);
+
+        if (logger.isTraceEnabled())
+            logger.trace("Server Cookie: " + toString(svltCookie));
+
+        if (logger.isTraceEnabled())
+            logger.trace("Client Cookie: " + cookie.toString());
 
         return cookie;
+    }
+
+    protected String toString(javax.servlet.http.Cookie cookie) {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("[version: ");
+        buffer.append(Integer.toString(cookie.getVersion()));
+        buffer.append("]");
+        buffer.append("[name: ");
+        buffer.append(cookie.getName());
+        buffer.append("]");
+        buffer.append("[value: ");
+        buffer.append(cookie.getValue());
+        buffer.append("]");
+        buffer.append("[domain: ");
+        buffer.append(cookie.getDomain());
+        buffer.append("]");
+        buffer.append("[path: ");
+        buffer.append(cookie.getPath());
+        buffer.append("]");
+        buffer.append("[max-age: ");
+        buffer.append(cookie.getMaxAge());
+        buffer.append("]");
+        return buffer.toString();
+
     }
 }

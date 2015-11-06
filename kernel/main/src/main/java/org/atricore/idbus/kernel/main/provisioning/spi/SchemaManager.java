@@ -7,8 +7,11 @@ import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningExcepti
 import java.util.Collection;
 
 /**
+ * @Deprecated now replaced by the new IDM module
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
+@Deprecated
 public interface SchemaManager {
 
     String getSchemaName();
@@ -17,9 +20,9 @@ public interface SchemaManager {
     
     UserAttributeDefinition updateUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException;
     
-    void deleteUserAttribute(long id) throws ProvisioningException;
+    void deleteUserAttribute(String id) throws ProvisioningException;
 
-    UserAttributeDefinition findUserAttributeById(long id) throws ProvisioningException;
+    UserAttributeDefinition findUserAttributeById(String id) throws ProvisioningException;
 
     UserAttributeDefinition findUserAttributeByName(String name) throws ProvisioningException;
     
@@ -29,9 +32,9 @@ public interface SchemaManager {
     
     GroupAttributeDefinition updateGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException;
     
-    void deleteGroupAttribute(long id) throws ProvisioningException;
+    void deleteGroupAttribute(String id) throws ProvisioningException;
 
-    GroupAttributeDefinition findGroupAttributeById(long id) throws ProvisioningException;
+    GroupAttributeDefinition findGroupAttributeById(String id) throws ProvisioningException;
 
     GroupAttributeDefinition findGroupAttributeByName(String name) throws ProvisioningException;
 

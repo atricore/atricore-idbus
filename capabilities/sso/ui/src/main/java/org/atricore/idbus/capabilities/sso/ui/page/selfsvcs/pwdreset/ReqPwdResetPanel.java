@@ -108,7 +108,7 @@ public class ReqPwdResetPanel extends Panel {
         FindUserByUsernameResponse userResp = app.getProvisioningTarget().findUserByUsername(userReq);
         user = userResp.getUser();
 
-        /*
+
         // Start request process
         ResetPasswordRequest req = new ResetPasswordRequest(user);
         PrepareResetPasswordResponse resp = app.getProvisioningTarget().prepareResetPassword(req);
@@ -116,19 +116,21 @@ public class ReqPwdResetPanel extends Panel {
         // Create and send email using transaction ID
         String t = resp.getTransactionId();
 
-        app.getMailService().send("josso@atricore.com",
+        String from = getLocalizer().getString("email.sender", this, "josso@atricore.com");
+        app.getMailService().send(from,
                 user.getEmail(),
                 "Password Reset", buildEMailText(user, t).toString(),
                 "text/html");
-          */
+
     }
 
     protected void onReqPwdResetSucceeded() {
-        //submit.setEnabled(false);
-        //error(getLocalizer().getString("reqPwdResetSucceeded", this, "Operation succeeded"));
-        PageParameters params = new PageParameters();
-        params.add("username", user.getUserName());
-        throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/VFYPWDRESET"), params);
+        submit.setEnabled(false);
+        error(getLocalizer().getString("reqPwdResetSucceeded", this, "Operation succeeded"));
+
+        //PageParameters params = new PageParameters();
+        //params.add("username", user.getUserName());
+        //throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/VFYPWDRESET"), params);
 
     }
 

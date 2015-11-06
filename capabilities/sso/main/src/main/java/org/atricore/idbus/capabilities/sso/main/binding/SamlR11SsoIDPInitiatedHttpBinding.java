@@ -147,5 +147,6 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
         httpOut.getHeaders().put("http.responseCode", 302);
         httpOut.getHeaders().put("Content-Type", "text/html");
         httpOut.getHeaders().put("Location", ssoRedirLocation);
+        handleCrossOriginResourceSharing(exchange);
     }
 }

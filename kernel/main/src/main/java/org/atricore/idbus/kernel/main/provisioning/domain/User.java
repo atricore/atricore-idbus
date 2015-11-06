@@ -9,7 +9,7 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = -2547786148798290707L;
 
-    private long id;
+    private String oid;
 
     //<--- General Information ---->
     private String userName;
@@ -74,12 +74,12 @@ public class User implements Serializable {
 
     private UserAttributeValue[] attrs;
 
-    public long getId() {
-        return id;
+    public String getOid() {
+        return oid;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setOid(String oid) {
+        this.oid = oid;
     }
 
     public String getUserName() {
@@ -489,16 +489,15 @@ public class User implements Serializable {
 
         User that = (User) o;
 
-        if(id == 0) return false;
+        if (oid != null)
+            return oid.equals(that.oid);
 
-        if (id != that.id) return false;
-
-        return true;
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return oid != null ? oid.hashCode() : super.hashCode();
     }
 
 }

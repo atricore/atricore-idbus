@@ -113,20 +113,30 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                 }
 
                 // Additional information
-                if (ctx.getProxyResponse() != null) {
+                if (ctx.getProxyPrincipals() != null) {
 
                     // Proxied requests may provide additional information:
-                    SPAuthnResponseType proxyResponse = ctx.getProxyResponse();
-
                     List<SSONameValuePair> proxyProps = new ArrayList();
                     List<SSORole> proxyRoles = new ArrayList();
+                    // Now check if the subject itself has additional information
 
-                    for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
-                        proxyProps.add(new SSONameValuePair(attr.getName(), attr.getValue()));
-                    }
+                    for (AbstractPrincipalType p : ctx.getProxyPrincipals()) {
 
-                    for (SubjectRoleType p : proxyResponse.getSubjectRoles()) {
-                        proxyRoles.add(new BaseRoleImpl(p.getName()));
+                        if (p instanceof SubjectAttributeType) {
+                            SubjectAttributeType attr = (SubjectAttributeType) p;
+                            if (logger.isTraceEnabled())
+                                logger.trace("Adding subject attribute from proxy response subject " + attr.getName() + ":" + attr.getValue());
+
+                            proxyProps.add(new SSONameValuePair(attr.getName(), attr.getValue()));
+
+                        } else if (p instanceof SubjectRoleType) {
+                            SubjectRoleType r = (SubjectRoleType) p;
+                            if (logger.isTraceEnabled())
+                                logger.trace("Adding subject role from proxy response subject " + r.getName());
+
+                            proxyRoles.add(new BaseRoleImpl(r.getName()));
+
+                        }
                     }
 
                     if (proxyProps.size() > 0) {

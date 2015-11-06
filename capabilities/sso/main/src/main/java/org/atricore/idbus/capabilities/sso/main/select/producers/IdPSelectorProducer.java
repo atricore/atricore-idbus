@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.capabilities.sso.main.select.internal.EntitySelectionState;
 import org.atricore.idbus.kernel.main.mediation.claim.UserClaimsRequestImpl;
@@ -12,9 +14,6 @@ import org.atricore.idbus.capabilities.sso.main.select.SSOEntitySelectorMediator
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
-import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
-import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -66,26 +65,86 @@ public class IdPSelectorProducer extends SSOProducer {
                 doProcessSelectEntityRequest(exchange, state, request);
 
             } else if (content instanceof UserClaimsResponse) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing claims response for " + endpointRef);
+
                 // Claims collected from the user, to make a selection decision.
                 doProcessUserClaimsResponse(exchange, state, (UserClaimsResponse) content);
 
+            } else if (content instanceof CurrentEntityRequestType) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing claims response for " + endpointRef);
+
+                // Claims collected from the user, to make a selection decision.
+                doProcessCurrentEntityRequest(exchange, state, (CurrentEntityRequestType) content);
+
             } else {
-                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                logger.error("Unknown message type : " + content);
+
+                if (content != null)
+                    throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
                         StatusDetails.UNKNOWN_REQUEST.getValue(),
                         content.getClass().getName(),
                         null);
+
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.UNKNOWN_REQUEST.getValue(),
+                        "No content received",
+                        null);
+
             }
 
 
 
+
+
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
-                    StatusDetails.UNKNOWN_REQUEST.getValue(),
+                    StatusDetails.INTERNAL_ERROR.getValue(),
                     content.getClass().getName(),
                     e);
         }
+    }
+
+    protected void doProcessCurrentEntityRequest(CamelMediationExchange exchange, MediationState state, CurrentEntityRequestType request) throws SSOException {
+
+        // Do we need to collect more information to make a decision ?!
+        SSOEntitySelectorMediator mediator = (SSOEntitySelectorMediator) channel.getIdentityMediator();
+
+        CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(request.getEntityId());
+
+        if (logger.isDebugEnabled())
+            logger.debug("Storing selected entity " + idp);
+
+        state.setLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY", idp);
+
+        EndpointDescriptor destination = new EndpointDescriptorImpl("idpSelectorCallback",
+                SSOMetadataConstants.IdPSelectorCallbackService_QNAME.getLocalPart(),
+                SSOBinding.SSO_ARTIFACT.getValue(), request.getReplyTo(), null);
+
+        SSOResponseType response = new SSOResponseType();
+        response.setID(uuidGenerator.generateId());
+        response.setInReplayTo(request.getID());
+
+        // Send User Claims request
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                response,
+                "SSOResponse",
+                null,
+                destination,
+                state));
+
+        exchange.setOut(out);
+
+
+
+
     }
 
     protected void doProcessSelectEntityRequest(CamelMediationExchange exchange, MediationState state, SelectEntityRequestType request) throws SSOException {
@@ -94,7 +153,8 @@ public class IdPSelectorProducer extends SSOProducer {
         SSOEntitySelectorMediator mediator = (SSOEntitySelectorMediator) channel.getIdentityMediator();
         EntitySelectorManager entitySelectorMgr = mediator.getSelectorManager();
 
-        CircleOfTrustMemberDescriptor previouslySelectedCotMember = (CircleOfTrustMemberDescriptor) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY");
+        CircleOfTrustMemberDescriptor previouslySelectedCotMember = (CircleOfTrustMemberDescriptor)
+                state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTED_ENTITY");
 
         if (logger.isDebugEnabled())
             logger.debug("Found previously selected entity " + previouslySelectedCotMember);
@@ -146,7 +206,7 @@ public class IdPSelectorProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Processing Selector: " + selector);
 
-            // This will process the next selector endpoint, if it returs true, it means that an endpoint was used
+            // This will process the next selector endpoint, if it returns true, it means that a claims endpoint was used and we'll wait for a response
             if (processNextSelectorEndpoint(exchange, selector, ctx))
                 return;
 
@@ -185,6 +245,10 @@ public class IdPSelectorProducer extends SSOProducer {
         EntitySelectionState selectionState = (EntitySelectionState) state.getLocalVariable(getProvider().getName().toUpperCase() + "_SELECTION_STATE");
 
         for (Claim c : userClaimsResp.getClaimSet().getClaims()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Storing selection claim: " + c);
+
             selectionState.getUserClaims().addClaim(c);
         }
 
@@ -206,14 +270,13 @@ public class IdPSelectorProducer extends SSOProducer {
             if (processNextSelectorEndpoint(exchange, selector, ctx))
                 return;
 
-            // If we get here, it means that there are now more endpoints to process for this selector, try to select
+            // If we get here, it means that there are no more endpoints to process for this selector, try to select
             // an entity now.
 
             entity = entitySelectorMgr.selectEntity(mediator.getPreferredStrategy(), selector, ctx, (SelectorChannel) channel);
 
             selector = processNextSelector(exchange, selectors, ctx);
         }
-
 
         if (logger.isDebugEnabled())
             logger.debug("Selected IdP " + (entity != null ? entity.getAlias() : "NULL"));

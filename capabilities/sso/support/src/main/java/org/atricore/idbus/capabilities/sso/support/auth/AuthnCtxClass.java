@@ -54,7 +54,7 @@ public enum AuthnCtxClass {
     PASSWORD_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:Password", false),
 
     /** URI for Password Protected Transport authentication context. */
-    PPT_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport", true),
+    PPT_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport", false),
 
     /** URI for Previous Session authentication context. */
     PREVIOUS_SESSION_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession", true),
@@ -120,7 +120,15 @@ public enum AuthnCtxClass {
     OPENIDCONNECT_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OpenIDConnect", true),
 
     /** URI for Preauthentication (OAuth2) authentication context. */
-    OAUTH2_AUTHN_CTX("urn:org:atricore:idbus:ac:classes:OAuth2", true);
+    OAUTH2_PREAUTHN_CTX("urn:org:atricore:idbus:ac:classes:OAuth2", false),
+
+
+    /** URI for Preauthentication (OAuth2) authentication context. */
+    OAUTH2_PREAUTHN_PASSIVE_CTX("urn:org:atricore:idbus:ac:classes:OAuth2:Passive", true),
+
+    ;
+
+
 
     private String ac;
 

@@ -63,11 +63,6 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
 
         // Get credentials for claims request
         // Resolve SP callback endpoint
-
-
-
-        //CircleOfTrustMemberDescriptor sp = resolveSp(channel, claimsRequest.getSpAlias());
-
         FederatedLocalProvider sp = resolveSp(channel, claimsRequest.getSpAlias());
 
         // IDP That issued the claims request
@@ -86,6 +81,7 @@ public class SpUsernamePasswordClaimsProducer extends SSOProducer
         if (logger.isTraceEnabled())
             logger.trace("Collecting claims using callback to " + spCallbackEd);
 
+        // Issue back channel (SOAP?) credentials callback request:
         SPCredentialsCallbackResponseType callbackResp =
                 (SPCredentialsCallbackResponseType) channel.getIdentityMediator().sendMessage(callbackReq, spCallbackEd, spChannel);
 

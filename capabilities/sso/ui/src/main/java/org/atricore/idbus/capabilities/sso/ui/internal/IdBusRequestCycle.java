@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.ui.internal;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.http.WebResponse;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,6 +37,6 @@ public class IdBusRequestCycle extends RequestCycle {
     @Override
     protected void onEndRequest() {
         super.onEndRequest();
-        ((WebResponse) getResponse()).setHeader("X-IdBus-FollowRedirect", "FALSE" );
+        ((WebResponse) getResponse()).setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "FALSE" );
     }
 }

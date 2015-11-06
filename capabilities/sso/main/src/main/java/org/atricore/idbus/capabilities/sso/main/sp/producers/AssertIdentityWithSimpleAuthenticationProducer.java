@@ -17,6 +17,7 @@ import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.main.sp.plans.AssertIdentityWithSimpleAuthenticationReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
@@ -472,31 +473,6 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
         SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        // Remove previous security context if any
-
-        /*
-        SPSecurityContext secCtx =
-                (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getFederatedProvider().getName().toUpperCase() + "_SECURITY_CTX");
-
-        if (secCtx != null) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Invalidating old sso session " + secCtx.getSessionIndex());
-            try {
-
-                ssoSessionManager.invalidate(secCtx.getSessionIndex());
-
-            } catch (NoSuchSessionException e) {
-                // Ignore this ...
-                if (logger.isDebugEnabled())
-                    logger.debug("Invalidating already invalid sso session " + secCtx.getSessionIndex());
-
-            } catch (SSOSessionException e) {
-                throw new SSOException(e);
-            }
-
-        } */
-
         // Get Subject ID (username ?)
         SubjectNameID nameId = null;
         Set<SubjectNameID> nameIds = federatedSubject.getPrincipals(SubjectNameID.class);
@@ -522,6 +498,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
         secCtx.setSubject(federatedSubject);
         secCtx.setAccountLink(acctLink);
         secCtx.setRequester(requester);
+        secCtx.setAuthnCtxClass(AuthnCtxClass.PASSWORD_AUTHN_CTX);
         SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
 
         try {

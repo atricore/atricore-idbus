@@ -1,19 +1,13 @@
 ## OAuth2 sample client configuration
 
 # Client ID (as configured in your IDP's OAuth2 section)
-oauth2.clientId=acme
+oauth2.clientId=pre-authn
 
 # Client Shared secret (as configured in your IDP's OAuth2 section)
-oauth2.clientSecret=acme123
-
-# Default username (optional)
-oauth2.username=testuser1
-
-# Default password (optional)
-oauth2.password=Te$tU$er1
+oauth2.clientSecret=changeme
 
 # OAuth 2 service endpoint, where tokens will be requested
-oauth2.authorizationServerEndpoint=http://localhost:8081/IDBUS/ACME/IDP1/OAUTH2/TOKEN/SOAP
+oauth2.authnEndpoint=http://localhost:8081/IDBUS/IDA-1/IDP-1/OAUTH2/TOKEN/SOAP
 
 #-----------------------------------------------------------
 # OAuth 2 resource settings
@@ -25,8 +19,12 @@ oauth2.resourceServerEndpoint=http://acme.com/app/resource
 # Pre-authentication settings
 #-----------------------------------------------------------
 # Service Provider Alias (SAML 2 alias, it's the SAML entity ID in the SAML Metadata file)
-oauth2.serviceProviderAlias=http://localhost:8081/IDBUS/ACME/SP1/SAML2/MD
+oauth2.spAlias=http://localhost:8081/IDBUS/ACME/SP1/SAML2/MD
 
 # The IDP initiated SSO authentication URL (optinal)
 # It's normally <protocol>://<sso-server>:<sso-port>/IDBUS/<appliance-id>/<idp-id>/SAML2/SSO/IDP_INITIATE
-oauth2.identityProviderPreAuthnEndpoint=http://localhost:8081/IDBUS/ACME/IDP1/SAML2/SSO/IDP_INITIATE
+oauth2.idpInitPreAuthn=http://localhost:8081/IDBUS/IDA-1/IDP-1/SAML2/SSO/IDP_INITIATE
+
+# The IDP pre-authentication response endpoint
+# It's normally <protocol>://<sso-server>:<sso-port>/IDBUS/<appliance-id>/<idp-id>/CC/OAUTH2/PRE-AUTHN/REST
+oauth2.idpPreAuthnResponse=http://localhost:8081/IDBUS/IDA-1/IDP-1/CC/OAUTH2/PRE-AUTHN/REST

@@ -75,7 +75,7 @@ public abstract class SelfServicesPage extends BasePage {
             User user = resp.getUser();
 
             if (logger.isTraceEnabled())
-                logger.trace("Found user " + user.getId() + " for principal " + ssoSession.getPrincipal());
+                logger.trace("Found user " + user.getOid() + " for principal " + ssoSession.getPrincipal());
 
             return user;
 

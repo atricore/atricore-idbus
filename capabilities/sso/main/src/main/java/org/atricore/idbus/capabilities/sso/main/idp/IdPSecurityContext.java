@@ -2,10 +2,12 @@ package org.atricore.idbus.capabilities.sso.main.idp;
 
 import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
+import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 
 import javax.security.auth.Subject;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,6 +25,7 @@ public class IdPSecurityContext implements java.io.Serializable {
     private AuthnStatementType authnStatement;
 
     private Set<ProviderSecurityContext> registry = new HashSet<ProviderSecurityContext>();
+    private List<AbstractPrincipalType> proxyPrincipals;
 
     public IdPSecurityContext(Subject subject, String sessionIndex, AuthnStatementType authnStatement) {
         this.subject = subject;
@@ -73,4 +76,11 @@ public class IdPSecurityContext implements java.io.Serializable {
     }
 
 
+    public void setPRoxyPrincipals(List<AbstractPrincipalType> proxyPrinciapsl) {
+        this.proxyPrincipals = proxyPrinciapsl;
+    }
+
+    public List<AbstractPrincipalType> getProxyPrincipals() {
+        return proxyPrincipals;
+    }
 }

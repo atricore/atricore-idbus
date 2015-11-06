@@ -45,8 +45,11 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     private static final Log logger = LogFactory.getLog( SSOClaimsMediator.class );
 
+    private boolean rememberMe;
 
     private String basicAuthnUILocation;
+
+    private String basicAuthnCtxClass;
 
     private String twoFactorAuthnUILocation;
 
@@ -58,6 +61,15 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     public void setBasicAuthnUILocation( String basicAuthnUILocation ) {
         this.basicAuthnUILocation = basicAuthnUILocation;
+    }
+
+
+    public String getBasicAuthnCtxClass() {
+        return basicAuthnCtxClass;
+    }
+
+    public void setBasicAuthnCtxClass(String basicAuthnCtxClass) {
+        this.basicAuthnCtxClass = basicAuthnCtxClass;
     }
 
     public String getTwoFactorAuthnUILocation() {
@@ -74,6 +86,14 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
     public void setProvisioningTarget(ProvisioningTarget provisioningTarget) {
         this.provisioningTarget = provisioningTarget;
+    }
+
+    public boolean isRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
     }
 
     @Override
@@ -102,6 +122,7 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
                         case SSO_ARTIFACT:
                         case SSO_POST:
                         case SSO_REDIRECT:
+                        case SSO_PREAUTHN:
 
                             // HTTP Bindings are handled with Camel
 

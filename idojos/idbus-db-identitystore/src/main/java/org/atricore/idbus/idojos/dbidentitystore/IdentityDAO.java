@@ -63,6 +63,8 @@ public class IdentityDAO {
     private String _resetCredentialDml;
     private String _relayCredentialQueryString;
 
+    private boolean _useColumnNamesAsPropNames = false;
+
     public IdentityDAO(Connection conn,
                        CredentialProvider cp,
                        String userQueryString,
@@ -70,7 +72,8 @@ public class IdentityDAO {
                        String credentialsQueryString,
                        String userPropertiesQueryString,
                        String resetCredentialDml,
-                       String relayCredentialQueryString) {
+                       String relayCredentialQueryString,
+                       boolean useColumnNamesAsPropNames) {
 
         _conn = conn;
         _cp = cp;
@@ -92,6 +95,28 @@ public class IdentityDAO {
             _userPropertiesQueryString = userPropertiesQueryString;
             _userPropertiesQueryVariables = countQueryVariables(_userPropertiesQueryString);
         }
+        _useColumnNamesAsPropNames = useColumnNamesAsPropNames;
+    }
+
+
+    public IdentityDAO(Connection conn,
+                       CredentialProvider cp,
+                       String userQueryString,
+                       String rolesQueryString,
+                       String credentialsQueryString,
+                       String userPropertiesQueryString,
+                       String resetCredentialDml,
+                       String relayCredentialQueryString) {
+        this(conn,
+                cp,
+                userQueryString,
+                rolesQueryString,
+                credentialsQueryString,
+                userPropertiesQueryString,
+                resetCredentialDml,
+                relayCredentialQueryString,
+                false);
+
     }
 
     public BaseUser selectUser(SimpleUserKey key) throws SSOIdentityException {
@@ -226,7 +251,12 @@ public class IdentityDAO {
 
             result = stmt.executeQuery();
 
-            SSONameValuePair[] props = fetchSSONameValuePairs(result);
+            SSONameValuePair[] props = _useColumnNamesAsPropNames ?
+                    fecthSSONameValuePairsFromCols(result) :
+                    fetchSSONameValuePairsFromRows(result);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Retrieved " + props.length + " user properties");
 
             return props;
         } catch (SQLException sqlE) {
@@ -336,13 +366,32 @@ public class IdentityDAO {
 
     }
 
+    protected SSONameValuePair[] fecthSSONameValuePairsFromCols(ResultSet rs) throws SQLException {
+        List<SSONameValuePair> props = new ArrayList<SSONameValuePair>();
+
+        ResultSetMetaData rsmd = rs.getMetaData();
+
+        int cols = rsmd.getColumnCount();
+
+        while (rs.next()) {
+            for (int i = 1; i <= cols; i++) {
+                String cName = rsmd.getColumnName(i);
+                String cValue = rs.getString(i);
+                SSONameValuePair prop = new SSONameValuePair(cName, cValue);
+                props.add(prop);
+            }
+        }
+
+        return props.toArray(new SSONameValuePair[props.size()]);
+    }
+
     /**
      * Builds an array of name-value pairs on a ResultSet
      * The resultset must have two columns, the first one contains names and the second one values.
      */
-    protected SSONameValuePair[] fetchSSONameValuePairs(ResultSet rs)
+    protected SSONameValuePair[] fetchSSONameValuePairsFromRows(ResultSet rs)
             throws SQLException, IOException, SSOAuthenticationException {
-        List props = new ArrayList();
+        List<SSONameValuePair> props = new ArrayList<SSONameValuePair>();
 
         while (rs.next()) {
             // First column is a name and second is a value.
@@ -352,7 +401,7 @@ public class IdentityDAO {
             props.add(prop);
         }
 
-        return (SSONameValuePair[]) props.toArray(new SSONameValuePair[props.size()]);
+        return props.toArray(new SSONameValuePair[props.size()]);
     }
 
 

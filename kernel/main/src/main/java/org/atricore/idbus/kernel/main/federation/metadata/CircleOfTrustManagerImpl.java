@@ -184,8 +184,9 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
     }
 
     /**
-     * This will look in all registered providers that realize the given role for the channel that targets the source
-     * provider and return its COT Member descriptor.
+     * This will look in all registered providers that realize the given role for the channel and targets the source
+     * provider
+     * @return the COT Member descriptor for the selected provider
      *
      */
     public CircleOfTrustMemberDescriptor lookupMemberForProvider(Provider srcProvider, String role) throws CircleOfTrustManagerException {
@@ -221,6 +222,13 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
 
     }
 
+    /**
+     * This will look for FederationChannel associated with the source provider, that targets the destination provider and
+     * return the COT Member descriptor.
+     *
+     * @return the COT Member descriptor for the selected provider
+     *
+     */
     public CircleOfTrustMemberDescriptor lookupMemberForProvider(Provider srcProvider, Provider destProvider) throws CircleOfTrustManagerException {
 
         CircleOfTrustMemberDescriptor targetingMember = null;
@@ -266,67 +274,81 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
     public Collection<CircleOfTrustMemberDescriptor> lookupMembersForProvider(Provider provider, String role)
             throws CircleOfTrustManagerException {
 
+
+
+
         Set<CircleOfTrustMemberDescriptor> members = new HashSet<CircleOfTrustMemberDescriptor>();
 
-        for (Provider destProvider : cot.getProviders()) {
-            if (destProvider.getRole().equals(role)) {
+        for (Provider targetProvider : cot.getProviders()) {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Provider " + destProvider .getName() + " has role " + role);
+            if (!targetProvider.getRole().equals(role))
+                continue;
 
-                // See if this local provider can be used with our provider
-                if (destProvider instanceof FederatedLocalProvider) {
-                    FederatedLocalProvider federatedDestProvider = (FederatedLocalProvider) destProvider;
+            if (logger.isDebugEnabled())
+                logger.debug("Provider " + targetProvider .getName() + " has role " + role);
 
-                    boolean useOverrideChannel = false;
-                    for (FederationChannel channel : federatedDestProvider.getChannels()) {
+            // See if this local provider can be used with our provider
+            if (targetProvider instanceof FederatedLocalProvider) {
 
-                        // The received provider is the target of the channel
-                        if (channel.getTargetProvider().equals(provider)) {
-                            useOverrideChannel = true;
-                            members.add(channel.getMember());
-                            if (logger.isDebugEnabled())
-                                logger.debug("Selected targeting member : " + channel.getMember().getAlias());
-                        }
-                    }
+                // The target provider must trust the received provider
+                FederatedLocalProvider localTargetProvider = (FederatedLocalProvider) targetProvider;
 
-                    // Use the default channel
-                    if (!useOverrideChannel) {
-                        // Only add it if the provider trust us
-                        for (Provider trusted : federatedDestProvider.getChannel().getTrustedProviders()) {
-                            if (trusted.getName().equals(provider.getName()))
-                                members.add(federatedDestProvider.getChannel().getMember());
-                        }
+                // First, got through non-default (override) channels:
+                boolean useOverrideChannel = false;
+                for (FederationChannel channel : localTargetProvider.getChannels()) {
 
-                    }
-
-                } else {
-                    FederatedRemoteProvider destRemoteProvider = (FederatedRemoteProvider) destProvider;
-                    for(CircleOfTrustMemberDescriptor m : destRemoteProvider.getAllMembers()) {
+                    // The received provider is the target of the the specific channel
+                    if (channel.getTargetProvider().equals(provider)) {
+                        useOverrideChannel = true;
+                        members.add(channel.getMember());
                         if (logger.isDebugEnabled())
-                            logger.debug("Selected member : " + m.getAlias());
-                        // Only add it if we trust this provider:
-                        if (provider instanceof FederatedLocalProvider) {
-                            FederatedLocalProvider localProvider = (FederatedLocalProvider) provider;
-                            for (Provider trusted: localProvider.getChannel().getTrustedProviders()) {
-                                if (trusted.getName().equals(destRemoteProvider.getName()))
-                                    members.add(m);
-                            }
-
-                            for (Provider trusted : localProvider.getChannel().getTrustedProviders()) {
-                                if (trusted.getName().equals(destRemoteProvider.getName()))
-                                    members.add(m);
-                            }
-
-                        } else {
-                            // This is not wright
-                            logger.error("Connecting to non-local providers may produce unexpected results");
-                            members.add(m);
-                        }
+                            logger.debug("Selected targeting member : " + channel.getMember().getAlias());
                     }
                 }
 
+                // Use the default channel
+                if (!useOverrideChannel) {
+                    // Only add it if the provider trust us
+                    for (Provider trusted : localTargetProvider.getChannel().getTrustedProviders()) {
+                        if (trusted.getName().equals(provider.getName()))
+                            members.add(localTargetProvider.getChannel().getMember());
+                    }
+
+                }
+
+            } else {
+                FederatedRemoteProvider remoteTargetProvider = (FederatedRemoteProvider) targetProvider;
+
+                for(CircleOfTrustMemberDescriptor m : remoteTargetProvider.getAllMembers()) {
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Selected member : " + m.getAlias());
+
+                    // Only add it if we trust this provider:
+                    if (provider instanceof FederatedLocalProvider) {
+
+                        FederatedLocalProvider localProvider = (FederatedLocalProvider) provider;
+
+                        for (Provider trusted: localProvider.getChannel().getTrustedProviders()) {
+                            if (trusted.getName().equals(remoteTargetProvider.getName()))
+                                members.add(m);
+                        }
+
+                        for (FederationChannel channel : localProvider.getChannels()) {
+                            for (Provider trusted : channel.getTrustedProviders()) {
+                                if (trusted.getName().equals(remoteTargetProvider.getName()))
+                                    members.add(m);
+                            }
+                        }
+
+                    } else {
+                        // This is not wright
+                        logger.error("Connecting to non-local providers may produce unexpected results");
+                        members.add(m);
+                    }
+                }
             }
+
         }
 
         if (logger.isDebugEnabled())

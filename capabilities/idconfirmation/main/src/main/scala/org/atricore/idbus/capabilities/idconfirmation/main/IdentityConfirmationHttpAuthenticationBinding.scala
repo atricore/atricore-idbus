@@ -77,7 +77,8 @@ private[main] class IdentityConfirmationHttpAuthenticationBinding(binding : Stri
         httpOut.getHeaders.put("http.responseCode", new Integer(302))
         httpOut.getHeaders.put("Content-Type", "text/html")
         httpOut.getHeaders.put("Location", "localhost")
-        httpOut.getHeaders.put("FollowRedirect", "FALSE")
+        httpOut.getHeaders.put("X-IdBus-FollowRedirect", "FALSE")
+        handleCrossOriginResourceSharing(exchange)
       case _ =>
     }
 

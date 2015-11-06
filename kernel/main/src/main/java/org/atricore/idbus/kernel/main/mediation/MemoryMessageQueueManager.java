@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -20,7 +19,9 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    private int maxTimeToLive = 600; // seconds
+    private int artifactTTL = 600; // seconds
+
+    private int monitorInterval = 600; // seconds
 
     private OldArtifactsMonitor monitor;
 
@@ -36,11 +37,34 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
         return null;
     }
 
+    /**
+     * Monitor interval, in seconds
+     */
+    public int getMonitorInterval() {
+        return monitorInterval;
+    }
+
+    public void setMonitorInterval(int monitorInterval) {
+        this.monitorInterval = monitorInterval;
+    }
+
+
+    /**
+     * Message max. time to live, in seconds
+     */
+    public int getArtifactTTL() {
+        return artifactTTL;
+    }
+
+    public void setArtifactTTL(int artifactTTL) {
+        this.artifactTTL = artifactTTL;
+    }
+
     public void init() throws Exception {
         msgs = new HashMap<String, Message>();
 
         // Start session monitor.
-        monitor = new OldArtifactsMonitor(this);
+        monitor = new OldArtifactsMonitor(this, monitorInterval * 1000L);
 
         monitorThread = new Thread(monitor);
         monitorThread.setDaemon(true);
@@ -65,7 +89,7 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
     }
 
     public synchronized Artifact pushMessage(Object msg) throws Exception {
-        ArtifactImpl a = new ArtifactImpl(uuidGenerator.generateId());
+        Artifact a = ArtifactImpl.newInstance(uuidGenerator.generateId());
         msgs.put(a.getContent(), new Message(a, msg));
         return a;
     }
@@ -82,15 +106,12 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
     protected synchronized void purgeOldMessages() {
 
         long now = System.currentTimeMillis();
-
-        // Do not create one unless we need to remove something
         List<String> toRemove = null;
 
         for (String key : msgs.keySet()) {
             Message m = msgs.get(key);
-            if (m.getCreationTime() + maxTimeToLive < now) {
-                if (toRemove == null) toRemove = new ArrayList<String>();
-
+            if (m.getCreationTime() + (artifactTTL * 1000L) < now) {
+                if(toRemove == null) toRemove = new ArrayList<String>();
                 toRemove.add(key);
             }
         }
@@ -133,12 +154,19 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
 
         protected boolean stop = false;
 
-        protected int interval = 1000 * 60 * 10; // Ten minutes interval
+        protected long interval = 1000 * 60 * 10; // Ten minutes interval
 
         private MemoryMessageQueueManager aqm;
 
-        public OldArtifactsMonitor(MemoryMessageQueueManager aqm) {
+        /**
+         *
+         * @param aqm Artifact Queue Manager instance
+         *
+         * @param monitorInterval monitor interval in millis
+         */
+        public OldArtifactsMonitor(MemoryMessageQueueManager aqm, long monitorInterval) {
             this.aqm = aqm;
+            this.interval = monitorInterval;
         }
 
         public void run() {
@@ -164,11 +192,4 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
         }
     }
 
-    public int getMaxTimeToLive() {
-        return maxTimeToLive;
-    }
-
-    public void setMaxTimeToLive(int maxTimeToLive) {
-        this.maxTimeToLive = maxTimeToLive;
-    }
 }

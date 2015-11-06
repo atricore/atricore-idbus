@@ -279,9 +279,11 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
     protected EndpointDescriptor resolveClaimsEndpoint(CredentialClaimsRequest requestCredential) throws IdentityMediationException {
 
         for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
-            // Look for PWD endpoint using Artifacct binding
-            if (AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue().equals(endpoint.getType()) &&
-                    SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
+            // Look for PWD endpoint using Artifact binding
+            if ((AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue().equals(endpoint.getType()) ||
+                 AuthnCtxClass.PPT_AUTHN_CTX.getValue().equals(endpoint.getType())) &&
+
+                SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Resolved claims endpoint " + endpoint);

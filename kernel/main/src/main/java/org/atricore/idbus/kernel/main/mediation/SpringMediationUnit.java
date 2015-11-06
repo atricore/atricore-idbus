@@ -31,6 +31,8 @@ import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -61,6 +63,8 @@ public class SpringMediationUnit implements IdentityMediationUnit, ApplicationCo
     public IdentityMediationUnitContainer getContainer() {
         return container;
     }
+
+    private Map<String, Object> mediationProperties = new ConcurrentHashMap<String, Object>();
 
     public void setContainer(IdentityMediationUnitContainer unitContainer) {
         this.container = unitContainer;
@@ -102,5 +106,26 @@ public class SpringMediationUnit implements IdentityMediationUnit, ApplicationCo
     public String toString() {
         return super.toString() + "[name='"+name+"'"+
                 "]";
+    }
+
+    @Override
+    public Object getMediationProperty(String key) {
+        return mediationProperties.get(key);
+    }
+
+    @Override
+    public Collection<String> getMediationPropertyKeys() {
+        return mediationProperties.keySet();
+    }
+
+    /**
+     * Spring friendly accessors
+     */
+    public Map<String, Object> getMediationProperties() {
+        return mediationProperties;
+    }
+
+    public void setMediationProperties(Map<String, Object> mediationProperties) {
+        this.mediationProperties = mediationProperties;
     }
 }

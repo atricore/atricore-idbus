@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<publishData>
+  <publishProfile publishUrl="C:\atricore\wa\temp-bin" deleteExistingFiles="True" ftpAnonymousLogin="False" ftpPassiveMode="True" msdeploySite="" msdeploySiteID="" msdeployRemoteSitePhysicalPath="" msdeployAllowUntrustedCertificate="False" msdeploySkipExtraFilesOnServer="True" msdeployMarkAsApp="False" profileName="Profile1" publishMethod="FileSystem" replaceMatchingFiles="False" userName="" savePWD="False" userPWD="" SelectedForPublish="True">
+    <file relUrl="bin/PreAuthnApp.pdb" publishTime="03/02/2015 21:16:54" />
+    <file relUrl="Site.Master" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Login.aspx" publishTime="03/02/2015 21:13:50" />
+    <file relUrl="Account/Web.config" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="bin/OAuth2Client.dll" publishTime="03/02/2015 20:24:18" />
+    <file relUrl="Account/Register.aspx" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="bin/PreAuthnApp.dll" publishTime="03/02/2015 21:16:54" />
+    <file relUrl="Account/ChangePasswordSuccess.aspx" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Account/Login.aspx" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Web.config" publishTime="03/02/2015 21:16:58" />
+    <file relUrl="Scripts/jquery-1.4.1.js" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Account/ChangePassword.aspx" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="bin/OAuth2Protocol.dll" publishTime="03/02/2015 20:24:17" />
+    <file relUrl="Global.asax" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Scripts/jquery-1.4.1-vsdoc.js" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="About.aspx" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Styles/Site.css" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Default.aspx" publishTime="03/02/2015 19:54:24" />
+    <file relUrl="Scripts/jquery-1.4.1.min.js" publishTime="03/02/2015 19:54:24" />
+  </publishProfile>
+</publishData>

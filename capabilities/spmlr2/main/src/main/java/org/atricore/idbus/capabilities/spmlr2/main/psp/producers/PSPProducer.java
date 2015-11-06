@@ -156,7 +156,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             try {
 
-                lookupUser(target, spmlUser.getUserName());
+                lookupUserByName(target, spmlUser.getUserName());
                 
                 // ERROR, username already exists
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
@@ -216,7 +216,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             try {
 
-                lookupUserAttribute(target, spmlUserAttribute.getName());
+                lookupUserAttributeByName(target, spmlUserAttribute.getName());
 
                 // ERROR, user attribute name already exists
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
@@ -246,7 +246,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             try {
 
-                lookupGroupAttribute(target, spmlGroupAttribute.getName());
+                lookupGroupAttributeByName(target, spmlGroupAttribute.getName());
 
                 // ERROR, group attribute name already exists
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
@@ -412,7 +412,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             // Lookup groups
             FindGroupByIdRequest req = new FindGroupByIdRequest();
-            req.setId(Long.parseLong(psoId.getID()));
+            req.setId(psoId.getID());
 
             try {
                 FindGroupByIdResponse res = target.findGroupById(req);
@@ -432,10 +432,10 @@ public class PSPProducer extends SpmlR2Producer {
         } else if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
             if (logger.isTraceEnabled())
-                logger.trace("Looking for group using PSO-ID " + psoId.getID());
+                logger.trace("Looking for user using PSO-ID " + psoId.getID());
 
             FindUserByIdRequest req = new FindUserByIdRequest();
-            req.setId(Long.parseLong(psoId.getID()));
+            req.setId(psoId.getID());
 
             try {
                 FindUserByIdResponse res = target.findUserById(req);
@@ -455,7 +455,7 @@ public class PSPProducer extends SpmlR2Producer {
                 logger.trace("Looking for user attribute using PSO-ID " + psoId.getID());
 
             FindUserAttributeByIdRequest req = new FindUserAttributeByIdRequest();
-            req.setId(Long.parseLong(psoId.getID()));
+            req.setId(psoId.getID());
 
             try {
                 FindUserAttributeByIdResponse res = target.findUserAttributeById(req);
@@ -475,7 +475,7 @@ public class PSPProducer extends SpmlR2Producer {
                 logger.trace("Looking for group attribute using PSO-ID " + psoId.getID());
 
             FindGroupAttributeByIdRequest req = new FindGroupAttributeByIdRequest();
-            req.setId(Long.parseLong(psoId.getID()));
+            req.setId(psoId.getID());
 
             try {
                 FindGroupAttributeByIdResponse res = target.findGroupAttributeById(req);
@@ -623,7 +623,7 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setRequestID(spmlRequest.getRequestID());
 
             RemoveGroupRequest groupRequest = new RemoveGroupRequest ();
-            groupRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+            groupRequest.setId(spmlRequest.getPsoID().getID());
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
@@ -651,7 +651,7 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setRequestID(spmlRequest.getRequestID());
 
             RemoveUserRequest userRequest = new RemoveUserRequest ();
-            userRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+            userRequest.setId(spmlRequest.getPsoID().getID());
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
@@ -681,7 +681,7 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setRequestID(spmlRequest.getRequestID());
 
             RemoveUserAttributeRequest userAttributeRequest = new RemoveUserAttributeRequest();
-            userAttributeRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+            userAttributeRequest.setId(spmlRequest.getPsoID().getID());
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
@@ -710,7 +710,7 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setRequestID(spmlRequest.getRequestID());
 
             RemoveGroupAttributeRequest groupAttributeRequest = new RemoveGroupAttributeRequest();
-            groupAttributeRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+            groupAttributeRequest.setId(spmlRequest.getPsoID().getID());
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
@@ -748,7 +748,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             SetPasswordRequest req = new SetPasswordRequest();
 
-            req.setUserId(Long.parseLong(spmlRequest.getPsoID().getID()));
+            req.setUserId(spmlRequest.getPsoID().getID());
             req.setCurrentPassword(spmlRequest.getCurrentPassword());
             req.setNewPassword(spmlRequest.getPassword());
 
@@ -771,7 +771,7 @@ public class PSPProducer extends SpmlR2Producer {
         try {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
-            long userId = Long.parseLong(spmlRequest.getPsoID().getID());
+            String userId = spmlRequest.getPsoID().getID();
             String newPwd = spmlRequest.getNewPassword();
 
             User user = this.lookupUser(target, userId);

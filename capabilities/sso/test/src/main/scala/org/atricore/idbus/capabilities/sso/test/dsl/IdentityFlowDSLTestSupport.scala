@@ -205,9 +205,17 @@ object MockProvisioningTarget extends ProvisioningTarget {
 
   def purgeOldTransactions() {}
 
+  def isSchemaManagementAvailable(): Boolean = false
+
+  def isMediationPartitionAvailable(): Boolean = false
+
   def isTransactionValid(transactionId: String): Boolean = false
 
   def lookupTransactionRequest(transactionId: String): AbstractProvisioningRequest = null
+
+  def getHashAlgorithm: String = "MD5";
+
+  def getHashEncoding: String = "HEX";
 
   def removeGroup(groupRequest: RemoveGroupRequest): RemoveGroupResponse = null
 
@@ -300,6 +308,10 @@ object MockProvisioningTarget extends ProvisioningTarget {
   def findSecurityTokensByExpiresOnBefore(findSecurityTokensByExpiresOnBeforeRequest: FindSecurityTokensByExpiresOnBeforeRequest): FindSecurityTokensByExpiresOnBeforeResponse = null
 
   def findSecurityTokensByIssueInstantBefore(findSecurityTokensByIssueInstantBeforeRequest: FindSecurityTokensByIssueInstantBeforeRequest): FindSecurityTokensByIssueInstantBeforeResponse = null
+
+  def listUserAccounts(request: ListUserAccountsRequest): ListUserAccountsResponse = null
+
+  def listResources(requesst: ListResourcesRequest): ListResourcesResponse = null
 }
 
 object MockMailService extends MailService {

@@ -11,7 +11,11 @@ public enum OpenIDConnectService {
 
     SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
 
-    AuthzTokenConsumerServiceProxy(OpenIDConnectConstants.AuthzTokenConsumerService_QNAME);
+    GoogleAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.GoogleAuthzTokenConsumerService_QNAME),
+
+    FacebookAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME),
+
+    TwitterAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME);
 
     private QName qname;
 

@@ -49,6 +49,8 @@ import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 
 public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
 
+    public static final String SCHEME_NAME = "basic-authentication";
+
     private static final Log logger = LogFactory.getLog(BindUsernamePasswordAuthScheme.class);
 
     public BindUsernamePasswordAuthScheme() {

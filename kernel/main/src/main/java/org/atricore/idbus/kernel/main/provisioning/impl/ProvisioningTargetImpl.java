@@ -9,9 +9,7 @@ import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
-import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
-import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
-import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
+import org.atricore.idbus.kernel.main.provisioning.spi.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -47,7 +45,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     
     private int saltLength;
     
-    private IdentityPartition identityPartition;
+    private IdentityConnector identityConnector;
 
     private SchemaManager schemaManager;
 
@@ -102,6 +100,15 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
+    @Override
+    public boolean isMediationPartitionAvailable() {
+        return identityConnector.getMediationPartition() != null;
+    }
+
+    @Override
+    public boolean isSchemaManagementAvailable() {
+        return schemaManager != null;
+    }
 
     public boolean isTransactionValid(String transactionId) {
         return transactionId != null && pendingTransactions.get(transactionId) != null;
@@ -163,12 +170,12 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.saltLength = saltLength;
     }
 
-    public IdentityPartition getIdentityPartition() {
-        return identityPartition;
+    public IdentityConnector getIdentityConnector() {
+        return identityConnector;
     }
 
-    public void setIdentityPartition(IdentityPartition identityPartition) {
-        this.identityPartition = identityPartition;
+    public void setIdentityConnector(IdentityConnector identityConnector) {
+        this.identityConnector = identityConnector;
     }
 
     public SchemaManager getSchemaManager() {
@@ -178,21 +185,23 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public void setSchemaManager(SchemaManager schemaManager) {
         this.schemaManager = schemaManager;
     }
-
-    public void deleteGroup(long id) throws ProvisioningException {
-        try {
-            identityPartition.deleteGroup(id);
-        } catch (Exception e) {
-            throw new ProvisioningException(e);
-        }
-
+    
+    public IdentityPartition getIdentityPartition() {
+        return identityConnector.getIdentityPartition();
     }
 
-    
+    public MediationPartition getMediationPartition() {
+        return identityConnector.getMediationPartition();
+    }
+
+    public IdentityResource lookupResource(String oid) {
+        return identityConnector.lookupResource(oid);
+    }
+
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws ProvisioningException {
 
         try {
-            Group group = identityPartition.findGroupById(groupRequest.getId());
+            Group group = getIdentityPartition().findGroupByOid(groupRequest.getId());
             FindGroupByIdResponse groupResponse = new FindGroupByIdResponse ();
             groupResponse.setGroup(group);
             return groupResponse;
@@ -207,7 +216,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws ProvisioningException {
 
         try {
-            Group group = identityPartition.findGroupByName(groupRequest.getName());
+            Group group = getIdentityPartition().findGroupByName(groupRequest.getName());
             FindGroupByNameResponse groupResponse = new FindGroupByNameResponse ();
             groupResponse.setGroup(group);
             return groupResponse;
@@ -221,7 +230,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     
     public ListGroupsResponse listGroups(ListGroupsRequest groupRequest) throws ProvisioningException {
         try {
-            Collection<Group> groups = identityPartition.findAllGroups();
+            Collection<Group> groups = getIdentityPartition().findAllGroups();
 
             ListGroupsResponse groupResponse = new ListGroupsResponse();
             groupResponse.setGroups(groups.toArray(new Group[groups.size()]));
@@ -245,7 +254,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         
         try {
 
-            Group group =  identityPartition.findGroupByName(name);
+            Group group =  getIdentityPartition().findGroupByName(name);
             List<Group> groups = new ArrayList<Group>();
             groups.add(group);
 
@@ -265,7 +274,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
             group.setAttrs(groupRequest.getAttrs());
-            group = identityPartition.addGroup(group);
+            group = getIdentityPartition().addGroup(group);
             AddGroupResponse groupResponse = new AddGroupResponse();
             groupResponse.setGroup(group);
             return groupResponse;
@@ -278,13 +287,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningException {
         try {
             
-            Group group = identityPartition.findGroupById(groupRequest.getId());
+            Group group = getIdentityPartition().findGroupByOid(groupRequest.getId());
 
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
             group.setAttrs(groupRequest.getAttrs());
             
-            group = identityPartition.updateGroup(group);
+            group = getIdentityPartition().updateGroup(group);
 
             UpdateGroupResponse groupResponse = new UpdateGroupResponse();
             groupResponse.setGroup(group);
@@ -299,7 +308,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningException {
         try {
-            identityPartition.deleteGroup(groupRequest.getId());
+            getIdentityPartition().deleteGroup(groupRequest.getId());
             return new RemoveGroupResponse();
         } catch (GroupNotFoundException e) {
             throw e;
@@ -310,7 +319,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws ProvisioningException {
         try {
-            identityPartition.deleteUser(userRequest.getId());
+            getIdentityPartition().deleteUser(userRequest.getId());
             return new RemoveUserResponse();
         } catch (UserNotFoundException e) {
             throw e;
@@ -341,7 +350,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             UserSecurityQuestion[] securityQuestions = userRequest.getSecurityQuestions();
             user.setSecurityQuestions(securityQuestions);
 
-            user = identityPartition.addUser(user);
+            user = getIdentityPartition().addUser(user);
             AddUserResponse userResponse = new AddUserResponse();
             userResponse.setUser(user);
 
@@ -359,7 +368,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         AddUserResponse userResponse = new AddUserResponse();
 
         User u = new User();
-        BeanUtils.copyProperties(userRequest, u, new String[] {"groups", "securityQuestions", "userPassword"});
+        BeanUtils.copyProperties(userRequest, u, new String[]{"groups", "securityQuestions", "userPassword"});
 
         String salt = generateSalt();
 
@@ -369,7 +378,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         u.setUserPassword(createPasswordHash(tmpPassword, salt));
         u.setAccountDisabled(true);
 
-        u = identityPartition.addUser(u);
+        u = getIdentityPartition().addUser(u);
 
         userResponse.setUser(u);
 
@@ -392,8 +401,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Retrieve the user from the partition
         AddUserResponse response = (AddUserResponse) t.getResponse();
-        Long uid = response.getUser().getId();
-        User tmpUser = identityPartition.findUserById(uid);
+        String uid = response.getUser().getOid();
+        User tmpUser = getIdentityPartition().findUserByOid(uid);
 
         // New user information
 
@@ -420,7 +429,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         tmpUser.setAccountDisabled(false);
 
         // Store user information
-        User newUser = identityPartition.updateUser(tmpUser);
+        User newUser = getIdentityPartition().updateUser(tmpUser);
 
         // Send response message
         response.setUser(newUser);
@@ -430,7 +439,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws ProvisioningException {
         try {
-            User user = identityPartition.findUserById(userRequest.getId());
+            User user = getIdentityPartition().findUserByOid(userRequest.getId());
             FindUserByIdResponse userResponse = new FindUserByIdResponse();
             userResponse.setUser(user);
             return userResponse;
@@ -444,7 +453,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     
     public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws ProvisioningException {
         try {
-            User user = identityPartition.findUserByUserName(userRequest.getUsername());
+            User user = getIdentityPartition().findUserByUserName(userRequest.getUsername());
             FindUserByUsernameResponse userResponse = new FindUserByUsernameResponse();
             userResponse.setUser(user);
             return userResponse;
@@ -458,7 +467,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     
     public ListUsersResponse listUsers(ListUsersRequest userRequest) throws ProvisioningException {
         try {
-            Collection<User> users = identityPartition.findAllUsers();
+            Collection<User> users = getIdentityPartition().findAllUsers();
 
             ListUsersResponse userResponse = new ListUsersResponse();
             userResponse.setUsers(users.toArray(new User[users.size()]));
@@ -480,7 +489,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             
             User user = userRequest.getUser();
-            User oldUser = identityPartition.findUserById(user.getId());
+            User oldUser = getIdentityPartition().findUserByOid(user.getOid());
 
             // DO NOT UPDATE USER PASSWORD OR LIFE QUESTIONS HERE
             BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "securityQuestions", "acls", "userPassword", "id"});
@@ -489,7 +498,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             // DO NOT UPDATE USER PASSWORD HERE : oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
 
-            user = identityPartition.updateUser(oldUser);
+            user = getIdentityPartition().updateUser(oldUser);
 
             UpdateUserResponse userResponse = new UpdateUserResponse();
             userResponse.setUser(user);
@@ -503,7 +512,33 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+    @Override
+    public ListUserAccountsResponse listUserAccounts(ListUserAccountsRequest request) throws ProvisioningException {
+        try {
+
+            List<Account> userAccounts = new ArrayList<Account>();
+            for (IdentityResource resource : identityConnector.getResources()) {
+                Account userAccount = resource.getUserAccount(request.getUserOid());
+                userAccounts.add(userAccount);
+            }
+
+            ListUserAccountsResponse response = new ListUserAccountsResponse();
+            response.setAccounts(userAccounts.toArray(new Account[userAccounts.size()]));
+
+            return response;
+
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+
+    @Override
+    public ListResourcesResponse listResources(ListResourcesRequest request) throws ProvisioningException {
+        // TODO !
+        return new ListResourcesResponse();
+    }
+
     public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByUserRequest) throws ProvisioningException {
         // TODO !
         throw new UnsupportedOperationException("Not Implemented yet!");
@@ -515,7 +550,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         validatePassword(setPwdRequest.getNewPassword());
 
         try {
-            User user = identityPartition.findUserById(setPwdRequest.getUserId());
+            User user = getIdentityPartition().findUserByOid(setPwdRequest.getUserId());
 
             String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword(), user.getSalt());
             if (!user.getUserPassword().equals(currentPwd)) {
@@ -525,7 +560,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             // TODO : Apply password validation rules
             String newPwdHash = createPasswordHash(setPwdRequest.getNewPassword(), user.getSalt());
             user.setUserPassword(newPwdHash);
-            identityPartition.updateUser(user);
+            getIdentityPartition().updateUser(user);
             SetPasswordResponse setPwdResponse = new SetPasswordResponse();
             
             return setPwdResponse;
@@ -546,7 +581,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         validatePassword(pwd);
 
         try {
-            User user = identityPartition.findUserById(resetPwdRequest.getUser().getId());
+            User user = getIdentityPartition().findUserByOid(resetPwdRequest.getUser().getOid());
             User providedUser = resetPwdRequest.getUser();
             if (!user.getUserName().equals(providedUser.getUserName()))
                 throw new ProvisioningException("Invalid user information");
@@ -554,7 +589,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             String pwdHash = createPasswordHash(pwd, user.getSalt());
             user.setUserPassword(pwdHash);
 
-            identityPartition.updateUser(user);
+            getIdentityPartition().updateUser(user);
 
             ResetPasswordResponse resetPwdResponse = new ResetPasswordResponse();
             resetPwdResponse.setNewPassword(pwd);
@@ -597,7 +632,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
         ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
 
-        User user = identityPartition.findUserById(req.getUser().getId());
+        User user = getIdentityPartition().findUserByOid(req.getUser().getOid());
 
         String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
         String pwdHash = createPasswordHash(newPwd, user.getSalt());
@@ -607,7 +642,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         user.setUserPassword(pwdHash);
 
-        user = identityPartition.updateUser(user);
+        user = getIdentityPartition().updateUser(user);
 
         if (logger.isDebugEnabled())
             logger.debug("Password has been updated using " + (usedGeneratedPwd ? "GENERATED" : "USER PROVIDED") + " password");
@@ -619,7 +654,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public FindAclEntryByApprovalTokenResponse findAclEntryByApprovalToken(FindAclEntryByApprovalTokenRequest aclEntryRequest) throws ProvisioningException {
 
         try {
-            AclEntry aclEntry = identityPartition.findAclEntryByApprovalToken(aclEntryRequest.getApprovalToken());
+            AclEntry aclEntry = getMediationPartition().findAclEntryByApprovalToken(aclEntryRequest.getApprovalToken());
             FindAclEntryByApprovalTokenResponse aclEntryResponse = new FindAclEntryByApprovalTokenResponse();
             aclEntryResponse.setAclEntry(aclEntry);
             return aclEntryResponse;
@@ -633,11 +668,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public UpdateAclEntryResponse updateAclEntry(UpdateAclEntryRequest aclEntryRequest) throws ProvisioningException {
         try {
             AclEntry aclEntry = aclEntryRequest.getAclEntry();
-            AclEntry oldAclEntry = identityPartition.findAclEntryById(aclEntry.getId());
+            AclEntry oldAclEntry = getMediationPartition().findAclEntryById(aclEntry.getId());
 
             BeanUtils.copyProperties(aclEntry, oldAclEntry, new String[] {"id"});
 
-            aclEntry = identityPartition.updateAclEntry(oldAclEntry);
+            aclEntry = getMediationPartition().updateAclEntry(oldAclEntry);
 
             UpdateAclEntryResponse aclEntryResponse = new UpdateAclEntryResponse();
             aclEntryResponse.setAclEntry(aclEntry);
@@ -652,7 +687,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public RemoveAclEntryResponse removeAclEntry(RemoveAclEntryRequest aclEntryRequest) throws ProvisioningException {
         try {
-            identityPartition.deleteAclEntry(aclEntryRequest.getId());
+            getMediationPartition().deleteAclEntry(aclEntryRequest.getId());
             return new RemoveAclEntryResponse();
         } catch (AclEntryNotFoundException e) {
             throw e;
@@ -671,7 +706,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
                     addSecurityTokenRequest.getSerializedContent(),
                     addSecurityTokenRequest.getIssueInstant());
 
-            securityToken = identityPartition.addSecurityToken(securityToken);
+            securityToken = getMediationPartition().addSecurityToken(securityToken);
 
             AddSecurityTokenResponse resp = new AddSecurityTokenResponse();
             resp.setSecurityToken(securityToken);
@@ -683,13 +718,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public UpdateSecurityTokenResponse updateSecurityToken(UpdateSecurityTokenRequest req) throws ProvisioningException {
         try {
-            SecurityTokenImpl st = (SecurityTokenImpl) identityPartition.findSecurityTokenByTokenId(req.getTokenId());
+            SecurityTokenImpl st = (SecurityTokenImpl) getMediationPartition().findSecurityTokenByTokenId(req.getTokenId());
             st.setContent(req.getContent());
             st.setSerializedContent(req.getSerializedContent());
             st.setIssueInstant(req.getIssueInstant());
             st.setNameIdentifier(req.getNameIdentifier());
 
-            st = (SecurityTokenImpl) identityPartition.updateSecurityToken(st);
+            st = (SecurityTokenImpl) getMediationPartition().updateSecurityToken(st);
 
             UpdateSecurityTokenResponse resp = new UpdateSecurityTokenResponse();
             resp.setSecurityToken(st);
@@ -703,8 +738,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public RemoveSecurityTokenResponse removeSecurityToken(RemoveSecurityTokenRequest req) throws ProvisioningException {
         try {
-            SecurityTokenImpl st = (SecurityTokenImpl) identityPartition.findSecurityTokenByTokenId(req.getTokenId());
-            identityPartition.deleteSecurityToken(st.getId());
+            SecurityTokenImpl st = (SecurityTokenImpl) getMediationPartition().findSecurityTokenByTokenId(req.getTokenId());
+            getMediationPartition().deleteSecurityToken(st.getId());
             RemoveSecurityTokenResponse resp = new RemoveSecurityTokenResponse();
 
             return resp;
@@ -718,7 +753,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindSecurityTokenByTokenIdResponse findSecurityTokenByTokenId(FindSecurityTokenByTokenIdRequest req) throws ProvisioningException {
         try {
-            SecurityToken st = identityPartition.findSecurityTokenByTokenId(req.getTokenId());
+            SecurityToken st = getMediationPartition().findSecurityTokenByTokenId(req.getTokenId());
             FindSecurityTokenByTokenIdResponse resp = new FindSecurityTokenByTokenIdResponse();
             resp.setSecurityToken(st);
             return resp;
@@ -731,7 +766,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindSecurityTokensByExpiresOnBeforeResponse findSecurityTokensByExpiresOnBefore(FindSecurityTokensByExpiresOnBeforeRequest req) throws ProvisioningException {
         try {
-            Collection<SecurityToken> st = identityPartition.findSecurityTokensByExpiresOnBefore(req.getExpiresOnBefore());
+            Collection<SecurityToken> st = getMediationPartition().findSecurityTokensByExpiresOnBefore(req.getExpiresOnBefore());
             FindSecurityTokensByExpiresOnBeforeResponse resp = new FindSecurityTokensByExpiresOnBeforeResponse();
             if (st != null)
                 resp.setSecurityTokens(st.toArray(new SecurityToken[st.size()]));
@@ -747,7 +782,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindSecurityTokensByIssueInstantBeforeResponse findSecurityTokensByIssueInstantBefore(FindSecurityTokensByIssueInstantBeforeRequest req) throws ProvisioningException {
         try {
-            Collection<SecurityToken> st = identityPartition.findSecurityTokensByIssueInstantBefore(req.getIssueInstant());
+            Collection<SecurityToken> st = getMediationPartition().findSecurityTokensByIssueInstantBefore(req.getIssueInstant());
             FindSecurityTokensByIssueInstantBeforeResponse resp = new FindSecurityTokensByIssueInstantBeforeResponse();
             if (st != null)
                 resp.setSecurityTokens(st.toArray(new SecurityToken[st.size()]));
@@ -950,7 +985,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public ListSecurityQuestionsResponse listSecurityQuestions(ListSecurityQuestionsRequest request) throws ProvisioningException {
         try {
-            Collection<SecurityQuestion> securityQuestions = identityPartition.findAllSecurityQuestions();
+            Collection<SecurityQuestion> securityQuestions = getMediationPartition().findAllSecurityQuestions();
             ListSecurityQuestionsResponse response = new ListSecurityQuestionsResponse();
             response.setSecurityQuestions(securityQuestions.toArray(new SecurityQuestion[securityQuestions.size()]));
 

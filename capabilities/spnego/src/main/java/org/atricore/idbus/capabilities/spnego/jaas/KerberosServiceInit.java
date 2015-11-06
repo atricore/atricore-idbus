@@ -186,8 +186,6 @@ public class KerberosServiceInit {
         }
     }
 
-
-
     public Subject authenticate(Object credentials) throws SecurityException {
 
         //sun.security.krb5.Config.getInstance();

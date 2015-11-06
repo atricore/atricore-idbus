@@ -26,10 +26,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.atricore.idbus</groupId>
-    <artifactId>all</artifactId>
+    <artifactId>idbus-all</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <name>Atricore IDBus All POM</name>
     <inceptionYear>2009</inceptionYear>
 
@@ -46,7 +46,9 @@
         <module>bundles/datanucleus-v2_0_3</module>
         <module>bundles/datanucleus-v2_1_2</module>
         <module>bundles/apache-derby-network-v10_5_3_0_1</module>
+        <module>bundles/apache-derby-network-v10_11_1_1</module>
         <module>bundles/apache-derby-client-v10_5_3_0_1</module>
+        <module>bundles/apache-derby-client-v10_11_1_1</module>
         <module>bundles/apache-ds-v1_5_7</module>
         <module>bundles/apache-maven-v3_0</module>
         <module>bundles/ehcache-v2_1_0</module>
@@ -86,9 +88,13 @@
         <module>connectors/idbus-jdo-identityvault</module>
 
         <module>applications/idbus-server</module>
+        <module>examples/custom-accountlink-emitter</module>
+        <module>examples/custom-identity-mapper</module>
+        <module>examples/custom-identity-vault</module>
         <module>examples/simple-federation</module>
         <module>examples/simple-provisioning</module>
         <module>examples/salesforce</module>
+        <module>examples/oauth2-preauthn-app</module>
         <module>examples/simple-iwa</module>
         <module>examples/simple-openid</module>
 
@@ -105,6 +111,7 @@
     </properties>
 
 
+    <!-- Minor change -->
     <scm>
         <connection>scm:git://atricore.git.sourceforge.net/gitroot/atricore/atricore</connection>
         <!-- Used by Maven -->

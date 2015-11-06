@@ -47,15 +47,28 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
 
         if (out.getContent() instanceof String) {
             // This could be some kind of token, lets find out ...
-
-            String token = (String) out.getContent();
             if (out.getContentType().equals("AccessToken")) {
+
+                // We're sending an access token
+                String token = (String) out.getContent();
                 restfulQueryStr += (restfulQueryStr.contains("?") ? "&" : "?");
                 try {
                     restfulQueryStr += "access_token=" + URLEncoder.encode(token, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     logger.error("Cannot encode access token : " + e.getMessage(), e);
                     throw new RuntimeException("Cannot encode access token : " + e.getMessage(), e);
+                }
+
+            } else if (out.getContentType().equals("ErrorCode")) {
+
+                // We're sending an error
+                restfulQueryStr += (restfulQueryStr.contains("?") ? "&" : "?");
+                try {
+                    String errorCode = (String) out.getContent();
+                    restfulQueryStr += "error_code=" + URLEncoder.encode(errorCode, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    logger.error("Cannot encode error code : " + e.getMessage(), e);
+                    throw new RuntimeException("Cannot encode error code : " + e.getMessage(), e);
                 }
 
             } else {
@@ -72,7 +85,6 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
         if (logger.isDebugEnabled())
             logger.debug("Redirecting to " + oauth2ResfulLocation);
 
-
         try {
 
             // ------------------------------------------------------------
@@ -85,6 +97,7 @@ public class OAuth2RestfulBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", oauth2ResfulLocation);
+            handleCrossOriginResourceSharing(exchange);
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

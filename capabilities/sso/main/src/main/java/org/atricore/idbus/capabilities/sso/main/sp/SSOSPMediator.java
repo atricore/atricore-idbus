@@ -277,6 +277,47 @@ public class SSOSPMediator extends AbstractSSOMediator {
 
                             break;
 
+                        case SSO_ARTIFACT:
+
+                            // ----------------------------------------------------------
+                            // HTTP Incomming messages:
+                            // ==> idbus-http ==> idbus-bind ==> sso-sp
+                            // ----------------------------------------------------------
+
+                            // FROM idbus-http TO samlr2-binding (through direct component)
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+                            // FROM samlr-bind TO sso-sp
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + idpChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("sso-sp:" + ed.getType() +
+                                            "?channelRef=" + idpChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+
+                                // FROM idbus-http TO samlr2-binding (through direct component)
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+                                // FROM samlr-bind TO sso-sp
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                        "?binding=" + ed.getBinding() +
+                                        "&channelRef=" + idpChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("sso-sp:" + ed.getType() +
+                                                "?channelRef=" + idpChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+
+                            break;
+
 
                         case SSO_LOCAL:
 

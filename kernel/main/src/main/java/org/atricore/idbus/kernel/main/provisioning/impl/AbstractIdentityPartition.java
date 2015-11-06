@@ -1,8 +1,13 @@
 package org.atricore.idbus.kernel.main.provisioning.impl;
 
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
+import org.atricore.idbus.kernel.main.provisioning.spi.IdentityResource;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityVault;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -48,4 +53,5 @@ public abstract class AbstractIdentityPartition implements IdentityPartition {
     public void setIdentityStore(IdentityStore identityStore) {
         this.identityStore = identityStore;
     }
+
 }

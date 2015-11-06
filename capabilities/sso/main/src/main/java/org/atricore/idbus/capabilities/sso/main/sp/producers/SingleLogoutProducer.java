@@ -145,7 +145,7 @@ public class SingleLogoutProducer extends SSOProducer {
         SPSecurityContext secCtx =
                 (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
-        validateRequest(sloRequest, in.getMessage().getRawContent());
+        validateRequest(sloRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
         CircleOfTrustMemberDescriptor idp = ((FederatedLocalProvider)getProvider()).getCotManager().lookupMemberByAlias(sloRequest.getIssuer().getValue());
         if (secCtx == null || !idp.getAlias().equals(secCtx.getIdpAlias())) {
@@ -188,7 +188,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(samlResponse.getID(),
-                samlResponse, "ResponseType", null, destination, in.getMessage().getState()));
+                samlResponse, "LogoutResponse", in.getMessage().getRelayState(), destination, in.getMessage().getState()));
 
         exchange.setOut(out);
     }
@@ -272,11 +272,15 @@ public class SingleLogoutProducer extends SSOProducer {
                         destinationLocation, null);
 
         if (ssoLogoutRequest != null) {
-            logger.debug("SLO Response in reply to " + ssoLogoutRequest.getID());
+
+            if (logger.isDebugEnabled())
+                logger.debug("SLO Response in reply to " + ssoLogoutRequest.getID());
+
             ssoResponse.setInReplayTo(ssoLogoutRequest.getID());
             if (ssoLogoutRequest.getReplyTo() != null) {
 
-                logger.debug("Using requested reply destination : " + ssoLogoutRequest.getReplyTo());
+                if (logger.isDebugEnabled())
+                    logger.debug("Using requested reply destination : " + ssoLogoutRequest.getReplyTo());
 
                 destination = new EndpointDescriptorImpl("EmbeddedSPAcs",
                         "SingleLogoutService",
@@ -300,7 +304,7 @@ public class SingleLogoutProducer extends SSOProducer {
     }
 
     // TODO : Reuse basic SAML request validations ....
-    protected void validateRequest(LogoutRequestType request, String originalRequest)
+    protected void validateRequest(LogoutRequestType request, String originalRequest, MediationState state)
             throws SSORequestException, SSOException {
 
         SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
@@ -334,30 +338,56 @@ public class SingleLogoutProducer extends SSOProducer {
 		// XML Signature, saml2 core, section 5
         if (mediator.isValidateRequestsSignature()) {
 
-            // If no signature is present, throw an exception!
-            if (request.getSignature() == null)
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
-            try {
+            if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
-                if (originalRequest != null)
-                    signer.validateDom(idpMd, originalRequest);
-                else
-                    signer.validate(idpMd, request);
+                // If no signature is present, throw an exception!
+                if (request.getSignature() == null)
 
-            } catch (SamlR2SignatureValidationException e) {
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-            } catch (SamlR2SignatureException e) {
-                //other exceptions like JAXB, xml parser...
-                throw new SSORequestException(request,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.REQUEST_DENIED,
-                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_REQUEST_SIGNATURE);
+                try {
+
+                    if (originalRequest != null)
+                        signer.validateDom(idpMd, originalRequest);
+                    else
+                        signer.validate(idpMd, request);
+
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
+            } else {
+                // HTTP-Redirect binding signature validation !
+                try {
+                    signer.validateQueryString(idpMd,
+                            state.getTransientVariable("SAMLRequest"),
+                            state.getTransientVariable("RelayState"),
+                            state.getTransientVariable("SigAlg"),
+                            state.getTransientVariable("Signature"),
+                            false);
+                } catch (SamlR2SignatureValidationException e) {
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                } catch (SamlR2SignatureException e) {
+                    //other exceptions like JAXB, xml parser...
+                    throw new SSORequestException(request,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+                }
+
             }
 
         }
@@ -461,16 +491,22 @@ public class SingleLogoutProducer extends SSOProducer {
 
     	} else if(request != null) {
 
-            // Request can be null for IDP initiated SSO
-    		if(response.getIssueInstant().compare(request.getIssueInstant()) <= 0){
-    			throw new SSOResponseException(response,
+
+            long responseIssueInstant = response.getIssueInstant().toGregorianCalendar().getTimeInMillis();
+            long requestIssueInstant = request.getIssueInstant().toGregorianCalendar().getTimeInMillis();
+
+            long tolerance = mediator.getTimestampValidationTolerance();
+            // You can't have a request emitted before 'tolerance' millisenconds
+            if(responseIssueInstant - requestIssueInstant <= tolerance * -1) {
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_ISSUE_INSTANT,
                         response.getIssueInstant().toGregorianCalendar().toString() +
-                                    " earlier than request issue instant.");
+                                " earlier than request issue instant.");
 
-    		} else {
+            } else {
+
 
                 long ttl = mediator.getRequestTimeToLive();
 
@@ -480,17 +516,20 @@ public class SingleLogoutProducer extends SSOProducer {
                 if (logger.isDebugEnabled())
                     logger.debug("TTL : " + res + " - " +  req + " = " + (res - req));
 
-    			if(response.getIssueInstant().toGregorianCalendar().getTime().getTime()
-    					- request.getIssueInstant().toGregorianCalendar().getTime().getTime() > ttl) {
+                // If 0, response does not expires!
+                if(ttl > 0 && response.getIssueInstant().toGregorianCalendar().getTime().getTime()
+                        - request.getIssueInstant().toGregorianCalendar().getTime().getTime() > ttl) {
 
-    				throw new SSOResponseException(response,
+                    throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                             StatusDetails.INVALID_ISSUE_INSTANT,
                             response.getIssueInstant().toGregorianCalendar().toString() +
                                     " expired after " + ttl + "ms");
-    			}
-    		}
+                }
+            }
+
+
     	}
 
         // Version, saml2 core, section 3.2.2
@@ -527,6 +566,15 @@ public class SingleLogoutProducer extends SSOProducer {
                         null,
                         StatusDetails.INVALID_RESPONSE_ID,
                         request.getID() + "/ " + response.getInResponseTo());
+            }
+
+            if (state.getTransientVariable("RelayState") == null ||
+                 !state.getTransientVariable("RelayState").equals(state.getLocalState().getId())) {
+                throw new SSOResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        null,
+                        StatusDetails.INVALID_RELAY_STATE,
+                        state.getLocalState().getId() + "/ " + state.getTransientVariable("RelayState"));
             }
 
     	}
@@ -633,10 +681,10 @@ public class SingleLogoutProducer extends SSOProducer {
         CircleOfTrustMemberDescriptor idp = getCotManager().lookupMemberByAlias(secCtx.getIdpAlias());
         IdPChannel idpChannel = (IdPChannel) resolveIdpChannel(idp);
         SSOSessionManager ssoSessionManager = idpChannel.getSessionManager();
-        secCtx.clear();
 
         try {
             ssoSessionManager.invalidate(secCtx.getSessionIndex());
+            secCtx.clear();
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
             in.getMessage().getState().removeRemoteVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
         } catch (NoSuchSessionException e) {

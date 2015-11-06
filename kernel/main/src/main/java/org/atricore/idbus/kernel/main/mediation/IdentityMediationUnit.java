@@ -36,4 +36,8 @@ public interface IdentityMediationUnit {
 
     IdentityMediationUnitContainer getContainer();
 
+    Object getMediationProperty(String key);
+
+    Collection<String> getMediationPropertyKeys();
+
 }

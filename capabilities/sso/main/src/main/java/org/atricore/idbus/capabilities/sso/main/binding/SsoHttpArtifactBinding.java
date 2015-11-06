@@ -74,8 +74,6 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
         try {
 
             // HTTP Request Parameters from HTTP Request body
-
-
             MediationState state = createMediationState(exchange);
 
             String ssoArtifact = state.getTransientVariable(SSO_ARTIFACT_ID);
@@ -86,6 +84,8 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
             String relayState = state.getTransientVariable("RelayState");
             MessageQueueManager aqm = getArtifactQueueManager();
             Object ssoMsg = aqm.pullMessage(new ArtifactImpl(ssoArtifact));
+            if (ssoMsg ==null)
+                logger.warn("SSO Artifact cannot be resolved : " + ssoArtifact);
 
             return new MediationMessageImpl(httpMsg.getMessageId(),
                     ssoMsg,
@@ -126,13 +126,11 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
 
             if (out.getContent() instanceof ClaimsRequest) {
                 msgValue = out.getContent();
-            } else
-            if (out.getContent() instanceof IdentityConfirmationRequest) {
+            } else if (out.getContent() instanceof IdentityConfirmationRequest) {
                 msgValue = out.getContent();
             } else if (out.getContent() instanceof ClaimsResponse) {
                 msgValue = out.getContent();
                 isResponse = true;
-
             } else if (out.getContent() instanceof SSORequestAbstractType) {
                 msgValue = out.getContent();
             } else if (out.getContent() instanceof SSOResponseType) {
@@ -140,7 +138,6 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
                 isResponse = true;
             } else if (out.getContent() instanceof PolicyEnforcementRequest) {
                 msgValue = out.getContent();
-
             } else if (out.getContent() instanceof PolicyEnforcementResponse) {
                 msgValue = out.getContent();
                 isResponse = true;
@@ -176,6 +173,7 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("http.responseCode", 302);
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", artifactLocation);
+            handleCrossOriginResourceSharing(exchange);
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);

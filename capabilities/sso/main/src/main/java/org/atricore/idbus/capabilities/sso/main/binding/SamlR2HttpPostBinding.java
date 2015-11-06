@@ -211,6 +211,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("Pragma", "no-cache");
             httpOut.getHeaders().put("http.responseCode", 200);
             httpOut.getHeaders().put("Content-Type", "text/html");
+            handleCrossOriginResourceSharing(exchange);
 
             ByteArrayInputStream baos = new ByteArrayInputStream (marshalledHttpResponseBody.getBytes());
             httpOut.setBody(baos);

@@ -81,6 +81,9 @@ public class SSOIDPComponent extends DefaultComponent {
             case ProxyAssertionConsumerService:
                 endpoint = new SingleSignOnEndpoint(uri, this, parameters);
                 break;
+            case ProxySingleLogoutService:
+                endpoint = new SingleLogoutEndpoint(uri, this, parameters);
+                break;
 
             default:
                 throw new IllegalArgumentException( "Invalid SAMLR2 endpoint specified for endpoint " + remaining );

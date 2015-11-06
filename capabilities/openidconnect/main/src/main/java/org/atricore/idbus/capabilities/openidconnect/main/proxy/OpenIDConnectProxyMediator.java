@@ -37,6 +37,8 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private String accessTokenServiceLocation;
 
+    private String requestTokenServiceLocation;
+
     private String clientId;
 
     private String clientSecret;
@@ -87,7 +89,7 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
                         case SSO_REDIRECT:
                         case SSO_ARTIFACT:
                         case OPENID_HTTP_POST:
-                        case OPENID_HTTP_REDIR:
+                        case OPENIDCONNECT_AUTHZ:
 
                             // ----------------------------------------------------------
                             // HTTP Incoming messages:
@@ -259,6 +261,14 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public void setAccessTokenServiceLocation(String accessTokenServiceLocation) {
         this.accessTokenServiceLocation = accessTokenServiceLocation;
+    }
+
+    public String getRequestTokenServiceLocation() {
+        return requestTokenServiceLocation;
+    }
+
+    public void setRequestTokenServiceLocation(String requestTokenServiceLocation) {
+        this.requestTokenServiceLocation = requestTokenServiceLocation;
     }
 
     public String getScopes() {

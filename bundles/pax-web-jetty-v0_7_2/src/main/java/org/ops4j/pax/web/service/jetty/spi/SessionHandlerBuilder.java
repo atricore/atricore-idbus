@@ -12,4 +12,8 @@ public interface SessionHandlerBuilder {
 
     SessionHandler build(Server server, Model model);
 
+    void setSecureCookies(boolean secureCookies);
+
+    boolean isSecureCookies();
+
 }

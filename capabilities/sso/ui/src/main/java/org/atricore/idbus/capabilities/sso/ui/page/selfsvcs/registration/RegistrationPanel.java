@@ -32,6 +32,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.ListSecurityQues
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,11 +50,17 @@ public class RegistrationPanel extends Panel {
 
     private RegistrationModel registration;
 
-    private final List <SecurityQuestion> secQuestions;
+    private List <SecurityQuestion> secQuestions = new ArrayList<SecurityQuestion>();
 
     private String hashAlgorithm = "MD5";
 
     private String hashEncoding = "HEX";
+
+    public RegistrationPanel(String id, String transactionId, String hashAlgorithm, String hashEncoding) {
+        this(id, transactionId);
+        this.hashAlgorithm = hashAlgorithm;
+        this.hashEncoding = hashEncoding;
+    }
 
     public RegistrationPanel(String id, String transactionId) {
         super(id);
@@ -62,13 +69,9 @@ public class RegistrationPanel extends Panel {
 
         SSOIdPApplication app = (SSOIdPApplication) getApplication();
 
-        secQuestions = new ArrayList<SecurityQuestion>();
-
         try {
             ListSecurityQuestionsResponse resp = app.getProvisioningTarget().listSecurityQuestions(new ListSecurityQuestionsRequest());
-            for (SecurityQuestion sq : resp.getSecurityQuestions()) {
-                secQuestions.add(sq);
-            }
+            Collections.addAll(secQuestions, resp.getSecurityQuestions());
         } catch (ProvisioningException e) {
             logger.error(e.getMessage(),  e);
         }
@@ -99,7 +102,9 @@ public class RegistrationPanel extends Panel {
                     },
                     new IChoiceRenderer<SecurityQuestion>() {
                         public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                            return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                            return securityQuestion.getMessageKey() != null ?
+                                getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                    securityQuestion.getDefaultMessage();
                         }
 
                         public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -130,7 +135,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -161,7 +168,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -180,7 +189,7 @@ public class RegistrationPanel extends Panel {
         final TextField<String> secAnswer3 = new TextField<String>("secAnswer3");
         form.add(secAnswer3);
 
-
+/*
         // Sec. Question 4
         DropDownChoice<SecurityQuestion> secQuestion4 =
                 new DropDownChoice<SecurityQuestion>("secQuestion4",
@@ -193,7 +202,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -224,7 +235,9 @@ public class RegistrationPanel extends Panel {
                         },
                         new IChoiceRenderer<SecurityQuestion>() {
                             public Object getDisplayValue(SecurityQuestion securityQuestion) {
-                                return getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage());
+                                return securityQuestion.getMessageKey() != null ?
+                                        getString(securityQuestion.getMessageKey(), null, securityQuestion.getDefaultMessage()) :
+                                        securityQuestion.getDefaultMessage();
                             }
 
                             public String getIdValue(SecurityQuestion securityQuestion, int i) {
@@ -243,7 +256,7 @@ public class RegistrationPanel extends Panel {
         final TextField<String> secAnswer5 = new TextField<String>("secAnswer5");
         form.add(secAnswer5);
 
-
+*/
 
         // Submit
         final SubmitLink submit = new SubmitLink("doRegister")  {
@@ -353,10 +366,11 @@ public class RegistrationPanel extends Panel {
         if (!registration.getNewPassword().equals(registration.getRetypedPassword()))
             throw new RegistrationException("error.password.doNotMatch", "Invalid temporary password");
 
+        /** TODO : Verify temporary password
         String hash = PasswordUtil.createPasswordHash(registration.getPassword(), getHashAlgorithm(), getHashEncoding(), getDigest());
         if (!hash.equals(tmpUser.getUserPassword())) {
             throw new RegistrationException("error.tmpPassword.invalid", "Invalid temporary password");
-        }
+        } **/
 
         RegistrationModel registration = getRegisterModel();
 
@@ -386,6 +400,7 @@ public class RegistrationPanel extends Panel {
         else
             q3.setQuestion(registration.getSecQuestion3());
 
+        /*
         // Q4
         UserSecurityQuestion q4 = new UserSecurityQuestion();
         q4.setAnswer(registration.getSecAnswer4());
@@ -401,10 +416,13 @@ public class RegistrationPanel extends Panel {
             q5.setCustomMessage((registration.getCustomSecQuestion5()));
         else
             q5.setQuestion(registration.getSecQuestion5());
+        */
 
         ConfirmAddUserRequest req = new ConfirmAddUserRequest ();
         req.setUserPassword(registration.getNewPassword());
-        req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3, q4, q5});
+        //req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3, q4, q5});
+        req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3});
+
         req.setTransactionId(transactionId);
 
         AddUserResponse resp = pt.confirmAddUser(req);
@@ -446,9 +464,9 @@ public class RegistrationPanel extends Panel {
     }
 
 
-    protected SecurityQuestion lookupQuestion(Long id) {
+    protected SecurityQuestion lookupQuestion(String id) {
         for (SecurityQuestion sq : this.secQuestions) {
-            if (sq.getId() == id)
+            if (sq.getId().equals(id))
                 return sq;
         }
         return null;

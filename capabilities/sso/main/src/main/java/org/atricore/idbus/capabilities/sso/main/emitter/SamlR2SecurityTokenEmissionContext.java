@@ -24,7 +24,9 @@ package org.atricore.idbus.capabilities.sso.main.emitter;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
+import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
+import org.atricore.idbus.kernel.main.federation.AbstractPrincipal;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
@@ -32,6 +34,8 @@ import org.atricore.idbus.kernel.main.session.SSOSession;
 
 import javax.security.auth.Subject;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -41,7 +45,7 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     private Subject subject;
 
-    private SPAuthnResponseType proxyResponse;
+    private List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
 
     private String sessionIndex;
 
@@ -104,12 +108,12 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
         this.subject = subject;
     }
 
-    public SPAuthnResponseType getProxyResponse() {
-        return proxyResponse;
+    public List<AbstractPrincipalType> getProxyPrincipals() {
+        return proxyPrincipals;
     }
 
-    public void setProxyResponse(SPAuthnResponseType proxyResponse) {
-        this.proxyResponse = proxyResponse;
+    public void setProxyResponse(List<AbstractPrincipalType> proxyPrincipals) {
+        this.proxyPrincipals = proxyPrincipals;
     }
 
     public AssertionType getAssertion() {

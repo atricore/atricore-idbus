@@ -11,6 +11,7 @@ import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
+import org.atricore.idbus.kernel.main.provisioning.spi.MediationPartition;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -31,10 +32,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * This is a JDO based implementation of both, an IdentityPartition and a MediationPartition
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOIdentityPartition extends AbstractIdentityPartition
-        implements InitializingBean,
+        implements MediationPartition, InitializingBean,
         DisposableBean,
         IdentityServiceLifecycle {
 
@@ -160,7 +163,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     // -------------------------------------< Group >
 
 //    @Transactional
-    public Group findGroupById(long id) throws ProvisioningException {
+    protected Group findGroupById(long id) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -192,7 +195,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
-//    @Transactional
+    @Override
+    public Group findGroupByOid(String oid) throws ProvisioningException {
+        return findGroupById(Long.parseLong(oid));
+    }
+
+    //    @Transactional
     public Group findGroupByName(String name) throws ProvisioningException {
 
 
@@ -260,7 +268,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
-            JDOGroup jdoGroup = groupDao.findById(group.getId());
+            JDOGroup jdoGroup = groupDao.findById(Long.parseLong(group.getOid()));
             jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
             List<JDOGroupAttributeValue> oldAttrsList = new ArrayList<JDOGroupAttributeValue>();
             if (jdoGroup.getAttrs() != null) {
@@ -271,13 +279,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 }
 
                 if (oldAttrsList.size() != jdoGroup.getAttrs().length) {
-                    jdoGroup = groupDao.findById(group.getId());
+                    jdoGroup = groupDao.findById(Long.parseLong(group.getOid()));
                     jdoGroup.setAttrs(oldAttrsList.toArray(new JDOGroupAttributeValue[]{}));
                     jdoGroup = groupDao.save(jdoGroup);
                 }
             }
 
-            jdoGroup = groupDao.findById(group.getId());
+            jdoGroup = groupDao.findById(Long.parseLong(group.getOid()));
             JDOGroupAttributeValue[] oldAttrs = jdoGroup.getAttrs();
             jdoGroup = toJDOGroup(jdoGroup, group);
             jdoGroup = groupDao.save(jdoGroup);
@@ -290,13 +298,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         } catch (JdoObjectRetrievalFailureException e) {
             transactionManager.rollback(status);
-            throw new GroupNotFoundException(group.getId());
+            throw new GroupNotFoundException(group.getOid());
         } catch (JDOObjectNotFoundException e) {
             transactionManager.rollback(status);
-            throw new GroupNotFoundException(group.getId());
+            throw new GroupNotFoundException(group.getOid());
         } catch (NucleusObjectNotFoundException e) {
             transactionManager.rollback(status);
-            throw new GroupNotFoundException(group.getId());
+            throw new GroupNotFoundException(group.getOid());
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -322,7 +330,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
 //    @Transactional
-    public void deleteGroup(long id) throws ProvisioningException {
+    public void deleteGroup(String oid) throws ProvisioningException {
+
+        long id = Long.parseLong(oid);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -365,8 +375,14 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-//    @Transactional
-    public User findUserById(long id) throws ProvisioningException {
+    @Override
+    public long getUserCount() throws ProvisioningException {
+        // TODO : Optimize!
+        return userDao.findAll().size();
+    }
+
+    //    @Transactional
+    protected User findUserById(long id) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -396,6 +412,10 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
+    }
+
+    public User findUserByOid(String oid) throws ProvisioningException {
+        return findUserById(Long.parseLong(oid));
     }
 
 //    @Transactional
@@ -463,7 +483,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
-            JDOUser jdoUser = userDao.findById(user.getId());
+            JDOUser jdoUser = userDao.findById(Long.parseLong(user.getOid()));
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             List<JDOUserAttributeValue> oldAttrsList = new ArrayList<JDOUserAttributeValue>();
             if (jdoUser.getAttrs() != null) {
@@ -474,13 +494,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 }
 
                 if (oldAttrsList.size() != jdoUser.getAttrs().length) {
-                    jdoUser = userDao.findById(user.getId());
+                    jdoUser = userDao.findById(Long.parseLong(user.getOid()));
                     jdoUser.setAttrs(oldAttrsList.toArray(new JDOUserAttributeValue[]{}));
                     jdoUser = userDao.save(jdoUser);
                 }
             }
 
-            jdoUser = userDao.findById(user.getId());
+            jdoUser = userDao.findById(Long.parseLong(user.getOid()));
             JDOUserAttributeValue[] oldAttrs = jdoUser.getAttrs();
 
             // Do not let users to change the password!
@@ -492,13 +512,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toUser(jdoUser, true);
         } catch (JdoObjectRetrievalFailureException e) {
             transactionManager.rollback(status);
-            throw new UserNotFoundException(user.getId());
+            throw new UserNotFoundException(user.getOid());
         } catch (JDOObjectNotFoundException e) {
             transactionManager.rollback(status);
-            throw new UserNotFoundException(user.getId());
+            throw new UserNotFoundException(user.getOid());
         } catch (NucleusObjectNotFoundException e) {
             transactionManager.rollback(status);
-            throw new UserNotFoundException(user.getId());
+            throw new UserNotFoundException(user.getOid());
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -506,7 +526,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
 //    @Transactional
-    public void deleteUser(long id) throws ProvisioningException {
+    public void deleteUser(String oid) throws ProvisioningException {
+
+        long id = Long.parseLong(oid);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -561,8 +583,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         try {
             Collection<JDOSecurityQuestion> securityQuestions = securityQuestionDAO.findAll();
+            Collection<SecurityQuestion> secQuestions = toSecurityQuestion(securityQuestions);
             transactionManager.commit(status);
-            return toSecurityQuestion(securityQuestions);
+            return secQuestions;
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -594,7 +617,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
 //    @Transactional
-    public AclEntry findAclEntryById(long id) throws ProvisioningException {
+    public AclEntry findAclEntryById(String oid) throws ProvisioningException {
+
+        long id = Long.parseLong(oid);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -622,7 +647,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         TransactionStatus status = transactionManager.getTransaction(txDef );
 
         try {
-            JDOAclEntry jdoAclEntry = aclEntryDao.findById(aclEntry.getId());
+            JDOAclEntry jdoAclEntry = aclEntryDao.findById(Long.parseLong(aclEntry.getId()));
             jdoAclEntry = toJDOAclEntry(jdoAclEntry, aclEntry);
             jdoAclEntry = aclEntryDao.save(jdoAclEntry);
             jdoAclEntry = aclEntryDao.detachCopy(jdoAclEntry, FetchPlan.FETCH_SIZE_GREEDY);
@@ -645,7 +670,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
 //    @Transactional
-    public void deleteAclEntry(long id) throws ProvisioningException {
+    public void deleteAclEntry(String oid) throws ProvisioningException {
+
+        long id = Long.parseLong(oid);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -813,7 +840,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected JDOGroup toJDOGroup(Group group) {
         JDOGroup jdoGroup = toJDOGroup(new JDOGroup(), group);
-        jdoGroup.setId(group.getId());
+        if (group.getOid() != null)
+            jdoGroup.setId(Long.parseLong(group.getOid()));
         return jdoGroup;
     }
 
@@ -827,8 +855,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             for (int i = 0; i < group.getAttrs().length; i++) {
                 GroupAttributeValue attr = group.getAttrs()[i];
                 JDOGroupAttributeValue jdoAttr = null;
-                if (attr.getId() > 0) {
-                    jdoAttr = grpAttrValDao.findById(attr.getId());
+                if (attr.getId() != null) {
+                    jdoAttr = grpAttrValDao.findById(Long.parseLong(attr.getId()));
                 }
                 if (jdoAttr == null) {
                     jdoAttr = new JDOGroupAttributeValue();
@@ -861,7 +889,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     protected Group toGroup(JDOGroup jdoGroup) {
         Group group = new Group();
 
-        group.setId(jdoGroup.getId());
+        group.setOid(jdoGroup.getId() + "");
         group.setName(jdoGroup.getName());
         group.setDescription(jdoGroup.getDescription());
 
@@ -872,7 +900,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 JDOGroupAttributeValue jdoAttr = jdoGroup.getAttrs()[i];
                 if (jdoAttr.getId() > 0) {
                     GroupAttributeValue groupAttribute = new GroupAttributeValue();
-                    groupAttribute.setId(jdoAttr.getId());
+                    groupAttribute.setId(jdoAttr.getId() + "");
                     groupAttribute.setName(jdoAttr.getName());
                     groupAttribute.setValue(jdoAttr.getValue());
 
@@ -904,7 +932,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         SecurityQuestion group = new SecurityQuestion();
 
-        group.setId(jdoSecurityQuestion.getId());
+        group.setId(jdoSecurityQuestion.getId() + "");
         group.setMessageKey(jdoSecurityQuestion.getMessageKey());
 
 
@@ -925,7 +953,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected JDOUser toJDOUser(User user, boolean keepUserPassword) {
         JDOUser jdoUser = new JDOUser();
-        jdoUser.setId(user.getId());
+        if (user.getOid() != null)
+            jdoUser.setId(Long.parseLong(user.getOid()));
         return toJDOUser(jdoUser, user, keepUserPassword);
     }
 
@@ -941,7 +970,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             JDOGroup[] jdoGroups = new JDOGroup[user.getGroups().length];
             for (int i = 0; i < user.getGroups().length; i++) {
                 Group group = user.getGroups()[i];
-                JDOGroup jdoGroup = groupDao.findById(group.getId());
+                JDOGroup jdoGroup = groupDao.findById(Long.parseLong(group.getOid()));
                 jdoGroups[i] = jdoGroup;
             }
             jdoUser.setGroups(jdoGroups);
@@ -953,7 +982,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 Acl acl = user.getAcls()[i];
                 JDOAcl jdoAcl;
                 if (acl.getId() != null) {
-                    jdoAcl = aclDao.findById(acl.getId());
+                    jdoAcl = aclDao.findById(Long.parseLong(acl.getId()));
                 } else {
                     jdoAcl = new JDOAcl();
                     jdoAcl.setName(acl.getName());
@@ -967,7 +996,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
                     JDOAclEntry jdoAclEntry;
                     if (aclEntry.getId() != null) {
-                        jdoAclEntry = aclEntryDao.findById(aclEntry.getId());
+                        jdoAclEntry = aclEntryDao.findById(Long.parseLong(aclEntry.getId()));
                     } else {
                         jdoAclEntry = new JDOAclEntry();
                         jdoAclEntry.setPrincipalNameClaim(aclEntry.getPrincipalNameClaim());
@@ -992,8 +1021,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             for (int i = 0; i < user.getAttrs().length; i++) {
                 UserAttributeValue attr = user.getAttrs()[i];
                 JDOUserAttributeValue jdoAttr = null;
-                if (attr.getId() > 0) {
-                    jdoAttr = usrAttrValDao.findById(attr.getId());
+                if (attr.getId() != null) {
+                    jdoAttr = usrAttrValDao.findById(Long.parseLong(attr.getId()));
                 }
                 if (jdoAttr == null) {
                     jdoAttr = new JDOUserAttributeValue();
@@ -1014,8 +1043,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 UserSecurityQuestion userSecurityQuestion = user.getSecurityQuestions()[i];
                 JDOUserSecurityQuestion jdoUserSecurityQuestion = null;
 
-                if (userSecurityQuestion.getId() > 0) {
-                    jdoUserSecurityQuestion = usrSecQuestionDao.findById(userSecurityQuestion.getId());
+                if (userSecurityQuestion.getId() != null) {
+                    jdoUserSecurityQuestion = usrSecQuestionDao.findById(Long.parseLong(userSecurityQuestion.getId()));
                 }
 
                 if (jdoUserSecurityQuestion == null) {
@@ -1028,7 +1057,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 jdoUserSecurityQuestion.setHashing(userSecurityQuestion.getHashing());
 
                 if (userSecurityQuestion.getQuestion() != null) {
-                    jdoUserSecurityQuestion.setQuestion(securityQuestionDAO.findById(userSecurityQuestion.getQuestion().getId()));
+                    jdoUserSecurityQuestion.setQuestion(securityQuestionDAO.findById(Long.parseLong(userSecurityQuestion.getQuestion().getId())));
                 }
 
                 jdoSecurityQuestions[i] = jdoUserSecurityQuestion;
@@ -1045,6 +1074,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         User user = new User();
         BeanUtils.copyProperties(jdoUser, user, new String[] {"groups", "acls", "securityQuestions", "attrs"});
 
+        user.setOid(jdoUser.getId() + "");
+
         if (!retrieveUserPassword)
             user.setUserPassword(null);
 
@@ -1056,7 +1087,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 Group group = new Group();
                 group.setName(jdoGroup.getName());
                 group.setDescription(jdoGroup.getDescription());
-                group.setId(jdoGroup.getId());
+                group.setOid(jdoGroup.getId() + "");
 
                 groups[i] = group;
             }
@@ -1072,7 +1103,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 Acl acl = new Acl();
                 acl.setName(jdoAcl.getName());
                 acl.setDescription(jdoAcl.getDescription());
-                acl.setId(jdoAcl.getId());
+                acl.setId(jdoAcl.getId() + "");
 
                 if (jdoAcl.getEntries() != null) {
                     AclEntry[] aclEntries = new AclEntry[jdoAcl.getEntries().length];
@@ -1096,7 +1127,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 JDOUserAttributeValue jdoAttr = jdoUser.getAttrs()[i];
                 if (jdoAttr.getId() > 0) {
                     UserAttributeValue userAttribute = new UserAttributeValue();
-                    userAttribute.setId(jdoAttr.getId());
+                    userAttribute.setId(jdoAttr.getId() + "");
                     userAttribute.setName(jdoAttr.getName());
                     userAttribute.setValue(jdoAttr.getValue());
 
@@ -1117,7 +1148,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 if (jdoUserSecurityQuestion.getId() > 0) {
 
                     UserSecurityQuestion userSecurityQuestion = new UserSecurityQuestion();
-                    userSecurityQuestion.setId(jdoUserSecurityQuestion.getId());
+                    userSecurityQuestion.setId(jdoUserSecurityQuestion.getId() + "");
                     userSecurityQuestion.setAnswer(jdoUserSecurityQuestion.getAnswer());
                     userSecurityQuestion.setCustomMessage(jdoUserSecurityQuestion.getCustomMessage());
 
@@ -1171,7 +1202,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         aclEntry.setApprovalToken(jdoAclEntry.getApprovalToken());
         aclEntry.setState(AclEntryStateType.fromValue(jdoAclEntry.getState().toString()));
         aclEntry.setSpAlias(jdoAclEntry.getSpAlias());
-        aclEntry.setId(jdoAclEntry.getId());
+        aclEntry.setId(jdoAclEntry.getId() + "");
         return aclEntry;
 
     }

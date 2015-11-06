@@ -16,9 +16,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.atricore.idbus.capabilities.sso.ui.model.IdPModel;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: sgonzalez@atriocore.com
@@ -95,8 +93,9 @@ public class SelectIdPPanel extends Panel {
         private List<IdPModel> idps;
 
         public IdPDataProvider(List<IdPModel> idps) {
-            setSort("name", SortOrder.ASCENDING);
-            this.idps = idps;
+            this.idps = new ArrayList<IdPModel>();
+            this.idps.addAll(idps);
+            Collections.sort(this.idps, new IdPComparator());
         }
 
         public final Iterator<IdPModel> iterator(long first, long count) {
@@ -109,6 +108,13 @@ public class SelectIdPPanel extends Panel {
 
         public IModel<IdPModel> model(IdPModel idp) {
             return new CompoundPropertyModel<IdPModel>(idp);
+        }
+
+        protected class IdPComparator implements Comparator<IdPModel> {
+            @Override
+            public int compare(IdPModel idp1, IdPModel idp2) {
+                return idp1.getDescription().compareTo(idp2.getDescription());
+            }
         }
     }
 }

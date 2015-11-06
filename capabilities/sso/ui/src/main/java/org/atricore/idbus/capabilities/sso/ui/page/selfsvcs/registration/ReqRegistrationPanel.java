@@ -51,7 +51,7 @@ public class ReqRegistrationPanel extends Panel {
 
         form = new StatelessForm<ReqRegistrationModel>("reqRegistrationForm", new CompoundPropertyModel<ReqRegistrationModel>(new ReqRegistrationModel()));
 
-        final EmailTextField username = new EmailTextField("username");
+        final RequiredTextField username = new RequiredTextField("username");
         form.add(username);
 
         final RequiredTextField<String> firstName = new RequiredTextField<String>("firstName");
@@ -65,6 +65,10 @@ public class ReqRegistrationPanel extends Panel {
 
         final RequiredTextField<String> phone = new RequiredTextField<String>("phone");
         form.add(phone);
+
+        final EmailTextField email = new EmailTextField("email");
+        form.add(email);
+
 
         // TODO : Internationalize
         submit = new SubmitLink("doReqRegistration")  {
@@ -139,7 +143,7 @@ public class ReqRegistrationPanel extends Panel {
         AddUserRequest req = new AddUserRequest();
 
         req.setUserName(username);
-        req.setEmail(username);
+        req.setEmail(registration.getEmail());
         req.setFirstName(registration.getFirstName());
         req.setSurename(registration.getLastName());
         req.setOrganizationName(registration.getCompany());
@@ -157,17 +161,15 @@ public class ReqRegistrationPanel extends Panel {
         // This is a relative path !, now it's ../CONFIRM
         pagePath = pagePath.substring(2);
 
-        path = path + "/SS" + pagePath;
+        path = path + "/SS/" + pagePath;
 
         Url url  = RequestCycle.get().getRequest().getClientUrl();
 
-        confirmUrl = url.getProtocol() + "://" +
-                url.getHost() + (url.getPort() != 443 && url.getPort() != 80 ? ":" + url.getPort() + "" : "") +
-                path;
+        confirmUrl = "https://josso.atricore.com" + path;
 
-        // TODO : Make from and subject also brandlable/internationlized
-        app.getMailService().send("josso@atricore.com",
-                username,
+        String from = getLocalizer().getString("email.sender", this, "josso@atricore.com");
+        app.getMailService().send(from,
+                registration.getEmail(),
                 "Registration", buildEMailText(registration, resp, transactionId, confirmUrl).toString(),
                 "text/html");
 

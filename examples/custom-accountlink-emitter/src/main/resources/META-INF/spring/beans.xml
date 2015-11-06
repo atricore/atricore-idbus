@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+      http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <!-- ============================================================ -->
+    <!-- Custom AccountLinkage 01                                     -->
+    <!-- ============================================================ -->
+    <bean name="custom-accountlink-emitter-01" class="org.atricore.idbus.examples.accountlinkemitter.CustomAccountLinkEmitter"/>
+
+    <osgi:service id="custom-accountlink-emitter-svc-01"
+                  ref="custom-accountlink-emitter-01"
+                  interface="org.atricore.idbus.kernel.main.federation.AccountLinkEmitter"/>
+
+    <bean name="custom-accountlinkage-policy-01" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkagePolicy">
+        <property name="id" value="-1"/>
+        <property name="name" value="Custom 01"/>
+        <!-- MUST match the Custom bean name -->
+        <property name="customLinkEmitter" value="custom-accountlink-emitter-01"/>
+    </bean>
+
+    <osgi:service id="custom-accountlinkage-policy-svc-01"
+                  ref="custom-accountlinkage-policy-01"
+                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkagePolicy"/>
+
+
+    <!-- ============================================================ -->
+    <!-- Custom AccountLinkage 02                                     -->
+    <!-- ============================================================ -->
+    <bean name="custom-accountlink-emitter-02" class="org.atricore.idbus.examples.accountlinkemitter.CustomAccountLinkEmitter"/>
+
+    <osgi:service id="custom-accountlink-emitter-svc-02"
+                  ref="custom-accountlink-emitter-02"
+                  interface="org.atricore.idbus.kernel.main.federation.AccountLinkEmitter"/>
+
+    <bean name="custom-accountlinkage-policy-02" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkagePolicy">
+        <property name="id" value="-1"/>
+        <property name="name" value="Custom 02"/>
+        <!-- MUST match the Custom bean name -->
+        <property name="customLinkEmitter" value="custom-accountlink-emitter-02"/>
+    </bean>
+
+    <osgi:service id="custom-accountlinkage-policy-svc-02"
+                  ref="custom-accountlinkage-policy-02"
+                  interface="com.atricore.idbus.console.lifecycle.main.domain.metadata.AccountLinkagePolicy"/>
+
+</s:beans>

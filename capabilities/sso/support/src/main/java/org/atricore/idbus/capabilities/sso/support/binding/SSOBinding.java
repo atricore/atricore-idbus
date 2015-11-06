@@ -59,6 +59,10 @@ public enum SSOBinding {
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
     SSO_POST("urn:org:atricore:idbus:sso:bindings:HTTP-POST", true),
 
+    /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
+    AJAX_POST("urn:org:atricore:idbus:sso:bindings:AJAX-POST", true),
+
+
     /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
     SSO_SOAP("urn:org:atricore:idbus:sso:bindings:SOAP", false),
 
@@ -67,6 +71,9 @@ public enum SSOBinding {
 
     /** URI for SAML 2.0 IdP initiated bindings */
     SSO_IDP_INITIATED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http", true),
+
+    /** URI for SAML 2.0 IdP initiated bindings */
+    SSO_PREAUTHN("urn:org:atricore:idbus:sso:bindings:HTTP-PreAuthn", true),
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
     SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.0:bindings:HTTP-Artifact", true),

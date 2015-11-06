@@ -92,6 +92,13 @@ public class SSOSPComponent extends DefaultComponent {
             case SPInitiatedSingleSignOnServiceProxy:
                 endpoint = new SPInitiatedSingleSignOnServiceProxyEndpoint(uri, this, parameters);
                 break;
+            case SPInitiatedSingleLogoutServiceProxy:
+                endpoint = new SPInitiatedSingleLogoutServiceProxyEndpoint(uri, this, parameters);
+                break;
+            case IdPSelectorCallbackService:
+                endpoint = new IdPSelectorCallbackEndpoint(uri, this, parameters);
+                break;
+
             default:
                 throw new IllegalArgumentException( "Unsupported SAMLR 2.0 endpoint " + remaining );
         }

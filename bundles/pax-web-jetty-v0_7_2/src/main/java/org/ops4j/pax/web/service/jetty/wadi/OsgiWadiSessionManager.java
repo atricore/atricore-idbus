@@ -45,12 +45,12 @@ public class OsgiWadiSessionManager extends AbstractSessionManager
 
     public OsgiWadiSessionManager(ClassLoader cl, WadiCluster wadiCluster, int numPartitions, int sweepInterval)
     {
-        this(cl, wadiCluster, 0, numPartitions, sweepInterval, false, false);
+        this(cl, wadiCluster, 0, numPartitions, sweepInterval, false, false, false);
     }
 
     public OsgiWadiSessionManager(ClassLoader cl, WadiCluster wadiCluster, int nbReplica, int numPartitions, int sweepInterval)
     {
-        this(cl, wadiCluster, nbReplica, numPartitions, sweepInterval, true, false);
+        this(cl, wadiCluster, nbReplica, numPartitions, sweepInterval, true, false, false);
     }
 
     /**
@@ -71,7 +71,8 @@ public class OsgiWadiSessionManager extends AbstractSessionManager
             int numPartitions,
             int sweepInterval,
             boolean enableReplication,
-            boolean deltaReplication)
+            boolean deltaReplication,
+            boolean secureCookies)
     {
         _classLoader = cl;
         _wadiCluster = wadiCluster;
@@ -80,6 +81,7 @@ public class OsgiWadiSessionManager extends AbstractSessionManager
         _sweepInterval = sweepInterval;
         _enableReplication = enableReplication;
         _deltaReplication = deltaReplication;
+        _secureCookies = secureCookies;
 
         _listeners = new CopyOnWriteArrayList();
 

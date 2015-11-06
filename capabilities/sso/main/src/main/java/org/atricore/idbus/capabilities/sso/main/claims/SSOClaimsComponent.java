@@ -57,6 +57,7 @@ public class SSOClaimsComponent extends DefaultComponent {
         AuthnCtxClass authnCtx = resolveAuthnCtx(uri, remaining);
         switch(authnCtx) {
             case PASSWORD_AUTHN_CTX:
+            case PPT_AUTHN_CTX:
                 endpoint = new UsernamePasswordClaimsEndpoint(uri, this, parameters);
                 break;
 
@@ -68,7 +69,11 @@ public class SSOClaimsComponent extends DefaultComponent {
                 endpoint = new SpUsernamePasswordClaimsEndpoint(uri, this, parameters);
                 break;
 
-            case OAUTH2_AUTHN_CTX:
+            case OAUTH2_PREAUTHN_CTX:
+                endpoint = new PreAuthenticationSecurityTokenClaimsEndpoint(uri, this, parameters);
+                break;
+
+            case OAUTH2_PREAUTHN_PASSIVE_CTX:
                 endpoint = new PreAuthenticationSecurityTokenClaimsEndpoint(uri, this, parameters);
                 break;
 

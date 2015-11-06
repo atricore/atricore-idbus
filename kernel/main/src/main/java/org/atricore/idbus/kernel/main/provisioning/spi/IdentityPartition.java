@@ -1,16 +1,16 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
-import org.atricore.idbus.kernel.main.provisioning.domain.AclEntry;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.SecurityQuestion;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 
 import java.util.Collection;
 
 /**
+ * Low-level view of users repository.  Originally conceived as a provisioning resource.  Its role changed once
+ * the IdM module was added, and resources are hidden by that module.
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public interface IdentityPartition {
@@ -19,14 +19,9 @@ public interface IdentityPartition {
 
     String getDescription();
 
-    @Deprecated
-    IdentityVault getIdentityVault();
-
     IdentityStore getIdentityStore();
-
-    SchemaManager getSchemaManager();
-
-    Group findGroupById(long id) throws ProvisioningException;
+    
+    Group findGroupByOid(String oid) throws ProvisioningException;
 
     Group findGroupByName(String name) throws ProvisioningException;
 
@@ -38,13 +33,13 @@ public interface IdentityPartition {
 
     Group updateGroup(Group group) throws ProvisioningException;
 
-    void deleteGroup(long id) throws ProvisioningException;
+    void deleteGroup(String oid) throws ProvisioningException;
 
     User addUser(User user) throws ProvisioningException;
 
-    void deleteUser(long id) throws ProvisioningException;
+    void deleteUser(String oid) throws ProvisioningException;
 
-    User findUserById(long id) throws ProvisioningException;
+    User findUserByOid(String oid) throws ProvisioningException;
 
     User findUserByUserName(String username) throws ProvisioningException;
 
@@ -54,27 +49,8 @@ public interface IdentityPartition {
 
     Collection<User> getUsersByGroup(Group group) throws ProvisioningException;
 
-    AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException;
+    long getUserCount() throws ProvisioningException;
 
-    AclEntry findAclEntryById(long id) throws ProvisioningException;
-
-    AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException;
-
-    void deleteAclEntry(long id) throws ProvisioningException;
-
-    Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException;
-
-    SecurityToken addSecurityToken(SecurityToken securityToken) throws ProvisioningException;
-
-    SecurityToken updateSecurityToken(SecurityToken securityToken) throws ProvisioningException;
-
-    void deleteSecurityToken(String id) throws ProvisioningException;
-
-    SecurityToken findSecurityTokenByTokenId(String tokenId) throws ProvisioningException;
-
-    Collection<SecurityToken> findSecurityTokensByIssueInstantBefore(long issueInstant) throws ProvisioningException;
-
-    Collection<SecurityToken> findSecurityTokensByExpiresOnBefore(long expiresOn) throws ProvisioningException;
 }
 
 

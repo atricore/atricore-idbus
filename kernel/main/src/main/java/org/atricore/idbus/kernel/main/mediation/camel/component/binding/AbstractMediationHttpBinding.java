@@ -48,10 +48,7 @@ import java.lang.Object;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -153,6 +150,9 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     }
 
     protected void copyBackState(MediationState state, Exchange exchange) {
+
+        boolean secureCookies = exchange.getIn().getHeader("org.atricore.idbus.http.SecureCookies") != null;
+
         if (state == null) {
             logger.warn("No state received ...!");
             return;
@@ -220,11 +220,11 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                     Date exp = new Date(expiration);
                     String expirationStr = cookieDf.format(exp);
                     exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                            state.getRemoteVariable(name) + ";Path=/;Expires=" + expirationStr);
+                            state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
                 } else {
                     // Session cookie
                     exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                        state.getRemoteVariable(name) + ";Path=/");
+                        state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "Path=/");
                 }
 
             }
@@ -236,7 +236,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             Date exp = new Date(0);
             String expirationStr = cookieDf.format(exp);
             exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                    "-" + ";Path=/;Expires=" + expirationStr);
+                    "-" + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
         }
     }
 
@@ -352,6 +352,56 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
     public String buildHttpTargetLocation(Object httpData, EndpointDescriptor ed) {
         return buildHttpTargetLocation(httpData, ed, false);
+    }
+
+
+    /**
+     * This will add the necessary CORS headers to the HTTP response when CORS is requested.
+     */
+    protected void handleCrossOriginResourceSharing(Exchange exchange) {
+        Message httpOut = exchange.getOut();
+        Message httpIn = exchange.getIn();
+
+        String origin = (String) httpIn.getHeader("Origin");
+
+        if (origin != null) {
+
+            // External application is requesting cross origin support:
+
+            Boolean allowAll = Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.cors.allowAll", "false"));
+
+            if (logger.isTraceEnabled())
+                logger.trace("User-Agent requesting cross origin support for " + origin);
+
+            boolean allow = false;
+            IdentityMediationUnit unit = this.channel.getUnitContainer().getUnit();
+            // TODO : Populate this from the console, at the moment the list is always empty!
+            Set<String> allowedOrigins = (Set<String>) unit.getMediationProperty("binding.http.cors.origins");
+
+            if (allowedOrigins != null && allowedOrigins.size() > 0 && allowedOrigins.contains(origin)) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Allowing cross origin for registered URL " + origin);
+
+                allow = true;
+
+            } else if (allowAll) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Allowing cross origin for non-registered URL " + origin);
+
+                allow = true;
+            } else {
+                logger.warn("Denying cross origin for registered URL " + origin);
+                allow = false;
+            }
+
+            if (allow) {
+                httpOut.getHeaders().put("Access-Control-Allow-Origin", origin);
+                httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
+                httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                httpOut.getHeaders().put("Access-Control-Allow-Credentials", "true");
+            }
+        }
+
     }
 
     // -------------------------------------------------------------
@@ -648,6 +698,9 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         return html;
     }
 
+    // -------------------------------------------------------------
+    // HTTP Utils
+    // -------------------------------------------------------------
     protected java.util.Map<String, String> getParameters(InputStream httpMsgBody) throws IOException {
 
         if (httpMsgBody == null) {
@@ -725,7 +778,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         int retryCount = Integer.parseInt(retryCountStr);
         if (retryCount < 1) {
-            logger.warn("Configuratio property 'binding.http.loadStateRetryCount' cannot be " + retryCount);
+            logger.warn("Configuration property 'binding.http.loadStateRetryCount' cannot be " + retryCount);
             retryCount = 3;
         }
 
@@ -744,7 +797,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         long retryDelay = Long.parseLong(retryDelayStr);
         if (retryDelay < 0) {
-            logger.warn("Configuratio property 'binding.http.loadStateRetryDelay' cannot be " + retryDelay);
+            logger.warn("Configuration property 'binding.http.loadStateRetryDelay' cannot be " + retryDelay);
             retryDelay = 100;
         }
 

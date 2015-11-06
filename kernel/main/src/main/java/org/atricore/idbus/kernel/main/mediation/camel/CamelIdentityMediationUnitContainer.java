@@ -66,7 +66,7 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
     private boolean init = false;
     private SpringMediationUnit unit;
 
-    // CXF Bus.  We programatically add Camel Transport to it ...
+    // CXF Bus.  We manually add Camel Transport to it ...
     private Bus bus;
 
     public String getName() {
@@ -77,12 +77,12 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
         this.name = name;
     }
 
-    public SpringMediationUnit getUnit() {
+    public IdentityMediationUnit getUnit() {
         return unit;
     }
 
-    public void setUnit(SpringMediationUnit unit) {
-        this.unit = unit;
+    public void setUnit(IdentityMediationUnit unit) {
+        this.unit = (SpringMediationUnit) unit;
     }
 
     public CamelIdentityMediationUnitContainer() {

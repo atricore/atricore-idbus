@@ -33,6 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -103,7 +104,7 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
                 logger.debug("Token received in Authorization Header (base64) : " + base64token);
                 sm = new AuthenticatedRequest(binaryToken);
             } else {
-                 throw new UnsupportedOperationException("Only 'Negotiate' is supported:" + authorization);
+                throw new UnsupportedOperationException("Only 'Negotiate' is supported:" + authorization);
             }
         }
 
@@ -134,7 +135,9 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
 
         if (sm instanceof InitiateSpnegoNegotiation) {
             InitiateSpnegoNegotiation isn = (InitiateSpnegoNegotiation) sm;
-            logger.debug("Initiating Spnego Negotiation on " + ed.getLocation());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Initiating Spnego Negotiation on " + ed.getLocation());
 
             if (!isn.getSpnegoInitiationEndpoint().equals(ed.getLocation())) {
                 logger.warn("Requested Spnego Negotiation endpoint ignored : " + isn.getSpnegoInitiationEndpoint());
@@ -146,15 +149,23 @@ public class SpnegoHttpNegotiatorBinding extends AbstractMediationHttpBinding {
             httpOut.getHeaders().put("Content-Type", "text/html");
             httpOut.getHeaders().put("Location", ed.getLocation());
             // Tell the kernel not to follow this redirect, we need the browser to handle it
-            httpOut.getHeaders().put("X-IdBus-FollowRedirect", "FALSE");
+            httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "FALSE");
+            handleCrossOriginResourceSharing(exchange);
 
         } else if (sm instanceof RequestToken) {
-            logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
-            httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
-            httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
+            if (logger.isDebugEnabled())
+                logger.debug("Requesting GSSAPI token to SPNEGO/HTTP initiator");
 
             String fallBackUrl =
                     (ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation()) + "?SPNEGO=false";
+
+            httpOut.getHeaders().put(SpnegoHeader.AUTHN.getValue(), SpnegoHeader.NEGOTIATE.getValue());
+
+            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+            httpOut.getHeaders().put("Pragma", "no-cache");
+            httpOut.getHeaders().put("http.responseCode", SpnegoStatus.UNAUTHORIZED.getValue());
+            httpOut.getHeaders().put("Content-Type", "text/html");
+            httpOut.getHeaders().put("Location", fallBackUrl);
 
             // Create fall-back HTML
             String fallBackHtml = "<HTML>\n" +

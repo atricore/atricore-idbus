@@ -10,12 +10,12 @@
     <parent>
         <groupId>org.atricore.idbus.examples.simple-openid</groupId>
         <artifactId>org.atricore.idbus.examples.simple-openid.project</artifactId>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.examples.simple-openid</groupId>
 	<artifactId>org.atricore.idbus.examples.simple-openid.features</artifactId>
-    <version>1.4.1-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <name>Atricore IDBus :: Example : Simple OpenID Identity Appliance Feature</name>
 	<packaging>jar</packaging>
 

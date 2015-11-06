@@ -235,7 +235,8 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
 
             for (IdentityMediationEndpoint endpoint : bChannel.getEndpoints()) {
 
-                logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
 
                 if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnService.toString())) {
 

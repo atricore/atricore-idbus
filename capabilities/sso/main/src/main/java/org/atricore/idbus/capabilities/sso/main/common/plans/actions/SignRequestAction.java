@@ -21,11 +21,19 @@
 
 package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
+import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -45,9 +53,26 @@ public class SignRequestAction extends AbstractSSOAction {
         Channel channel = (Channel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
 
-        if (!mediator.isSignRequests()) {
-            logger.debug("Signature disabled for " + channel.getName());
-            return;
+        // TODO : Support signin some requests: i.e. when IdP requires authn. requests to be signed
+
+        boolean signRequest = false;
+
+        if (request instanceof AuthnRequestType) {
+            CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable( VAR_DESTINATION_COT_MEMBER );
+            if (idp != null) {
+                signRequest = wantAssertionSigned(idp);
+            }
+        }
+
+        if (!signRequest && !mediator.isSignRequests()) {
+            if (logger.isDebugEnabled())
+                logger.debug("Signature disabled for " + channel.getName());
+
+            signRequest = false;
+        }
+
+        if (!signRequest) {
+            return ;
         }
 
         SamlR2Signer signer = mediator.getSigner();
@@ -59,6 +84,41 @@ public class SignRequestAction extends AbstractSSOAction {
         }
 
         out.replaceContent(signer.sign(request));
+    }
+
+
+
+    protected boolean wantAssertionSigned(CircleOfTrustMemberDescriptor idp) {
+
+        MetadataEntry idpMd = idp.getMetadata();
+
+        if (idpMd.getEntry() instanceof EntityDescriptorType) {
+
+            EntityDescriptorType md = (EntityDescriptorType) idpMd.getEntry();
+
+            for (RoleDescriptorType role : md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+
+                if (role instanceof IDPSSODescriptorType) {
+                    IDPSSODescriptorType idpSsoRole = (IDPSSODescriptorType) role;
+                    Boolean wantAuthnRequestsSigned = idpSsoRole.getWantAuthnRequestsSigned();
+
+                    if (logger.isDebugEnabled())
+                        logger.debug(idp.getAlias() + ":WantAuthnRequestsSigned=" + wantAuthnRequestsSigned );
+
+                    return wantAuthnRequestsSigned  != null ? wantAuthnRequestsSigned  : false;
+                }
+
+            }
+
+            logger.error("Non-IdP Metadata found " + idpMd.getEntry() + ", SAML 2 IDP Role expected");
+
+        } else {
+            logger.error("Unsupported Metadata type " + idpMd.getEntry() + ", SAML 2 Metadata expected");
+        }
+
+        return false;
+
+
     }
 
 

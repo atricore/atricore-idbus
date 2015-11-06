@@ -135,6 +135,7 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
                     httpOut.getHeaders().put("Pragma", "no-cache");
                     httpOut.getHeaders().put("http.responseCode", 200);
                     httpOut.getHeaders().put("Content-Type", "text/html");
+                    handleCrossOriginResourceSharing(exchange);
 
                     ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
                     httpOut.setBody(baos);
@@ -150,6 +151,7 @@ public class OpenIDHttpPostBinding extends AbstractMediationHttpBinding {
                     httpOut.getHeaders().put("http.responseCode", 302);
                     httpOut.getHeaders().put("Content-Type", "text/html");
                     httpOut.getHeaders().put("Location", soar.getDestinationUrl());
+                    handleCrossOriginResourceSharing(exchange);
             }
 
         } catch (Exception e) {
