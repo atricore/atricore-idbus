@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.ui.page.policy.pwdreset;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -65,10 +66,10 @@ public class PolicyPwdResetPanel extends BaseSignInPanel {
                     pwdReset();
                     onPwdResetSucceeded();
                 } catch (PolicyPwdResetException e) {
-                    onPwdResetFailed(e.getMessageKey());
+                    onPwdResetFailed(e.getMessageKeys());
                 } catch (Exception e) {
                     logger.error("Fatal error during password reset : " + e.getMessage(), e);
-                    onPwdResetFailed("app.error");
+                    onPwdResetFailed(new String[] {"app.error"});
                 }
             }
         };
@@ -117,15 +118,17 @@ public class PolicyPwdResetPanel extends BaseSignInPanel {
         }
     }
 
-    protected void onPwdResetFailed(String messageKey) {
-        error(getLocalizer().getString(messageKey, this, "Operation failed"));
+    protected void onPwdResetFailed(String[] messageKeys) {
+        for (String messageKey : messageKeys) {
+            getFeedbackMessages().add(new FeedbackMessage(this, getLocalizer().getString(messageKey, this, "Operation failed"), FeedbackMessage.ERROR));
+        }
     }
 
     protected void pwdReset() throws ProvisioningException, PolicyPwdResetException {
         PolicyPwdResetModel pwdReset = getPwdResetModel();
 
         if (!pwdReset.getNewPassword().equals(pwdReset.getRetypedPassword())) {
-            throw new PolicyPwdResetException("error.password.doNotMatch");
+            throw new PolicyPwdResetException(new String[] {"error.password.doNotMatch"});
         }
 
         try {
@@ -134,15 +137,19 @@ public class PolicyPwdResetPanel extends BaseSignInPanel {
         } catch (InvalidCredentialsException e) {
             logger.error("Error updating user password: " + e.getMessage(), e);
             recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
-            throw new PolicyPwdResetException("error.password.invalid");
+            throw new PolicyPwdResetException(new String[] {"error.password.invalid"});
         } catch (CredentialsPolicyVerificationException e) {
-            // TODO : Handle error codes from exception:
             logger.error("Error updating user password: " + e.getMessage(), e);
             recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
-
-            throw new PolicyPwdResetException("error.password.illegal");
+            String[] messageKeys = new String[e.getErrorCodes().length];
+            for (int i = 0; i < e.getErrorCodes().length; i++) {
+                messageKeys[i] = "error.password." + e.getErrorCodes()[i];
+            }
+            throw new PolicyPwdResetException(messageKeys);
         } catch (SSOIdentityException e) {
-            throw new PolicyPwdResetException("app.error");
+            logger.error("Error updating user password: " + e.getMessage(), e);
+            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
+            throw new PolicyPwdResetException(new String[] {"app.error"});
         }
     }
 

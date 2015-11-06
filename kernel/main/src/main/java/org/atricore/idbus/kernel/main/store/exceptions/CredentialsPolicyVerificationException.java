@@ -23,32 +23,34 @@ public class CredentialsPolicyVerificationException extends SSOIdentityException
 
     public static final String PASSWORD_IN_HISTORY = "passwordInHistory";
 
-    public static final String INVALID_PASSWORD = "invalidPassowrd";
+    public static final String PASSWORD_CONTAINS_USERNAME = "passwordContainsUsername";
 
-    private String errorCode;
+    public static final String INVALID_PASSWORD = "invalidPassword";
+
+    private String[] errorCodes;
 
 
-    public CredentialsPolicyVerificationException(String code) {
+    public CredentialsPolicyVerificationException(String[] codes) {
         super();
-        this.errorCode = code;
+        this.errorCodes = codes;
     }
 
-    public CredentialsPolicyVerificationException(String code, String message) {
+    public CredentialsPolicyVerificationException(String[] codes, String message) {
         super(message);
-        this.errorCode = code;
+        this.errorCodes = codes;
     }
 
-    public CredentialsPolicyVerificationException(String code, Throwable cause) {
+    public CredentialsPolicyVerificationException(String[] codes, Throwable cause) {
         super(cause);
-        this.errorCode = code;
+        this.errorCodes = codes;
     }
 
-    public CredentialsPolicyVerificationException(String code, String message, Throwable cause) {
+    public CredentialsPolicyVerificationException(String[] codes, String message, Throwable cause) {
         super(message, cause);
-        this.errorCode = code;
+        this.errorCodes = codes;
     }
 
-    public String getErrorCode() {
-        return errorCode;
+    public String[] getErrorCodes() {
+        return errorCodes;
     }
 }

@@ -2,23 +2,23 @@ package org.atricore.idbus.capabilities.sso.ui.page.policy.pwdreset;
 
 public class PolicyPwdResetException extends Exception {
 
-    private String messageKey;
+    private String[] messageKeys;
 
-    public PolicyPwdResetException(String messageKey) {
-        this(messageKey, "Password reset error");
+    public PolicyPwdResetException(String[] messageKeys) {
+        this(messageKeys, "Password reset error");
     }
 
-    public PolicyPwdResetException(String messageKey, String error) {
+    public PolicyPwdResetException(String[] messageKeys, String error) {
         super(error);
-        this.messageKey = messageKey;
+        this.messageKeys = messageKeys;
     }
 
-    public PolicyPwdResetException(String messageKey, String error, Throwable cause) {
+    public PolicyPwdResetException(String[] messageKeys, String error, Throwable cause) {
         super(error, cause);
-        this.messageKey = messageKey;
+        this.messageKeys = messageKeys;
     }
 
-    public String getMessageKey() {
-        return messageKey;
+    public String[] getMessageKeys() {
+        return messageKeys;
     }
 }
