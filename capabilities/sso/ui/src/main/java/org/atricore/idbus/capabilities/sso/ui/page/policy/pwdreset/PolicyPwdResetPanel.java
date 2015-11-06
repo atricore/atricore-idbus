@@ -23,12 +23,11 @@ import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
+import org.atricore.idbus.kernel.main.store.exceptions.CredentialsPolicyVerificationException;
+import org.atricore.idbus.kernel.main.store.exceptions.InvalidCredentialsException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-
-import javax.naming.AuthenticationException;
-import javax.naming.directory.InvalidAttributeValueException;
 
 public class PolicyPwdResetPanel extends BaseSignInPanel {
 
@@ -132,16 +131,18 @@ public class PolicyPwdResetPanel extends BaseSignInPanel {
         try {
             identityStore.updatePassword(new SimpleUserKey(username), pwdReset.getCurrentPassword(), pwdReset.getNewPassword());
             recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.SUCCESS, username);
-        } catch (SSOIdentityException e) {
+        } catch (InvalidCredentialsException e) {
             logger.error("Error updating user password: " + e.getMessage(), e);
             recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
-            if (e.getCause() instanceof AuthenticationException) {
-                throw new PolicyPwdResetException("error.password.invalid");
-            } else if (e.getCause() instanceof InvalidAttributeValueException) {
-                throw new PolicyPwdResetException("error.password.illegal");
-            } else {
-                throw new PolicyPwdResetException("app.error");
-            }
+            throw new PolicyPwdResetException("error.password.invalid");
+        } catch (CredentialsPolicyVerificationException e) {
+            // TODO : Handle error codes from exception:
+            logger.error("Error updating user password: " + e.getMessage(), e);
+            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
+
+            throw new PolicyPwdResetException("error.password.illegal");
+        } catch (SSOIdentityException e) {
+            throw new PolicyPwdResetException("app.error");
         }
     }
 

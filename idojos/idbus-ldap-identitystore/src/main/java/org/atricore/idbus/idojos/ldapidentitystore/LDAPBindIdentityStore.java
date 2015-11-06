@@ -30,6 +30,8 @@ import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
 import org.atricore.idbus.kernel.main.store.UserKey;
+import org.atricore.idbus.kernel.main.store.exceptions.CredentialsPolicyVerificationException;
+import org.atricore.idbus.kernel.main.store.exceptions.InvalidCredentialsException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.BindContext;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
@@ -37,10 +39,7 @@ import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.BasicAttributes;
+import javax.naming.directory.*;
 import javax.naming.ldap.BasicControl;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
@@ -382,6 +381,13 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
             Attribute pwdResetAttr = new BasicAttribute("pwdReset", false);
             attrs1.put(pwdResetAttr);
             ctx.modifyAttributes(dn, InitialLdapContext.REPLACE_ATTRIBUTE, attrs1);
+
+        } catch (AuthenticationException e) {
+            // Invalid old password value
+            throw new InvalidCredentialsException(e.getMessage(), e);
+        } catch (InvalidAttributeValueException e) {
+            // Invalid new password value
+            throw buildCrendetialsPolicyVerificationException(e);
         } catch (NamingException e) {
             throw new SSOIdentityException(e);
         } finally {
@@ -392,5 +398,11 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 throw new SSOIdentityException(e);
             }
         }
+    }
+
+    protected CredentialsPolicyVerificationException buildCrendetialsPolicyVerificationException(InvalidAttributeValueException e) {
+        // TODO : Parse messages to get the proper code
+        // We need to detect/configure the LDAP vendor ? and use that to get the code from the message string.
+        return new CredentialsPolicyVerificationException(CredentialsPolicyVerificationException.INVALID_PASSWORD, e.getMessage(), e);
     }
 }
