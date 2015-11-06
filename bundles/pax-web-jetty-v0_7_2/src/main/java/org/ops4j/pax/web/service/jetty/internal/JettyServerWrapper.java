@@ -46,6 +46,7 @@ public class JettyServerWrapper extends Server {
         m_serverModel = serverModel;
         m_contexts = new IdentityHashMap<HttpContext, Context>();
         m_sessionHandlerBuilder = sessionHandlerBuilder;
+        this.setSendServerVersion(false);
     }
 
     public void setSessionHandlerBuilder(SessionHandlerBuilder b) {
