@@ -120,6 +120,7 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
+import org.w3c.dom.Node;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
@@ -3054,22 +3055,29 @@ public class SingleSignOnProducer extends SSOProducer {
     }
 
     protected Locale getLocaleFromAuthRequest(AuthnRequestType authnRequest){
-        if(authnRequest.getExtensions() != null)
-        {
-            // TODO : Look for a specific element
-            List localeElem =  authnRequest.getExtensions().getAny();
-            logger.debug("localeElem is found under Extensions element is: " + localeElem);
+        if(authnRequest.getExtensions() != null) {
 
-            if(localeElem != null){
-                String localeCode = ((org.w3c.dom.Node)(localeElem.get(0))).getTextContent();
-                if (logger.isDebugEnabled())
-                    logger.debug("Using AuthnRequest locale: " + localeCode);
-                return new Locale(localeCode);
+            oasis.names.tc.saml._2_0.protocol.ExtensionsType ext = authnRequest.getExtensions();
+            List<Object> any = ext.getAny();
 
+            if (any == null) {
+                logger.trace("No extension's content in AuthnRequest");
+                return null;
             }
 
-        }else {
-            logger.trace("No extensions element in authnrequest");
+            for (Object o : any) {
+                // There are other extension types (i.e. SPList)
+                if (o instanceof org.w3c.dom.Node) {
+                    org.w3c.dom.Node n = (Node) o;
+                    String name = n.getLocalName();
+                    String localeCode = n.getTextContent();
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using AuthnRequest locale ["+name+"]: " + localeCode);
+                }
+            }
+
+        } else {
+            logger.trace("No extensions element in AuthnRequest");
         }
 
         return null;

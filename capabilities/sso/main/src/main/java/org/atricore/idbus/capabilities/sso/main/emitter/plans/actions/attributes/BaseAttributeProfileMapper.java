@@ -1,6 +1,7 @@
 package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes;
 
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.SSORole;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
@@ -52,6 +53,11 @@ public abstract class BaseAttributeProfileMapper implements SamlR2AttributeProfi
     @Override
     public Collection<AttributeType> toAttributes(SecurityToken securityToken) {
         return tokenToAttributes(securityToken);
+    }
+
+    @Override
+    public AuthnCtxClass toAuthnCtxClass(Subject ssoSubject, AuthnCtxClass original) {
+        return original;
     }
 
     protected abstract Collection<AttributeType> userToAttributes(SSOUser ssoUser);
