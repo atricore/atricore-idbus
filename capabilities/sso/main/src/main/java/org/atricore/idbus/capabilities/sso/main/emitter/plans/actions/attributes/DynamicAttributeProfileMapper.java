@@ -3,10 +3,12 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attribute
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 
+import javax.security.auth.Subject;
 import java.util.*;
 
 public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
@@ -17,6 +19,8 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
     private static final String PRINCIPAL_ATTR_NAME = "_principal";
 
     private static final String GROUPS_ATTR_NAME = "_groups";
+
+    private static final String AUTHN_CTX_CLASS_ATTR_NAME = "_authnContextClass";
 
     private Map<String, AttributeMapping> attributeMaps = new HashMap<String, AttributeMapping>();
 
@@ -181,6 +185,16 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
         }
 
         return attrTokens;
+    }
+
+    @Override
+    public AuthnCtxClass toAuthnCtxClass(Subject ssoSubject, AuthnCtxClass original) {
+        AttributeMapping authnCtxClassAttributeMapping = getAttributeMapping(AUTHN_CTX_CLASS_ATTR_NAME);
+        if (authnCtxClassAttributeMapping != null && authnCtxClassAttributeMapping.getReportedAttrName() != null &&
+                !authnCtxClassAttributeMapping.getReportedAttrName().equals("")) {
+            return AuthnCtxClass.asEnum(authnCtxClassAttributeMapping.getReportedAttrName());
+        }
+        return original;
     }
 
     private AttributeMapping getAttributeMapping(String attrName) {
