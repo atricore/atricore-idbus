@@ -86,6 +86,8 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
 
             AuthnContextType authnContext = new AuthnContextType();
 
+            // TODO : Map authnCtxClass and replace selected value
+
             JAXBElement<String> authnCtx= samlObjectFactory.createAuthnContextClassRef(
                     ctx.getAuthnState().getCurrentAuthnCtxClass().getValue()
             );
@@ -123,12 +125,16 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
             // Having no authentication context means that we've authenticated using the previously established session
             AuthnContextType authnContext = new AuthnContextType();
 
+            // TODO : Map authnCtxClass and replace selected value
+
             JAXBElement<String> authnCtx= samlObjectFactory.createAuthnContextClassRef(
                 authnCtxClass
             );
             authnContext.getContent().add(authnCtx);
             authnStatement.setAuthnContext(authnContext);
         }
+
+
 
         assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().add(authnStatement);
 
