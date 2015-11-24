@@ -345,27 +345,32 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
                         if (logger.isTraceEnabled())
                             logger.trace("Looking at SLO Endpoint " + idpSloEndpoint.getBinding());
 
-                        SSOBinding b = SSOBinding.asEnum(idpSloEndpoint.getBinding());
+                        try {
 
-                        if (b.isFrontChannel() != frontChannel)
-                            continue;
+                            SSOBinding b = SSOBinding.asEnum(idpSloEndpoint.getBinding());
 
-                        if (b.equals(preferredBinding)) {
-                            if (logger.isDebugEnabled())
-                                logger.debug("Selected IdP SLO Endpoint " + idpSloEndpoint.getBinding());
-                            return idpSloEndpoint;
+                            if (b.isFrontChannel() != frontChannel)
+                                continue;
+
+                            if (b.equals(preferredBinding)) {
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Selected IdP SLO Endpoint " + idpSloEndpoint.getBinding());
+                                return idpSloEndpoint;
+                            }
+
+                            // If POST is available, use it
+                            if (b.equals(SSOBinding.SAMLR2_POST))
+                                postEndpoint = idpSloEndpoint;
+
+                            if (b.equals(SSOBinding.SAMLR2_REDIRECT))
+                                redirEndpoint = idpSloEndpoint;
+
+                            // Take the first front channel endpoint
+                            if (endpoint == null)
+                                endpoint = idpSloEndpoint;
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Ignoring unsupported binding " + idpSloEndpoint.getBinding() + " for endpoint " + idpSloEndpoint.getLocation());
                         }
-
-                        // If POST is available, use it
-                        if (b.equals(SSOBinding.SAMLR2_POST))
-                            postEndpoint = idpSloEndpoint;
-
-                        if (b.equals(SSOBinding.SAMLR2_REDIRECT))
-                            redirEndpoint = idpSloEndpoint;
-
-                        // Take the first front channel endpoint
-                        if (endpoint == null)
-                            endpoint = idpSloEndpoint;
                     }
 
 

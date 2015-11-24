@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.component.builtin.directives
 
+import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType
 import org.atricore.idbus.capabilities.sso.dsl.core._
 import directives.BasicIdentityFlowDirectives
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
@@ -122,6 +123,18 @@ trait ClaimDirectives extends Logging {
                               case _ =>
                                 true
                             }
+                      }.filter {
+                        ep =>
+
+                          val authnCtxClass = AuthnCtxClass.asEnum(ep.getType)
+
+                          // If AuthnContext was requested, match one of them.
+                          Option(authnRequest.getRequestedAuthnContext) match {
+                            case Some(requestedAuthnCtx) if (!requestedAuthnCtx.getAuthnContextClassRef.contains(authnCtxClass.getValue)) =>
+                              false
+                            case _ =>
+                              true
+                          }
                       }.filter {
                         ep =>
                           // if no authentication context has been requested fallback only to endpoints supporting

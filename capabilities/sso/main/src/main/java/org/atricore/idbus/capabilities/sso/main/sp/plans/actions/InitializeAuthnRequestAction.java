@@ -78,17 +78,30 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         boolean passive = false;
         boolean forceAuthn = false;
+        String authnCtxClass = null;
 
         RequestedAuthnContextType reqAuthnCtx = null;
         if (in.getContent() instanceof SPInitiatedAuthnRequestType) {
 
             SPInitiatedAuthnRequestType ssoAuthnReq = (SPInitiatedAuthnRequestType) in.getContent();
             passive = ssoAuthnReq.isPassive();
+            forceAuthn = ssoAuthnReq.getForceAuthn() != null && ssoAuthnReq.getForceAuthn();
 
+            // Only set requested authn ctx. class when credentials are provided by the SP.
+            if (ssoAuthnReq.getAuthnCtxClass() != null) {
+                reqAuthnCtx = new RequestedAuthnContextType();
+                reqAuthnCtx.getAuthnContextClassRef().add(ssoAuthnReq.getAuthnCtxClass());
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using AuthnContextClassRef : " + ssoAuthnReq.getAuthnCtxClass() + " (SPInitiatedAuthnRequest received)");
+
+            }
 
             // If credentials are present, request a special authnctx
             if (ssoAuthnReq.getCredentials() != null &&
                 ssoAuthnReq.getCredentials().size() > 0) {
+
+                logger.error("Usage of deprecated feature: request credentials, please use OpenID Connect/Pre-Authentication instead");
 
                 // TODO : Send SAML Subject, as stated in Saml 2 profiles : 4.1.4.1 <AuthnRequest> Usage
 
@@ -106,11 +119,9 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
             } else {
 
-                if (logger.isDebugEnabled() && passive)
+                if (logger.isDebugEnabled())
                     logger.debug("Generating PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
 
-                if (logger.isDebugEnabled() && !passive)
-                    logger.debug("Generating NON-PASSIVE Authn Request (SPInitiatedAuthnRequest received)");
 
             }
 
@@ -229,15 +240,19 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
             log.debug("Selected IdP channel " + idpChannel.getName());
 
         if (incomingEndpoint != null) {
-            incomingEndpointBinding  = SSOBinding.asEnum(incomingEndpoint.getBinding());
+            try {
+                incomingEndpointBinding = SSOBinding.asEnum(incomingEndpoint.getBinding());
 
-            if (log.isTraceEnabled())
-                log.trace("Incomming endpoint " + incomingEndpoint + ". Is front-channel: " +
-                        incomingEndpointBinding.isFrontChannel());
+                if (log.isTraceEnabled())
+                    log.trace("Incomming endpoint " + incomingEndpoint + ". Is front-channel: " +
+                            incomingEndpointBinding.isFrontChannel());
 
-            if (!incomingEndpointBinding.isFrontChannel()) {
-                // No need to resolve ACS endpoint for back-channel ...
-                return null;
+                if (!incomingEndpointBinding.isFrontChannel()) {
+                    // No need to resolve ACS endpoint for back-channel ...
+                    return null;
+                }
+            } catch (IllegalArgumentException e) {
+                logger.debug("Ignoring unsupported binding " + incomingEndpoint.getBinding() + " for endpoint " + incomingEndpoint.getLocation());
             }
 
         }

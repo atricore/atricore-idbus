@@ -47,6 +47,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private String hashCharset;
     
     private int saltLength;
+
+    private String saltValue;
     
     private IdentityPartition identityPartition;
 
@@ -1153,10 +1155,16 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.maxTimeToLive = maxTimeToLive;
     }
 
+    public String getSaltValue() {
+        return saltValue;
+    }
+
+    public void setSaltValue(String saltValue) {
+        this.saltValue = saltValue;
+    }
+
     // Use some external plugin/strategy
     public void validatePassword(String password) throws IllegalPasswordException {
-
-
 
         if (password == null || password.length() < 6) {
             throw new IllegalPasswordException("Password is too short");
@@ -1203,7 +1211,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     protected String generateSalt() {
         if (saltLength < 1)
-            return null;
+            return saltValue;
         byte[] saltBytes = new byte[saltLength];
         saltRandomizer.nextBytes(saltBytes);
 

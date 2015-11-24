@@ -123,17 +123,20 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
                 if (ssoAuthnReq != null && ssoAuthnReq.getForceAuthn() != null && !ssoAuthnReq.getForceAuthn()) {
 
                     // TODO ! Check that the session belongs to the IdP associated with this request
-                    logger.debug("SSO Session found " + secCtx.getSessionIndex());
+                    logger.debug("SSO Session found on SP " + secCtx.getSessionIndex());
 
                     SPAuthnResponseType ssoResponse = new SPAuthnResponseType ();
                     ssoResponse.setID(uuidGenerator.generateId());
                     ssoResponse.setIssuer(getProvider().getName());
+
                     SPInitiatedAuthnRequestType ssoRequest =
                             (SPInitiatedAuthnRequestType) in.getMessage().getState().
                                     getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
 
                     if (ssoRequest != null) {
                         ssoResponse.setInReplayTo(ssoRequest.getID());
+                    } else if (ssoAuthnReq != null) {
+                        ssoResponse.setInReplayTo(ssoAuthnReq.getID());
                     }
 
                     SubjectType subjectType = toSubjectType(secCtx.getSubject());
@@ -434,15 +437,19 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
-                        if (b.equals(preferredBinding))
-                            return idpSsoEndpoint;
+                        try {
+                            SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
+                            if (b.equals(preferredBinding))
+                                return idpSsoEndpoint;
 
-                        if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
-                            defaultEndpoint = idpSsoEndpoint;
+                            if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
+                                defaultEndpoint = idpSsoEndpoint;
 
-                        if (defaultEndpoint == null)
-                            defaultEndpoint = idpSsoEndpoint;
+                            if (defaultEndpoint == null)
+                                defaultEndpoint = idpSsoEndpoint;
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Ignoring unsupported binding " + idpSsoEndpoint.getBinding() + " for endpoint " + idpSsoEndpoint.getLocation());
+                        }
                     }
                     return defaultEndpoint;
                 }

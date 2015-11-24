@@ -193,9 +193,13 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
             log.debug("Selected IdP channel " + idpChannel.getName());
 
         if (incomingEndpoint != null) {
-            incomingEndpointBinding  = SSOBinding.asEnum(incomingEndpoint.getBinding());
-            if (log.isTraceEnabled())
-                log.trace("Incomming endpoint " + incomingEndpoint);
+            try {
+                incomingEndpointBinding = SSOBinding.asEnum(incomingEndpoint.getBinding());
+                if (log.isTraceEnabled())
+                    log.trace("Incomming endpoint " + incomingEndpoint);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Ignoring unsupported binding " + incomingEndpoint.getBinding() + " for endpoint " + incomingEndpoint);
+            }
         }
 
         // Look for the ACS endpoint configured in the IdP channel

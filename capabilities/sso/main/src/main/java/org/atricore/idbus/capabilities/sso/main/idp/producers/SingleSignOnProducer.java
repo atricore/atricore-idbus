@@ -2407,15 +2407,19 @@ public class SingleSignOnProducer extends SSOProducer {
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
-                        if (b.equals(preferredBinding))
-                            return idpSsoEndpoint;
+                        try {
+                            SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
+                            if (b.equals(preferredBinding))
+                                return idpSsoEndpoint;
 
-                        if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
-                            defaultEndpoint = idpSsoEndpoint;
+                            if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
+                                defaultEndpoint = idpSsoEndpoint;
 
-                        if (defaultEndpoint == null)
-                            defaultEndpoint = idpSsoEndpoint;
+                            if (defaultEndpoint == null)
+                                defaultEndpoint = idpSsoEndpoint;
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Ignoring unsupported binding " + idpSsoEndpoint.getBinding() + " for endpoint " + idpSsoEndpoint.getLocation());
+                        }
                     }
                     return defaultEndpoint;
                 }

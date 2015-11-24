@@ -31,27 +31,6 @@ public class SetAuthnResponseSubjectAction extends AbstractSSOAction {
             ssoResponse.setSubject(subject);
             ssoResponse.setSessionIndex(spSecurityContext.getSessionIndex());
 
-/* No app should need the IDP SSO Session through agents (keep-alive can be performed using SP Session)
-
-            // Adding idpSsoSession property (required by JOSSO capability, but only available through back channel)
-            SubjectAttributeType idpSsoSessionIdx = new SubjectAttributeType();
-            idpSsoSessionIdx.setName("idpSsoSession");
-            idpSsoSessionIdx.setValue(spSecurityContext.getIdpSsoSession());
-            ssoResponse.getSubjectAttributes().add(idpSsoSessionIdx);
-
-
-            SubjectAttributeType authnCtxAttr = new SubjectAttributeType();
-            authnCtxAttr.setName("authnCtxClass");
-            authnCtxAttr.setValue(spSecurityContext.getAuthnCtxClass().getValue());
-            ssoResponse.getSubjectAttributes().add(authnCtxAttr);
-
-            SubjectAttributeType idpAlias = new SubjectAttributeType();
-            idpAlias.setName("idpAlias");
-            idpAlias.setValue(spSecurityContext.getIdpAlias());
-            ssoResponse.getSubjectAttributes().add(idpAlias);
-*/
-
-
         }
 
     }

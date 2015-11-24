@@ -268,9 +268,6 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
             exchange.setOut(out);
 
-
-
-
         }
 
 
@@ -357,9 +354,13 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
-                        if (b.equals(SSOBinding.SAMLR2_SOAP))
-                            defaultEndpoint = idpSsoEndpoint;
+                        try {
+                            SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
+                            if (b.equals(SSOBinding.SAMLR2_SOAP))
+                                defaultEndpoint = idpSsoEndpoint;
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Ignoring unsupported binding " + idpSsoEndpoint.getBinding() + " for endpoint " + idpSsoEndpoint.getLocation());
+                        }
 
                     }
                     return defaultEndpoint;
