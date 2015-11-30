@@ -22,8 +22,7 @@ DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
 
 # Uncomment in develomnent environments
-#IDBUS_CLEANUP="all"
-IDBUS_CLEANUP="fast"
+#IDBUS_CLEANUP="true"
 
 #
 # Check/Set up some easily accessible MIN/MAX params for JVM mem usage
@@ -303,9 +302,9 @@ setupDefaults() {
 
 
 cleanUp() {
-    if [ "x$IDBUS_CLEANUP" == "xall" ]; then
+    if [ "x$IDBUS_CLEANUP" != "x" ]; then
         cleanUpAll
-    else 
+    else
         cleanUpFast
     fi
 }
