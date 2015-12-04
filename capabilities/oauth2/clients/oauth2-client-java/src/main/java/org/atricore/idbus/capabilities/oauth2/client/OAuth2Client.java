@@ -252,7 +252,7 @@ public class OAuth2Client implements ConfigurationConstants {
             configPath = "/oauth2.properties";
 
         Properties props = new Properties();
-        InputStream is = getClass().getResourceAsStream("/oauth2.properties");
+        InputStream is = getClass().getResourceAsStream(configPath);
         if (is == null)
             throw new OAuth2ClientException("Configuration not found for " + configPath);
 

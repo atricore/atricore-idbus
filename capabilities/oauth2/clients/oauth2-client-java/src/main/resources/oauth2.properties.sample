@@ -23,7 +23,7 @@ oauth2.spAlias=http://localhost:8081/IDBUS/ACME/SP1/SAML2/MD
 
 # The IDP initiated SSO authentication URL (optinal)
 # It's normally <protocol>://<sso-server>:<sso-port>/IDBUS/<appliance-id>/<idp-id>/SAML2/SSO/IDP_INITIATE
-oauth2.idpInitPreAuthn=http://localhost:8081/IDBUS/IDA-1/IDP-1/SAML2/SSO/IDP_INITIATE
+oauth2.idpPreAuthn=http://localhost:8081/IDBUS/IDA-1/IDP-1/SAML2/SSO/IDP_INITIATE
 
 # The IDP pre-authentication response endpoint
 # It's normally <protocol>://<sso-server>:<sso-port>/IDBUS/<appliance-id>/<idp-id>/CC/OAUTH2/PRE-AUTHN/REST

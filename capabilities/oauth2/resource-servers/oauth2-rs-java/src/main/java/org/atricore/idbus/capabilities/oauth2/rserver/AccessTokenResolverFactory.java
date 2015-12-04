@@ -87,7 +87,7 @@ public abstract class AccessTokenResolverFactory {
             configPath = "/oauth2.properties";
 
         Properties props = new Properties();
-        InputStream is = getClass().getResourceAsStream("/oauth2.properties");
+        InputStream is = getClass().getResourceAsStream(configPath);
         if (is == null)
             throw new OAuth2RServerException("Configuration not found for " + configPath);
 
