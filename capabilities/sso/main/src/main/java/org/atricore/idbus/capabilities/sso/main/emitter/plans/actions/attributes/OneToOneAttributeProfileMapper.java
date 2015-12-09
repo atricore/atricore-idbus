@@ -4,6 +4,7 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attribute
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
@@ -27,7 +28,7 @@ public class OneToOneAttributeProfileMapper extends BaseAttributeProfileMapper {
     }
 
     @Override
-    protected Collection<AttributeType> userToAttributes(SSOUser ssoUser) {
+    protected Collection<AttributeType> userToAttributes(SSOUser ssoUser, SamlR2SecurityTokenEmissionContext emissionContext) {
 
         List<AttributeType> attrProps = new ArrayList<AttributeType>();
 

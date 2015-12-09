@@ -1,6 +1,7 @@
 package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes;
 
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.SSORole;
@@ -27,7 +28,7 @@ public abstract class BaseAttributeProfileMapper implements SamlR2AttributeProfi
      * Factory method, that invokes primitives to build attribute types
      */
     @Override
-    public Collection<AttributeType> toAttributes(Subject subject) {
+    public Collection<AttributeType> toAttributes(Subject subject, SamlR2SecurityTokenEmissionContext emissionContext) {
 
         Set<AttributeType> attrs = new HashSet<AttributeType>();
 
@@ -37,7 +38,7 @@ public abstract class BaseAttributeProfileMapper implements SamlR2AttributeProfi
 
         // SSO User
         SSOUser ssoUser = ssoUsers.iterator().next();
-        attrs.addAll(userToAttributes(ssoUser));
+        attrs.addAll(userToAttributes(ssoUser, emissionContext));
 
         // SSO Roles
         Set ssoRoles = subject.getPrincipals(SSORole.class);
@@ -60,7 +61,7 @@ public abstract class BaseAttributeProfileMapper implements SamlR2AttributeProfi
         return original;
     }
 
-    protected abstract Collection<AttributeType> userToAttributes(SSOUser ssoUser);
+    protected abstract Collection<AttributeType> userToAttributes(SSOUser ssoUser, SamlR2SecurityTokenEmissionContext emissionContext);
 
     protected abstract Collection<AttributeType> rolesToAttributes(Set<SSORole> ssoRoles);
 

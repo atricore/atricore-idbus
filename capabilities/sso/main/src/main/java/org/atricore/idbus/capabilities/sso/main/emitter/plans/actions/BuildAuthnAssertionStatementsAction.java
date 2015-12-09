@@ -114,7 +114,7 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
         SamlR2AttributeProfileMapper mapper = resolveMapper(mapperName);
 
         // Map subject to saml attributes
-        Collection<AttributeType> attrs = mapper.toAttributes(s);
+        Collection<AttributeType> attrs = mapper.toAttributes(s, samlCtx);
 
         for (SecurityToken otherToken : stsCtx.getEmittedTokens()) {
             attrs.addAll(mapper.toAttributes(otherToken));

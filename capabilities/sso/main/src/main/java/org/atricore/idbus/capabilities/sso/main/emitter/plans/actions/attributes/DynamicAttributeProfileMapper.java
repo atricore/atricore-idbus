@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attribute
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
@@ -22,6 +23,8 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
     private static final String AUTHN_CTX_CLASS_ATTR_NAME = "_authnContextClass";
 
+    private static final String IDP_SSO_SESSION = "_idpSsoSession";
+
     private Map<String, AttributeMapping> attributeMaps = new HashMap<String, AttributeMapping>();
 
     public DynamicAttributeProfileMapper() {
@@ -29,10 +32,11 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
     }
 
     @Override
-    protected Collection<AttributeType> userToAttributes(SSOUser ssoUser) {
+    protected Collection<AttributeType> userToAttributes(SSOUser ssoUser, SamlR2SecurityTokenEmissionContext emissionContext) {
 
         List<AttributeType> userAttrs = new ArrayList<AttributeType>();
 
+        // Principal
         AttributeMapping principalAttributeMapping = getAttributeMapping(PRINCIPAL_ATTR_NAME);
         if (principalAttributeMapping != null) {
             // Add an attribute for the principal
@@ -43,6 +47,19 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
             attrPrincipal.setNameFormat(principalAttributeMapping.getReportedAttrNameFormat());
             attrPrincipal.getAttributeValue().add(ssoUser.getName());
         }
+
+        // IdP SSO Session
+        AttributeMapping idpSsoSessionAttributeMapping = getAttributeMapping(IDP_SSO_SESSION);
+        if (idpSsoSessionAttributeMapping != null) {
+            // Add an attribute for the principal
+            AttributeType idpSsoSession = new AttributeType();
+            idpSsoSession.setName((idpSsoSessionAttributeMapping.getReportedAttrName() != null &&
+                    !idpSsoSessionAttributeMapping.getReportedAttrName().equals("")) ?
+                    idpSsoSessionAttributeMapping.getReportedAttrName() : "idpSsoSession");
+            idpSsoSession.setNameFormat(idpSsoSessionAttributeMapping.getReportedAttrNameFormat());
+            idpSsoSession.getAttributeValue().add(emissionContext.getSessionIndex());
+        }
+
 
         // This will add SSO User properties as attribute statements.
         if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
