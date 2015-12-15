@@ -191,7 +191,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="aqm.receiveTimeout">30000</prop>
         <prop key="aqm.useCompression">false</prop>
 
-        <!-- For memroy AQM -->
+        <!-- For memory AQM -->
         <prop key="aqm.monitorInterval">30</prop>
         <prop key="aqm.artifactTTL">30</prop>
 
