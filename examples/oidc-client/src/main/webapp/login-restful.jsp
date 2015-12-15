@@ -98,17 +98,21 @@
             // Apply the HMAC
             signedJWT.sign(signer);
 
-            JWEHeader jweHeader = new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A256GCM).contentType("JWT").build();
-
-            // Create the encrypted JWT object
-            EncryptedJWT jwt = new EncryptedJWT(jweHeader, claimsSet);
-
-            // Do the actual encryption
-            jwt.encrypt(new DirectEncrypter(secretKey.getEncoded()));
+            // Create JWE object with signed JWT as payload
+            JWEObject jweObject = new JWEObject(
+                    new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A256GCM)
+                            .contentType("JWT") // required to signal nested JWT
+                            .build(),
+                    new Payload(signedJWT));
 
             // Perform encryption
-            assertion = jwt;
+            jweObject.encrypt(new DirectEncrypter(secretKey.getEncoded()));
 
+            // Serialise to JWE compact form
+            String jweString = jweObject.serialize();
+
+            // Create the encrypted JWT object
+            assertion = EncryptedJWT.parse(jweString);
         }
 
         // Authorization Grant

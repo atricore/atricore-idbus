@@ -20,12 +20,15 @@ public class AccessTokenRequestor {
 
     private String endpoint;
 
+    private String wsdlLocation;
+
     private OAuthPortType wsClient;
 
-    public AccessTokenRequestor(String clientId, String clientSecret, String endpoint) {
+    public AccessTokenRequestor(String clientId, String clientSecret, String endpoint, String wsdlLocation) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.endpoint = endpoint;
+        this.wsdlLocation = wsdlLocation;
         this.wsClient = doMakeWsClient();
     }
 
@@ -55,6 +58,8 @@ public class AccessTokenRequestor {
         factory.getOutInterceptors().add(new LoggingOutInterceptor());
         factory.setServiceClass(OAuthPortType.class);
         factory.setAddress(endpoint);
+        if (wsdlLocation != null && !wsdlLocation.equals(""))
+            factory.setWsdlLocation(wsdlLocation);
 
         OAuthPortType client = (OAuthPortType) factory.create();
 

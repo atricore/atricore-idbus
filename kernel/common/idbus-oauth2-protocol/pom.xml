@@ -77,6 +77,7 @@
                                     <wsdl>
                                         ${basedir}/src/main/resources/org/atricore/idbus/kernel/common/oauth2/oauth-2.0.wsdl
                                     </wsdl>
+                                    <wsdlLocation>classpath:org/atricore/idbus/kernel/common/oauth2/oauth-2.0-all.wsdl</wsdlLocation>
                                     <extraargs>
                                         <extraarg>-impl</extraarg>
                                         <extraarg>-verbose</extraarg>

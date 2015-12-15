@@ -21,17 +21,22 @@
 
 package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.http.DefaultHttpBinding;
 import org.apache.camel.component.http.HttpMessage;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
+import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This is actually a CAMEL HTTP Binding extension, it's not related with mediation HTTP bindings
@@ -110,6 +115,8 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         if (logger.isDebugEnabled())
             logger.debug("Writing HTTP Servlet Response");
 
+        handleCrossOriginResourceSharing(message.getExchange());
+
         // append headers
         for (String key : message.getHeaders().keySet()) {
 
@@ -119,7 +126,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
                 // This is a filtered header ... check if is a josso 'set cookie'
                 if (key.startsWith("org.atricore.idbus.http.Set-Cookie.")) {
-                    
+
                     String cookieName = key.substring("org.atricore.idbus.http.Set-Cookie.".length());
                     if (!cookieName.equals("JSESSIONID")) {
 
@@ -138,6 +145,63 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
             logger.trace("Writing HTTP Servlet Response");
 
         super.doWriteResponse(message, httpServletResponse);
+    }
+
+    /**
+     * This will add the necessary CORS headers to the HTTP response when CORS is requested.
+     */
+    protected void handleCrossOriginResourceSharing(Exchange exchange) {
+        Message httpOut = exchange.getOut();
+        Message httpIn = exchange.getIn();
+
+        String origin = (String) httpIn.getHeader("Origin");
+
+        if (origin != null) {
+
+            // External application is requesting cross origin support:
+
+            ConfigurationContext configurationContext = getConfigurationContext(exchange);
+            Boolean allowAll = configurationContext != null ?
+                    Boolean.parseBoolean(configurationContext.getProperty("binding.http.cors.allowAll", "false")) : false;
+
+            if (logger.isTraceEnabled())
+                logger.trace("User-Agent requesting cross origin support for " + origin);
+
+            boolean allow = false;
+            //IdentityMediationUnit unit = this.channel.getUnitContainer().getUnit();
+            // TODO : Populate this from the console, at the moment the list is always empty!
+            //Set<String> allowedOrigins = (Set<String>) unit.getMediationProperty("binding.http.cors.origins");
+            Set<String> allowedOrigins = null;
+
+            if (allowedOrigins != null && allowedOrigins.size() > 0 && allowedOrigins.contains(origin)) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Allowing cross origin for registered URL " + origin);
+
+                allow = true;
+
+            } else if (allowAll) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Allowing cross origin for non-registered URL " + origin);
+
+                allow = true;
+            } else {
+                logger.warn("Denying cross origin for registered URL " + origin);
+                allow = false;
+            }
+
+            if (allow) {
+                httpOut.getHeaders().put("Access-Control-Allow-Origin", origin);
+                httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
+                httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                httpOut.getHeaders().put("Access-Control-Allow-Credentials", "true");
+            }
+        }
+    }
+
+    protected ConfigurationContext getConfigurationContext(Exchange exchange) {
+        Map<String, ConfigurationContext> cfgs = ((OsgiBundleXmlApplicationContext) exchange.getContext().getRegistry().
+                lookup("applicationContext")).getBeansOfType(ConfigurationContext.class);
+        return cfgs.size() == 1 ? cfgs.values().iterator().next() : null;
     }
 }
 

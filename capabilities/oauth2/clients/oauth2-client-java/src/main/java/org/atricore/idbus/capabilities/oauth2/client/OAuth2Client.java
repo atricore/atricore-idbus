@@ -50,7 +50,8 @@ public class OAuth2Client implements ConfigurationConstants {
             requestor = new AccessTokenRequestor(
                     config.getProperty(CLIENT_ID),
                     config.getProperty(CLIENT_SECRET),
-                    config.getProperty(AUTHN_ENDPOINT));
+                    config.getProperty(AUTHN_ENDPOINT),
+                    config.getProperty(WSDL_LOCATION));
 
             init = true;
         } catch (IOException e) {
@@ -252,7 +253,7 @@ public class OAuth2Client implements ConfigurationConstants {
             configPath = "/oauth2.properties";
 
         Properties props = new Properties();
-        InputStream is = getClass().getResourceAsStream("/oauth2.properties");
+        InputStream is = getClass().getResourceAsStream(configPath);
         if (is == null)
             throw new OAuth2ClientException("Configuration not found for " + configPath);
 
