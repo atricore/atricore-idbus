@@ -52,6 +52,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="aqm.receiveTimeout">30000</prop>
         <prop key="aqm.artifactTTL">6000</prop>
         <prop key="aqm.useCompression">false</prop>
+
+        <!-- For memory AQM -->
+        <prop key="aqm.monitorInterval">30</prop>
+        <prop key="aqm.artifactTTL">30</prop>
+
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache-ha.xml</prop>
 
