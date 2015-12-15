@@ -50,7 +50,8 @@ public class OAuth2Client implements ConfigurationConstants {
             requestor = new AccessTokenRequestor(
                     config.getProperty(CLIENT_ID),
                     config.getProperty(CLIENT_SECRET),
-                    config.getProperty(AUTHN_ENDPOINT));
+                    config.getProperty(AUTHN_ENDPOINT),
+                    config.getProperty(WSDL_LOCATION));
 
             init = true;
         } catch (IOException e) {

@@ -28,3 +28,6 @@ oauth2.idpPreAuthn=http://localhost:8081/IDBUS/IDA-1/IDP-1/SAML2/SSO/IDP_INITIAT
 # The IDP pre-authentication response endpoint
 # It's normally <protocol>://<sso-server>:<sso-port>/IDBUS/<appliance-id>/<idp-id>/CC/OAUTH2/PRE-AUTHN/REST
 oauth2.idpPreAuthnResponse=http://localhost:8081/IDBUS/IDA-1/IDP-1/CC/OAUTH2/PRE-AUTHN/REST
+
+# OAuth 2 Service WSDL location
+oauth2.wsdlLocation=
