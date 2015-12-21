@@ -43,7 +43,9 @@ public class
 
     private static final Log logger = LogFactory.getLog(TokenProducer.class);
 
-    private UUIDGenerator uuidGenerator = new UUIDGenerator();
+    private static final UUIDGenerator uuidGenerator = new UUIDGenerator(false);
+
+    private static final UUIDGenerator sessionUuidGenerator = new UUIDGenerator(true);
 
     public TokenProducer(TokenEndpoint endpoint) {
         super(endpoint);
@@ -81,7 +83,7 @@ public class
             // Send extra information to STS, using the emission context
             //securityTokenEmissionCtx.setMember(sp);
             //securityTokenEmissionCtx.setAuthnState(authnState);
-            securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+            securityTokenEmissionCtx.setSessionIndex(sessionUuidGenerator.generateId());
 
             emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
 

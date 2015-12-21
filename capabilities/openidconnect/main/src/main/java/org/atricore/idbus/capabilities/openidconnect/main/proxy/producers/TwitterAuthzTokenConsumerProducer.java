@@ -181,7 +181,7 @@ public class TwitterAuthzTokenConsumerProducer extends AuthzTokenConsumerProduce
             ssoResponse.setInReplayTo(ssoRequest.getID());
         }
 
-        ssoResponse.setSessionIndex(uuidGenerator.generateId());
+        ssoResponse.setSessionIndex(sessionUuidGenerator.generateId());
         ssoResponse.setSubject(subject);
         ssoResponse.getSubjectAttributes().addAll(attrs);
 

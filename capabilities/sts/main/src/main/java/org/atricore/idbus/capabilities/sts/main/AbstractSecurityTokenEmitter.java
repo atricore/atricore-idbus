@@ -47,7 +47,7 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
     // To support simultaneous token emissions, using different plan instances!
     protected ThreadLocal<IdentityPlan> identityPlan = new ThreadLocal<IdentityPlan>();
 
-    protected UUIDGenerator uuidGenerator = new UUIDGenerator();
+    protected UUIDGenerator uuidGenerator = new UUIDGenerator(true);
 
     private IdentityPlanRegistry identityPlanRegistry;
 

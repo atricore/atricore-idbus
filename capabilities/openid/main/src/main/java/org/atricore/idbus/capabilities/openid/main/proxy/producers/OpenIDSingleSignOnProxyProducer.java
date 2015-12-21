@@ -71,7 +71,9 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
     private static final Log logger = LogFactory.getLog(OpenIDSingleSignOnProxyProducer.class);
 
-    protected UUIDGenerator uuidGenerator = new UUIDGenerator();
+    protected static final UUIDGenerator uuidGenerator = new UUIDGenerator();
+
+    protected static final UUIDGenerator sessionUuidGenerator  = new UUIDGenerator(true);
 
     public OpenIDSingleSignOnProxyProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -370,7 +372,7 @@ public class OpenIDSingleSignOnProxyProducer extends OpenIDProducer {
 
             // TODO: create a second principal for the OpenID claimed identifier
 
-            ssoResponse.setSessionIndex(uuidGenerator.generateId());
+            ssoResponse.setSessionIndex(sessionUuidGenerator.generateId());
             ssoResponse.setSubject(st);
 
             String destinationLocation = resolveSpProxyACS();

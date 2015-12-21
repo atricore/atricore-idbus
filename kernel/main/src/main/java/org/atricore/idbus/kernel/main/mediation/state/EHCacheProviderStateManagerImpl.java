@@ -37,7 +37,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     private Cache cache;
 
-    private UUIDGenerator idGen = new UUIDGenerator();
+    private UUIDGenerator idGen = new UUIDGenerator(true);
 
     private boolean forceNonDirtyStorage;
 

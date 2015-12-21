@@ -143,6 +143,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    protected static final UUIDGenerator sessionUuidGenerator  = new UUIDGenerator(true);
+
     public SingleSignOnProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
     }
@@ -903,7 +905,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             securityTokenEmissionCtx.setRoleMetadata(null);
             securityTokenEmissionCtx.setAuthnState(authnState);
-            securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+            securityTokenEmissionCtx.setSessionIndex(sessionUuidGenerator.generateId());
             securityTokenEmissionCtx.setSpAcs(ed);
             securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
             securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)channel.getIdentityMediator()).getChannelConfig(channel.getName()));
@@ -1274,7 +1276,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
                 securityTokenEmissionCtx.setRoleMetadata(null);
                 securityTokenEmissionCtx.setAuthnState(authnState);
-                securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+                securityTokenEmissionCtx.setSessionIndex(sessionUuidGenerator.generateId());
                 securityTokenEmissionCtx.setSpAcs(ed);
                 securityTokenEmissionCtx.setAttributeProfile(requiredSpChannel.getAttributeProfile());
                 securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)mediator).getChannelConfig(requiredSpChannel.getName()));

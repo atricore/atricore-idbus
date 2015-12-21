@@ -52,6 +52,8 @@ public abstract class AuthzTokenConsumerProducer extends OpenIDConnectProducer {
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    protected static final UUIDGenerator sessionUuidGenerator  = new UUIDGenerator(true);
+
     protected ObjectMapper mapper = new ObjectMapper();
 
     public AuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {

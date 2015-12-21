@@ -17,7 +17,7 @@ public class MemoryProviderStateManagerImpl implements ProviderStateManager {
     // TODO : Cleanup cache when expires!
     private Cache cache;
 
-    private UUIDGenerator idGen = new UUIDGenerator();
+    private UUIDGenerator idGen = new UUIDGenerator(true);
 
     private String namespace;
 
