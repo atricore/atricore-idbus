@@ -100,6 +100,8 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    private UUIDGenerator sessionUuidGenerator = new UUIDGenerator(true);
+
     public AssertionConsumerProducer(AbstractCamelEndpoint endpoint) throws Exception {
         super(endpoint);
     }
@@ -1625,7 +1627,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         secCtx.setRequester(requester);
         secCtx.setAuthnCtxClass(authnCtx);
 
-        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
+        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(sessionUuidGenerator.generateId(), secCtx);
 
         try {
             // Create new local SP SSO Session

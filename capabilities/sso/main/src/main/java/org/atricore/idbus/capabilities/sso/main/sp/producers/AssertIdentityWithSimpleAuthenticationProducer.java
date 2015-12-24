@@ -63,6 +63,8 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    private UUIDGenerator sessionUuidGenerator = new UUIDGenerator(true);
+
     private static final Log logger = LogFactory.getLog(AssertIdentityWithSimpleAuthenticationProducer.class);
 
     public AssertIdentityWithSimpleAuthenticationProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
@@ -500,7 +502,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
         secCtx.setAccountLink(acctLink);
         secCtx.setRequester(requester);
         secCtx.setAuthnCtxClass(AuthnCtxClass.PASSWORD_AUTHN_CTX);
-        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
+        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(sessionUuidGenerator.generateId(), secCtx);
 
         try {
             // Create new SSO Session
