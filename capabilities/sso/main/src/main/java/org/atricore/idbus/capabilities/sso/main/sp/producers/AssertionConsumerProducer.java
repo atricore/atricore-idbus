@@ -543,8 +543,12 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                             List<Object> attributeValues = attr.getAttributeValue();
 
+                            String name = attr.getName();
+
                             if (logger.isDebugEnabled())
-                                logger.debug("Processing attribute " + attr.getName()) ;
+                                logger.debug("Processing attribute " + name) ;
+
+
 
                             for (Object attributeValue : attributeValues) {
 
@@ -555,14 +559,13 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding String Attribute Statement to IDP Subject " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 attr.getAttributeValue());
                                     }
 
-
                                     SubjectAttribute sAttr =
-                                            getNextSubjectAttr(subjectAttrs, attr.getName(),
+                                            getNextSubjectAttr(subjectAttrs, name,
                                                     (String) attributeValue
                                             );
 
@@ -573,13 +576,13 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding Integer Attribute Value to IDP Subject " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 attr.getAttributeValue());
                                     }
 
 
-                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, attr.getName(),
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name,
                                             (Integer) attributeValue);
                                     outSubject.getPrincipals().add(sAttr);
 
@@ -588,12 +591,12 @@ public class AssertionConsumerProducer extends SSOProducer {
                                     Element e = (Element) attributeValue;
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding Attribute Statement to IDP Subject from DOM Element " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 e.getTextContent());
                                     }
 
-                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, attr.getName(), e.getTextContent());
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name, e.getTextContent());
                                     if (sAttr != null)
                                         outSubject.getPrincipals().add(sAttr);
 
@@ -601,12 +604,12 @@ public class AssertionConsumerProducer extends SSOProducer {
                                 } else if (attributeValue == null) {
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding String Attribute Statement to IDP Subject " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 "null");
                                     }
 
-                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, attr.getName(), "");
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name, "");
                                     if (sAttr != null)
                                         outSubject.getPrincipals().add(sAttr);
 
@@ -642,7 +645,10 @@ public class AssertionConsumerProducer extends SSOProducer {
                                 )
                         );
 
-                        SubjectAttribute authnCtxAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:authnCtxClass", (String) authnContext.getValue());
+                        SubjectAttribute authnCtxAttr = getNextSubjectAttr(subjectAttrs,
+                                "urn:org:atricore:idbus:sso:sp:authnCtxClass",
+                                (String) authnContext.getValue());
+
                         if (authnCtxAttr != null)
                             outSubject.getPrincipals().add(authnCtxAttr);
 

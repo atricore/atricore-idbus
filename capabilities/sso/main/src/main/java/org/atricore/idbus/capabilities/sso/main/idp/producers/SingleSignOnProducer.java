@@ -1289,7 +1289,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 if (proxyResponse.getSubjectAttributes() != null) {
                     for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
-                        if (attr.getName().equals("authnCtxClass")) {
+                        if (attr.getName().equals("authnCtxClass") ||
+                                attr.getName().equals("org:atricore:idbus:sso:sp:authnCtxClass") ||
+                                attr.getName().equals("urn:org:atricore:idbus:sso:sp:authnCtxClass")) {
                             try {
                                 authnCtx = AuthnCtxClass.asEnum(attr.getValue());
                                 if (logger.isDebugEnabled())
@@ -1302,9 +1304,32 @@ public class SingleSignOnProducer extends SSOProducer {
                     }
                 }
 
+                if (authnCtx == null) {
+
+                    for (AbstractPrincipalType principal : proxySubjectPrincipals) {
+                        if (principal instanceof SubjectAttributeType) {
+                            SubjectAttributeType attr = (SubjectAttributeType) principal;
+                            if (attr.getName().equals("authnCtxClass") ||
+                                    attr.getName().equals("org:atricore:idbus:sso:sp:authnCtxClass") ||
+                                    attr.getName().equals("urn:org:atricore:idbus:sso:sp:authnCtxClass")) {
+                                try {
+                                    authnCtx = AuthnCtxClass.asEnum(attr.getValue());
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Using authnCtxClass " + attr.getValue());
+                                    break;
+                                } catch (Exception e) {
+                                    logger.error("Unknonw AuthnCtxClass type " + attr.getValue());
+                                }
+
+                            }
+                        }
+                    }
+                }
+
                 // Just in case
                 if (authnCtx == null) {
-                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                    logger.warn("Unsing unspecified AuthnCtxClass, no value found in proxy response");
+                    authnCtx = AuthnCtxClass.UNSPECIFIED_AUTHN_CTX;
                 }
 
                 ClaimSet claims = new ClaimSetImpl();
@@ -1339,6 +1364,50 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Now, add all proxy principals stored in the response, different proxies may use different mechanisms
                 if (proxyResponse.getSubjectAttributes() != null)
                     securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectAttributes());
+
+                // Do some handling on special attributes:
+                for (AbstractPrincipalType principal : securityTokenEmissionCtx.getProxyPrincipals())  {
+                    if (principal instanceof SubjectAttributeType) {
+                        SubjectAttributeType attr = (SubjectAttributeType) principal;
+                        // -----------------------------------------------------------
+
+                        // TODO : Improve ? Strategy to detect proxied attributes maybe
+
+                        // JOSSO proxied attributes in JOSSO 2 profile
+                        String name = attr.getName();
+
+                        if (name.startsWith("urn:org:atricore:idbus:sso:sp:")) {
+                            // Internal SP / Proxy attributte
+                            name = name + "_proxied";
+                        }
+
+                        if (name.startsWith("org:atricore:idbus:sso:sp:")) {
+                            // Internal SP / Proxy attributte
+                            name = name + "_proxied";
+                        }
+
+                        // JOSSO proxied attributes in basic profile
+                        if (name.equals("idpName") ||
+                                name.equals("idpAlias") ||
+                                name.equals("authnCtxClass")) {
+
+                            name = name + "_proxied";
+                        }
+
+                        // Some OAUTH 2.0 special attributes
+                        if (name.contains("oasis_wss_oauth2_token_profile_1_1#OAUTH2.0")) {
+                            name = name + "_proxied";
+                        }
+
+                        if (name.contains("oasis_wss_oauth2_token_profile_1_1#RM_OAUTH2.0")) {
+                            name = name + "_proxied";
+                        }
+
+                        attr.setName(name);
+
+                        // -----------------------------------------------------------
+                    }
+                }
 
                 if (proxyResponse.getSubjectRoles() != null)
                     securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectRoles());

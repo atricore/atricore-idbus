@@ -189,8 +189,14 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                         SubjectAttributeType attr = (SubjectAttributeType) principal;
                         String name = attr.getName();
 
-                        // Do not embedd other OAuth2 related tokens
+                        // Do not embed other OAuth2 related tokens
                         if (name.startsWith(WSTConstants.WST_OAUTH2_TOKEN_TYPE))
+                            continue;
+
+                        if (name.contains("oasis_wss_oauth2_token_profile_1_1#OAUTH2.0"))
+                            continue;
+
+                        if (name.contains("oasis_wss_oauth2_token_profile_1_1#RM_OAUTH2.0"))
                             continue;
 
                         if (name != null) {
