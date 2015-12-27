@@ -3,12 +3,14 @@ package org.atricore.idbus.idojos.ehcachesessionstore;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.distribution.RMICacheManagerPeerProvider;
 import net.sf.ehcache.event.CacheEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.session.BaseSession;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.store.session.AbstractSessionStore;
+import org.atricore.idbus.bundles.ehcache.distribution.DynamicRMICacheManagerPeerProvider;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -118,6 +120,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                 } else {
                     logger.info("Cache does not exists '"+cacheName+"', adding it");
                     cacheManager.addCache(cacheName);
+                    registerPeers();
                 }
 
                 cache = cacheManager.getCache(cacheName);
@@ -152,6 +155,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
 
     public void destroy() throws Exception {
         if (init) {
+            unregisterPeers();
             cacheManager.removeCache(cacheName);
             init = false;
         }
@@ -353,6 +357,46 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
 
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
+        }
+    }
+
+    protected void registerPeers() {
+
+        RMICacheManagerPeerProvider peerProvider =
+                (RMICacheManagerPeerProvider) cacheManager.getCacheManagerPeerProvider("RMI");
+
+        // Not a clustered environment
+        if (peerProvider == null)
+            return;
+
+        if (peerProvider instanceof DynamicRMICacheManagerPeerProvider) {
+            DynamicRMICacheManagerPeerProvider dynamicPeerProvider = (DynamicRMICacheManagerPeerProvider) peerProvider;
+            Collection<String> remoteHosts = dynamicPeerProvider.listRemoteHosts();
+            for (String remoteHost : remoteHosts) {
+                String rmiUrl = "//" + remoteHost + "/" + cacheName;
+                logger.info("Registering remote cache : " + rmiUrl);
+                dynamicPeerProvider.registerPeer(rmiUrl);
+            }
+        }
+    }
+
+    protected void unregisterPeers() {
+
+        RMICacheManagerPeerProvider peerProvider =
+                (RMICacheManagerPeerProvider) cacheManager.getCacheManagerPeerProvider("RMI");
+
+        // Not a clustered environment
+        if (peerProvider == null)
+            return;
+
+        if (peerProvider instanceof DynamicRMICacheManagerPeerProvider) {
+            DynamicRMICacheManagerPeerProvider dynamicPeerProvider = (DynamicRMICacheManagerPeerProvider) peerProvider;
+            Collection<String> remoteHosts = dynamicPeerProvider.listRemoteHosts();
+            for (String remoteHost : remoteHosts) {
+                String rmiUrl = "//" + remoteHost + "/" + cacheName;
+                logger.info("Unregistering remote cache : " + rmiUrl);
+                dynamicPeerProvider.unregisterPeer(rmiUrl);
+            }
         }
     }
 }

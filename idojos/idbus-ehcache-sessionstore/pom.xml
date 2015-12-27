@@ -48,6 +48,7 @@
         <log4j.version>1.2.16</log4j.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <idbus-kernel.version>1.4.2-SNAPSHOT</idbus-kernel.version>
+        <ehcache-bundle.version>1.4.2-SNAPSHOT</ehcache-bundle.version>
     </properties>
 
     <build>
@@ -99,6 +100,12 @@
             <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
             <version>${idbus-kernel.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
+            <version>${ehcache-bundle.version}</version>
         </dependency>
 
         <dependency>
