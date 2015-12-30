@@ -2173,6 +2173,13 @@ public class SingleSignOnProducer extends SSOProducer {
         if (authnRequest.getRememberMe() != null)
             idpInitReq.setRememberMe(authnRequest.getRememberMe());
 
+        if (authnRequest.getRequestedAuthnContext() != null) {
+            List<String> authnCtxs = authnRequest.getRequestedAuthnContext().getAuthnContextClassRef();
+            // TODO : Only support one for now!
+            if (authnCtxs.size() > 0)
+                idpInitReq.setAuthnCtxClass(authnCtxs.get(0));
+        }
+
         return idpInitReq;
     }
 
@@ -2961,6 +2968,13 @@ public class SingleSignOnProducer extends SSOProducer {
         target.setID(uuidGenerator.generateId());
         target.setPassive(source.getIsPassive() != null ? source.getIsPassive() : false);
         target.setForceAuthn(source.getForceAuthn() != null ? source.getForceAuthn() : false);
+
+        if (source.getRequestedAuthnContext() != null) {
+            RequestedAuthnContextType requestedAuthnCtx = source.getRequestedAuthnContext();
+            if (requestedAuthnCtx.getAuthnContextClassRef() != null && requestedAuthnCtx.getAuthnContextClassRef().size() > 0)
+            // TODO : Support multiple
+            target.setAuthnCtxClass(requestedAuthnCtx.getAuthnContextClassRef().get(0));
+        }
 
         if (idpAlias != null) {
             RequestAttributeType idpAliasAttr = new RequestAttributeType();

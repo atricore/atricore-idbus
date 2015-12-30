@@ -57,6 +57,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
@@ -180,18 +181,32 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         MediationState state = in.getMessage().getState();
 
+        AuthnCtxClass authnCtx = AuthnCtxClass.asEnum(endpoint.getType());
+        AuthnCtxClass requestedAuthnCtx = null;
+
+        if (claimsRequest instanceof SSOCredentialClaimsRequest) {
+            SSOCredentialClaimsRequest ssoClaimsRequest = (SSOCredentialClaimsRequest) claimsRequest;
+
+            if (ssoClaimsRequest.getRequestedAuthnCtxClass() != null) {
+                List<String> authnCtxs = ssoClaimsRequest.getRequestedAuthnCtxClass().getAuthnContextClassRef();
+                if (authnCtxs != null && authnCtxs.size() > 0) {
+                    // TODO : Support multiple ?!
+                    requestedAuthnCtx = AuthnCtxClass.asEnum(authnCtxs.get(0));
+                }
+            }
+        }
         // No pre-authn token received, looking for remember-me token id
         boolean provided = true;
-        if (preAuthnToken == null && mediator.isRememberMe()) {
+        if (preAuthnToken == null && mediator.isRememberMe() &&
+                (requestedAuthnCtx == null || requestedAuthnCtx.isPassive())) {
+
             if (logger.isDebugEnabled())
                 logger.debug("Pre-authn token not found in CredentialClaimsRequest, trying remember me" + claimsRequest.getId());
 
             preAuthnToken = resolveRememberMeToken(state, mediator);
             provided = false;
-
+            authnCtx = AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX;
         }
-
-        AuthnCtxClass authnCtx = AuthnCtxClass.asEnum(endpoint.getType());
 
         if (!authnCtx.isPassive() &&
                 preAuthnToken == null &&

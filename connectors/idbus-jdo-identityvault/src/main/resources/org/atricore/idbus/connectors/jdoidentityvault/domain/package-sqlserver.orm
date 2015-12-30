@@ -401,7 +401,7 @@
             </field>
 
             <field name="tokenId">
-                <column jdbc-type="VARCHAR" length="32"/>
+                <column jdbc-type="VARCHAR" length="64"/>
                 <index name="TOKEN_ID_IDX" unique="true"/>
             </field>
 
