@@ -205,7 +205,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
             preAuthnToken = resolveRememberMeToken(state, mediator);
             provided = false;
-            authnCtx = AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX;
+            //authnCtx = AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX;
         }
 
         if (!authnCtx.isPassive() &&
