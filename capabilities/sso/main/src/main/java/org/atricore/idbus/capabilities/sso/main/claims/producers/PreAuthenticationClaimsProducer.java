@@ -157,7 +157,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             rememberMe = Boolean.parseBoolean(b);
 
         // In this case, let the token as is
-        sendClaimsResponse(exchange, preAuthToken, rememberMe);
+        sendClaimsResponse(exchange, preAuthToken, AuthnCtxClass.asEnum(endpoint.getType()), rememberMe);
 
     }
 
@@ -195,9 +195,11 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                 }
             }
         }
+
+        // This produce handles both passive and non-passive endpoints
         // No pre-authn token received, looking for remember-me token id
         boolean provided = true;
-        if (preAuthnToken == null && mediator.isRememberMe() &&
+        if (preAuthnToken == null && mediator.isRememberMe() && authnCtx.isPassive() &&
                 (requestedAuthnCtx == null || requestedAuthnCtx.isPassive())) {
 
             if (logger.isDebugEnabled())
@@ -205,7 +207,6 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
             preAuthnToken = resolveRememberMeToken(state, mediator);
             provided = false;
-            //authnCtx = AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX;
         }
 
         if (!authnCtx.isPassive() &&
@@ -260,12 +261,13 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
                 claimsRequest.getParams().get("remember_me") != null &&
                 Boolean.parseBoolean((String) claimsRequest.getParams().get("remember_me"));
 
-        sendClaimsResponse(exchange, preAuthnToken, rememberMe);
+        sendClaimsResponse(exchange, preAuthnToken, authnCtx, rememberMe);
 
     }
 
     protected void sendClaimsResponse(CamelMediationExchange exchange,
                                       String preAuthnToken,
+                                      AuthnCtxClass authnCxtClass,
                                       boolean allowRememberMe) throws SSOException, IdentityMediationException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -317,7 +319,7 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             token.getOtherAttributes().put(new QName(Constants.REMEMBERME_NS), "TRUE");
 
         // Endpoint type MUST be authn ctx class
-        CredentialClaim credentialClaim = new CredentialClaimImpl(endpoint.getType(), token);
+        CredentialClaim credentialClaim = new CredentialClaimImpl(authnCxtClass.getValue(), token);
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(credentialClaim);
 

@@ -105,8 +105,8 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
      */
     protected SPInitiatedAuthnRequestType buildAuthnRequest(CamelMediationExchange exchange, String idpAlias, AuthenticationRequest authnReq) {
 
-        boolean passive = authnReq.getPrompt() != null && authnReq.getPrompt().toString().equals("none");
-        boolean forceAuthn = authnReq.getPrompt() != null && authnReq.getPrompt().toString().equals("login");
+        Boolean passive = authnReq.getPrompt() != null && authnReq.getPrompt().toString().equals("none") ? true : null;
+        Boolean forceAuthn = authnReq.getPrompt() != null && authnReq.getPrompt().toString().equals("login") ? true : null;
 
         // TODO : Support other prompt options: login, consent and select_account
         if (authnReq.getPrompt() != null && (authnReq.getPrompt().equals("consent")

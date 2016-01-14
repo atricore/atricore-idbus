@@ -128,7 +128,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         authn.setForceAuthn(forceAuthn);
 
         // IsPassive [optional] --> automatic login!
-        authn.setIsPassive(ssoAuthnReq != null && ssoAuthnReq.isPassive());
+        authn.setIsPassive(ssoAuthnReq.isPassive());
 
         // AssertionConsumerServiceIndex [optional] --> from our springmetadata/endponit
         // AssertionConsumerServiceURL [optional] --> from our springmetadata/endpoint

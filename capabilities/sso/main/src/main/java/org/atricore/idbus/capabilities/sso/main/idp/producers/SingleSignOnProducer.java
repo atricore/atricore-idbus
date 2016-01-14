@@ -2966,8 +2966,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
         SPInitiatedAuthnRequestType target = new SPInitiatedAuthnRequestType();
         target.setID(uuidGenerator.generateId());
-        target.setPassive(source.getIsPassive() != null ? source.getIsPassive() : false);
-        target.setForceAuthn(source.getForceAuthn() != null ? source.getForceAuthn() : false);
+        target.setPassive(source.getIsPassive());
+        target.setForceAuthn(source.getForceAuthn());
 
         if (source.getRequestedAuthnContext() != null) {
             RequestedAuthnContextType requestedAuthnCtx = source.getRequestedAuthnContext();

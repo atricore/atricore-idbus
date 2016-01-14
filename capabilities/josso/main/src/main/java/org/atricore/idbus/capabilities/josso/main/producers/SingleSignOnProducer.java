@@ -151,7 +151,9 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         // TODO : Support multiple values, like SAML ?!
         String authnCtxClass = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_AUTHN_CTX_VAR);
 
-        req.setPassive(cmd != null && cmd.equals("login_optional"));
+        if (cmd != null && cmd.equals("login_optional"))
+            req.setPassive(true);
+
         req.setForceAuthn(cmd != null && cmd.equals("login_force"));
         req.setAuthnCtxClass(authnCtxClass);
 

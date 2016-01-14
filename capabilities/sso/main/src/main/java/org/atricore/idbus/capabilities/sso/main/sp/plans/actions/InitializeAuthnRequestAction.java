@@ -76,15 +76,15 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
-        boolean passive = false;
-        boolean forceAuthn = false;
+        Boolean passive = null;
+        Boolean forceAuthn = null;
         String authnCtxClass = null;
 
         RequestedAuthnContextType reqAuthnCtx = null;
         if (in.getContent() instanceof SPInitiatedAuthnRequestType) {
 
             SPInitiatedAuthnRequestType ssoAuthnReq = (SPInitiatedAuthnRequestType) in.getContent();
-            passive = ssoAuthnReq.isPassive();
+            passive = ssoAuthnReq.getPassive();
             forceAuthn = ssoAuthnReq.getForceAuthn() != null && ssoAuthnReq.getForceAuthn();
 
             // Only set requested authn ctx. class when credentials are provided by the SP.
@@ -114,7 +114,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                             "(SPInitiatedAuthnRequest w/credentials received for " + ssoAuthnReq.getAuthnCtxClass() + ")");
 
                 // Set this to non-passive, JOSSO Login will handle subsequent errors.
-                passive = ssoAuthnReq.isPassive();
+                passive = ssoAuthnReq.getPassive();
                 forceAuthn = ssoAuthnReq.getForceAuthn() != null && ssoAuthnReq.getForceAuthn();
 
             } else {
