@@ -83,6 +83,15 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
             forceAuthn = true;
             log.trace("Issuing SAML2 Authentication Request for Preauthenticated Token [" + securityToken  + "] and " +
                       "Authentication Context Class " + preAuthnReq.getAuthnCtxClass());
+        } else {
+            for (RequestAttributeType a : ssoAuthnReq.getRequestAttribute()) {
+                if (a.getName().equals("force_authn")) {
+                    forceAuthn = Boolean.valueOf(a.getValue());
+                } else if (a.getName().equals("authn_ctx_class")) {
+                    reqAuthnCtx = new RequestedAuthnContextType();
+                    reqAuthnCtx.getAuthnContextClassRef().add(a.getValue());
+                }
+            }
         }
         
         AuthnRequestType authn = (AuthnRequestType) out.getContent();

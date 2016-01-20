@@ -132,6 +132,22 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             idpInitReq.setPassive(Boolean.parseBoolean(passive));
         }
 
+        String forceAuthn = state.getTransientVariable("force_authn");
+        if (forceAuthn != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("force_authn");
+            a.setValue(forceAuthn);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
+        String authnCtxClass = state.getTransientVariable("authn_ctx_class");
+        if (authnCtxClass != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("authn_ctx_class");
+            a.setValue(authnCtxClass);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
                         idpInitReq,
                         null,
