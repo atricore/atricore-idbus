@@ -258,7 +258,7 @@
 
     <samlr2-support:keystore-keyresolver id="idp-1-ks-crypto-resolver"
                           keystoreType="JKS"
-                          keystoreFile="org/atricore/josso2/samlr2/test/tck003/josso-sp1.jks"
+                          keystoreFile="keystore.jks"
                           keystorePass="xmlsecurity"
                           privateKeyAlias="rsa-keys"
                           privateKeyPass="rsa-keys-pwd"
@@ -479,7 +479,7 @@
 
     <samlr2-support:keystore-keyresolver id="sp-1-ks-crypto-resolver"
                           keystoreType="JKS"
-                          keystoreFile="org/atricore/josso2/samlr2/test/tck003/josso-sp1.jks"
+                          keystoreFile="keystore.jks"
                           keystorePass="xmlsecurity"
                           privateKeyAlias="rsa-keys"
                           privateKeyPass="rsa-keys-pwd"

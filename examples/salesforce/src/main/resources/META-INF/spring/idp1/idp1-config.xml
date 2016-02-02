@@ -492,10 +492,10 @@
                   class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                 <property name="keystoreType" value="JKS"/>
                 <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/salesforce/idau/idp1/idp1-keystore.jks"/>
-                <property name="keystorePass" value="xmlsecurity"/>
-                <property name="privateKeyAlias" value="rsa-keys"/>
-                <property name="privateKeyPass" value="rsa-keys-pwd"/>
-                <property name="certificateAlias" value="rsa-keys"/>
+                <property name="keystorePass" value="ATRICORE"/>
+                <property name="privateKeyAlias" value="idp1"/>
+                <property name="privateKeyPass" value="ATRICORE"/>
+                <property name="certificateAlias" value="idp1"/>
             </bean>
         </property>
     </bean>
