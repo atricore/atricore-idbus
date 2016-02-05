@@ -172,13 +172,6 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         SSOClaimsMediator mediator = ((SSOClaimsMediator) channel.getIdentityMediator());
 
         in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:credential-claims-request", claimsRequest);
-
-        // First, check if we already have a token as part of the request
-        String preAuthnToken = claimsRequest.getPreauthenticationSecurityToken();
-
-        if (preAuthnToken != null && logger.isDebugEnabled())
-            logger.debug("Pre-authn token found in CredentialClaimsRequest " + claimsRequest.getId());
-
         MediationState state = in.getMessage().getState();
 
         AuthnCtxClass authnCtx = AuthnCtxClass.asEnum(endpoint.getType());
@@ -196,63 +189,83 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
             }
         }
 
+
+        // 2. For non-passive endpoint, only provided token is acceptable.
+
         // This produce handles both passive and non-passive endpoints
         // No pre-authn token received, looking for remember-me token id
         boolean provided = true;
-        if (preAuthnToken == null && mediator.isRememberMe() && authnCtx.isPassive() &&
-                (requestedAuthnCtx == null || requestedAuthnCtx.isPassive())) {
+        String preAuthnToken = null;
 
+        // 1. For passive endpoint, only RM is acceptable.
+        // RM only valid when requested authnCtx is also passive or empty and no token has been provided!
+        if (mediator.isRememberMe() && authnCtx.isPassive() &&
+                claimsRequest.getPreauthenticationSecurityToken() == null &&
+                (requestedAuthnCtx == null || requestedAuthnCtx.isPassive())) {
             if (logger.isDebugEnabled())
                 logger.debug("Pre-authn token not found in CredentialClaimsRequest, trying remember me" + claimsRequest.getId());
-
             preAuthnToken = resolveRememberMeToken(state, mediator);
+            if (preAuthnToken != null && logger.isDebugEnabled())
+                logger.debug("Pre-authn token found in as RememberMe");
             provided = false;
         }
 
+        // 2. For non-passive endpoint, only non-passive tokens are acceptable.
         if (!authnCtx.isPassive() &&
-                preAuthnToken == null &&
-                mediator.getBasicAuthnUILocation() != null &&
+                (requestedAuthnCtx == null || !requestedAuthnCtx.isPassive())) {
+
+            // First, check if we already have a token as part of the request
+            preAuthnToken = claimsRequest.getPreauthenticationSecurityToken();
+            if (preAuthnToken != null) {
+
+                provided = true;
+                if (logger.isDebugEnabled())
+                    logger.debug("Pre-authn token found in CredentialClaimsRequest " + claimsRequest.getId());
+
+            } else if(mediator.getBasicAuthnUILocation() != null &&
                 !"".equals(mediator.getBasicAuthnUILocation())) {
 
-            if (logger.isTraceEnabled())
-                logger.trace("Non-passive OAuth2 pre-authentication endpoint ["+endpoint.getName()+"] without a token, " +
-                        "requesting one at " + mediator.getBasicAuthnUILocation());
+                if (logger.isTraceEnabled())
+                    logger.trace("Non-passive OAuth2 pre-authentication endpoint [" + endpoint.getName() + "] without a token, " +
+                            "requesting one at " + mediator.getBasicAuthnUILocation());
 
-            // Issue PreAuthn token request.
+                // Issue PreAuthn token request.
 
-            PreAuthenticatedTokenRequestType preAuthnReq = new PreAuthenticatedTokenRequestType();
-            ClaimChannel cc = (ClaimChannel) channel;
+                PreAuthenticatedTokenRequestType preAuthnReq = new PreAuthenticatedTokenRequestType();
+                ClaimChannel cc = (ClaimChannel) channel;
 
-            preAuthnReq.setID(uuidGenerator.generateId());
+                preAuthnReq.setID(uuidGenerator.generateId());
 
-            String idpAlias = cc.getFederatedProvider().getChannel().getMember().getAlias();
-            preAuthnReq.setIssuer(new String(new Base64().encode(idpAlias.getBytes())));
+                String idpAlias = cc.getFederatedProvider().getChannel().getMember().getAlias();
+                preAuthnReq.setIssuer(new String(new Base64().encode(idpAlias.getBytes())));
 
-            if (claimsRequest instanceof SSOCredentialClaimsRequest) {
-                String spAlias = ((SSOCredentialClaimsRequest) claimsRequest).getSpAlias();
-                if (logger.isDebugEnabled())
-                    logger.debug("Setting SP Alias as target : " + spAlias);
-                preAuthnReq.setTarget(new String(new Base64().encode(spAlias.getBytes())));
+                if (claimsRequest instanceof SSOCredentialClaimsRequest) {
+                    String spAlias = ((SSOCredentialClaimsRequest) claimsRequest).getSpAlias();
+                    if (logger.isDebugEnabled())
+                        logger.debug("Setting SP Alias as target : " + spAlias);
+                    preAuthnReq.setTarget(new String(new Base64().encode(spAlias.getBytes())));
+                }
+
+                EndpointDescriptor ed = new EndpointDescriptorImpl("pre-authn-token",
+                        "PreAuthenticationTokenService",
+                        SSOBinding.SSO_PREAUTHN.getValue(),
+                        mediator.getBasicAuthnUILocation(),
+                        null);
+
+                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+                out.setMessage(new MediationMessageImpl(preAuthnReq.getID(),
+                        preAuthnReq,
+                        "PreAuthenticatedTokenRequest",
+                        state.getLocalState().getId(),
+                        ed,
+                        in.getMessage().getState()));
+
+                exchange.setOut(out);
+
+                return;
             }
 
-            EndpointDescriptor ed = new EndpointDescriptorImpl("pre-authn-token",
-                    "PreAuthenticationTokenService",
-                    SSOBinding.SSO_PREAUTHN.getValue(),
-                    mediator.getBasicAuthnUILocation(),
-                    null);
-
-            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
-            out.setMessage(new MediationMessageImpl(preAuthnReq.getID(),
-                    preAuthnReq,
-                    "PreAuthenticatedTokenRequest",
-                    state.getLocalState().getId(),
-                    ed,
-                    in.getMessage().getState()));
-
-            exchange.setOut(out);
-
-            return;
 
         }
 
@@ -309,9 +322,9 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
         MediationState state = in.getMessage().getState();
 
         // Create Password Token Claim with the received Pre-Authenticated Token
+        ClaimSet claims = new ClaimSetImpl();
 
         // Let's mark this claim to be used when emitting remember me tokens
-
         PasswordString token = new PasswordString();
         token.setValue(preAuthnToken);
 
@@ -320,7 +333,6 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
         // Endpoint type MUST be authn ctx class
         CredentialClaim credentialClaim = new CredentialClaimImpl(authnCxtClass.getValue(), token);
-        ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(credentialClaim);
 
         SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(

@@ -2163,7 +2163,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
         PreAuthenticatedIDPInitiatedAuthnRequestType idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
         idpInitReq.setSecurityToken(securityToken);
-        idpInitReq.setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX.getValue());
+        idpInitReq.setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_CTX.getValue());
 
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
