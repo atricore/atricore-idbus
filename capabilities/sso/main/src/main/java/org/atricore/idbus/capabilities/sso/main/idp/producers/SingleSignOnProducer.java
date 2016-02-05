@@ -453,6 +453,17 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // Discard current SSO Session
             isSsoSessionValid = false;
+            if (secCtx != null && secCtx.getSessionIndex() != null) {
+                sessionMgr.invalidate(secCtx.getSessionIndex());
+            }
+
+        } else if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
+            // This means that we MUST destroy any previous session, it's like 'forcing' authn
+
+            isSsoSessionValid = false;
+            if (secCtx != null && secCtx.getSessionIndex() != null) {
+                sessionMgr.invalidate(secCtx.getSessionIndex());
+            }
 
         } else if (secCtx != null && secCtx.getSessionIndex() != null) {
 
@@ -605,6 +616,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             in.getMessage().getState()));
 
                     exchange.setOut(out);
+                    return;
 
                 } else {
 
@@ -628,6 +640,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             in.getMessage().getState()));
 
                     exchange.setOut(out);
+                    return;
                 }
 
 
