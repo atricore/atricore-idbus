@@ -33,7 +33,6 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
-import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
@@ -469,7 +468,7 @@ public class LDAPIdentityStore extends AbstractStore  {
                 String uidValue = uidAttr.get().toString();
 
                 if (uidValue != null) {
-                    dn = sr.getName() + "," + usersCtxDN;
+                    dn = sr.getNameInNamespace();
                     if (logger.isDebugEnabled())
                         logger.debug("Found user '" + principalUidAttrName + "=" + uidValue + "' for user '" + uid + "' DN=" + dn);
                 } else {
