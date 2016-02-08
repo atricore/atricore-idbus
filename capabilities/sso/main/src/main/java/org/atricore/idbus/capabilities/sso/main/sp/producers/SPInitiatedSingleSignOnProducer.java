@@ -117,11 +117,17 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             SPSecurityContext secCtx =
                     (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
+
             if (secCtx != null && secCtx.getSessionIndex() != null) {
-
                 // Support no authentication request !
-                if (ssoAuthnReq != null && ssoAuthnReq.getForceAuthn() != null && !ssoAuthnReq.getForceAuthn()) {
+                if (ssoAuthnReq != null && ssoAuthnReq.getForceAuthn() != null && ssoAuthnReq.getForceAuthn()) {
+                    logger.debug("SSO Session found " + secCtx.getSessionIndex() + ", but SP requested 'forceAuthn'. Destroying security context");
+                    // Destroy current session/secCtx !
+                    destroySPSecurityContext(exchange, secCtx);
+                }
+            }
 
+                /*
                     // TODO ! Check that the session belongs to the IdP associated with this request
                     logger.debug("SSO Session found on SP " + secCtx.getSessionIndex());
 
@@ -163,7 +169,7 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
                     destroySPSecurityContext(exchange, secCtx);
                 }
 
-            }
+            } */
 
             // ------------------------------------------------------
             // Resolve IDP configuration!

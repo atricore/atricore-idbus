@@ -106,7 +106,7 @@ public class SessionHeartBeatProducer extends SSOProducer {
 
                 long now = System.currentTimeMillis();
                 if (secCtx.getLastIdPSessionHeartBeat() == null ||
-                        secCtx.getLastIdPSessionHeartBeat() + mediator.getIdpSessionHeartBeatInterval() * 1000L < now) {
+                        secCtx.getLastIdPSessionHeartBeat() + mediator.getIdpSessionHeartBeatInterval() * 100L < now) {
 
                     // Send HB request to IDP.  If we get a null response, HB was not sent.
                     IDPSessionHeartBeatResponseType idpResp = performIdPSessionHeartBeat(exchange, secCtx);
