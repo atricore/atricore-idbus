@@ -54,7 +54,7 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
     /**
      * @return a list of {@link CachePeer} peers, excluding the local peer.
      */
-    public final synchronized List listRemoteCachePeers(Ehcache cache) throws CacheException {
+    /* public final synchronized List listRemoteCachePeers(Ehcache cache) throws CacheException {
         List remoteCachePeers = new ArrayList();
         List staleList = new ArrayList();
         for (Iterator iterator = peerUrls.keySet().iterator(); iterator.hasNext(); ) {
@@ -89,6 +89,32 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
             String rmiUrl = (String) staleList.get(i);
             peerUrls.remove(rmiUrl);
         }
+        return remoteCachePeers;
+    } */
+
+    /**
+     * @return a list of {@link CachePeer} peers, excluding the local peer.
+     */
+    public final synchronized List listRemoteCachePeers(Ehcache cache) throws CacheException {
+        List remoteCachePeers = new ArrayList();
+
+        for (Iterator iterator = remoteHosts.iterator() ; iterator.hasNext() ; ) {
+            String remoteHost = (String) iterator.next();
+            String rmiUrl = "//" + remoteHost + "/" + cache.getName();
+
+            CachePeer cachePeer = null;
+            try {
+                cachePeer = lookupRemoteCachePeer(rmiUrl);
+                remoteCachePeers.add(cachePeer);
+            } catch (Exception e) {
+                    LOG.warn("Looking up rmiUrl " + rmiUrl + " through exception " + e.getMessage()
+                            + ". This may be normal if a node has gone offline. Or it may indicate network connectivity"
+                            + " difficulties", e);
+
+            }
+
+        }
+
         return remoteCachePeers;
     }
 
