@@ -5,6 +5,8 @@ package org.atricore.idbus.kernel.main.session.service;
  */
 public interface SSOSessionStats {
 
+    void init(long currentSessions);
+
     public long getMaxSessions();
 
     public long getCreatedSessions();

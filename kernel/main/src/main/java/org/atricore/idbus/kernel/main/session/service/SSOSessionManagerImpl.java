@@ -63,6 +63,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private boolean _invalidateExceedingSessions = false;
 
+    private boolean _initStats = true;
+
     private SSOSessionStats _stats;
 
     @Deprecated
@@ -144,7 +146,6 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
         // Start session monitor.
         _monitor.start();
-
 
         // Register sessions in security domain !
         logger.info("[initialize()] : Restore Sec.Domain Registry.=" + _securityDomainName);
@@ -458,7 +459,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
      * @param ss
      */
     public void setSessionStore(SessionStore ss) {
-        _store = ss;
+        _store = ss; // todo :  grab statistics ?!
     }
 
     @Override
@@ -586,8 +587,18 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     }
 
     public long getStatsCurrentSessions() {
-        if (_stats != null)
+        if (_stats != null) {
+
+            if (_initStats) {
+                try {
+                    _stats.init(_store.getSize());
+                    _initStats = false;
+                } catch (SSOSessionException e) {
+                    logger.warn(e.getMessage());
+                }
+            }
             return _stats.getCurrentSessions();
+        }
 
         return -1;
     }

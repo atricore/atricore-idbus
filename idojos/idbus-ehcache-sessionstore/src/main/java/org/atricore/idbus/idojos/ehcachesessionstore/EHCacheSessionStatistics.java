@@ -38,6 +38,11 @@ public class EHCacheSessionStatistics implements CacheEventListener, SSOSessionS
 
     }
 
+    @Override
+    public void init(long currentSessions) {
+        this.currentSessions = currentSessions;
+    }
+
     public String getMetricsPrefix() {
         return metricsPrefix;
     }
