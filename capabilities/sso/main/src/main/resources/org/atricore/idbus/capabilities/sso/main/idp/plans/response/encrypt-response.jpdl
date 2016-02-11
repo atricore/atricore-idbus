@@ -31,8 +31,8 @@
 
     <state name="samlrEncryptResponse">
         <event type="node-enter">
-            <action class="org.atricore.idbus.capabilities.sso.main.common.plans.actions.EncryptResponseAction"
-                    name="SAMLR2 Sign IDP Response">
+            <action class="org.atricore.idbus.capabilities.sso.main.common.plans.actions.EncryptResponseContentAction"
+                    name="SAMLR2 Encrypt IDP Response">
             </action>
         </event>
 

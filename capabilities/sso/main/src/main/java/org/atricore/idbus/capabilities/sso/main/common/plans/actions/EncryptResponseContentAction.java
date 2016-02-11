@@ -32,7 +32,6 @@ import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
-import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
@@ -43,12 +42,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This actually encrypts assertions in a response
+ *
+ *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: EncryptResponseAssertionAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
  */
-public class EncryptResponseAction extends AbstractSSOAction {
+public class EncryptResponseContentAction extends AbstractSSOAction {
 
-    private static final Log logger = LogFactory.getLog(EncryptResponseAction.class);
+    private static final Log logger = LogFactory.getLog(EncryptResponseContentAction.class);
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
         StatusResponseType response = (StatusResponseType) out.getContent();
