@@ -43,7 +43,7 @@
             eternal="false"
             timeToIdleSeconds="3600"
             timeToLiveSeconds="3600"
-            overflowToDisk="true"
+            overflowToDisk="false"
             diskPersistent="false">
         <!-- Replicate cache elements using JMS
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jms.JMSCacheReplicatorFactory"
