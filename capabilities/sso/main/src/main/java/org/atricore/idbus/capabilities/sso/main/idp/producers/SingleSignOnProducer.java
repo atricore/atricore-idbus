@@ -1165,6 +1165,37 @@ public class SingleSignOnProducer extends SSOProducer {
             if (authnRequest.getIssuer() != null)
                 claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
 
+            // Proxy extensions override default issuer:
+            if (authnRequest.getExtensions() != null) {
+                // We have extensions:
+                oasis.names.tc.saml._2_0.protocol.ExtensionsType ext = authnRequest.getExtensions();
+                List<Object> any = ext.getAny();
+                if(any != null)
+                    for (Object o : any) {
+                        if (o instanceof JAXBElement) {
+                            JAXBElement jaxbExt = (JAXBElement) o;
+                            if (jaxbExt.getValue() instanceof SPListType) {
+                                SPListType spList = (SPListType) jaxbExt.getValue();
+
+                                if (spList != null && spList.getSPEntry() != null && spList.getSPEntry().size() > 0) {
+
+                                    SPEntryType spExt = spList.getSPEntry().get(0);
+                                    String providerId = spExt.getProviderID();
+
+                                    if (spList.getSPEntry().size() > 1)
+                                        logger.error("Too many SPs listed, using first " + providerId);
+
+                                    if (providerId != null) {
+                                        if (logger.isDebugEnabled())
+                                            logger.debug("Overriding SP alis with extension " + providerId);
+                                        claimsRequest.setSpAlias(providerId);
+                                    }
+                                }
+                            }
+                        }
+                    }
+            }
+
             // --------------------------------------------------------------------
             // Send claims request
             // --------------------------------------------------------------------
