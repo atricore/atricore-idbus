@@ -5,7 +5,6 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -13,13 +12,11 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.IdRegistry;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * OpenID Connect Provider Mediator (IdP)
@@ -33,6 +30,8 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
     private SSOKeystoreKeyResolver signKeyResolver;
 
     private SSOKeystoreKeyResolver encryptKeyResolver;
+
+    private List<OIDCClientInformation> clients;
 
     public OpenIDConnectOPMediator() {
         logger.info("OpenIDConnectOPMediator Instantiated");
@@ -184,5 +183,13 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
 
     public void setEncryptKeyResolver(SSOKeystoreKeyResolver encryptKeyResolver) {
         this.encryptKeyResolver = encryptKeyResolver;
+    }
+
+    public List<OIDCClientInformation> getClients() {
+        return clients;
+    }
+
+    public void setClients(List<OIDCClientInformation> clients) {
+        this.clients = clients;
     }
 }

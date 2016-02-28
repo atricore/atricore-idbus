@@ -1,15 +1,21 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.oauth2.sdk.AuthorizationCode;
+import com.nimbusds.oauth2.sdk.AuthorizationResponse;
+import com.nimbusds.oauth2.sdk.ResponseType;
+import com.nimbusds.oauth2.sdk.SerializeException;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
+import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectTokenType;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectOPMediator;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -17,6 +23,8 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+
+import java.util.Iterator;
 
 /**
  * Producer that receives an assertion
@@ -39,7 +47,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
 
-        OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx");
+        OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:authnCtx");
 
         AuthenticationRequest  authnRequest = authnCtx.getAuthnRequest();
         SPInitiatedAuthnRequestType request = authnCtx != null ? authnCtx.getSsoAuthnRequest() : null;
@@ -50,20 +58,20 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             validateSolicitedAuthnResponse(exchange, request, response);
         }
 
-        OpenIDConnectOPMediator bpMediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
-
         // Resolve OpenID client
-
-        // Resolve response ED
-        EndpointDescriptor ed = resolveRedirectUri(authnRequest);
 
         // build response
         AuthenticationResponse authnResponse = buildAuthorizationResponse(exchange, authnCtx, authnRequest);
+
+        // Resolve response ED
+        EndpointDescriptor ed = resolveRedirectUri(authnRequest, (AuthorizationResponse) authnResponse);
 
         // Store tokens
         //authnCtx.setAuthzGrant(authnResponse.getCode());
         //authnCtx.setAccessToken(authnResponse.getAccessToken());
         //authnCtx.setIdToken(authnResponse.getIdToken());
+
+        state.getLocalState().addAlternativeId("authorization_code", ((AuthenticationSuccessResponse) authnResponse).getAuthorizationCode().getValue());
 
         // TODO : Store unmarshalled tokens w/expiration
 
@@ -72,60 +80,59 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         authnCtx.setAuthnRequest(null);
 
         out.setMessage(new MediationMessageImpl(request.getID(),
-                authnResponse,
+                null,
                 "AuthorizationResponse",
                 null,
                 ed,
-                in.getMessage().getState()));
+                state));
 
         exchange.setOut(out);
 
     }
 
-    protected EndpointDescriptor resolveRedirectUri(AuthenticationRequest authnRequest) {
+    protected EndpointDescriptor resolveRedirectUri(AuthenticationRequest authnRequest, AuthorizationResponse authnResponse) throws SerializeException {
 
         String redirectUriStr = null;
         if (authnRequest != null)
-            redirectUriStr = ""; // TODO : authnRequest.getRedirectUri();
-
-        OpenIDConnectBinding binding = OpenIDConnectBinding.OPENID_PROVIDER_AUTHZ_HTTP;
+            redirectUriStr = authnResponse.toURI().toString();
 
         return new EndpointDescriptorImpl("OpenIDConnectRedirectUri",
-                OpenIDConnectService.AuthorizationConsumerService.toString(), binding.getValue(), redirectUriStr, null);
+                "OpenIDConnectRedirectUri",
+                OpenIDConnectBinding.SSO_REDIRECT.getValue(),
+                redirectUriStr, null);
     }
 
     protected AuthenticationResponse buildAuthorizationResponse(CamelMediationExchange exchange,
                                                                    OpenIDConnectAuthnContext authnCtx,
                                                                    AuthenticationRequest authnRequest) {
 
-        AuthenticationResponse authnResponse = null;
         // TODO : ERROR handling
-        /*
-        AuthenticationResponse authnResponse = new AuthenticationResponse();
-
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
 
-        // Send back original state
-        authnResponse.setState(authnRequest != null ? authnRequest.getState() : null);
-
         // Set all requested tokens as part of the response.
-        OpenIDConnectTokenType[] requestedTokens = getRequestedTokens(authnRequest);
-        for (OpenIDConnectTokenType tokenType : requestedTokens) {
+        AuthorizationCode code = null;
+        BearerAccessToken accessToken = null;
+        JWT idToken = null;
+        ResponseType responseType = authnRequest.getResponseType();
 
+        for (Iterator<ResponseType.Value> iterator = responseType.iterator(); iterator.hasNext(); ) {
+            ResponseType.Value responseTypeValue = iterator.next();
+
+            OpenIDConnectTokenType tokenType = OpenIDConnectTokenType.asEnum(responseTypeValue.getValue());
             String tokenValue = resolveToken(response, tokenType.getFQTN());
 
             if (tokenType.equals(OpenIDConnectTokenType.AUTHZ_CODE)) {
-                authnResponse.setCode(tokenValue);
+                code = new AuthorizationCode(tokenValue);
             } else if (tokenType.equals(OpenIDConnectTokenType.ACCESS_TOKEN)) {
-                authnResponse.setAccessToken(tokenValue);
-                authnResponse.setTokenType("bearer");
+                accessToken = new BearerAccessToken(tokenValue);
             } else if (tokenType.equals(OpenIDConnectTokenType.ID_TOKEN)) {
-                //
-                authnResponse.setIdToken(tokenValue);
-                authnResponse.setExpiresIn(3600L); // TODO : Take from ID Token
+                //idToken = tokenValue;
             }
-        }*/
+        }
+
+        AuthenticationResponse authnResponse = new AuthenticationSuccessResponse(authnRequest.getRedirectionURI(),
+                code, idToken, accessToken, authnRequest.getState(), null, authnRequest.getResponseMode());
 
         return authnResponse;
     }

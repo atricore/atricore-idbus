@@ -22,7 +22,6 @@ import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
@@ -39,25 +38,18 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.IdRegistry;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.bouncycastle.crypto.tls.EncryptionAlgorithm;
-import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.*;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 
@@ -551,26 +543,11 @@ public class TokenProducer extends AbstractOpenIDProducer {
             if (logger.isTraceEnabled())
                 logger.trace("Getting Client Information from current SP channel " + fChannel.getName());
 
-            for (FederatedProvider p : fChannel.getTrustedProviders()) {
-                // We are looking for a SAML 2 SP Proxy for the Relaying Party.
-                if (p instanceof ServiceProvider) {
-                    ServiceProvider sp = (ServiceProvider) p;
-
-                    String bpRole = sp.getBindingChannel().getFederatedProvider().getRole();
-
-                    if (bpRole.equals(OpenIDConnectConstants.IDPSSODescriptor_QNAME.toString())) {
-                        // This is a relaying party facing channel.
-                        BindingChannel bc = sp.getBindingChannel();
-
-                        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) bc.getIdentityMediator();
-                        OIDCClientInformation client = mediator.getClient();
-                        if (client.getID().equals(clientID))
-                            return client;
-
-                    }
-                }
+            OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) fChannel.getIdentityMediator();
+            for (OIDCClientInformation client : mediator.getClients()) {
+                if (client.getID().equals(clientID))
+                    return client;
             }
-
         } else if (fChannel instanceof BindingChannel) {
             if (logger.isTraceEnabled())
                 logger.trace("Getting Client Information from current binding channel " + fChannel.getName());

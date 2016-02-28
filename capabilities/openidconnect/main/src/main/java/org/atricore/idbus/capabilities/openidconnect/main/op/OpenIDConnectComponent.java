@@ -4,12 +4,8 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.op.endpoints.AuthorizationEndpoint;
-import org.atricore.idbus.capabilities.openidconnect.main.op.endpoints.SSOSingleLogoutEndpoint;
-import org.atricore.idbus.capabilities.openidconnect.main.op.endpoints.SSOSingleSignOnEndpoint;
-import org.atricore.idbus.capabilities.openidconnect.main.op.endpoints.TokenEndpoint;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
-import org.atricore.idbus.capabilities.sso.main.sp.endpoints.AssertionConsumerEndpoint;
+import org.atricore.idbus.capabilities.openidconnect.main.op.endpoints.*;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
 import java.util.Map;

@@ -167,7 +167,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
 
     protected BindingChannel resolveSpBindingChannel(BindingChannel bChannel) throws OpenIDConnectException {
 
-        String spAlias = null; ((OpenIDConnectBPMediator)bChannel.getIdentityMediator()).getSpAlias();
+        String spAlias = ((OpenIDConnectBPMediator)bChannel.getIdentityMediator()).getSpAlias();
 
         CircleOfTrust cot = getFederatedProvider().getCircleOfTrust();
 

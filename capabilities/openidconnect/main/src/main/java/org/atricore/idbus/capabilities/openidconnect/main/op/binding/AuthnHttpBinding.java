@@ -14,6 +14,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -52,9 +53,10 @@ public class AuthnHttpBinding extends AbstractOpenIDHttpBinding {
             // HTTP Request Parameters from HTTP Request body
             MediationState state = createMediationState(exchange);
 
-            // TODO : Get URL from Camel
-            URL url = null;
-            HTTPRequest httpRequest = new HTTPRequest(HTTPRequest.Method.GET, url);
+            // Get URL from Camel
+            HTTPRequest httpRequest = new HTTPRequest(HTTPRequest.Method.GET,
+                    new URL((String) httpMsg.getHeader("org.atricore.idbus.http.RequestURL")));
+            httpRequest.setQuery((String) httpMsg.getHeader("org.atricore.idbus.http.QueryString"));
             //httpRequest.setContentType(CommonContentTypes.APPLICATION_URLENCODED);
 
             AuthenticationRequest authnRequest = AuthenticationRequest.parse(httpRequest);
@@ -68,6 +70,9 @@ public class AuthnHttpBinding extends AbstractOpenIDHttpBinding {
 
 
         } catch (ParseException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }

@@ -254,9 +254,9 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
             // Add retries just in case we're in a cluster (they are disabled in non HA setups)
             int retryCount = getRetryCount();
             if (retryCount > 0) {
-                lState = ctx.retrieve("authz_code", code, retryCount, getRetryDelay());
+                lState = ctx.retrieve("authorization_code", code, retryCount, getRetryDelay());
             } else {
-                lState = ctx.retrieve("authz_code", code);
+                lState = ctx.retrieve("authorization_code", code);
             }
 
             // Add retries just in case we're in a cluster (they are disabled in non HA setups)

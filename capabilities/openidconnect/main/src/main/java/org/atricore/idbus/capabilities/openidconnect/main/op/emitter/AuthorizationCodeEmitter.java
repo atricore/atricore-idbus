@@ -36,6 +36,13 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
     }
 
     @Override
+    public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
+        // We can emit for any context with a valid subject when Token Type is SAMLR2!
+        return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
+                WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
+    }
+
+    @Override
     public SecurityToken emit(SecurityTokenProcessingContext context,
                               Object requestToken,
                               String tokenType) throws SecurityTokenEmissionException {

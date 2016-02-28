@@ -37,6 +37,11 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
     }
 
     protected int getRetryCount() {
+        if (getConfigurationContext() == null) {
+            logger.warn("No Configuration context find in binding " + getBinding());
+            return -1;
+        }
+
         String retryCountStr = getConfigurationContext().getProperty("binding.soap.loadStateRetryCount");
         if (retryCountStr == null)
             return -1;
@@ -51,6 +56,11 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
     }
 
     protected long getRetryDelay() {
+        if (getConfigurationContext() == null) {
+            logger.warn("No Configuration context find in binding " + getBinding());
+            return -1;
+        }
+
         String retryDelayStr = getConfigurationContext().getProperty("binding.soap.loadStateRetryDelay");
         if (retryDelayStr == null)
             return -1;
