@@ -82,7 +82,7 @@
             <xsd:complexType name="AccessTokenRequestType">
                 <xsd:complexContent>
                     <xsd:extension base="oauth2p:OAuthRequestAbstractType">
-                        <xsd:attribute name="grantType" type="xsd:string" use="requitargetNamespacered"/>
+                        <xsd:attribute name="grantType" type="xsd:string" use="required"/>
                         <xsd:attribute name="clientId" type="xsd:string" use="required"/>
                         <xsd:attribute name="clientSecret" type="xsd:string" use="optional"/>
                         <xsd:attribute name="username" type="xsd:string" use="optional"/>

@@ -100,7 +100,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             OAuthAccessTokenType oauthToken = of.createOAuthAccessTokenType();
             oauthToken.setTokenType("bearer");
             oauthToken.setAccessToken(tokenValue);
-            oauthToken.setExpiresIn(System.currentTimeMillis() - token.getExpiresOn());
+            oauthToken.setExpiresIn(token.getExpiresOn() - System.currentTimeMillis());
 
             // Create a security token using the OUT artifact content.
             SecurityTokenImpl st = new SecurityTokenImpl(uuid,
