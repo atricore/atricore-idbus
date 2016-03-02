@@ -86,6 +86,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // If we have an authorization_code , the state MUST have the proper alternate key.
         AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
         if (grant instanceof AuthorizationCodeGrant) {
+            // The Authorization Grant will be used to emit a JWT token and validated during the process.
             String expectedAuthzCode = state.getLocalState().getAlternativeId("authorization_code");
             if (expectedAuthzCode == null) {
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "authorization_code:n/a");
@@ -95,6 +96,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 if (authzCode == null || !authzCode.getValue().equals(expectedAuthzCode))
                     throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "authorization_code:" + authzCode);
             }
+
         }
 
         // Validate the incoming request

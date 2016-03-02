@@ -66,12 +66,10 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         // Resolve response ED
         EndpointDescriptor ed = resolveRedirectUri(authnRequest, (AuthorizationResponse) authnResponse);
 
-        // Store tokens
-        //authnCtx.setAuthzGrant(authnResponse.getCode());
-        //authnCtx.setAccessToken(authnResponse.getAccessToken());
-        //authnCtx.setIdToken(authnResponse.getIdToken());
 
-        state.getLocalState().addAlternativeId("authorization_code", ((AuthenticationSuccessResponse) authnResponse).getAuthorizationCode().getValue());
+        // Ad alternate state key, to be used by back-channel.
+        state.getLocalState().addAlternativeId("authorization_code",
+                ((AuthenticationSuccessResponse) authnResponse).getAuthorizationCode().getValue());
 
         // TODO : Store unmarshalled tokens w/expiration
 

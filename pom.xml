@@ -128,13 +128,13 @@
         <repository>
             <id>atricore-m2-deploy-repo</id>
             <name>Atricore Release Distribution Repository</name>
-            <url>sftp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
+            <url>scpexe://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
         </repository>
 
         <snapshotRepository>
             <id>atricore-m2-snapshot-deploy-repo</id>
             <name>Atricore Development Snapshot Repository</name>
-            <url>sftp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
+            <url>scpexe://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
         </snapshotRepository>
 
     </distributionManagement>
