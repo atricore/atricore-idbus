@@ -49,7 +49,7 @@ import java.util.*;
 public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertionPlan {
 
     public IdentityPlanExecutionExchange prepare(IdentityPlanExecutionExchange ex) throws IdentityPlanningException {
-        
+
         IdentityArtifact artifact = ex.getIn();
 
         try {

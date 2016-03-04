@@ -112,6 +112,10 @@ public interface CircleOfTrustManager {
     MetadataEntry findEntityMetadata(String memberAlias)
             throws CircleOfTrustManagerException;
 
+    MetadataEntry findEntityMetadata(String memberAlias, boolean strict)
+            throws CircleOfTrustManagerException;
+
+
     MetadataEntry findEntityRoleMetadata(String memberAlias, String role)
             throws CircleOfTrustManagerException;
 

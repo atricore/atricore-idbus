@@ -118,7 +118,6 @@ public class XmlUtils {
                 SAMLR2Constants.SAML_METADATA_NS,
                 metadataType
         );
-
         return encode ? new String(new Base64().encode(marshaledMd.getBytes())) : marshaledMd;
     }
 
