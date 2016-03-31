@@ -74,8 +74,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <!-- Default Mail properties -->
         <prop key="mail.smtp.host">localhost</prop>
+        <prop key="mail.smtp.port">25</prop>
         <prop key="mail.username">admin</prop>
         <prop key="mail.password">admin</prop>
+        <prop key="mail.smtp.starttls.enable">false</prop>
 
 
     </osgix:cm-properties>

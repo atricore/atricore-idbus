@@ -19,7 +19,9 @@ public enum OAuth2Binding {
 
     OAUTH2_SOAP("urn:org:atricore:idbus:OAUTH:2.0:bindings:SOAP", false),
 
-    OAUTH2_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:HTTP-Restful", true);
+    OAUTH2_RESTFUL("urn:org:atricore:idbus:OAUTH:2.0:bindings:HTTP-Restful", true),
+
+    OAUTH2_REDIRECT("urn:org:atricore:idbus:OAUTH:2.0:bindings:HTTP-Redirect", true);
 
 
     private String binding;

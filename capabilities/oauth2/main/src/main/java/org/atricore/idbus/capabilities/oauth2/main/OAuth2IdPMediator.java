@@ -117,6 +117,7 @@ public class OAuth2IdPMediator extends AbstractCamelMediator {
                             }
                             break;
                         case OAUTH2_RESTFUL:
+                        case OAUTH2_REDIRECT:
 
                             // FROM idbus-http TO idbus-bind (through direct component)
                             from("idbus-http:" + ed.getLocation()).

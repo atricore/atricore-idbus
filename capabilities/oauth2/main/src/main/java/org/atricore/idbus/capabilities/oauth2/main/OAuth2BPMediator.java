@@ -32,6 +32,8 @@ public class OAuth2BPMediator extends AbstractCamelMediator {
 
     private String spAlias;
 
+    private String tokenResponseBinding = OAuth2Binding.OAUTH2_RESTFUL.getValue();
+
     public OAuth2BPMediator() {
         logger.info("OAuth2BPMediator Instantiated");
     }
@@ -196,5 +198,13 @@ public class OAuth2BPMediator extends AbstractCamelMediator {
 
     public void setSpAlias(String spAlias) {
         this.spAlias = spAlias;
+    }
+
+    public String getTokenResponseBinding() {
+        return tokenResponseBinding;
+    }
+
+    public void setTokenResponseBinding(String tokenResponseBinding) {
+        this.tokenResponseBinding = tokenResponseBinding;
     }
 }

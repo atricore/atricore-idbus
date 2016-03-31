@@ -71,7 +71,7 @@ public class AssertionConsumerProducer extends AbstractCamelProducer<CamelMediat
         // Create destination with back/to and OAUTH2 Restful binding
         EndpointDescriptor destination = new EndpointDescriptorImpl("OAuth2ResourceServer",
                 "AccessTokenResponse",
-                OAuth2Binding.OAUTH2_RESTFUL.getValue(),
+                bpMediator.getTokenResponseBinding(),
                 rServerLocation, null);
 
         out.setMessage(new MediationMessageImpl(response.getID(),

@@ -141,8 +141,10 @@ public class BasePage extends WebPage implements IHeaderContributor {
             };
         };
 
-        if (session.isAuthenticated())
+        if (session.isAuthenticated()) {
             utilityBox.add(new Label("username", session.getPrincipal()));
+            utilityBox.add(new BookmarkablePageLink<Void>("logout", resolvePage("AGENT/LOGOUT")));
+        }
 
         add(utilityBox);
 

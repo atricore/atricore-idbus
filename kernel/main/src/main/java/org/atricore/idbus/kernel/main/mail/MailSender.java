@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.main.mail;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,9 +24,13 @@ public class MailSender {
 
     private String host;
 
+    private String port;
+
     private String username;
 
     private String password;
+
+    private boolean startTls;
 
     private Properties properties;
 
@@ -36,13 +41,14 @@ public class MailSender {
         logger.info("Initializing mail sender ["+name+"] with host [" + host + "], username ["+username+"], password [*]");
 
         properties.setProperty("mail.smtp.host", host);
+        if (port != null && NumberUtils.toInt(port) > 0)
+            properties.setProperty("mail.smtp.port", port);
         if (username != null)
             properties.setProperty("mail.username", username);
         if (password != null)
             properties.setProperty("mail.password", password);
-
-
-
+        if (startTls)
+            properties.setProperty("mail.smtp.starttls.enable", "true");
     }
 
     public String getName() {
@@ -61,6 +67,14 @@ public class MailSender {
         this.host = host;
     }
 
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -75,6 +89,14 @@ public class MailSender {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isStartTls() {
+        return startTls;
+    }
+
+    public void setStartTls(boolean startTls) {
+        this.startTls = startTls;
     }
 
     public void send(String from, String to, String subject, String messageText, String contentType) {
