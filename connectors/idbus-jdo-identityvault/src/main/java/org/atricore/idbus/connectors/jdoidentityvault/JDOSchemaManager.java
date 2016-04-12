@@ -401,7 +401,8 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
     protected JDOGroupAttributeDefinition toJDOGroupAttribute(GroupAttributeDefinition groupAttribute) {
         JDOGroupAttributeDefinition jdoGroupAttribute = toJDOGroupAttribute(new JDOGroupAttributeDefinition(), groupAttribute);
-        jdoGroupAttribute.setId(Long.parseLong(groupAttribute.getId()));
+        if (groupAttribute.getId() != null)
+            jdoGroupAttribute.setId(Long.parseLong(groupAttribute.getId()));
         return jdoGroupAttribute;
     }
 
