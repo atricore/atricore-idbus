@@ -1,4 +1,4 @@
-package org.josso.samples.spring.boot;
+package org.atricore.idbus.examples.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

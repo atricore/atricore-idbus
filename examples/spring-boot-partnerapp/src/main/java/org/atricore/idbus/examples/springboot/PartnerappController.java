@@ -1,4 +1,4 @@
-package org.josso.samples.spring.boot;
+package org.atricore.idbus.examples.springboot;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

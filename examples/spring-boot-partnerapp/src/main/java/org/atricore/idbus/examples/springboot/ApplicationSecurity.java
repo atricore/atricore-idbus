@@ -1,4 +1,4 @@
-package org.josso.samples.spring.boot;
+package org.atricore.idbus.examples.springboot;
 
 import org.josso.agent.Lookup;
 import org.josso.agent.http.HttpSSOAgent;
