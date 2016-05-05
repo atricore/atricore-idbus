@@ -54,22 +54,22 @@
                     <list>
                         <bean class="org.josso.agent.SSOPartnerAppConfig">
                             <property name="id">
-<value>sp</value>
+                                <value>sp</value>
                             </property>
                             <property name="vhost">
-<value>localhost</value>
+                                <value>localhost</value>
                             </property>
                             <property name="context">
-<value>/partnerapp</value>
+                                <value>/partnerapp</value>
                             </property>
                             <property name="ignoredUrlPatterns">
-<list>
-    <value>/css/*</value>
-    <value>/img/*</value>
-    <value>/favicon.ico</value>
-    <value>/logout</value>
-    <value>/WEB-INF/*</value>
-</list>
+                                <list>
+                                    <value>/css/*</value>
+                                    <value>/img/*</value>
+                                    <value>/favicon.ico</value>
+                                    <value>/logout</value>
+                                    <value>/WEB-INF/*</value>
+                                </list>
                             </property>
                         </bean>
                     </list>
