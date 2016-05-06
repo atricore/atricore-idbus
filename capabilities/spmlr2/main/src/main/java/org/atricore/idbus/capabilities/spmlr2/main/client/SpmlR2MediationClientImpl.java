@@ -253,6 +253,14 @@ public class SpmlR2MediationClientImpl implements SpmlR2Client, InitializingBean
         }
     }
 
+    public VerifyResetPasswordResponseType spmlVerifyResetPasswordRequest(VerifyResetPasswordRequestType request) {
+        try {
+            return (VerifyResetPasswordResponseType) mediator.sendMessage(request, doMakeDestination(request), psp.getChannel());
+        } catch (IdentityMediationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected EndpointDescriptor doMakeDestination(RequestType request) throws IdentityMediationException {
 
         Channel c = psp.getChannel();

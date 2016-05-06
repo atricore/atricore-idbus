@@ -2,8 +2,7 @@ package org.atricore.idbus.capabilities.spmlr2.main.psp.producers;
 
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.*;
-import oasis.names.tc.spml._2._0.password.ResetPasswordRequestType;
-import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
+import oasis.names.tc.spml._2._0.password.*;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
@@ -80,11 +79,9 @@ public class PSPProducer extends SpmlR2Producer {
         } else if (content instanceof ReplacePasswordRequestType) {
             spmlResponse = doProcessReplacePassword(exchange, (ReplacePasswordRequestType) content);
         } else if (content instanceof ResetPasswordRequestType) {
-            // TODO :
-            logger.error("Unknown SPML Request type : " + content.getClass().getName());
-            spmlResponse.setStatus(StatusCodeType.FAILURE);
-            spmlResponse.setError(ErrorCode.UNSUPPORTED_OPERATION);
-
+            spmlResponse = doProcessResetPasswordRequest(exchange, (ResetPasswordRequestType) content);
+        } else if (content instanceof VerifyResetPasswordRequestType) {
+            spmlResponse = doProcessVerifyResetPasswordRequest(exchange, (VerifyResetPasswordRequestType) content);
         } else {
 
             // TODO : Send status=failure error= in response ! (use super producer or binding to build error
@@ -780,6 +777,51 @@ public class PSPProducer extends SpmlR2Producer {
             req.setNewPassword(newPwd);
             target.resetPassword(req);
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } catch (ProvisioningException e) {
+            logger.error(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+        }
+
+        return spmlResponse;
+    }
+
+    public ResponseType doProcessVerifyResetPasswordRequest(CamelMediationExchange exchange, VerifyResetPasswordRequestType spmlRequest) {
+        VerifyResetPasswordResponseType spmlResponse = new VerifyResetPasswordResponseType();
+        try {
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            ConfirmResetPasswordRequest req = new ConfirmResetPasswordRequest();
+            req.setTransactionId(spmlRequest.getTransaction());
+            req.setNewPassword(spmlRequest.getNewpassword());
+
+            ResetPasswordResponse resp = target.confirmResetPassword(req);
+
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } catch (ProvisioningException e) {
+            logger.error(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+        }
+
+        return spmlResponse;
+    }
+
+    public ResponseType doProcessResetPasswordRequest(CamelMediationExchange exchange, ResetPasswordRequestType spmlRequest) {
+        ResetPasswordResponseType spmlResponse = new ResetPasswordResponseType();
+        try {
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+            String userId = spmlRequest.getPsoID().getID();
+
+            User user = this.lookupUser(target, userId);
+
+            ResetPasswordRequest req = new ResetPasswordRequest(user);
+            PrepareResetPasswordResponse resp = target.prepareResetPassword(req);
+
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+            spmlResponse.setTransaction(resp.getTransactionId());
+            spmlResponse.setPassword(resp.getNewPassword());
 
         } catch (ProvisioningException e) {
             logger.error(e.getMessage(), e);

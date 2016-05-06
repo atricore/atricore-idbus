@@ -278,5 +278,6 @@
     <modules>
         <module>main</module>
         <module>command</module>
+        <module>clients/spmlr2-client-java</module>
     </modules>
 </project>

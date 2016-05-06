@@ -661,7 +661,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         HttpConsumer consumer = resolveConsumer(req);
         if (consumer == null) {
             log("No HTTP Consumer found for " + req.getRequestURL().toString() + " Sending 404 (Not Found) HTTP Status.");
-            logger.warn("Make sure your appliance is STARTED");
+            logger.warn("Make sure your appliance is STARTED [" + req.getRequestURL().toString() + "]");
             res.setStatus(HttpServletResponse.SC_NOT_FOUND);
             // TODO : Send 404 HTML content
             return;

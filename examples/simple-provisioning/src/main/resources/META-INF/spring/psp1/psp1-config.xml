@@ -220,6 +220,6 @@
 
     <osgi:service id="osgi-psp1-client"
                   ref="psp1-client"
-                  interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"/>
+                  interface="org.atricore.idbus.capabilities.spmlr2.main.org.atricore.idbus.capabilities.spmlr2.client.SpmlR2Client"/>
 
 </s:beans>
