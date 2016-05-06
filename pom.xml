@@ -101,6 +101,7 @@
         <module>examples/custom-accountlink-emitter</module>
         <module>examples/custom-audit-handler</module>
         <module>examples/oidc-client</module>
+        <module>examples/spring-boot-partnerapp</module>
 
         <module>distributions</module>
     </modules>
