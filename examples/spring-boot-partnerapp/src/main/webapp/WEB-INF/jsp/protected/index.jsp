@@ -85,7 +85,7 @@
                               <div class="footer"></div>
                         </div><!-- /highlight -->
 
-                        <a href="<%=request.getContextPath()%>/josso_logout/" class="button">Logout</a>
+                        <a href="<%=request.getContextPath()%>/logout" class="button">Logout</a>
 
                         <div id="login-options" class="clearfix">
 
@@ -96,7 +96,7 @@
 
                             <div id="col2">
                                   <h3 class="arrow">Logout URL</h3>
-                                  <p>The logout URL is <a href="<%=request.getContextPath()%>/josso_logout/"><%=request.getContextPath()%>/josso_logout/</a>. <br/>Do not forget the trailing '/'</p>
+                                  <p>The logout URL is <a href="<%=request.getContextPath()%>/logout"><%=request.getContextPath()%>/logout</a>. <br/>Do not forget the trailing '/'</p>
                             </div>
 
                             <div id="col3">
