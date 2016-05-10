@@ -34,7 +34,7 @@ public class MailSender {
 
     private Properties properties;
 
-    private void init() {
+    public void init() {
 
         properties = new Properties();
 

@@ -106,7 +106,7 @@ public class SpmlR2Client implements ConfigurationConstants {
         return res;
     }
 
-    public void verifyResetPassword(String username, String transactionId, String newpassword) throws SpmlR2ClientException {
+    public VerifyResetPasswordResponseType verifyResetPassword(String username, String transactionId, String newpassword) throws SpmlR2ClientException {
 
         PSOType user = searchUserPSO(username);
         if (user ==null)
@@ -118,7 +118,7 @@ public class SpmlR2Client implements ConfigurationConstants {
         req.setTransaction(transactionId);
 
         VerifyResetPasswordResponseType resp = wsClient.spmlVerifyResetPasswordRequest(req);
-
+        return resp;
     }
 
     public ExtensibleType searchUser(String username) throws SpmlR2ClientException {
