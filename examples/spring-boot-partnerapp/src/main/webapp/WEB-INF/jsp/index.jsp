@@ -123,7 +123,7 @@
                             <div class="footer"></div>
                         </div><!-- /highlight -->
 
-                        <a href="<%=request.getContextPath()%>/josso_logout/" class="button">Logout</a>
+                        <a href="<%=request.getContextPath()%>/logout" class="button">Logout</a>
 
                         <div id="login-options" class="clearfix">
 
