@@ -3,12 +3,12 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
+import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,10 +17,10 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "grpmodify", description = "SPML User MODIFY operation")
+@Command(scope = "spml", name = "usrmodify", description = "SPML User MODIFY operation")
 public class UserModifyCommand extends SpmlCommandSupport {
 
-    @Option(name = "-i", aliases = "--id", description = "Group ID", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--id", description = "User ID", required = true, multiValued = false)
     Long id;
 
     //<--- General Information ---->
@@ -59,6 +59,7 @@ public class UserModifyCommand extends SpmlCommandSupport {
 
 
 //<--- Security Account---->
+    @Option(name = "--account-disabled", description = "Account disabled", required = false, multiValued = false)
     Boolean accountDisabled;
     Boolean accountExpires;
     Date accountExpirationDate;
@@ -93,7 +94,9 @@ public class UserModifyCommand extends SpmlCommandSupport {
         PSOType psoUser = lookupUser(pspChannel, id);
         UserType spmlUser = (UserType) psoUser.getData();
 
-        BeanUtils.copyProperties(spmlUser, this);
+        // Note: use Spring's BeanUtils (instead of Apache's) because null Boolean values will be set to null and not false
+        // Note: null values will be ignored for user update
+        BeanUtils.copyProperties(this, spmlUser);
 
         if (this.groupName != null) {
 
@@ -118,4 +121,155 @@ public class UserModifyCommand extends SpmlCommandSupport {
         return spmlRequest;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getSurename() {
+        return surename;
+    }
+
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+
+    public String getInitials() {
+        return initials;
+    }
+
+    public String getGenerationQualifier() {
+        return generationQualifier;
+    }
+
+    public String getDistinguishedName() {
+        return distinguishedName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public String getFacsimilTelephoneNumber() {
+        return facsimilTelephoneNumber;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public String getLocalityName() {
+        return localityName;
+    }
+
+    public String getStateOrProvinceName() {
+        return stateOrProvinceName;
+    }
+
+    public String getStreetAddress() {
+        return streetAddress;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public String getOrganizationUnitName() {
+        return organizationUnitName;
+    }
+
+    public String getPersonalTitle() {
+        return personalTitle;
+    }
+
+    public String getBusinessCategory() {
+        return businessCategory;
+    }
+
+    public String getPostalAddress() {
+        return postalAddress;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public String getPostOfficeBox() {
+        return postOfficeBox;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public Boolean getAccountDisabled() {
+        return accountDisabled;
+    }
+
+    public Boolean getAccountExpires() {
+        return accountExpires;
+    }
+
+    public Date getAccountExpirationDate() {
+        return accountExpirationDate;
+    }
+
+    public Boolean getLimitSimultaneousLogin() {
+        return limitSimultaneousLogin;
+    }
+
+    public Integer getMaximunLogins() {
+        return maximunLogins;
+    }
+
+    public Boolean getTerminatePreviousSession() {
+        return terminatePreviousSession;
+    }
+
+    public Boolean getPreventNewSession() {
+        return preventNewSession;
+    }
+
+    public Boolean getAllowUserToChangePassword() {
+        return allowUserToChangePassword;
+    }
+
+    public Boolean getForcePeriodicPasswordChanges() {
+        return forcePeriodicPasswordChanges;
+    }
+
+    public Integer getDaysBetweenChanges() {
+        return daysBetweenChanges;
+    }
+
+    public Date getPasswordExpirationDate() {
+        return passwordExpirationDate;
+    }
+
+    public Boolean getNotifyPasswordExpiration() {
+        return notifyPasswordExpiration;
+    }
+
+    public Integer getDaysBeforeExpiration() {
+        return daysBeforeExpiration;
+    }
+
+    public byte[] getUserCertificate() {
+        return userCertificate;
+    }
+
+    public Boolean getAutomaticallyGeneratePassword() {
+        return automaticallyGeneratePassword;
+    }
+
+    public Boolean getEmailNewPasword() {
+        return emailNewPasword;
+    }
 }
