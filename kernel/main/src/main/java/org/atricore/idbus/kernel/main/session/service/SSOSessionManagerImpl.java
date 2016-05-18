@@ -191,7 +191,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         if (!_invalidateExceedingSessions &&
                 _maxSessionsPerUser != -1 &&
                 _maxSessionsPerUser <= sessions.length) {
-            throw new TooManyOpenSessionsException(sessions.length - 1);
+            throw new TooManyOpenSessionsException(sessions.length);
         }
 
         // Check if sessions should be auto-invalidated.
