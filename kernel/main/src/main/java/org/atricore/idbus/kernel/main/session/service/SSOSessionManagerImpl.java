@@ -141,7 +141,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         logger.info("[initialize()] : MaxInactive.................=" + _maxInactiveInterval);
         logger.info("[initialize()] : MaxSessionsPerUser..........=" + _maxSessionsPerUser);
         logger.info("[initialize()] : InvalidateExceedingSessions.=" + _invalidateExceedingSessions);
-        logger.info("[initialize()] : SesisonMonitorInteval.......=" + _sessionMonitorInterval);
+        logger.info("[initialize()] : SessionMonitorInterval......=" + _sessionMonitorInterval);
         logger.info("[initialize()] : Node........................=" + _node);
 
         // Start session monitor.
@@ -153,36 +153,36 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     }
 
     /**
-     * TODO: deprecate
-     * Initiates a new session.
-     *
-     * @return the new session identifier.
-     * @deprecated
-     */
-    @Deprecated
-    public String initiateSession(String username) throws SSOSessionException {
-        throw new UnsupportedOperationException("Operation was deprecated!");
-    }
-
-
-    /**
      * Initiates a new session. The new session id is returned.
      *
      * @return the new session identifier.
      */
     public String initiateSession(String username, SecurityToken securityToken) throws SSOSessionException {
         // Convert minutes to seconds:
-        return initiateSession(username, securityToken, getMaxInactiveInterval() * 60);
+        return initiate(username, securityToken, getMaxInactiveInterval() * 60);
     }
 
     /**
      * Initiates a new session. The new session id is returned.
      *
-     * @param sessionTimeout in seconds
+     * @param sessionTimeoutInSeconds in seconds
      * @return
      * @throws SSOSessionException
      */
-    public String initiateSession(String username, SecurityToken securityToken, int sessionTimeout) throws SSOSessionException {
+    public String initiateSession(String username, SecurityToken securityToken, int sessionTimeoutInSeconds) throws SSOSessionException {
+        return initiate(username, securityToken, sessionTimeoutInSeconds);
+    }
+
+    /**
+     * Method that initiates a new session.
+     *
+     * @param username
+     * @param securityToken
+     * @param sessionTimeout
+     * @return
+     * @throws SSOSessionException
+     */
+    protected String initiate(String username, SecurityToken securityToken, int sessionTimeout) throws SSOSessionException {
 
         // Invalidate sessions if necessary
         BaseSession sessions[] = _store.loadByUsername(username);

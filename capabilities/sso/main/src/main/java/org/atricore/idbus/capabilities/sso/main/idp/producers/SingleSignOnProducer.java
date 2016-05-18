@@ -1987,6 +1987,23 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Using username : " + userId.getName());
 
+        // TODO : Customize timeouts based on context: Subject (username, roles), date/time, authn context, remote IP ... etc.
+
+        /*
+
+        TODO : Send this to init session ?!
+        Properties props = new Properties();
+        props.put("subject", authnSubject);
+        props.put("saml2Assertion", assertion);
+        props.put("saml2AuthnStmt", authnStmt);
+
+        String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+        if (remoteAddr != null) {
+            props.setProperty("remoteAddress", remoteAddr);
+        }
+
+        */
+
         // Initiate SSO Session
         String ssoSessionId = ((SPChannel) channel).getSessionManager().initiateSession(userId.getName(), st);
         assert ssoSessionId.equals(st.getId()) : "SSO Session Manager MUST use security token ID as session ID";

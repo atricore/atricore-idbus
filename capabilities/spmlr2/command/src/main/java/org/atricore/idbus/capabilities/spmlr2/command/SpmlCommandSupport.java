@@ -43,7 +43,7 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
     @Argument(index = 1, name = "pspId", description = "The id if the Provisioning Service Provider", required = true)
     String pspId;
 
-    @Argument(index = 2, name = "targetId", description = "Provisionig Service Target id", required = false)
+    @Argument(index = 2, name = "targetId", description = "Provisioning Service Target id", required = false)
     String targetId;
 
     @Option(name = "-v", aliases = "--verbose", description = "Verbose command", required = false, multiValued = false)

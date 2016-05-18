@@ -43,6 +43,13 @@ public class BaseAuditingServer implements AuditingServer {
     }
 
     @Override
+    public AuditTrail process(String category, String severity, String action, ActionOutcome outcome, String subject, Date time, Throwable error, Properties props) {
+        AuditTrail at = new BaseAuditTrail(category, severity, action, outcome, subject, time, error, props);
+        processAuditTrail(at);
+        return at;
+    }
+
+    @Override
     public void registerHandler(AuditHandler handler) {
         handlers.add(handler);
     }

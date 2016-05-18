@@ -6,6 +6,8 @@ import java.security.Principal;
 import java.util.Set;
 
 /**
+ * Generic SSO Policy enforcement statement.
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public interface SSOPolicyEnforcementStatement extends Serializable, Principal {

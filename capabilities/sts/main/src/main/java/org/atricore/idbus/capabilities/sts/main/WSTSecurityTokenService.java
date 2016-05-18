@@ -70,6 +70,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     private Collection<SecurityTokenAuthenticator> authenticators = new ArrayList<SecurityTokenAuthenticator>();
 
+    private Collection<SubjectAuthenticationPolicy> subjectAuthnPolicies = new ArrayList<SubjectAuthenticationPolicy>();
+
     private MessageQueueManager artifactQueueManager;
 
     private String name;
@@ -154,6 +156,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             subject = resolveSubject(subject);
 
             processingContext.setProperty(SUBJECT_PROP, subject);
+
+            verify(processingContext, requestToken.getValue(), tokenType.getValue());
 
             // -----------------------------------------
             // 2. Emit security token
@@ -258,6 +262,38 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     }
 
+    /**
+     * Verifies authentication
+     * @param ctx
+     * @param requestToken
+     * @param tokenType
+     * @throws SecurityTokenAuthenticationFailure
+     */
+    protected Set<SSOPolicyEnforcementStatement> verify(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType)
+            throws SecurityTokenAuthenticationFailure{
+
+        Set<SSOPolicyEnforcementStatement> allStmts = new HashSet<SSOPolicyEnforcementStatement>();
+
+        for (SubjectAuthenticationPolicy policy : subjectAuthnPolicies) {
+            Subject subject = (Subject) ctx.getProperty(SUBJECT_PROP);
+            try {
+                Set<SSOPolicyEnforcementStatement> stmts = policy.verify(subject, ctx);
+                if (stmts != null)
+                    allStmts.addAll(stmts);
+            } catch (SecurityTokenAuthenticationFailure e) {
+                logger.debug(e.getMessage(), e);
+                if (e.getSsoPolicyEnforcements() != null) {
+                    allStmts.addAll(e.getSsoPolicyEnforcements());
+                } else {
+                    AuthnErrorPolicyEnforcementStatement p = new AuthnErrorPolicyEnforcementStatement(e);
+                    allStmts.add(p);
+                }
+            }
+        }
+
+        return allStmts;
+    }
+
     protected SecurityToken emit(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType) {
 
         SecurityToken securityToken = null;
@@ -289,7 +325,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                                      "[" + emitter.getId() + "]");
 
                         if (securityToken != null) {
-                            logger.warn("Security configured multiple requested emitters, using token " + st);
+                            logger.warn("Multiple emitters configured as target emitter!!! Token " + st + " replaced " + securityToken);
                         }
                         securityToken = st;
                     }
@@ -476,7 +512,15 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         this.emitters = emitters;
     }
 
-   /**
+    public Collection<SubjectAuthenticationPolicy> getSubjectAuthnPolicies() {
+        return subjectAuthnPolicies;
+    }
+
+    public void setSubjectAuthnPolicies(Collection<SubjectAuthenticationPolicy> subjectAuthnPolicies) {
+        this.subjectAuthnPolicies = subjectAuthnPolicies;
+    }
+
+    /**
      * @org.apache.xbean.Property alias="authenticators" nestedType="org.atricore.atricore.idbus.kernel.main.authn.SecurityTokenAuthenticator"
      */
     public Collection<SecurityTokenAuthenticator> getAuthenticators() {

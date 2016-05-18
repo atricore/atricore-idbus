@@ -28,7 +28,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Signals that an authentication failed.  The policy enforcement statements listed in the error are those that failed
+ * during authentication.
  *
+ * @see SSOPolicyEnforcementStatement
  */
 public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionException {
 
@@ -36,6 +39,14 @@ public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionExc
 
     private String principalName;
 
+    /**
+     * Creates a new  Security Token authentication exception
+     *
+     * @param scheme the authentication scheme or policy that failed.
+     * @param ssoPolicyEnforcements List of policies that failed
+     * @param cause error that caused the policy to fail (optional)
+     *
+     */
     public SecurityTokenAuthenticationFailure(String scheme, Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements, Throwable cause) {
         super("Cannot authenticate token using scheme " + scheme, cause);
         if (cause instanceof AuthenticationFailureException) {

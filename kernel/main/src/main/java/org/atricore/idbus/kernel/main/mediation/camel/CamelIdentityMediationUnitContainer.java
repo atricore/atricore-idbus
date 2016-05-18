@@ -107,7 +107,7 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
             logger.info("Initializing Camel based Identity Mediation Engine with " + getMediators().size() + " mediators.");
 
             // ---------------------------------------------------------
-            // Setup CXF, adding Camel transport programatically
+            // Setup CXF, adding Camel transport programmatically
             // ---------------------------------------------------------
             // TODO : THIST SHOULD BE DONE DECLARATIVE, USING SPRING DM!
             logger.debug("Configuring Camel Transport for CXF ... ");
