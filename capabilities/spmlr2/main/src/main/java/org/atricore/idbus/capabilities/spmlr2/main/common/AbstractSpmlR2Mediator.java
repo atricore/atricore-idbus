@@ -19,6 +19,8 @@ public class AbstractSpmlR2Mediator extends AbstractCamelMediator {
 
     private static final Log logger = LogFactory.getLog(AbstractSpmlR2Mediator.class);
 
+    private String auditCategory = "";
+
     /**
      * @return
      * @org.apache.xbean.Property alias="log-messages"
@@ -84,6 +86,14 @@ public class AbstractSpmlR2Mediator extends AbstractCamelMediator {
             throw new IdentityMediationException("Unsupported channel type " +
                     channel.getName() + " " + channel.getClass().getName());
         }
+    }
+
+    public String getAuditCategory() {
+        return auditCategory;
+    }
+
+    public void setAuditCategory(String auditCategory) {
+        this.auditCategory = auditCategory;
     }
 }
 

@@ -4,6 +4,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.auditing.core.Action;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
@@ -61,6 +64,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private OldTransactionsMonitor monitor;
 
     private Thread monitorThread;
+
+    private AuditingServer aServer;
+
+    private String auditCategory = "";
 
     private static final Set<String> dictionary = new HashSet<String>();
 
@@ -282,6 +289,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningException {
 
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupName", groupRequest.getName());
+
         try {
             Group group = new Group();
             group.setName(groupRequest.getName());
@@ -290,14 +300,19 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             group = identityPartition.addGroup(group);
             AddGroupResponse groupResponse = new AddGroupResponse();
             groupResponse.setGroup(group);
+            recordInfoAuditTrail(Action.ADD_GROUP.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return groupResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
 
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupId", groupRequest.getId());
+
         try {
             
             Group group = identityPartition.findGroupById(groupRequest.getId());
@@ -308,35 +323,53 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             group = identityPartition.updateGroup(group);
 
+            auditProps.setProperty("groupName", group.getName());
+            recordInfoAuditTrail(Action.UPDATE_GROUP.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             UpdateGroupResponse groupResponse = new UpdateGroupResponse();
             groupResponse.setGroup(group);
 
             return groupResponse;
         } catch (GroupNotFoundException e) {
+            auditProps.setProperty("groupNotFound", "true");
+            recordInfoAuditTrail(Action.UPDATE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupId", groupRequest.getId());
         try {
             identityPartition.deleteGroup(groupRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_GROUP.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveGroupResponse();
         } catch (GroupNotFoundException e) {
+            auditProps.setProperty("groupNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", userRequest.getId());
         try {
             identityPartition.deleteUser(userRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_USER.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveUserResponse();
         } catch (UserNotFoundException e) {
+            auditProps.setProperty("userNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_USER.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_USER.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
@@ -367,8 +400,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             AddUserResponse userResponse = new AddUserResponse();
             userResponse.setUser(user);
 
+            recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUserName(), null);
+
             return userResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.FAILURE, userRequest.getUserName(), null);
             throw new ProvisioningException(e);
         }
     }
@@ -381,7 +417,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         AddUserResponse userResponse = new AddUserResponse();
 
         User u = new User();
-        BeanUtils.copyProperties(userRequest, u, new String[] {"groups", "securityQuestions", "userPassword"});
+        BeanUtils.copyProperties(userRequest, u, new String[]{"groups", "securityQuestions", "userPassword"});
 
         String salt = generateSalt();
 
@@ -398,6 +434,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         // TODO : Make configurable
         PendingTransaction t = new PendingTransaction(transactionId, System.currentTimeMillis() + (1000L * 60L * 30L), userRequest, userResponse);
         storePendingTransaction(t);
+
+        recordInfoAuditTrail(Action.PREPARE_ADD_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUserName(), null);
 
         return new PrepareAddUserResponse(t.getId(), u, tmpPassword);
     }
@@ -443,6 +481,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Store user information
         User newUser = identityPartition.updateUser(tmpUser);
+
+        recordInfoAuditTrail(Action.CONFIRM_ADD_USER.getValue(), ActionOutcome.SUCCESS, newUser.getUserName(), null);
 
         // Send response message
         response.setUser(newUser);
@@ -513,14 +553,18 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             user = identityPartition.updateUser(oldUser);
 
+            recordInfoAuditTrail(Action.UPDATE_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUser().getUserName(), null);
+
             UpdateUserResponse userResponse = new UpdateUserResponse();
             userResponse.setUser(user);
 
             return userResponse;
 
         } catch (UserNotFoundException e) {
+            recordInfoAuditTrail(Action.UPDATE_USER.getValue(), ActionOutcome.FAILURE, userRequest.getUser().getUserName(), null);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_USER.getValue(), ActionOutcome.FAILURE, userRequest.getUser().getUserName(), null);
             throw new ProvisioningException(e);
         }
     }
@@ -558,7 +602,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    public ResetPasswordResponse  resetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
 
         // Generate a password (TODO : improve ?!)
         // Passwords with alphabetic and numeric characters.
@@ -566,6 +610,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Make sure that the password meets the security requirements
         validatePassword(pwd);
+
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", resetPwdRequest.getUser().getId());
 
         try {
             User user = identityPartition.findUserById(resetPwdRequest.getUser().getId());
@@ -578,11 +625,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             identityPartition.updateUser(user);
 
+            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.SUCCESS, resetPwdRequest.getUser().getUserName(), auditProps);
+
             ResetPasswordResponse resetPwdResponse = new ResetPasswordResponse();
             resetPwdResponse.setNewPassword(pwd);
 
             return resetPwdResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, resetPwdRequest.getUser().getUserName(), auditProps);
             throw new ProvisioningException("Cannot reset user password", e);
         }
     }
@@ -600,42 +650,58 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         storePendingTransaction(t);
 
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", resetPwdRequest.getUser().getId());
+        recordInfoAuditTrail(Action.PREPARE_PWD_RESET.getValue(), ActionOutcome.SUCCESS, resetPwdRequest.getUser().getUserName(), auditProps);
+
         return new PrepareResetPasswordResponse(t.getId(), pwd);
     }
 
     public ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException {
 
-        // Either the user provides a new password, or we use the one we created.
-        boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
-        if (!usedGeneratedPwd);
+        User user = null;
+
+        Properties auditProps = new Properties();
+        auditProps.setProperty("transactionId", resetPwdRequest.getTransactionId());
+
+        try {
+
+            // Either the user provides a new password, or we use the one we created.
+            boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
+            if (!usedGeneratedPwd) ;
             validatePassword(resetPwdRequest.getNewPassword());
 
-        PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
-        // Did the transaction already expired ?
-        if (t == null || t.expiresOn < System.currentTimeMillis()) {
-            throw new TransactionExpiredExcxeption(resetPwdRequest.getTransactionId());
+            PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
+            // Did the transaction already expired ?
+            if (t == null || t.expiresOn < System.currentTimeMillis()) {
+                throw new TransactionExpiredExcxeption(resetPwdRequest.getTransactionId());
+            }
+
+            ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
+            ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
+
+            user = identityPartition.findUserById(req.getUser().getId());
+
+            String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
+            String pwdHash = createPasswordHash(newPwd, user.getSalt());
+            resp.setNewPassword(newPwd);
+
+            // Set user's password
+
+            user.setUserPassword(pwdHash);
+
+            user = identityPartition.updateUser(user);
+
+            recordInfoAuditTrail(Action.CONFIRM_PWD_RESET.getValue(), ActionOutcome.SUCCESS, user.getUserName(), auditProps);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Password has been updated using " + (usedGeneratedPwd ? "GENERATED" : "USER PROVIDED") + " password");
+
+            return resp;
+        } catch (ProvisioningException e) {
+            recordInfoAuditTrail(Action.CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, user != null ? user.getUserName() : null, auditProps);
+            throw e;
         }
-
-        ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
-        ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
-
-        User user = identityPartition.findUserById(req.getUser().getId());
-
-        String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
-        String pwdHash = createPasswordHash(newPwd, user.getSalt());
-        resp.setNewPassword(newPwd);
-
-        // Set user's password
-
-        user.setUserPassword(pwdHash);
-
-        user = identityPartition.updateUser(user);
-
-        if (logger.isDebugEnabled())
-            logger.debug("Password has been updated using " + (usedGeneratedPwd ? "GENERATED" : "USER PROVIDED") + " password");
-
-        return resp;
-
     }
 
     public FindAclEntryByApprovalTokenResponse findAclEntryByApprovalToken(FindAclEntryByApprovalTokenRequest aclEntryRequest) throws ProvisioningException {
@@ -788,6 +854,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     // ------------------------------------------------------------------------------------
 
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userAttributeName", userAttributeRequest.getName());
+
         try {
             // create user attribute
             UserAttributeDefinition userAttribute = new UserAttributeDefinition();
@@ -801,13 +870,20 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             userAttribute = schemaManager.addUserAttribute(userAttribute);
             AddUserAttributeResponse userAttributeResponse = new AddUserAttributeResponse();
             userAttributeResponse.setUserAttribute(userAttribute);
+
+            recordInfoAuditTrail(Action.ADD_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return userAttributeResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public UpdateUserAttributeResponse updateUserAttribute(UpdateUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userAttributeId", userAttributeRequest.getUserAttribute().getId());
+
         try {
             UserAttributeDefinition userAttribute = userAttributeRequest.getUserAttribute();
 
@@ -819,22 +895,36 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             UpdateUserAttributeResponse userAttributeResponse = new UpdateUserAttributeResponse();
             userAttributeResponse.setUserAttribute(userAttribute);
+
+            auditProps.setProperty("userAttributeName", userAttribute.getName());
+            recordInfoAuditTrail(Action.UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return userAttributeResponse;
 
         } catch (UserAttributeNotFoundException e) {
+            auditProps.setProperty("userAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveUserAttributeResponse removeUserAttribute(RemoveUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userAttributeId", userAttributeRequest.getId());
+
         try {
             schemaManager.deleteUserAttribute(userAttributeRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveUserAttributeResponse();
         } catch (UserAttributeNotFoundException e) {
+            auditProps.setProperty("userAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
@@ -879,6 +969,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public AddGroupAttributeResponse addGroupAttribute(AddGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupAttributeName", groupAttributeRequest.getName());
+
         try {
             // create group attribute
             GroupAttributeDefinition groupAttribute = new GroupAttributeDefinition();
@@ -892,13 +985,20 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             groupAttribute = schemaManager.addGroupAttribute(groupAttribute);
             AddGroupAttributeResponse groupAttributeResponse = new AddGroupAttributeResponse();
             groupAttributeResponse.setGroupAttribute(groupAttribute);
+
+            recordInfoAuditTrail(Action.ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return groupAttributeResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public UpdateGroupAttributeResponse updateGroupAttribute(UpdateGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupAttributeId", groupAttributeRequest.getGroupAttribute().getId());
+
         try {
             GroupAttributeDefinition groupAttribute = groupAttributeRequest.getGroupAttribute();
 
@@ -910,22 +1010,36 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             UpdateGroupAttributeResponse groupAttributeResponse = new UpdateGroupAttributeResponse();
             groupAttributeResponse.setGroupAttribute(groupAttribute);
+
+            auditProps.setProperty("groupAttributeName", groupAttribute.getName());
+            recordInfoAuditTrail(Action.UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return groupAttributeResponse;
 
         } catch (GroupAttributeNotFoundException e) {
+            auditProps.setProperty("groupAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveGroupAttributeResponse removeGroupAttribute(RemoveGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupAttributeId", groupAttributeRequest.getId());
+
         try {
             schemaManager.deleteGroupAttribute(groupAttributeRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveGroupAttributeResponse();
         } catch (GroupAttributeNotFoundException e) {
+            auditProps.setProperty("groupAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
@@ -1220,5 +1334,24 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         return salt;
     }
 
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal, Properties props) {
+        if (aServer != null)
+            aServer.processAuditTrail(auditCategory, "INFO", action, actionOutcome, principal != null ? principal : "UNKNOWN", new Date(), null, props);
+    }
 
+    public AuditingServer getAuditingServer() {
+        return aServer;
+    }
+
+    public void setAuditingServer(AuditingServer aServer) {
+        this.aServer = aServer;
+    }
+
+    public String getAuditCategory() {
+        return auditCategory;
+    }
+
+    public void setAuditCategory(String auditCategory) {
+        this.auditCategory = auditCategory;
+    }
 }

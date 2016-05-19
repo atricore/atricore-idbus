@@ -7,7 +7,10 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Exception;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SPMLR2MessagingConstants;
+import org.atricore.idbus.capabilities.spmlr2.main.common.AbstractSpmlR2Mediator;
 import org.atricore.idbus.capabilities.spmlr2.main.common.plans.SPMLR2PlanningConstants;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -26,7 +29,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -525,5 +530,29 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     }
 
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal, CamelMediationExchange exchange, Properties otherProps) {
 
+        AbstractSpmlR2Mediator mediator = (AbstractSpmlR2Mediator) channel.getIdentityMediator();
+        AuditingServer aServer = mediator.getAuditingServer();
+
+        if (aServer == null) return;
+
+        Properties props = new Properties();
+
+        String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+        if (remoteAddr != null) {
+            props.setProperty("remoteAddress", remoteAddr);
+        }
+
+        String session = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie.JSESSIONID");
+        if (session != null) {
+            props.setProperty("httpSession", session);
+        }
+
+        if (otherProps != null) {
+            props.putAll(otherProps);
+        }
+
+        aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", action, actionOutcome, principal != null ? principal : "UNKNOWN", new Date(), null, props);
+    }
 }

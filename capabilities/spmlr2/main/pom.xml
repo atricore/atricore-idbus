@@ -58,6 +58,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
             <version>${camel.version}</version>
