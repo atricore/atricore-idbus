@@ -14,15 +14,7 @@ public class OSGISessionManagerFactoryListener {
 
     private SSOSessionManagerRegistry registry;
 
-    public OSGISessionManagerFactoryListener() {
-
-    }
-
-    public SSOSessionManagerRegistry getRegistry() {
-        return registry;
-    }
-
-    public void setRegistry(SSOSessionManagerRegistry registry) {
+    public OSGISessionManagerFactoryListener(SSOSessionManagerRegistry registry) {
         this.registry = registry;
     }
 
