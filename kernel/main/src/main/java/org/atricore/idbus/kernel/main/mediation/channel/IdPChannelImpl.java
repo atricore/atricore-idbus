@@ -23,7 +23,6 @@ package org.atricore.idbus.kernel.main.mediation.channel;
 
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
-import org.atricore.idbus.kernel.main.session.SSOSessionManagerFactory;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 
 /**
@@ -38,8 +37,6 @@ public class IdPChannelImpl extends AbstractFederationChannel implements IdPChan
     // SSO Session manager used when communicating with this SP
     private transient SSOSessionManager sessionManager;
 
-    private transient SSOSessionManagerFactory sessionManagerFactory;
-
     @Deprecated
     private transient SSOIdentityManager identityManager;
 
@@ -53,23 +50,11 @@ public class IdPChannelImpl extends AbstractFederationChannel implements IdPChan
      * @org.apache.xbean.Property alias="session-manager"
      */
     public SSOSessionManager getSessionManager() {
-
-        if (this.sessionManager == null && this.getSessionManagerFactory() != null)
-            this.sessionManager = this.getSessionManagerFactory().getInstance();
-
         return this.sessionManager;
     }
 
     public void setSessionManager(SSOSessionManager sessionManager) {
         this.sessionManager = sessionManager;
-    }
-
-    public SSOSessionManagerFactory getSessionManagerFactory() {
-        return sessionManagerFactory;
-    }
-
-    public void setSessionManagerFactory(SSOSessionManagerFactory sessionManagerFactory) {
-        this.sessionManagerFactory = sessionManagerFactory;
     }
 
     @Deprecated

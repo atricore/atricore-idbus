@@ -22,10 +22,7 @@
 package org.atricore.idbus.kernel.main.mediation.channel;
 
 import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
-import org.atricore.idbus.kernel.main.session.SSOSessionManagerFactory;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
@@ -43,9 +40,6 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
 
     // SSO Session manager service used to handle sessions for this SP.
     private transient SSOSessionManager sessionManager;
-
-    // SSO Session manager factory service used to create a session manager if needed;
-    private transient SSOSessionManagerFactory sessionManagerFactory;
 
 
     // SSO Identity manager service used to retrieve identity for this SP.
@@ -68,22 +62,11 @@ public class SPChannelImpl extends AbstractFederationChannel implements SPChanne
     }
 
     public SSOSessionManager getSessionManager() {
-        if (this.sessionManager == null && this.getSessionManagerFactory() != null)
-            this.sessionManager = this.getSessionManagerFactory().getInstance();
-
         return this.sessionManager;
     }
 
     public void setSessionManager(SSOSessionManager sessionManager) {
         this.sessionManager = sessionManager;
-    }
-
-    public SSOSessionManagerFactory getSessionManagerFactory() {
-        return sessionManagerFactory;
-    }
-
-    public void setSessionManagerFactory(SSOSessionManagerFactory sessionManagerFactory) {
-        this.sessionManagerFactory = sessionManagerFactory;
     }
 
     public SSOIdentityManager getIdentityManager() {

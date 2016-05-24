@@ -23,25 +23,37 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.springframework.org/schema/osgi"
-       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
-       xmlns:ctx="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                     http://www.springframework.org/schema/beans/spring-beans.xsd
                     http://www.springframework.org/schema/osgi
-                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
-                    http://www.springframework.org/schema/context
-                    http://www.springframework.org/schema/context/spring-context.xsd
-                    http://www.springframework.org/schema/osgi-compendium
-                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
-                    ">
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
-    <!-- TODO : Authn Policy registry  -->
+    <!-- =================================================================== -->
+    <!-- Subject Authentication Policy registry                                -->
+    <!-- =================================================================== -->
+    <bean id="subjectAuthnPolicyRegistry" class="org.atricore.idbus.capabilities.sts.main.policies.SubjectAuthnPolicyRegistry" />
 
-    <!-- Registry bean -->
+    <bean id="osgiSubjectAuthnPolicyListener" class="org.atricore.idbus.capabilities.sts.main.policies.OSGISubjectAuthnPolicyListener">
+        <constructor-arg ref="subjectAuthnPolicyRegistry" />
+    </bean>
 
-    <!-- OSGi Registry listener -->
+    <osgi:list id="subjectAuthenticationPolicies" interface="org.atricore.idbus.capabilities.sts.main.SubjectAuthenticationPolicy"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiSubjectAuthnPolicyListener" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
 
-    <!-- OSGi list -->
+    <osgi:service id="subjectAuthnPolicyRegistrySvc" ref="subjectAuthnPolicyRegistry"
+                  interface="org.atricore.idbus.capabilities.sts.main.policies.SubjectAuthnPolicyRegistry"/>
 
+    <!-- Account locked authentication policy -->
+    <bean id="accountLockedAuthnPolicy" class="org.atricore.idbus.capabilities.sts.main.policies.AccountLockedAuthnPolicy" />
+
+    <osgi:service id="accountLockedAuthnPolicySvc" ref="accountLockedAuthnPolicy"
+                  interface="org.atricore.idbus.capabilities.sts.main.SubjectAuthenticationPolicy">
+        <service-properties>
+            <!-- This MUST match the SubjectAuthenticationPolicy property named 'name' -->
+            <entry key="policyName" value="idbus-account-locked"/>
+        </service-properties>
+    </osgi:service>
 
 </beans>
