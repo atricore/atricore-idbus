@@ -270,7 +270,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
      * @throws SecurityTokenAuthenticationFailure
      */
     protected Set<SSOPolicyEnforcementStatement> verify(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType)
-            throws SecurityTokenAuthenticationFailure{
+            throws SecurityTokenAuthenticationFailure {
 
         Set<SSOPolicyEnforcementStatement> allStmts = new HashSet<SSOPolicyEnforcementStatement>();
 
