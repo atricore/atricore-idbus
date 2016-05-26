@@ -1,11 +1,6 @@
 package org.atricore.idbus.capabilities.sts.main.policies;
 
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.SubjectAuthenticationPolicy;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
-
-import javax.security.auth.Subject;
-import java.util.Set;
 
 /**
  *
@@ -26,7 +21,7 @@ public abstract class AbstractAuthenticationPolicy implements SubjectAuthenticat
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     public void setName(String name) {
@@ -35,12 +30,10 @@ public abstract class AbstractAuthenticationPolicy implements SubjectAuthenticat
 
     @Override
     public String getDescription() {
-        return null;
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
-
-
 }

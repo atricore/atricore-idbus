@@ -157,7 +157,15 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
             processingContext.setProperty(SUBJECT_PROP, subject);
 
-            verify(processingContext, requestToken.getValue(), tokenType.getValue());
+            Set<SSOPolicyEnforcementStatement> ssoPolicies = verify(processingContext, requestToken.getValue(), tokenType.getValue());
+            if (ssoPolicies != null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals");
+
+                subject.getPrincipals().addAll(ssoPolicies);
+            }
+
+            subject.setReadOnly();
 
             // -----------------------------------------
             // 2. Emit security token
@@ -272,26 +280,30 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     protected Set<SSOPolicyEnforcementStatement> verify(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType)
             throws SecurityTokenAuthenticationFailure {
 
-        Set<SSOPolicyEnforcementStatement> allStmts = new HashSet<SSOPolicyEnforcementStatement>();
+        Set<SSOPolicyEnforcementStatement> warnStmts = new HashSet<SSOPolicyEnforcementStatement>();
+        Set<SSOPolicyEnforcementStatement> errorStmts = new HashSet<SSOPolicyEnforcementStatement>();
 
         for (SubjectAuthenticationPolicy policy : subjectAuthnPolicies) {
             Subject subject = (Subject) ctx.getProperty(SUBJECT_PROP);
             try {
                 Set<SSOPolicyEnforcementStatement> stmts = policy.verify(subject, ctx);
                 if (stmts != null)
-                    allStmts.addAll(stmts);
+                    warnStmts.addAll(stmts);
             } catch (SecurityTokenAuthenticationFailure e) {
                 logger.debug(e.getMessage(), e);
                 if (e.getSsoPolicyEnforcements() != null) {
-                    allStmts.addAll(e.getSsoPolicyEnforcements());
+                    errorStmts.addAll(e.getSsoPolicyEnforcements());
                 } else {
                     AuthnErrorPolicyEnforcementStatement p = new AuthnErrorPolicyEnforcementStatement(e);
-                    allStmts.add(p);
+                    errorStmts.add(p);
                 }
             }
         }
 
-        return allStmts;
+        if (errorStmts.size() > 0)
+            throw new SecurityTokenAuthenticationFailure("Policy Enforcement", errorStmts, null);
+
+        return warnStmts;
     }
 
     protected SecurityToken emit(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType) {
@@ -456,7 +468,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 }
 
                 // Build Subject
-                subject = new Subject(true, principals, subject.getPublicCredentials(), subject.getPrivateCredentials());
+                subject = new Subject(false, principals, subject.getPublicCredentials(), subject.getPrivateCredentials());
 
             } catch (Exception e) {
                 throw new SecurityTokenEmissionException(e);

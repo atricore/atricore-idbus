@@ -1941,18 +1941,6 @@ public class SingleSignOnProducer extends SSOProducer {
             }
         }
 
-        if (ssoUser != null) {
-            // Make some validations on the SSO user
-            for (SSONameValuePair nvp : ssoUser.getProperties()) {
-                if (nvp.getName().equalsIgnoreCase("accountDisabled")) {
-                    boolean disabled = Boolean.parseBoolean(nvp.getValue());
-                    if (disabled) {
-                        throw new SecurityTokenAuthenticationFailure("Account disabled");
-                    }
-                }
-            }
-        }
-
         // Return context with Assertion and Subject
         return securityTokenEmissionCtx;
 
@@ -2858,7 +2846,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         // TODO : Make this 'dynamic' to decouple from specific policy types
                         AttributeType attr = (AttributeType) attrOrEncAttr;
-                        SSOPasswordPolicyEnforcement policy = null;
+                        SSOPolicyEnforcementStatement policy = null;
 
                         if (attr.getName().startsWith(PasswordPolicyEnforcementWarning.NAMESPACE)) {
 
@@ -2881,6 +2869,14 @@ public class SingleSignOnProducer extends SSOProducer {
                                 logger.trace("Processing password policy error statement : " + attr.getFriendlyName());
 
                             policy = new PasswordPolicyEnforcementError(PasswordPolicyErrorType.fromName(attr.getFriendlyName()));
+
+                        } else if (attr.getName().startsWith(PolicyEnforcementWarning.NAMESPACE)) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Processing policy warning statement : " + attr.getFriendlyName());
+
+                            policy = new PolicyEnforcementWarning(attr.getName().substring(0, attr.getName().lastIndexOf(attr.getFriendlyName()) - 1), attr.getFriendlyName());
+                            policy.getValues().addAll(attr.getAttributeValue());
 
                         } else {
                             // What other policies can we handle ?!?
