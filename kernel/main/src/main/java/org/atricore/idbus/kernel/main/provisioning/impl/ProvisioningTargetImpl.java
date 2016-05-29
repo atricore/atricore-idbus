@@ -37,6 +37,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private UUIDGenerator uuid = new UUIDGenerator();
 
+    private UUIDGenerator shortIdGen = new UUIDGenerator(4);
+
     final Random saltRandomizer = new SecureRandom();
 
     private String name;
@@ -72,12 +74,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private static final Set<String> dictionary = new HashSet<String>();
 
     static {
+        // TODO : Take this from resource/file
         dictionary.add("password");
         dictionary.add("123456");
     }
 
     // TODO : Make it DB Persistent (add store ?)
     private Map<String, PendingTransaction> pendingTransactions = new ConcurrentHashMap<String, PendingTransaction>();
+    private Map<String, PendingTransaction> pendingTransactionsByCode = new ConcurrentHashMap<String, PendingTransaction>();
 
     //private Map<String, >
 
@@ -90,10 +94,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         monitorThread.setName("ProvisioningTargetMonitor-" + name);
         monitorThread.start();
 
+        shortIdGen.setPrefix(null);
+
     }
 
     public void shutDown() {
         pendingTransactions.clear();
+        pendingTransactionsByCode.clear();
         monitor.stop = true;
     }
 
@@ -109,6 +116,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         for (String key : expiredKeys) {
             PendingTransaction t = pendingTransactions.remove(key);
+            pendingTransactionsByCode.remove(t.getCode());
             t.rollback();
 
         }
@@ -432,7 +440,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         userResponse.setUser(u);
 
         // TODO : Make configurable
-        PendingTransaction t = new PendingTransaction(transactionId, System.currentTimeMillis() + (1000L * 60L * 30L), userRequest, userResponse);
+        PendingTransaction t = new PendingTransaction(transactionId, u.getUserName(), System.currentTimeMillis() + (1000L * 60L * 30L), userRequest, userResponse);
         storePendingTransaction(t);
 
         recordInfoAuditTrail(Action.PREPARE_ADD_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUserName(), null);
@@ -442,7 +450,6 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public AddUserResponse confirmAddUser(ConfirmAddUserRequest confirmReq) throws ProvisioningException {
         String transactionId = confirmReq.getTransactionId();
-
 
         // Make sure that the password meets the security requirements
         validatePassword(confirmReq.getUserPassword());
@@ -640,13 +647,16 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public PrepareResetPasswordResponse prepareResetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
 
         String transactionId = uuid.generateId();
+        String code = shortIdGen.generateId();
+
         String pwd = RandomStringUtils.randomAlphanumeric(8);
 
         ResetPasswordResponse resetPwdResp = new ResetPasswordResponse();
         resetPwdResp.setNewPassword(pwd);
 
         // TODO : Make confiurable
-        PendingTransaction t = new PendingTransaction(transactionId, System.currentTimeMillis() + (1000L * 60L * 30L), resetPwdRequest, resetPwdResp);
+        PendingTransaction t = new PendingTransaction(transactionId, code, resetPwdRequest.getUser().getUserName(),
+                System.currentTimeMillis() + (1000L * 60L * 10L), resetPwdRequest, resetPwdResp);
 
         storePendingTransaction(t);
 
@@ -654,7 +664,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         auditProps.setProperty("userId", resetPwdRequest.getUser().getId());
         recordInfoAuditTrail(Action.PREPARE_PWD_RESET.getValue(), ActionOutcome.SUCCESS, resetPwdRequest.getUser().getUserName(), auditProps);
 
-        return new PrepareResetPasswordResponse(t.getId(), pwd);
+        return new PrepareResetPasswordResponse(t.getId(), t.getCode(), pwd);
     }
 
     public ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException {
@@ -662,25 +672,32 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         User user = null;
 
         Properties auditProps = new Properties();
-        auditProps.setProperty("transactionId", resetPwdRequest.getTransactionId());
+        //auditProps.setProperty("transactionId", resetPwdRequest.getTransactionId());
 
         try {
 
             // Either the user provides a new password, or we use the one we created.
             boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
             if (!usedGeneratedPwd) ;
-            validatePassword(resetPwdRequest.getNewPassword());
+                validatePassword(resetPwdRequest.getNewPassword());
 
-            PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
+            String id = resetPwdRequest.getCode() != null ?
+                    resetPwdRequest.getCode() : resetPwdRequest.getTransactionId();
+
+            PendingTransaction t = consumePendingTransaction(id);
             // Did the transaction already expired ?
             if (t == null || t.expiresOn < System.currentTimeMillis()) {
-                throw new TransactionExpiredExcxeption(resetPwdRequest.getTransactionId());
+                throw new TransactionExpiredException(resetPwdRequest.getTransactionId());
             }
 
+            // Recover original request ...
             ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
             ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
 
             user = identityPartition.findUserById(req.getUser().getId());
+
+            if (t.getUsername().equals(user.getUserName()))
+                throw new ProvisioningException("Invalid transaction/code");
 
             String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
             String pwdHash = createPasswordHash(newPwd, user.getSalt());
@@ -1159,10 +1176,29 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     protected void storePendingTransaction(PendingTransaction t) {
         this.pendingTransactions.put(t.getId(), t);
+        this.pendingTransactionsByCode.put(t.getCode(), t);
     }
 
+    /**
+     * Looks for transactions by ID and Code
+     */
     protected PendingTransaction consumePendingTransaction(String id) {
-        return this.pendingTransactions.remove(id);
+
+        // Transaction Code is optional
+
+        PendingTransaction t = this.pendingTransactions.remove(id);
+
+        if (t == null) {
+            // Look up for the transaction by code
+            t = this.pendingTransactionsByCode.remove(id);
+            if (t != null)
+                this.pendingTransactions.remove(t.getId());
+        } else if (t.getCode() != null){
+            // Found a transaction by ID, If it has a code, remove it from code idx
+            this.pendingTransactionsByCode.remove(t.getCode());
+        }
+
+        return t;
     }
     
     /**
@@ -1192,18 +1228,33 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         private String id;
 
+        private String code;
+
+        private String username;
+
         private long expiresOn;
 
         private AbstractProvisioningRequest request;
 
         private AbstractProvisioningResponse response;
 
-        public PendingTransaction(String id, long expiresOn, AbstractProvisioningRequest request, AbstractProvisioningResponse response) {
+        public PendingTransaction(String id, String username, long expiresOn, AbstractProvisioningRequest request, AbstractProvisioningResponse response) {
             this.id = id;
+            this.username = username;
             this.expiresOn = expiresOn;
             this.request = request;
             this.response = response;
         }
+
+        public PendingTransaction(String id, String code, String username, long expiresOn, AbstractProvisioningRequest request, AbstractProvisioningResponse response) {
+            this.id = id;
+            this.code = code;
+            this.username = username;
+            this.expiresOn = expiresOn;
+            this.request = request;
+            this.response = response;
+        }
+
 
         public String getId() {
             return id;
@@ -1221,6 +1272,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             return response;
         }
 
+        public String getCode() {
+            return code;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
         public void rollback() {
             // TODO : Undo some change, like deleting a temp user that did not confirmed the registration
         }
@@ -1230,7 +1289,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         protected boolean stop = false;
 
-        protected int interval = 1000 * 60 * 10; // Ten minutes interval
+        protected int interval = 1000 * 60; // One minute interval
 
         private ProvisioningTarget provisioningTarget;
 
@@ -1277,7 +1336,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.saltValue = saltValue;
     }
 
-    // Use some external plugin/strategy
+    // TODO : Use some external plugin/strategy
     public void validatePassword(String password) throws IllegalPasswordException {
 
         if (password == null || password.length() < 6) {

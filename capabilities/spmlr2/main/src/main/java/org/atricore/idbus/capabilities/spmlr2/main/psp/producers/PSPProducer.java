@@ -878,7 +878,7 @@ public class PSPProducer extends SpmlR2Producer {
     public ResponseType doProcessVerifyResetPasswordRequest(CamelMediationExchange exchange, VerifyResetPasswordRequestType spmlRequest) {
         VerifyResetPasswordResponseType spmlResponse = new VerifyResetPasswordResponseType();
         Properties auditProps = new Properties();
-        auditProps.setProperty("transactionId", spmlRequest.getTransaction());
+        //auditProps.setProperty("transactionId", spmlRequest.getTransaction());
         try {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
@@ -917,6 +917,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
             spmlResponse.setTransaction(resp.getTransactionId());
+            spmlResponse.setCode(resp.getCode());
             spmlResponse.setPassword(resp.getNewPassword());
 
             recordInfoAuditTrail(Action.SPML_PREPARE_PWD_RESET.getValue(), ActionOutcome.SUCCESS, user.getUserName(), exchange, auditProps);

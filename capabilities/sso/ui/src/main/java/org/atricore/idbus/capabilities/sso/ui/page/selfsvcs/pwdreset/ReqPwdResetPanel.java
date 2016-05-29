@@ -115,8 +115,9 @@ public class ReqPwdResetPanel extends Panel {
 
         // Create and send email using transaction ID
         String t = resp.getTransactionId();
+        String c = resp.getCode();
 
-        String from = getLocalizer().getString("email.sender", this, "josso@atricore.com");
+        String from = getLocalizer().getString("email.sender", this, "josso@swirebev.com");
         app.getMailService().send(from,
                 user.getEmail(),
                 "Password Reset", buildEMailText(user, t).toString(),

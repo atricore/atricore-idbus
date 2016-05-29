@@ -8,6 +8,8 @@ public class ConfirmResetPasswordRequest extends AbstractProvisioningRequest {
 
     private String transactionId;
 
+    private String code;
+
     private String newPassword;
 
     public String getTransactionId() {
@@ -24,5 +26,13 @@ public class ConfirmResetPasswordRequest extends AbstractProvisioningRequest {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

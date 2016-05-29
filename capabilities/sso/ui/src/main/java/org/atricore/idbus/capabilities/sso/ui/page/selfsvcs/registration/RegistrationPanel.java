@@ -12,14 +12,13 @@ import org.apache.wicket.model.PropertyModel;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PasswordUtil;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.kernel.main.provisioning.domain.SecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.exception.IllegalCredentialException;
 import org.atricore.idbus.kernel.main.provisioning.exception.IllegalPasswordException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.exception.TransactionExpiredExcxeption;
+import org.atricore.idbus.kernel.main.provisioning.exception.TransactionExpiredException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.AddUserRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.ConfirmAddUserRequest;
@@ -267,7 +266,7 @@ public class RegistrationPanel extends Panel {
                 try {
                     register();
                     onRegisterSucceeded();
-                } catch (TransactionExpiredExcxeption e) {
+                } catch (TransactionExpiredException e) {
                     onRegisterExpired();
                 } catch (IllegalPasswordException e) {
                     onIllegalPassword();
@@ -356,7 +355,7 @@ public class RegistrationPanel extends Panel {
         ProvisioningTarget pt = app.getProvisioningTarget();
 
         if (!pt.isTransactionValid(transactionId)) {
-            throw new TransactionExpiredExcxeption(transactionId);
+            throw new TransactionExpiredException(transactionId);
         }
 
         AddUserRequest addUserRequest = (AddUserRequest) pt.lookupTransactionRequest(transactionId);

@@ -22,8 +22,6 @@ public class JossoLoginPage extends BasePage {
 
     public JossoLoginPage(PageParameters parameters) throws Exception {
         super(parameters);
-
-
     }
 
     @Override

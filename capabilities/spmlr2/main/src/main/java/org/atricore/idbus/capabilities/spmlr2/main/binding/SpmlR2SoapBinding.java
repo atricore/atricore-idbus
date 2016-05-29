@@ -9,17 +9,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.message.MessageContentsList;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationSoapBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 
 import javax.xml.ws.Service;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

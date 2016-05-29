@@ -79,6 +79,7 @@
                                        <extraarg>-verbose</extraarg>
                                        <extraarg>-impl</extraarg>
                                        <extraarg>-client</extraarg>
+                                       <extraarg>-keep</extraarg>
                                        <extraarg>-b</extraarg>
                                        <extraarg>${basedir}/src/main/wsdl/spmldsml-binding.xml</extraarg>
                                     </extraargs>

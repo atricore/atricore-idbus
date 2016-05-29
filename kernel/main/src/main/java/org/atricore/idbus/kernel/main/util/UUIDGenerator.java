@@ -38,8 +38,18 @@ public class UUIDGenerator extends AbstractIdGenerator {
 
     private boolean jdkIdGen = false;
 
+    /**
+     * Only works with legacy UUID generator
+     */
+    public UUIDGenerator(int artifactLength) {
+        this.jdkIdGen = false;
+        this.artifactLength = artifactLength;
+        setPrefix("id");
+    }
+
     public UUIDGenerator(boolean jdkIdGen) {
         this.jdkIdGen = jdkIdGen;
+        setPrefix("id");
     }
 
     public UUIDGenerator() {
@@ -101,7 +111,8 @@ public class UUIDGenerator extends AbstractIdGenerator {
                 resultLenBytes++;
             }
         }
-        return ("id" + result.toString());
+
+        return (getPrefix() != null ? getPrefix() + result.toString() : result.toString());
     }
 
 }

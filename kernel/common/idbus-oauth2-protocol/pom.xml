@@ -82,6 +82,7 @@
                                         <extraarg>-impl</extraarg>
                                         <extraarg>-verbose</extraarg>
                                         <extraarg>-client</extraarg>
+                                        <extraarg>-keep</extraarg>
                                         <extraarg>-b</extraarg>
                                         <extraarg>
                                             ${basedir}/src/main/resources/org/atricore/idbus/kernel/common/oauth2/oauth-2.0_binding.xml
