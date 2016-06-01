@@ -222,6 +222,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="binding.http.followRedirects">true</prop>
         <prop key="binding.http.reuseHttpClient">false</prop>
         <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
+        <prop key="binding.http.displayErrorDebugInfo">true</prop>
 
         <!-- Default Mail properties -->
         <prop key="mail.smtp.host">localhost</prop>
