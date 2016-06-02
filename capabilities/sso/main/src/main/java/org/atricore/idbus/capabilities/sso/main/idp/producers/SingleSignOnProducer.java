@@ -2875,7 +2875,11 @@ public class SingleSignOnProducer extends SSOProducer {
                             if (logger.isTraceEnabled())
                                 logger.trace("Processing policy warning statement : " + attr.getFriendlyName());
 
-                            policy = new PolicyEnforcementWarning(attr.getName().substring(0, attr.getName().lastIndexOf(attr.getFriendlyName()) - 1), attr.getFriendlyName());
+                            if (attr.getFriendlyName() != null) {
+                                policy = new PolicyEnforcementWarning(attr.getName().substring(0, attr.getName().lastIndexOf(attr.getFriendlyName()) - 1), attr.getFriendlyName());
+                            } else {
+                                policy = new PolicyEnforcementWarning(attr.getName().substring(0, attr.getName().lastIndexOf(":")), attr.getName().substring(attr.getName().lastIndexOf(":") + 1));
+                            }
                             policy.getValues().addAll(attr.getAttributeValue());
 
                         } else {

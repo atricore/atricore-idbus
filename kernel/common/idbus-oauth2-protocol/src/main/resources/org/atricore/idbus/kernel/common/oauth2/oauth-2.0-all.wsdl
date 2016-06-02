@@ -162,6 +162,8 @@
                         <xsd:sequence>
                             <xsd:element name="oauthAttributes" type="oauth2p:OauthAttributeType" minOccurs="0"
                                          maxOccurs="unbounded"/>
+                            <xsd:element name="ssoPolicyEnforcements" type="oauth2p:SSOPolicyEnforcementStatementType" minOccurs="0"
+                                         maxOccurs="unbounded"/>
                         </xsd:sequence>
 
                         <xsd:attribute name="accessToken" type="xsd:string" use="optional"/>
@@ -171,6 +173,14 @@
                         <xsd:attribute name="expiresIn" type="xsd:long" use="optional"/>
                     </xsd:extension>
                 </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="SSOPolicyEnforcementStatementType">
+                <xsd:sequence>
+                    <xsd:element name="values" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="ns" type="xsd:string" use="required"/>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
 
             <xsd:element name="RefreshAccessTokenRequest" type="oauth2p:RefreshAccessTokenRequestType"/>

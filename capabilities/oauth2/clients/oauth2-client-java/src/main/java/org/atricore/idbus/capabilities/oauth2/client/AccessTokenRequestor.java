@@ -45,7 +45,11 @@ public class AccessTokenRequestor {
         AccessTokenResponseType res = wsClient.accessTokenRequest(req);
 
         if (res.getError() != null) {
-            throw new Exception("Cannot get access token: " + res.getError().value() + " ["+res.getErrorDescription()+"]");
+            String errMsg = "Cannot get access token: " + res.getError().value() + " ["+res.getErrorDescription()+"]";
+            if (res.getSsoPolicyEnforcements() != null && res.getSsoPolicyEnforcements().size() > 0) {
+                throw new OAuth2ClientException(errMsg, res.getSsoPolicyEnforcements());
+            }
+            throw new Exception(errMsg);
         }
 
         return res.getAccessToken();

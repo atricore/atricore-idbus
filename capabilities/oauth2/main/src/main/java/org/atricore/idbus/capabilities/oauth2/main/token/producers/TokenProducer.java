@@ -7,11 +7,9 @@ import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2SecurityTokenEm
 import org.atricore.idbus.capabilities.oauth2.main.token.endpoints.TokenEndpoint;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
-import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenRequestType;
-import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
-import org.atricore.idbus.common.oauth._2_0.protocol.ErrorCodeType;
-import org.atricore.idbus.common.oauth._2_0.protocol.OAuthAccessTokenType;
+import org.atricore.idbus.common.oauth._2_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.Constants;
+import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
@@ -33,7 +31,6 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.math.BigInteger;
 
 /**
  * This emits an access, using a previously requested authorization token.
@@ -109,6 +106,18 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
         } catch (SecurityTokenAuthenticationFailure e) {
             atRes.setError(ErrorCodeType.ACCESS_DENIED);
             atRes.setErrorDescription(e.getMessage());
+
+            if (e.getSsoPolicyEnforcements() != null) {
+                for (SSOPolicyEnforcementStatement stmt : e.getSsoPolicyEnforcements()) {
+                    SSOPolicyEnforcementStatementType stmtType = new SSOPolicyEnforcementStatementType();
+                    stmtType.setNs(stmt.getNs());
+                    stmtType.setName(stmt.getName());
+                    if (stmt.getValues() != null) {
+                        stmtType.getValues().addAll(stmt.getValues());
+                    }
+                    atRes.getSsoPolicyEnforcements().add(stmtType);
+                }
+            }
 
             if (logger.isDebugEnabled())
                 logger.debug(e.getMessage(), e);

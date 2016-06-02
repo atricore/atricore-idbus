@@ -153,6 +153,8 @@
                 <sequence>
                     <element name="oauthAttributes" type="oauth2p:OauthAttributeType" minOccurs="0"
                              maxOccurs="unbounded"/>
+                    <element name="ssoPolicyEnforcements" type="oauth2p:SSOPolicyEnforcementStatementType" minOccurs="0"
+                             maxOccurs="unbounded"/>
                 </sequence>
 
                 <attribute name="accessToken" type="string" use="optional"/>
@@ -162,6 +164,14 @@
                 <attribute name="expiresIn" type="long" use="optional"/>
             </extension>
         </complexContent>
+    </complexType>
+
+    <complexType name="SSOPolicyEnforcementStatementType">
+        <sequence>
+            <element name="values" type="anyType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="ns" type="string" use="required"/>
+        <attribute name="name" type="string" use="required"/>
     </complexType>
 
     <element name="RefreshAccessTokenRequest" type="oauth2p:RefreshAccessTokenRequestType"/>

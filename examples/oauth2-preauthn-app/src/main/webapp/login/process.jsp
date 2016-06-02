@@ -1,9 +1,10 @@
 <%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2Client" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2ClientException" %>
-<%@ page import="org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolver" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken" %>
+<%@ page import="org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolver" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolverFactory" %>
-<%@ page import="java.util.Properties" %>
+<%@ page import="org.atricore.idbus.common.oauth._2_0.protocol.SSOPolicyEnforcementStatementType" %>
+<%@ page import="java.util.List" %>
 <%
 
     // Create oauth 2 client using properties file and initialize it
@@ -77,6 +78,17 @@
 </p>
 <p>
     Error Details:
+
+    <%
+        List<SSOPolicyEnforcementStatementType> ssoPolicyEnforcements = ((OAuth2ClientException) error).getSsoPolicyEnforcements();
+        if (ssoPolicyEnforcements != null && ssoPolicyEnforcements.size() > 0) {%>
+            <br/><br/>Policy Enforcements:<br/><br/>
+            <%for (SSOPolicyEnforcementStatementType stmt : ssoPolicyEnforcements) {%>
+                <%=stmt.getName()%>
+                <br/><br/>
+            <%}
+        }
+    %>
 
     <% // Look for the root cause of the problem
         Throwable cause = error.getCause();

@@ -75,6 +75,8 @@ public class OAuth2Client implements ConfigurationConstants {
         try {
             String accessToken = getAccessTokenRequestor().requestTokenForUsernamePassword(usr, pwd);
             return accessToken;
+        } catch (OAuth2ClientException e) {
+            throw e;
         } catch (Exception e) {
             throw new OAuth2ClientException(e);
         }
