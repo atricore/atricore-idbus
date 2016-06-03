@@ -70,7 +70,7 @@
      -->
 
     <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
-        <prop key="binding.http.displayErrorDebugInfo">true</prop>
+        <prop key="binding.http.displayErrorDebugInfo">false</prop>
     </osgix:cm-properties>
 
 </beans>

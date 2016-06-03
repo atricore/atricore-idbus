@@ -242,7 +242,7 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
                 principals.addAll(Arrays.asList(ssoRoles));
 
                 // Use existing SSOPolicyEnforcement principals
-                Set<SSOPolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(SSOPolicyEnforcementStatement.class);
+                Set<PolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(PolicyEnforcementStatement.class);
                 if (ssoPolicies != null) {
                     if (logger.isDebugEnabled())
                         logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");

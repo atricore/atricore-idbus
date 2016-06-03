@@ -40,7 +40,7 @@ import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyEnforcementError;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyErrorType;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
@@ -271,10 +271,10 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      * The received request contains previous error information
      */
     protected void onPreviousError() {
-        Set<SSOPolicyEnforcementStatement> policyStatements = ((SSOWebSession) getSession()).
+        Set<PolicyEnforcementStatement> policyStatements = ((SSOWebSession) getSession()).
                 getCredentialClaimsRequest().getSsoPolicyEnforcements();
         if (policyStatements != null && policyStatements.size() > 0) {
-            for (SSOPolicyEnforcementStatement stmt : policyStatements) {
+            for (PolicyEnforcementStatement stmt : policyStatements) {
                 if (stmt instanceof PasswordPolicyEnforcementError &&
                         PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED.equals(((PasswordPolicyEnforcementError) stmt).getType())) {
                     BaseWebApplication app = (BaseWebApplication) getApplication();

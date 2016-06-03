@@ -3,7 +3,7 @@ package org.atricore.idbus.examples.subjectauthnpolicy;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.policies.AbstractAuthenticationPolicy;
 import org.atricore.idbus.kernel.main.authn.SSONameValuePair;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
 
 import javax.security.auth.Subject;
@@ -17,8 +17,8 @@ public class PasswordExpirationAuthnPolicy extends AbstractAuthenticationPolicy 
     private Integer numOfDays;
 
     @Override
-    public Set<SSOPolicyEnforcementStatement> verify(Subject subject, Object context) throws SecurityTokenAuthenticationFailure {
-        Set<SSOPolicyEnforcementStatement> policyEnforcements = null;
+    public Set<PolicyEnforcementStatement> verify(Subject subject, Object context) throws SecurityTokenAuthenticationFailure {
+        Set<PolicyEnforcementStatement> policyEnforcements = null;
 
         for (Principal principal : subject.getPrincipals()) {
             if (principal instanceof SSOUser) {
@@ -26,7 +26,7 @@ public class PasswordExpirationAuthnPolicy extends AbstractAuthenticationPolicy 
                     // check if password expires in less than 3 days
                     if ("passwordExpiration".equals(property.getName()) &&
                             Long.valueOf(property.getName()) < (new Date().getTime() + numOfDays * 86400000)) {
-                        policyEnforcements = new HashSet<SSOPolicyEnforcementStatement>();
+                        policyEnforcements = new HashSet<PolicyEnforcementStatement>();
                         PasswordExpirationAuthnStatement policyEnforcement = new PasswordExpirationAuthnStatement();
                         policyEnforcement.getValues().add(numOfDays);
                         policyEnforcements.add(policyEnforcement);

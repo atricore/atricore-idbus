@@ -26,7 +26,6 @@ import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmiss
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.*;
-import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
@@ -188,7 +187,7 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                 principals.addAll(Arrays.asList(ssoRoles));
 
                 // Use existing SSOPolicyEnforcement principals
-                Set<SSOPolicyEnforcementStatement> ssoPolicies = s.getPrincipals(SSOPolicyEnforcementStatement.class);
+                Set<PolicyEnforcementStatement> ssoPolicies = s.getPrincipals(PolicyEnforcementStatement.class);
                 if (ssoPolicies != null) {
                     if (logger.isDebugEnabled())
                         logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");

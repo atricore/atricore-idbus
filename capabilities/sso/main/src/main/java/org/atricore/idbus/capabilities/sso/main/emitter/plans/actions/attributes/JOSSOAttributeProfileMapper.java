@@ -96,12 +96,12 @@ public class JOSSOAttributeProfileMapper extends BaseAttributeProfileMapper {
     }
 
     @Override
-    protected Collection<AttributeType> policiesToAttributes(Set<SSOPolicyEnforcementStatement> ssoPolicies) {
+    protected Collection<AttributeType> policiesToAttributes(Set<PolicyEnforcementStatement> ssoPolicies) {
         // SSO Enforced policies
         // TODO : Can we use SAML Authn context information ?!
         List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
 
-        for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicies) {
+        for (PolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicies) {
             AttributeType attrPolicy = new AttributeType();
 
             attrPolicy.setFriendlyName(ssoPolicyEnforcement.getName());

@@ -1049,7 +1049,7 @@ public class SingleSignOnProducer extends SSOProducer {
             clearAuthnState(exchange);
 
             // If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
-            List<SSOPolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
+            List<PolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
 
             if (stmts != null && stmts.size() > 0) {
 
@@ -1117,7 +1117,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // If not, keep trying with other endpoints.
 
             // Set of policies enforced during authentication
-            Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
+            Set<PolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
 
             // Ask for more claims, using other auth schemes
             ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState, exchange);
@@ -1298,7 +1298,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             AbstractSSOMediator mediator = (AbstractSSOMediator) requiredSpChannel.getIdentityMediator();
 
-            List<SSOPolicyEnforcementStatement> stmts = null;
+            List<PolicyEnforcementStatement> stmts = null;
             AssertionType assertion = null;
 
             if (proxyResponse.getSubject() == null) {
@@ -2821,9 +2821,9 @@ public class SingleSignOnProducer extends SSOProducer {
         return saml11Response;
     }
 
-    protected List<SSOPolicyEnforcementStatement> getPolicyEnforcementStatements(AssertionType assertion) {
+    protected List<PolicyEnforcementStatement> getPolicyEnforcementStatements(AssertionType assertion) {
 
-        List<SSOPolicyEnforcementStatement> policyStatements = new ArrayList<SSOPolicyEnforcementStatement>();
+        List<PolicyEnforcementStatement> policyStatements = new ArrayList<PolicyEnforcementStatement>();
         List<StatementAbstractType> stmts = assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement();
 
         if (stmts == null)
@@ -2846,7 +2846,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         // TODO : Make this 'dynamic' to decouple from specific policy types
                         AttributeType attr = (AttributeType) attrOrEncAttr;
-                        SSOPolicyEnforcementStatement policy = null;
+                        PolicyEnforcementStatement policy = null;
 
                         if (attr.getName().startsWith(PasswordPolicyEnforcementWarning.NAMESPACE)) {
 

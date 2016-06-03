@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.capabilities.sts.main;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.exceptions.AuthenticationFailureException;
 
 import java.util.HashSet;
@@ -31,11 +31,11 @@ import java.util.Set;
  * Signals that an authentication failed.  The policy enforcement statements listed in the error are those that failed
  * during authentication.
  *
- * @see SSOPolicyEnforcementStatement
+ * @see PolicyEnforcementStatement
  */
 public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionException {
 
-    private Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = new HashSet<SSOPolicyEnforcementStatement>();
+    private Set<PolicyEnforcementStatement> ssoPolicyEnforcements = new HashSet<PolicyEnforcementStatement>();
 
     private String principalName;
 
@@ -47,7 +47,7 @@ public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionExc
      * @param cause error that caused the policy to fail (optional)
      *
      */
-    public SecurityTokenAuthenticationFailure(String scheme, Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements, Throwable cause) {
+    public SecurityTokenAuthenticationFailure(String scheme, Set<PolicyEnforcementStatement> ssoPolicyEnforcements, Throwable cause) {
         super("Cannot authenticate token using scheme " + scheme, cause);
         if (cause instanceof AuthenticationFailureException) {
             this.principalName = ((AuthenticationFailureException)cause).getPrincipalName();
@@ -67,7 +67,7 @@ public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionExc
         super(message);
     }
 
-    public Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements() {
+    public Set<PolicyEnforcementStatement> getSsoPolicyEnforcements() {
         return ssoPolicyEnforcements;
     }
 

@@ -3,7 +3,7 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attribute
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.SSORole;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
@@ -45,7 +45,7 @@ public abstract class BaseAttributeProfileMapper implements SamlR2AttributeProfi
         attrs.addAll(rolesToAttributes(ssoRoles));
 
         // SSO Policies
-        Set ssoPolicyEnforcements = subject.getPrincipals(SSOPolicyEnforcementStatement.class);
+        Set ssoPolicyEnforcements = subject.getPrincipals(PolicyEnforcementStatement.class);
         attrs.addAll(policiesToAttributes(ssoPolicyEnforcements));
 
         return attrs;
@@ -65,7 +65,7 @@ public abstract class BaseAttributeProfileMapper implements SamlR2AttributeProfi
 
     protected abstract Collection<AttributeType> rolesToAttributes(Set<SSORole> ssoRoles);
 
-    protected abstract Collection<AttributeType> policiesToAttributes(Set<SSOPolicyEnforcementStatement> ssoPolicies);
+    protected abstract Collection<AttributeType> policiesToAttributes(Set<PolicyEnforcementStatement> ssoPolicies);
 
     protected abstract Collection<AttributeType> tokenToAttributes(SecurityToken securityToken);
 

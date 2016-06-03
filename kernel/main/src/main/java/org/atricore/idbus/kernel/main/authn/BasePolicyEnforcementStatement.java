@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  *
  */
-public class BasePolicyEnforcementStatement implements SSOPolicyEnforcementStatement, Principal {
+public class BasePolicyEnforcementStatement implements PolicyEnforcementStatement, Principal {
 
     private String ns;
 

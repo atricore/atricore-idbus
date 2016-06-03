@@ -5,7 +5,7 @@ import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PolicyEnforcementWarning implements SSOPolicyEnforcementStatement, Principal {
+public class PolicyEnforcementWarning implements PolicyEnforcementStatement, Principal {
 
     public static final String NAMESPACE = "urn:org:atricore:idbus:policy:warning";
 

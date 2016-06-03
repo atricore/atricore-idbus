@@ -7,15 +7,13 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
-import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
-import org.atricore.idbus.kernel.main.provisioning.spi.MediationPartition;
-import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
-import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
+import org.atricore.idbus.kernel.main.provisioning.spi.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -72,6 +70,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private String auditCategory = "";
 
     private static final Set<String> dictionary = new HashSet<String>();
+
+    private List<PasswordPolicy> passwordPolicies = new ArrayList<PasswordPolicy>();
 
     static {
         // TODO : Take this from resource/file
@@ -216,6 +216,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.schemaManager = schemaManager;
     }
 
+    public List<PasswordPolicy> getPasswordPolicies() {
+        return passwordPolicies;
+    }
+
+    public void setPasswordPolicies(List<PasswordPolicy> passwordPolicies) {
+        this.passwordPolicies = passwordPolicies;
+    }
+
     public void deleteGroup(String id) throws ProvisioningException {
         try {
             identityPartition.deleteGroup(id);
@@ -225,7 +233,6 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     }
 
-    
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws ProvisioningException {
 
         try {
@@ -1338,6 +1345,24 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     // TODO : Use some external plugin/strategy
     public void validatePassword(String password) throws IllegalPasswordException {
+
+        if (passwordPolicies.size() > 0) {
+
+            List<PolicyEnforcementStatement> allStmts = new ArrayList<PolicyEnforcementStatement>();
+
+            for (PasswordPolicy passwordPolicy : passwordPolicies) {
+                List<PolicyEnforcementStatement> stmts = passwordPolicy.validate(password);
+                if (stmts != null)
+                    allStmts.addAll(stmts);
+
+            }
+
+            if (allStmts.size() > 0)
+                throw new IllegalPasswordException(allStmts);
+
+            return;
+        }
+
 
         if (password == null || password.length() < 6) {
             throw new IllegalPasswordException("Password is too short");

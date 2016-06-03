@@ -10,7 +10,7 @@ import java.util.Set;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public interface SSOPolicyEnforcementStatement extends Serializable, Principal {
+public interface PolicyEnforcementStatement extends Serializable, Principal {
 
     QName getQName() ;
 

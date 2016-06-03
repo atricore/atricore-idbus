@@ -9,7 +9,7 @@ import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyEnforcementError;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyErrorType;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 
@@ -41,9 +41,9 @@ public class PolicyPwdResetPage extends BasePage {
                 throw new RestartResponseAtInterceptPageException(resolvePage("ERROR/SESSION"));
 
             boolean pwdResetPolicyExist = false;
-            Set<SSOPolicyEnforcementStatement> policyStatements = session.getCredentialClaimsRequest().getSsoPolicyEnforcements();
+            Set<PolicyEnforcementStatement> policyStatements = session.getCredentialClaimsRequest().getSsoPolicyEnforcements();
             if (policyStatements != null && policyStatements.size() > 0) {
-                for (SSOPolicyEnforcementStatement stmt : policyStatements) {
+                for (PolicyEnforcementStatement stmt : policyStatements) {
                     if (stmt instanceof PasswordPolicyEnforcementError &&
                             PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED.equals(((PasswordPolicyEnforcementError) stmt).getType())) {
                         pwdResetPolicyExist = true;

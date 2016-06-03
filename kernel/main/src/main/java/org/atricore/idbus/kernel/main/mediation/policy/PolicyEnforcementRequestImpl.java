@@ -1,6 +1,6 @@
 package org.atricore.idbus.kernel.main.mediation.policy;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 
 import java.util.HashSet;
@@ -15,7 +15,7 @@ public class PolicyEnforcementRequestImpl implements PolicyEnforcementRequest {
 
     private EndpointDescriptor replyTo;
 
-    private Set<SSOPolicyEnforcementStatement> stmts = new HashSet<SSOPolicyEnforcementStatement>();
+    private Set<PolicyEnforcementStatement> stmts = new HashSet<PolicyEnforcementStatement>();
 
     public PolicyEnforcementRequestImpl(String id, EndpointDescriptor replyTo) {
         this.id = id;
@@ -34,7 +34,7 @@ public class PolicyEnforcementRequestImpl implements PolicyEnforcementRequest {
         this.replyTo = replyTo;
     }
 
-    public Set<SSOPolicyEnforcementStatement> getStatements() {
+    public Set<PolicyEnforcementStatement> getStatements() {
         return stmts;
     }
 }

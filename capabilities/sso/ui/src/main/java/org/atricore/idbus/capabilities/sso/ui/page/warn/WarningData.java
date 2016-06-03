@@ -1,25 +1,25 @@
 package org.atricore.idbus.capabilities.sso.ui.page.warn;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 
 import java.io.Serializable;
 
 public class WarningData implements Serializable {
 
-    private SSOPolicyEnforcementStatement stmt;
+    private PolicyEnforcementStatement stmt;
 
     private String msgKey;
 
     private Object msgParam;
 
-    public WarningData(SSOPolicyEnforcementStatement stmt) {
+    public WarningData(PolicyEnforcementStatement stmt) {
         this.stmt = stmt;
         this.msgKey = stmt.getNs()  + ":" + stmt.getName();
         if (stmt.getValues() != null && stmt.getValues().size() > 0)
             msgParam = stmt.getValues().iterator().next();
     }
 
-    public SSOPolicyEnforcementStatement getStatement() {
+    public PolicyEnforcementStatement getStatement() {
         return stmt;
     }
 

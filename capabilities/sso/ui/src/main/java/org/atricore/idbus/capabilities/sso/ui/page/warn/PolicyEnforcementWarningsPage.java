@@ -35,7 +35,7 @@ import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
@@ -116,10 +116,10 @@ public class PolicyEnforcementWarningsPage extends BasePage {
         }
 
         List<WarningData> warnings = new ArrayList<WarningData>();
-        for (SSOPolicyEnforcementStatement stmt : policyEnforcementRequest.getStatements()) {
+        for (PolicyEnforcementStatement stmt : policyEnforcementRequest.getStatements()) {
             warnings.add(new WarningData(stmt));
             if (stmt.getValues() != null && stmt.getValues().size() > 1)
-                logger.warn("SSOPolicyEnforcementStatement has more than one value!");
+                logger.warn("PolicyEnforcementStatement has more than one value!");
         }
 
         add(new PropertyListView<WarningData>("warnings", warnings) {

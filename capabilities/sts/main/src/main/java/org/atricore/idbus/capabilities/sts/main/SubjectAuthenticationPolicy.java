@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.sts.main;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 
 import javax.security.auth.Subject;
 import java.util.Set;
@@ -21,5 +21,5 @@ public interface SubjectAuthenticationPolicy {
      *
      * @throws SecurityTokenAuthenticationFailure if the Subject cannot be verified. (Error status information included)
      */
-    Set<SSOPolicyEnforcementStatement> verify(Subject subject, Object context) throws SecurityTokenAuthenticationFailure;
+    Set<PolicyEnforcementStatement> verify(Subject subject, Object context) throws SecurityTokenAuthenticationFailure;
 }

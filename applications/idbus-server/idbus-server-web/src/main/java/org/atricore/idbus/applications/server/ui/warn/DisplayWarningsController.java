@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyEnforcementWarning;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyWarningType;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
@@ -59,7 +59,7 @@ public class DisplayWarningsController extends SimpleFormController {
 
             confirmForm.setRequest(policyEnforcementRequest);
 
-            for (SSOPolicyEnforcementStatement stmt : policyEnforcementRequest.getStatements()) {
+            for (PolicyEnforcementStatement stmt : policyEnforcementRequest.getStatements()) {
 
                 WarningData wd = new WarningData(stmt);
 

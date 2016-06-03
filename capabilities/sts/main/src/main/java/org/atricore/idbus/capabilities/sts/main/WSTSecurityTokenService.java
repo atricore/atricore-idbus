@@ -157,7 +157,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
             processingContext.setProperty(SUBJECT_PROP, subject);
 
-            Set<SSOPolicyEnforcementStatement> ssoPolicies = verify(processingContext, requestToken.getValue(), tokenType.getValue());
+            Set<PolicyEnforcementStatement> ssoPolicies = verify(processingContext, requestToken.getValue(), tokenType.getValue());
             if (ssoPolicies != null) {
                 if (logger.isDebugEnabled())
                     logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals");
@@ -277,16 +277,16 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
      * @param tokenType
      * @throws SecurityTokenAuthenticationFailure
      */
-    protected Set<SSOPolicyEnforcementStatement> verify(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType)
+    protected Set<PolicyEnforcementStatement> verify(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType)
             throws SecurityTokenAuthenticationFailure {
 
-        Set<SSOPolicyEnforcementStatement> warnStmts = new HashSet<SSOPolicyEnforcementStatement>();
-        Set<SSOPolicyEnforcementStatement> errorStmts = new HashSet<SSOPolicyEnforcementStatement>();
+        Set<PolicyEnforcementStatement> warnStmts = new HashSet<PolicyEnforcementStatement>();
+        Set<PolicyEnforcementStatement> errorStmts = new HashSet<PolicyEnforcementStatement>();
 
         for (SubjectAuthenticationPolicy policy : subjectAuthnPolicies) {
             Subject subject = (Subject) ctx.getProperty(SUBJECT_PROP);
             try {
-                Set<SSOPolicyEnforcementStatement> stmts = policy.verify(subject, ctx);
+                Set<PolicyEnforcementStatement> stmts = policy.verify(subject, ctx);
                 if (stmts != null)
                     warnStmts.addAll(stmts);
             } catch (SecurityTokenAuthenticationFailure e) {
@@ -459,7 +459,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 principals.addAll(Arrays.asList(ssoRoles));
 
                 // Use existing SSOPolicyEnforcement principals
-                Set<SSOPolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(SSOPolicyEnforcementStatement.class);
+                Set<PolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(PolicyEnforcementStatement.class);
                 if (ssoPolicies != null) {
                     if (logger.isDebugEnabled())
                         logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");

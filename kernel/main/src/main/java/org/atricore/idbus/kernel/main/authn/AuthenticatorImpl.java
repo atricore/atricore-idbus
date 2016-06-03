@@ -64,7 +64,7 @@ public class AuthenticatorImpl implements Authenticator {
         Subject s = new Subject();
 
         List<AuthenticationScheme> schemes = getSchemes(schemeName);
-        Set<SSOPolicyEnforcementStatement> ssoPolicies = new HashSet<SSOPolicyEnforcementStatement>();
+        Set<PolicyEnforcementStatement> ssoPolicies = new HashSet<PolicyEnforcementStatement>();
         String lastPrincipal = null;
 
         for (AuthenticationScheme scheme : schemes) {

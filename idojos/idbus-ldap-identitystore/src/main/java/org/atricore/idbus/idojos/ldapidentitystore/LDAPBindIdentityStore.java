@@ -280,7 +280,7 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                         addPasswordPolicyToBindCtx(ppolicyCtrl, bindCtx);
 
                     // Check for errors
-                    for (SSOPolicyEnforcementStatement policyStatement : bindCtx.getSSOPolicies()) {
+                    for (PolicyEnforcementStatement policyStatement : bindCtx.getSSOPolicies()) {
                         if (policyStatement instanceof PasswordPolicyEnforcementError) {
                             error = true;
                             break;

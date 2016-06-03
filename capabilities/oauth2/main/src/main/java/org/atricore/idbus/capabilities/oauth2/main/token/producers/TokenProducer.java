@@ -9,7 +9,7 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailu
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.oauth._2_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.Constants;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
@@ -108,7 +108,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
             atRes.setErrorDescription(e.getMessage());
 
             if (e.getSsoPolicyEnforcements() != null) {
-                for (SSOPolicyEnforcementStatement stmt : e.getSsoPolicyEnforcements()) {
+                for (PolicyEnforcementStatement stmt : e.getSsoPolicyEnforcements()) {
                     SSOPolicyEnforcementStatementType stmtType = new SSOPolicyEnforcementStatementType();
                     stmtType.setNs(stmt.getNs());
                     stmtType.setName(stmt.getName());

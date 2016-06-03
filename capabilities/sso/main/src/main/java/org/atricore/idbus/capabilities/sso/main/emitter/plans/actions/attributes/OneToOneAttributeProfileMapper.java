@@ -5,9 +5,7 @@ import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
-import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 
@@ -76,12 +74,12 @@ public class OneToOneAttributeProfileMapper extends BaseAttributeProfileMapper {
     }
 
     @Override
-    protected Collection<AttributeType> policiesToAttributes(Set<SSOPolicyEnforcementStatement> ssoPolicies) {
+    protected Collection<AttributeType> policiesToAttributes(Set<PolicyEnforcementStatement> ssoPolicies) {
         // SSO Enforced policies
         // TODO : Can we use SAML Authn context information ?!
         List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
 
-        for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicies) {
+        for (PolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicies) {
             AttributeType attrPolicy = new AttributeType();
 
             attrPolicy.setFriendlyName(ssoPolicyEnforcement.getName());
