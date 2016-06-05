@@ -703,7 +703,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             user = identityPartition.findUserById(req.getUser().getId());
 
-            if (t.getUsername().equals(user.getUserName()))
+            // Make a case insensitive check!
+            if (!t.getUsername().equalsIgnoreCase(user.getUserName()))
                 throw new ProvisioningException("Invalid transaction/code");
 
             String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();

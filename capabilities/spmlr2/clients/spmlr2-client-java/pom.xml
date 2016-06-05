@@ -44,11 +44,11 @@
             <version>1.4.2-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
             <version>1.4.2-SNAPSHOT</version>
-        </dependency>
+        </dependency-->
 
         <dependency>
             <groupId>org.apache.cxf</groupId>

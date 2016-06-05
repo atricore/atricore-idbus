@@ -17,7 +17,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -134,7 +133,7 @@ public class SpmlR2Client implements ConfigurationConstants {
 
         SearchRequestType spmlRequest = new SearchRequestType();
         spmlRequest.setRequestID(newUUID());
-        spmlRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+        spmlRequest.getOtherAttributes().put(SPMLR2ClientConstants.userAttr, "true");
 
         SearchQueryType spmlQry  = new SearchQueryType();
         spmlQry.setScope(ScopeType.ONE_LEVEL);
@@ -148,10 +147,10 @@ public class SpmlR2Client implements ConfigurationConstants {
         String qry = "/users[userName='"+username+"']";
 
         spmlSelect.setPath(qry);
-        spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+        spmlSelect.getOtherAttributes().put(SPMLR2ClientConstants.userAttr, "true");
 
         JAXBElement jaxbSelect= new JAXBElement(
-                new QName( SPMLR2Constants.SPML_NS, "select"),
+                new QName( SPMLR2ClientConstants.SPML_NS, "select"),
                 spmlSelect.getClass(),
                 spmlSelect
         );
