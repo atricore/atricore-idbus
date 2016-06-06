@@ -24,6 +24,9 @@ package org.atricore.idbus.kernel.main.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.nio.ByteBuffer;
+import java.util.Random;
+
 /**
  * Use org.atricore.idbus.uuid.jdk system property to enable built-in JDK UUIDs
  *
@@ -37,6 +40,12 @@ public class UUIDGenerator extends AbstractIdGenerator {
     private int artifactLength = 8;
 
     private boolean jdkIdGen = false;
+
+
+    //
+    private String format = null;
+    private int min = -1;
+    private int max = -1;
 
     /**
      * Only works with legacy UUID generator
@@ -56,6 +65,13 @@ public class UUIDGenerator extends AbstractIdGenerator {
         this.jdkIdGen = false;
     }
 
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
 
     /**
      * Generates a string identifier
@@ -87,32 +103,55 @@ public class UUIDGenerator extends AbstractIdGenerator {
      */
     protected String legacyUUID(int artifactLength) {
 
-        byte random[] = new byte[artifactLength * 2];
 
-        // Render the result as a String of hexadecimal digits
-        StringBuffer result = new StringBuffer();
-        int resultLenBytes = 0;
-        while (resultLenBytes < artifactLength) {
-            getRandomBytes(random);
-            random = getDigest().digest(random);
-            for (int j = 0;
-                 j < random.length && resultLenBytes < artifactLength;
-                 j++) {
-                byte b1 = (byte) ((random[j] & 0xf0) >> 4);
-                byte b2 = (byte) (random[j] & 0x0f);
-                if (b1 < 10)
-                    result.append((char) ('0' + b1));
-                else
-                    result.append((char) ('A' + (b1 - 10)));
-                if (b2 < 10)
-                    result.append((char) ('0' + b2));
-                else
-                    result.append((char) ('A' + (b2 - 10)));
-                resultLenBytes++;
+
+        if (format == null || "HEX".equals(format)){
+
+            byte random[] = new byte[artifactLength * 2];
+
+            // Render the result as a String of hexadecimal digits
+            StringBuffer result = new StringBuffer();
+            int resultLenBytes = 0;
+            while (resultLenBytes < artifactLength) {
+                getRandomBytes(random);
+                random = getDigest().digest(random);
+                for (int j = 0;
+                     j < random.length && resultLenBytes < artifactLength;
+                     j++) {
+                    byte b1 = (byte) ((random[j] & 0xf0) >> 4);
+                    byte b2 = (byte) (random[j] & 0x0f);
+                    if (b1 < 10)
+                        result.append((char) ('0' + b1));
+                    else
+                        result.append((char) ('A' + (b1 - 10)));
+                    if (b2 < 10)
+                        result.append((char) ('0' + b2));
+                    else
+                        result.append((char) ('A' + (b2 - 10)));
+                    resultLenBytes++;
+                }
             }
-        }
 
-        return (getPrefix() != null ? getPrefix() + result.toString() : result.toString());
+            return (getPrefix() != null ? getPrefix() + result.toString() : result.toString());
+
+        } else if (format.equals("NUM")) {
+
+            if (min == -1) {
+
+                min = 10;
+                for (int i = 1 ; i < artifactLength - 1; i++) {
+                    min = 10 * min;
+                }
+                max = min * 9;
+            }
+
+            Random rand = getRandom();
+            long num = rand.nextInt(min) + max;
+            return (getPrefix() != null ? getPrefix() + num : num + "");
+
+        } else {
+            throw new RuntimeException("Unsupported format " + format);
+        }
     }
 
 }

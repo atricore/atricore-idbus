@@ -1439,4 +1439,20 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public void setAuditCategory(String auditCategory) {
         this.auditCategory = auditCategory;
     }
+
+    public UUIDGenerator getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUIDGenerator uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUIDGenerator getShortIdGen() {
+        return shortIdGen;
+    }
+
+    public void setShortIdGen(UUIDGenerator shortIdGen) {
+        this.shortIdGen = shortIdGen;
+    }
 }
