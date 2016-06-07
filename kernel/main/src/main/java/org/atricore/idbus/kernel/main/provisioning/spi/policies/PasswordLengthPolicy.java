@@ -20,18 +20,20 @@ public class PasswordLengthPolicy extends AbstractPasswordPolicy {
     @Override
     public List<PolicyEnforcementStatement> validate(String password) {
 
+        List<PolicyEnforcementStatement> stmts = new ArrayList<PolicyEnforcementStatement>();
+
         if (password == null) {
-            addStatement(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_TOO_SHORT));
-            return getAllStatements();
+            stmts.add(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_TOO_SHORT));
+            return stmts;
         }
 
         if (minLength >= 0 && minLength > password.length())
-            addStatement(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_TOO_SHORT));
+            stmts.add(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_TOO_SHORT));
 
         if (maxLength >= 0 && maxLength  < password.length())
-            addStatement(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_TOO_SHORT));
+            stmts.add(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_TOO_SHORT));
 
-        return getAllStatements();
+        return stmts.size() > 0 ? stmts : null;
 
     }
 

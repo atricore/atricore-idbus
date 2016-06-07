@@ -16,6 +16,7 @@ import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.capabilities.spmlr2.main.util.XmlUtils;
 import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
@@ -885,6 +886,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             ConfirmResetPasswordRequest req = new ConfirmResetPasswordRequest();
             req.setTransactionId(spmlRequest.getTransaction());
+            req.setCode(spmlRequest.getCode());
             req.setNewPassword(spmlRequest.getNewpassword());
 
             ResetPasswordResponse resp = target.confirmResetPassword(req);
@@ -892,6 +894,35 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
             recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
+
+        } catch (TransactionExpiredException e) {
+            logger.debug(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+
+        } catch (IllegalPasswordException e) {
+            logger.debug(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            spmlResponse.setError("transaction_timout");
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Illegal password value ");
+
+            // Get password statements
+            if (e.getStmts() != null) {
+                for (PolicyEnforcementStatement stmt : e.getStmts()) {
+                    PolicyEnforcementStatementType stmtType = new PolicyEnforcementStatementType();
+                    stmtType.setName(stmt.getName());
+                    stmtType.setNs(stmt.getNs());
+                    spmlResponse.getSsoPolicyEnforcements().add(stmtType);
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("{"+stmt.getNs()+"}" + stmt.getName());
+
+                }
+            }
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
         } catch (ProvisioningException e) {
             logger.error(e.getMessage(), e);
             spmlResponse.setStatus(StatusCodeType.FAILURE);

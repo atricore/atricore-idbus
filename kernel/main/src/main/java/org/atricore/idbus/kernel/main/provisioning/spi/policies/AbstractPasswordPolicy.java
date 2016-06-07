@@ -11,20 +11,9 @@ import java.util.List;
  */
 public abstract class AbstractPasswordPolicy implements PasswordPolicy{
 
-    protected List<PolicyEnforcementStatement> stmts = null;
-
     @Override
     public void init() {
 
     }
 
-    protected void addStatement(PolicyEnforcementStatement stmt) {
-        if (stmts == null)
-            stmts = new ArrayList<PolicyEnforcementStatement>();
-        stmts.add(stmt);
-    }
-
-    protected List<PolicyEnforcementStatement> getAllStatements() {
-        return stmts;
-    }
 }

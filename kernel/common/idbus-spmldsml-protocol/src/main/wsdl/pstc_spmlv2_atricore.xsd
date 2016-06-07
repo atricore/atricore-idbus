@@ -162,6 +162,14 @@
 	    </xsd:restriction>
 	</xsd:simpleType>
 
+    <xsd:complexType name="PolicyEnforcementStatementType">
+        <xsd:sequence>
+            <xsd:element name="values" type="anyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="ns" type="string" use="required"/>
+        <xsd:attribute name="name" type="string" use="required"/>
+    </xsd:complexType>
+
     <element name="replacePasswordRequest" type="spmlatc:ReplacePasswordRequestType"/>
     <element name="replacePasswordResponse" type="spml:ResponseType"/>
     <element name="attributeValue" type="spmlatc:AttributeValueType"/>
@@ -169,5 +177,6 @@
     <element name="user" type="spmlatc:UserType"/>
     <element name="userAttribute" type="spmlatc:UserAttributeType"/>
     <element name="groupAttribute" type="spmlatc:GroupAttributeType"/>
+    <element name="policyEnforcementStatement" type="spmlatc:PolicyEnforcementStatementType"/>
 
 </schema>

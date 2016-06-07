@@ -446,8 +446,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         userResponse.setUser(u);
 
-        // TODO : Make configurable
-        PendingTransaction t = new PendingTransaction(transactionId, u.getUserName(), System.currentTimeMillis() + (1000L * 60L * 30L), userRequest, userResponse);
+        PendingTransaction t = new PendingTransaction(transactionId, u.getUserName(),
+                System.currentTimeMillis() + (1000L * getMaxTimeToLive()),
+                userRequest,
+                userResponse);
+
         storePendingTransaction(t);
 
         recordInfoAuditTrail(Action.PREPARE_ADD_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUserName(), null);
@@ -688,12 +691,19 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             if (!usedGeneratedPwd) ;
                 validatePassword(resetPwdRequest.getNewPassword());
 
+            if (logger.isDebugEnabled())
+                logger.trace("Password is valid ");
+
             String id = resetPwdRequest.getCode() != null ?
                     resetPwdRequest.getCode() : resetPwdRequest.getTransactionId();
 
             PendingTransaction t = consumePendingTransaction(id);
-            // Did the transaction already expired ?
-            if (t == null || t.expiresOn < System.currentTimeMillis()) {
+            // Did the transaction already expired
+            if (t == null || t.getExpiresOn() < System.currentTimeMillis()) {
+
+                if (logger.isDebugEnabled())
+                    logger.trace("Transaction has expired or is null " + t);
+
                 throw new TransactionExpiredException(resetPwdRequest.getTransactionId());
             }
 
@@ -1344,7 +1354,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.saltValue = saltValue;
     }
 
-    // TODO : Use some external plugin/strategy
+
     public void validatePassword(String password) throws IllegalPasswordException {
 
         if (passwordPolicies.size() > 0) {

@@ -46,12 +46,15 @@ public class RegExpPasswordPolicy extends AbstractPasswordPolicy {
 
     @Override
     public List<PolicyEnforcementStatement> validate(String password) {
+
+        List<PolicyEnforcementStatement> stmts = new ArrayList<PolicyEnforcementStatement>();
+
         matcher = pattern.matcher(password);
         if (!matcher.matches()) {
-            addStatement(new IllegalPasswordStatement(stmtName));
+            stmts.add(new IllegalPasswordStatement(stmtName));
         }
 
-        return getAllStatements();
+        return stmts;
 
     }
 }

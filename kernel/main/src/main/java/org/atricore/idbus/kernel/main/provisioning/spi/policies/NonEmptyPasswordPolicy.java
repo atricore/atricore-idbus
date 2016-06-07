@@ -17,8 +17,9 @@ public class NonEmptyPasswordPolicy extends AbstractPasswordPolicy {
 
         // Check that password is not empty
         if (password == null) {
-            addStatement(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_EMPTY));
-            return getAllStatements();
+            List<PolicyEnforcementStatement> stmts = new ArrayList<PolicyEnforcementStatement>();
+            stmts.add(new IllegalPasswordStatement(PasswordPolicy.ENFORCMENT_STMT_EMPTY));
+            return stmts;
         }
 
         return null;
