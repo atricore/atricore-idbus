@@ -903,7 +903,6 @@ public class PSPProducer extends SpmlR2Producer {
         } catch (IllegalPasswordException e) {
             logger.debug(e.getMessage(), e);
             spmlResponse.setStatus(StatusCodeType.FAILURE);
-            spmlResponse.setError("transaction_timout");
             recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
             if (logger.isDebugEnabled())
