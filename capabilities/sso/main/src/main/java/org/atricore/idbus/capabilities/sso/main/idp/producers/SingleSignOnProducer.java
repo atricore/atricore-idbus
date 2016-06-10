@@ -1488,7 +1488,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
                 // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
-                stmts = getPolicyEnforcementStatements(assertion);
+                //stmts = getPolicyEnforcementStatements(assertion);
 
                 // Set the SSO Session var
                 in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
