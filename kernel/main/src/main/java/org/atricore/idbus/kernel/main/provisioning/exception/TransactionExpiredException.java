@@ -7,6 +7,6 @@ package org.atricore.idbus.kernel.main.provisioning.exception;
 public class TransactionExpiredException extends  ProvisioningException {
 
     public TransactionExpiredException(String transactionId) {
-        super("Transaction ["+transactionId+"] is no longer availabe, probably expired" );
+        super("Transaction ["+transactionId+"] is no longer available, probably expired" );
     }
 }

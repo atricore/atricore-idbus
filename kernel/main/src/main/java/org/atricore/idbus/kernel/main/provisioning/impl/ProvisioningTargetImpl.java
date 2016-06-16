@@ -666,7 +666,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // TODO : Make confiurable
         PendingTransaction t = new PendingTransaction(transactionId, code, resetPwdRequest.getUser().getUserName(),
-                System.currentTimeMillis() + (1000L * 60L * 10L), resetPwdRequest, resetPwdResp);
+                System.currentTimeMillis() + (1000L * getMaxTimeToLive()), resetPwdRequest, resetPwdResp);
 
         storePendingTransaction(t);
 
@@ -689,7 +689,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             // Either the user provides a new password, or we use the one we created.
             boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
             if (!usedGeneratedPwd) ;
-                validatePassword(resetPwdRequest.getNewPassword());
+            validatePassword(resetPwdRequest.getNewPassword());
 
             if (logger.isDebugEnabled())
                 logger.trace("Password is valid ");
@@ -698,14 +698,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
                     resetPwdRequest.getCode() : resetPwdRequest.getTransactionId();
 
             PendingTransaction t = consumePendingTransaction(id);
-            // Did the transaction already expired
-            if (t == null || t.getExpiresOn() < System.currentTimeMillis()) {
 
-                if (logger.isDebugEnabled())
-                    logger.trace("Transaction has expired or is null " + t);
-
-                throw new TransactionExpiredException(resetPwdRequest.getTransactionId());
-            }
 
             // Recover original request ...
             ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
@@ -715,7 +708,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             // Make a case insensitive check!
             if (!t.getUsername().equalsIgnoreCase(user.getUserName()))
-                throw new ProvisioningException("Invalid transaction/code");
+                throw new TransactionExpiredException(t.getId());
 
             String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
             String pwdHash = createPasswordHash(newPwd, user.getSalt());
@@ -1200,7 +1193,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     /**
      * Looks for transactions by ID and Code
      */
-    protected PendingTransaction consumePendingTransaction(String id) {
+    protected PendingTransaction consumePendingTransaction(String id) throws TransactionExpiredException {
 
         // Transaction Code is optional
 
@@ -1214,6 +1207,16 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         } else if (t.getCode() != null){
             // Found a transaction by ID, If it has a code, remove it from code idx
             this.pendingTransactionsByCode.remove(t.getCode());
+        }
+
+        // Did the transaction already expired
+        long now = System.currentTimeMillis();
+        if (t == null || t.getExpiresOn() < now) {
+
+            if (logger.isDebugEnabled())
+                logger.trace("Transaction has expired " + id);
+
+            throw new TransactionExpiredException(id);
         }
 
         return t;

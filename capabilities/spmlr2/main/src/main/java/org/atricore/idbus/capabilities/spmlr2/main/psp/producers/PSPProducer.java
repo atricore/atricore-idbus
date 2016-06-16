@@ -898,6 +898,12 @@ public class PSPProducer extends SpmlR2Producer {
         } catch (TransactionExpiredException e) {
             logger.debug(e.getMessage(), e);
             spmlResponse.setStatus(StatusCodeType.FAILURE);
+
+            PolicyEnforcementStatementType stmtType = new PolicyEnforcementStatementType();
+            stmtType.setName("invalidTransactionOrCode");
+            stmtType.setNs("urn:org:atricore:idbus:policy:provisioning:transaction");
+            spmlResponse.getSsoPolicyEnforcements().add(stmtType);
+
             recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
         } catch (IllegalPasswordException e) {
