@@ -424,6 +424,32 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
+    public List<User> addUsers(List<User> users) throws ProvisioningException {
+
+        for (User user : users) {
+            // Make sure that the password meets the security requirements
+            validatePassword(user.getUserPassword());
+
+            try {
+
+                String salt = generateSalt();
+
+                user.setSalt(salt);
+                user.setUserPassword(createPasswordHash(user.getUserPassword(), salt));
+            } catch (Exception e) {
+                throw new ProvisioningException(e);
+            }
+        }
+
+        try {
+            users = identityPartition.addUsers(users);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
+        return users;
+    }
+
     public PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest) throws ProvisioningException {
 
         // TODO : We should be able to use different authentication mechanisms and let the IDP handle the authn ....
@@ -548,10 +574,28 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws ProvisioningException {
-        // TODO
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        try {
+            Collection<User> users = identityPartition.findUsers(userRequest.getSearchCriteria(),
+                    userRequest.getFromResult(), userRequest.getResultCount(), "userName", true);
+
+            SearchUserResponse userResponse = new SearchUserResponse();
+            userResponse.setUsers(new ArrayList<User>(users));
+            userResponse.setNumOfUsers(identityPartition.findUsersCount(userRequest.getSearchCriteria()));
+
+            return userResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public Collection<String> findUserNames(List<String> usernames) throws ProvisioningException {
+        try {
+            return identityPartition.findUserNames(usernames);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
     

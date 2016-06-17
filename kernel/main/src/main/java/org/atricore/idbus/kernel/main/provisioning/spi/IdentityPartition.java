@@ -1,14 +1,13 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
-import org.atricore.idbus.kernel.main.authn.SecurityToken;
-import org.atricore.idbus.kernel.main.provisioning.domain.AclEntry;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.SecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.UserSearchCriteria;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -37,6 +36,8 @@ public interface IdentityPartition {
 
     User addUser(User user) throws ProvisioningException;
 
+    List<User> addUsers(List<User> users) throws ProvisioningException;
+
     void deleteUser(String id) throws ProvisioningException;
 
     User findUserById(String id) throws ProvisioningException;
@@ -49,7 +50,11 @@ public interface IdentityPartition {
 
     Collection<User> getUsersByGroup(Group group) throws ProvisioningException;
 
+    Collection<User> findUsers(UserSearchCriteria searchCriteria, long fromResult, long resultCount, String sortColumn, boolean sortAscending) throws ProvisioningException;
 
+    Long findUsersCount(UserSearchCriteria searchCriteria) throws ProvisioningException;
+
+    Collection<String> findUserNames(List<String> usernames) throws ProvisioningException;
 }
 
 

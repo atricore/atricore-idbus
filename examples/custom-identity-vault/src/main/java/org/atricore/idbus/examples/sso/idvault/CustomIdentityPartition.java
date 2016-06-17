@@ -4,10 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
-import org.atricore.idbus.kernel.main.provisioning.domain.AclEntry;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.SecurityQuestion;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
@@ -15,6 +12,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by sgonzalez on 3/16/15.
@@ -72,6 +70,11 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
+    public List<User> addUsers(List<User> users) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
     public void deleteUser(String id) throws ProvisioningException {
 
     }
@@ -98,6 +101,21 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
 
     @Override
     public Collection<User> getUsersByGroup(Group group) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public Collection<User> findUsers(UserSearchCriteria searchCriteria, long fromResult, long resultCount, String sortColumn, boolean sortAscending) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public Long findUsersCount(UserSearchCriteria searchCriteria) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public Collection<String> findUserNames(List<String> usernames) throws ProvisioningException {
         return null;
     }
 

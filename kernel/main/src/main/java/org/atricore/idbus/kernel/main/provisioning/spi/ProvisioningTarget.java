@@ -1,8 +1,12 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This represents a destination to provision identity and mediation information (when available)
@@ -73,6 +77,9 @@ public interface ProvisioningTarget {
     AddUserResponse addUser(AddUserRequest userRequest)
             throws ProvisioningException;
 
+    List<User> addUsers(List<User> users)
+            throws ProvisioningException;
+
     PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest)
             throws ProvisioningException;
 
@@ -90,6 +97,9 @@ public interface ProvisioningTarget {
             throws ProvisioningException;
 
     SearchUserResponse searchUsers(SearchUserRequest userRequest)
+            throws ProvisioningException;
+
+    Collection<String> findUserNames(List<String> usernames)
             throws ProvisioningException;
 
     UpdateUserResponse updateUser(UpdateUserRequest userRequest)

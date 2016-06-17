@@ -25,10 +25,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
@@ -372,18 +369,38 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         } else if (path.startsWith("/user")) {
-            // TODO : Improve this
-            ListUsersResponse res = target.listUsers(new ListUsersRequest());
-            User[] users = res.getUsers();
+            UserSearchRequestType userSearchRequest = (UserSearchRequestType) spmlRequest;
 
-            JXPathContext jxp = JXPathContext.newContext(new TargetContainer(users));
+            SearchUserRequest searchUserRequest = new SearchUserRequest();
+
+            UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
+            userSearchCriteria.setUsername(userSearchRequest.getUserSearchCriteria().getUserName());
+            userSearchCriteria.setFirstName(userSearchRequest.getUserSearchCriteria().getFirstName());
+            userSearchCriteria.setLastName(userSearchRequest.getUserSearchCriteria().getLastName());
+            userSearchCriteria.setEmail(userSearchRequest.getUserSearchCriteria().getEmail());
+            userSearchCriteria.setExactMatch(userSearchRequest.getUserSearchCriteria().getExactMatch());
+            searchUserRequest.setSearchCriteria(userSearchCriteria);
+
+            searchUserRequest.setFromResult(userSearchRequest.getFromResult());
+            searchUserRequest.setResultCount(userSearchRequest.getResultCount());
+
+            SearchUserResponse res = target.searchUsers(searchUserRequest);
+            List<User> users = res.getUsers();
+
+            /*JXPathContext jxp = JXPathContext.newContext(new TargetContainer(users.toArray(new User[users.size()])));
             Iterator it = jxp.iteratePointers(path);
             while (it.hasNext()) {
                 Pointer userPointer = (Pointer) it.next();
                 User user = (User) userPointer.getValue();
                 PSOType psoUser = toSpmlUser(target, user);
                 spmlResponse.getPso().add(psoUser);
+            }*/
+
+            spmlResponse = new UserSearchResponseType();
+            for (User user : users) {
+                spmlResponse.getPso().add(toSpmlUser(target, user));
             }
+            ((UserSearchResponseType) spmlResponse).setNumOfUsers(res.getNumOfUsers());
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         } else if (path.startsWith("/attrUser")) {
@@ -459,7 +476,7 @@ public class PSPProducer extends SpmlR2Producer {
         } else if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
             if (logger.isTraceEnabled())
-                logger.trace("Looking for group using PSO-ID " + psoId.getID());
+                logger.trace("Looking for user using PSO-ID " + psoId.getID());
 
             FindUserByIdRequest req = new FindUserByIdRequest();
             req.setId(psoId.getID());

@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.UserSearchCriteria;
+
 /**
  * Created by IntelliJ IDEA.
  * User: eugenia
@@ -30,49 +32,32 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class SearchUserRequest extends AbstractProvisioningRequest {
 
-    private String userName;
-    private String firstName;
-    private String surename;
-    private String commonName;
-    private String givenName;
+    private UserSearchCriteria searchCriteria;
 
-    public String getUserName() {
-        return userName;
+    private long fromResult;
+    private long resultCount;
+
+    public UserSearchCriteria getSearchCriteria() {
+        return searchCriteria;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setSearchCriteria(UserSearchCriteria searchCriteria) {
+        this.searchCriteria = searchCriteria;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public long getFromResult() {
+        return fromResult;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFromResult(long fromResult) {
+        this.fromResult = fromResult;
     }
 
-    public String getSurename() {
-        return surename;
+    public long getResultCount() {
+        return resultCount;
     }
 
-    public void setSurename(String surename) {
-        this.surename = surename;
-    }
-
-    public String getCommonName() {
-        return commonName;
-    }
-
-    public void setCommonName(String commonName) {
-        this.commonName = commonName;
-    }
-
-    public String getGivenName() {
-        return givenName;
-    }
-
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
+    public void setResultCount(long resultCount) {
+        this.resultCount = resultCount;
     }
 }

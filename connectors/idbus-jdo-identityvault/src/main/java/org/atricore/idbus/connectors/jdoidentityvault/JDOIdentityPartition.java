@@ -469,6 +469,33 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
+    //    @Transactional
+    public List<User> addUsers(List<User> users) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
+        try {
+            Collection<JDOUser> jdoUsers = new ArrayList<JDOUser>();
+            for (User user : users) {
+                jdoUsers.add(toJDOUser(user, false));
+            }
+            userDao.saveAll(jdoUsers);
+            jdoUsers = userDao.detachCopyAll(jdoUsers, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
+
+            List<User> savedUsers = new ArrayList<User>();
+            for (JDOUser jdoUser : jdoUsers) {
+                savedUsers.add(toUser(jdoUser, true));
+            }
+            return savedUsers;
+
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw new ProvisioningException(e);
+        }
+    }
+
 //    @Transactional
     public User updateUser(User user) throws ProvisioningException {
 
@@ -561,6 +588,52 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (NucleusObjectNotFoundException e) {
             transactionManager.rollback(status);
             throw new UserNotFoundException(id);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public Collection<User> findUsers(UserSearchCriteria searchCriteria, long fromResult, long resultCount, String sortColumn, boolean sortAscending) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
+        try {
+            Collection<JDOUser> jdoUsers = userDao.find(searchCriteria, fromResult, resultCount, sortColumn, sortAscending);
+            jdoUsers = userDao.detachCopyAll(jdoUsers, FetchPlan.FETCH_SIZE_GREEDY);
+            transactionManager.commit(status);
+            return toUsers(jdoUsers, true);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public Long findUsersCount(UserSearchCriteria searchCriteria) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
+        try {
+            Long usersCount = userDao.findCount(searchCriteria);
+            transactionManager.commit(status);
+            return usersCount;
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public Collection<String> findUserNames(List<String> usernames) throws ProvisioningException {
+
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef );
+
+        try {
+            Collection<String> foundUsernames = userDao.findUserNames(usernames);
+            transactionManager.commit(status);
+            return foundUsernames;
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new ProvisioningException(e);

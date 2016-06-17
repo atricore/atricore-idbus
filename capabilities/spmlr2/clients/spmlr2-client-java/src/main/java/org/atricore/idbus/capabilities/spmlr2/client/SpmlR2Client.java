@@ -3,13 +3,14 @@ package org.atricore.idbus.capabilities.spmlr2.client;
 import oasis.names.tc.spml._2._0.ExtensibleType;
 import oasis.names.tc.spml._2._0.PSOType;
 import oasis.names.tc.spml._2._0.SelectionType;
+import oasis.names.tc.spml._2._0.atricore.UserSearchCriteriaType;
+import oasis.names.tc.spml._2._0.atricore.UserSearchRequestType;
 import oasis.names.tc.spml._2._0.password.ResetPasswordRequestType;
 import oasis.names.tc.spml._2._0.password.ResetPasswordResponseType;
 import oasis.names.tc.spml._2._0.password.VerifyResetPasswordRequestType;
 import oasis.names.tc.spml._2._0.password.VerifyResetPasswordResponseType;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
-import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
 import oasis.names.tc.spml._2._0.wsdl.SPMLRequestPortType;
 import org.apache.commons.logging.Log;
@@ -131,7 +132,7 @@ public class SpmlR2Client implements ConfigurationConstants {
 
     public PSOType searchUserPSO(String username) throws SpmlR2ClientException {
 
-        SearchRequestType spmlRequest = new SearchRequestType();
+        UserSearchRequestType spmlRequest = new UserSearchRequestType();
         spmlRequest.setRequestID(newUUID());
         spmlRequest.getOtherAttributes().put(SPMLR2ClientConstants.userAttr, "true");
 
@@ -145,6 +146,13 @@ public class SpmlR2Client implements ConfigurationConstants {
         spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
 
         String qry = "/users[userName='"+username+"']";
+
+        UserSearchCriteriaType userSearchCriteria = new UserSearchCriteriaType();
+        userSearchCriteria.setUserName(username);
+        userSearchCriteria.setExactMatch(true);
+        spmlRequest.setUserSearchCriteria(userSearchCriteria);
+        spmlRequest.setFromResult(0l);
+        spmlRequest.setResultCount(0l);
 
         spmlSelect.setPath(qry);
         spmlSelect.getOtherAttributes().put(SPMLR2ClientConstants.userAttr, "true");

@@ -22,6 +22,7 @@
   -->
 <schema targetNamespace="urn:oasis:names:tc:SPML:2:0:atricore"
         xmlns:spml="urn:oasis:names:tc:SPML:2:0"
+        xmlns:spmlsearch="urn:oasis:names:tc:SPML:2:0:search"
         xmlns:spmlatc="urn:oasis:names:tc:SPML:2:0:atricore"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns="http://www.w3.org/2001/XMLSchema"
@@ -120,6 +121,34 @@
         </complexContent>
     </complexType>
 
+    <complexType name="UserSearchCriteriaType">
+        <attribute name="userName" type="xsd:string" use="optional"/>
+        <attribute name="firstName" type="xsd:string" use="optional"/>
+        <attribute name="lastName" type="xsd:string" use="optional"/>
+        <attribute name="email" type="xsd:string" use="optional"/>
+        <attribute name="exactMatch" type="xsd:boolean" use="optional"/>
+    </complexType>
+
+    <complexType name="UserSearchRequestType">
+        <complexContent>
+            <extension base="spmlsearch:SearchRequestType">
+                <sequence>
+                    <element ref="spmlatc:userSearchCriteria" minOccurs="1" maxOccurs="1"/>
+                </sequence>
+                <attribute name="fromResult" type="xsd:long" use="optional"/>
+                <attribute name="resultCount" type="xsd:long" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="UserSearchResponseType">
+        <complexContent>
+            <extension base="spmlsearch:SearchResponseType">
+                <attribute name="numOfUsers" type="xsd:long" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
     <xsd:complexType name="UserAttributeType">
         <complexContent>
             <extension base="spml:ExtensibleType">
@@ -178,5 +207,8 @@
     <element name="userAttribute" type="spmlatc:UserAttributeType"/>
     <element name="groupAttribute" type="spmlatc:GroupAttributeType"/>
     <element name="policyEnforcementStatement" type="spmlatc:PolicyEnforcementStatementType"/>
+    <element name="userSearchCriteria" type="spmlatc:UserSearchCriteriaType"/>
+    <element name="userSearchRequest" type="spmlatc:UserSearchRequestType"/>
+    <element name="userSearchResponse" type="spmlatc:UserSearchResponseType"/>
 
 </schema>
