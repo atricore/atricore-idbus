@@ -215,7 +215,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         addUserAttribute(COMMON_NAME_USER_ATTR_NAME, getUserFullName(user), attrs);
         addUserAttribute(GENDER_USER_ATTR_NAME, user.getGender(), attrs);
         addUserAttribute(LANGUAGE_USER_ATTR_NAME, user.getLocale(), attrs);
-        addUserAttribute(PICTURE_USER_ATTR_NAME, toJsonString(user.getPicture()), attrs);
+        addUserAttribute(PICTURE_USER_ATTR_NAME, user.getPicture() != null ? user.getPicture().getUrl() : null, attrs);
         addUserAttribute(PROFILE_LINK_USER_ATTR_NAME, user.getLink(), attrs);
         addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.getVerified()), attrs);
         addUserAttribute(BIRTHDAY_USER_ATTR_NAME, user.getBirthday(), attrs);
