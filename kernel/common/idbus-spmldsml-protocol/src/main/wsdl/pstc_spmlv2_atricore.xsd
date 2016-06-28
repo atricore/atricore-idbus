@@ -122,6 +122,9 @@
     </complexType>
 
     <complexType name="UserSearchCriteriaType">
+        <sequence>
+            <element ref="spmlatc:searchAttribute" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
         <attribute name="userName" type="xsd:string" use="optional"/>
         <attribute name="firstName" type="xsd:string" use="optional"/>
         <attribute name="lastName" type="xsd:string" use="optional"/>
@@ -181,6 +184,12 @@
         <xsd:attribute name="value" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:complexType name="SearchAttributeType">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+        <xsd:attribute name="type" type="spmlatc:AttributeType" use="required"/>
+    </xsd:complexType>
+
     <xsd:simpleType name="AttributeType">
 	    <xsd:restriction base="xsd:string">
 	        <xsd:enumeration value="STRING" />
@@ -202,6 +211,7 @@
     <element name="replacePasswordRequest" type="spmlatc:ReplacePasswordRequestType"/>
     <element name="replacePasswordResponse" type="spml:ResponseType"/>
     <element name="attributeValue" type="spmlatc:AttributeValueType"/>
+    <element name="searchAttribute" type="spmlatc:SearchAttributeType"/>
     <element name="group" type="spmlatc:GroupType"/>
     <element name="user" type="spmlatc:UserType"/>
     <element name="userAttribute" type="spmlatc:UserAttributeType"/>

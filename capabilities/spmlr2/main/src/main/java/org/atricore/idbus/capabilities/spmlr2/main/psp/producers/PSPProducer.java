@@ -25,6 +25,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
+import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
@@ -379,6 +380,13 @@ public class PSPProducer extends SpmlR2Producer {
             userSearchCriteria.setLastName(userSearchRequest.getUserSearchCriteria().getLastName());
             userSearchCriteria.setEmail(userSearchRequest.getUserSearchCriteria().getEmail());
             userSearchCriteria.setExactMatch(userSearchRequest.getUserSearchCriteria().getExactMatch());
+            for (SearchAttributeType searchAttributeType : userSearchRequest.getUserSearchCriteria().getSearchAttribute()) {
+                SearchAttribute searchAttribute = new SearchAttribute();
+                searchAttribute.setName(searchAttributeType.getName());
+                searchAttribute.setValue(searchAttributeType.getValue());
+                searchAttribute.setType(AttributeType.fromValue(searchAttributeType.getType().name()));
+                userSearchCriteria.getAttributes().add(searchAttribute);
+            }
             searchUserRequest.setSearchCriteria(userSearchCriteria);
 
             searchUserRequest.setFromResult(userSearchRequest.getFromResult());

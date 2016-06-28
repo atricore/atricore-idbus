@@ -60,6 +60,9 @@ public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser, Long> implements JDO
         if (searchCriteriaHelper.getParams().size() > 0)
             query.setFilter(searchCriteriaHelper.getSearchCriteriaQuery());
 
+        if (searchCriteria.getAttributes().size() > 0)
+            query.declareVariables("org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeValue attr");
+
         return (Collection<JDOUser>) query.executeWithMap(searchCriteriaHelper.getParams());
     }
 
@@ -73,6 +76,9 @@ public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser, Long> implements JDO
 
         if (searchCriteriaHelper.getParams().size() > 0)
             query.setFilter(searchCriteriaHelper.getSearchCriteriaQuery());
+
+        if (searchCriteria.getAttributes().size() > 0)
+            query.declareVariables("org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeValue attr");
 
         query.setResult("count(this)");
 

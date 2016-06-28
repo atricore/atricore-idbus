@@ -1,6 +1,8 @@
 package org.atricore.idbus.kernel.main.provisioning.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserSearchCriteria implements Serializable {
 
@@ -10,6 +12,8 @@ public class UserSearchCriteria implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+
+    private List<SearchAttribute> attributes;
 
     private boolean exactMatch;
 
@@ -43,6 +47,17 @@ public class UserSearchCriteria implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<SearchAttribute> getAttributes() {
+        if (attributes == null) {
+            attributes = new ArrayList<SearchAttribute>();
+        }
+        return attributes;
+    }
+
+    public void setAttributes(List<SearchAttribute> attributes) {
+        this.attributes = attributes;
     }
 
     public boolean isExactMatch() {
