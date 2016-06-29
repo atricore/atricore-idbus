@@ -154,6 +154,8 @@ trait IdentityFlowDSLTestSupport {
     Map("%s_SECURITY_CTX".format(spChannelName.toUpperCase) -> new IdPSecurityContext(null, null, null))
 
 
+
+
 }
 
 class MockComponent extends DefaultComponent[CamelMediationExchange] {
@@ -197,6 +199,12 @@ class MockCamelMediationExchange(camelContext: CamelContext = new DefaultCamelCo
 case class MockCamelIdentityFlowResponse(response : Option[IdentityFlowResponse], rejections : Option[Set[Rejection]]) extends DefaultMessage
 
 object MockProvisioningTarget extends ProvisioningTarget {
+
+
+  def addUsers(users: util.List[User]): util.List[User] = null
+
+  def findUserNames(usernames: util.List[String]): util.Collection[String] = null
+
   def getName: String = ""
 
   def init() {}

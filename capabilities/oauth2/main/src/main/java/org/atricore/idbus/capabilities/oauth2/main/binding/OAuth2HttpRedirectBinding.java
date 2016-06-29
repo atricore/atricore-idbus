@@ -63,8 +63,6 @@ public class OAuth2HttpRedirectBinding extends AbstractMediationHttpBinding {
             } else {
                 throw new IllegalStateException("String Content type supported for OAuth2 HTTP Restful bidning " + out.getContentType() + " ["+out.getContent()+"]");
             }
-        } else {
-            throw new IllegalStateException("Content type supported for OAuth2 HTTP Redirect bidning " + out.getContentType() + " ["+out.getContent()+"]");
         }
 
         Message httpOut = exchange.getOut();

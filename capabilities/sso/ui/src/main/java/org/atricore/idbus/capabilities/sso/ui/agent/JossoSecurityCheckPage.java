@@ -14,6 +14,7 @@ import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 
 import java.util.Properties;
 
@@ -37,20 +38,24 @@ public class JossoSecurityCheckPage extends BasePage {
 
     @Override
     protected void onInitialize()  {
-
         super.onInitialize();
 
         try {
-            createOAuth2SecurityContext();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            // TODO : Provide error information
+            SecurityContext ctx = createOAuth2SecurityContext();
+            if (ctx == null) {
+                // Anonymous, go to home page
+                throw new RestartResponseAtInterceptPageException(ProfilePage.class);
+            }
+        } catch (OAuth2RServerException e) {
+            logger.error("Cannot create security context " + e.getMessage(), e);
             throw new RestartResponseAtInterceptPageException(AppErrorPage.class);
         }
 
         SSOWebSession session = (SSOWebSession) getSession();
         if (!session.isAuthenticated()) {
-            // TODO :  Something went wrong
+            logger.warn("Session is NOT authenticated, but we have a security context!!! Session ID / Principal : "
+                    + session.getId() + " / " + session.getPrincipal());
+            throw new RestartResponseAtInterceptPageException(ProfilePage.class);
         }
 
     }
@@ -64,19 +69,23 @@ public class JossoSecurityCheckPage extends BasePage {
                 getApplication().getHomePage()));
     }
 
-    private void createOAuth2SecurityContext() throws OAuth2RServerException {
+    protected SecurityContext createOAuth2SecurityContext() throws OAuth2RServerException {
 
         WebAppConfig cfg = getAppConfig();
 
         Properties oauth2Config = new Properties();
 
         PageParameters parameters = getPageParameters();
-        if (parameters == null)
-            throw new OAuth2RServerException("No page parameters available, required parameter " +ACCESS_TOKEN_PARAM);
+        if (parameters == null) {
+            logger.debug("No page parameters available, required parameter " + ACCESS_TOKEN_PARAM);
+            return null;
+        }
 
         String oauth2Token = parameters.get(ACCESS_TOKEN_PARAM).toString();
-        if (oauth2Token == null)
-            throw new OAuth2RServerException("No token found for parameter " +ACCESS_TOKEN_PARAM);
+        if (oauth2Token == null) {
+            logger.debug("No token found for parameter " + ACCESS_TOKEN_PARAM);
+            return null;
+        }
 
         oauth2Config.setProperty(SecureAccessTokenResolverFactory.SHARED_SECRECT_PROPERTY, cfg.getSelfServicesSharedSecret());
         oauth2Config.setProperty(SecureAccessTokenResolverFactory.TOKEN_VALIDITY_INTERVAL_PROPERTY, "30");
@@ -91,6 +100,8 @@ public class JossoSecurityCheckPage extends BasePage {
 
         SSOWebSession session = (SSOWebSession) getSession();
         session.setSecurityContext(ctx);
+
+        return ctx;
 
     }
 
