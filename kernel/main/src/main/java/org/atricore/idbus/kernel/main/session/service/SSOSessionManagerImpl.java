@@ -157,9 +157,9 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
      *
      * @return the new session identifier.
      */
-    public String initiateSession(String username, SecurityToken securityToken) throws SSOSessionException {
+    public String initiateSession(String username, SecurityToken securityToken, SSOSessionContext ctx) throws SSOSessionException {
         // Convert minutes to seconds:
-        return initiate(username, securityToken, getMaxInactiveInterval() * 60);
+        return initiate(username, securityToken, ctx, getMaxInactiveInterval() * 60);
     }
 
     /**
@@ -169,8 +169,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
      * @return
      * @throws SSOSessionException
      */
-    public String initiateSession(String username, SecurityToken securityToken, int sessionTimeoutInSeconds) throws SSOSessionException {
-        return initiate(username, securityToken, sessionTimeoutInSeconds);
+    public String initiateSession(String username, SecurityToken securityToken, SSOSessionContext ctx, int sessionTimeoutInSeconds) throws SSOSessionException {
+        return initiate(username, securityToken, ctx, sessionTimeoutInSeconds);
     }
 
     /**
@@ -182,7 +182,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
      * @return
      * @throws SSOSessionException
      */
-    protected String initiate(String username, SecurityToken securityToken, int sessionTimeout) throws SSOSessionException {
+    protected String initiate(String username, SecurityToken securityToken, SSOSessionContext ctx, int sessionTimeout) throws SSOSessionException {
 
         // Invalidate sessions if necessary
         BaseSession sessions[] = _store.loadByUsername(username);

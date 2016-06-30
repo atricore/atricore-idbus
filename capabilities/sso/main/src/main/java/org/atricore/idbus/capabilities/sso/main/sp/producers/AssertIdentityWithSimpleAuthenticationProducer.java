@@ -506,7 +506,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
         try {
             // Create new SSO Session
-            String ssoSessionId = ssoSessionManager.initiateSession(nameId.getName(), token);
+            String ssoSessionId = ssoSessionManager.initiateSession(nameId.getName(), token, null);
 
             // Update security context with SSO Session nameId
             secCtx.setSessionIndex(ssoSessionId);

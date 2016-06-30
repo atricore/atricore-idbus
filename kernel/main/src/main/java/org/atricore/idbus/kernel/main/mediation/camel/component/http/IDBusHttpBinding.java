@@ -103,6 +103,8 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteAddress", remoteAddr);
         httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteHost", remoteHost);
 
+        // TODO : Add user-agent
+
         if (logger.isDebugEnabled())
             logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
 

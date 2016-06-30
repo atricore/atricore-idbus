@@ -110,6 +110,7 @@ import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
 import org.atricore.idbus.kernel.main.mediation.provider.*;
+import org.atricore.idbus.kernel.main.session.SSOSessionContext;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
@@ -1981,19 +1982,23 @@ public class SingleSignOnProducer extends SSOProducer {
 
         TODO : Send this to init session ?!
         Properties props = new Properties();
+
+
         props.put("subject", authnSubject);
         props.put("saml2Assertion", assertion);
         props.put("saml2AuthnStmt", authnStmt);
 
-        String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
-        if (remoteAddr != null) {
-            props.setProperty("remoteAddress", remoteAddr);
-        }
 
         */
 
+        String remoteAddress = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+
+        SSOSessionContext sessionCtx = new SSOSessionContext();
+        sessionCtx.setSubject(authnSubject);
+        sessionCtx.setProperty("org.atricore.idbus.http.RemoteAddress", remoteAddress);
+
         // Initiate SSO Session
-        String ssoSessionId = ((SPChannel) channel).getSessionManager().initiateSession(userId.getName(), st);
+        String ssoSessionId = ((SPChannel) channel).getSessionManager().initiateSession(userId.getName(), st, sessionCtx);
         assert ssoSessionId.equals(st.getId()) : "SSO Session Manager MUST use security token ID as session ID";
 
         boolean rememberMe = false;

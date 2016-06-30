@@ -73,6 +73,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.session.SSOSessionContext;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
@@ -1646,9 +1647,15 @@ public class AssertionConsumerProducer extends SSOProducer {
                 sessionTimeout = (sessionExpiration.getTimeInMillis() - System.currentTimeMillis()) / 1000L;
             }
 
+            String remoteAddress = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+
+            SSOSessionContext sessionCtx = new SSOSessionContext();
+            sessionCtx.setSubject(federatedSubject);
+            sessionCtx.setProperty("org.atricore.idbus.http.RemoteAddress", remoteAddress);
+
             String ssoSessionId = (sessionTimeout > 0 ?
-                ssoSessionManager.initiateSession(nameId.getName(), token, (int) sessionTimeout) : // Request session timeout
-                ssoSessionManager.initiateSession(nameId.getName(), token));                       // Use default session timeout
+                ssoSessionManager.initiateSession(nameId.getName(), token, sessionCtx, (int) sessionTimeout) : // Request session timeout
+                ssoSessionManager.initiateSession(nameId.getName(), token, sessionCtx));                       // Use default session timeout
 
             if (logger.isTraceEnabled())
                     logger.trace("Created SP SSO Session with id " + ssoSessionId);
