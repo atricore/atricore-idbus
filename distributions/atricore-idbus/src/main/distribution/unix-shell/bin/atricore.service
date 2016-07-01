@@ -1,0 +1,27 @@
+[Unit]
+Description=JOSSO EE
+After=syslog.target network.target
+
+[Service]
+Type=idle
+RemainAfterExit=yes
+
+ExecStart=/opt/atricore/josso-ee-2.4.2/bin/start
+ExecStop=/opt/atricore/josso-ee-2.4.2/bin/stop
+
+User=atricore
+Group=atricore
+
+SuccessExitStatus=0 143
+RestartSec=15
+Restart=on-failure
+
+KillMode=process
+KillSignal=SIGTERM
+SendSIGHUP=no
+TimeoutStopSec=30
+
+LimitNOFILE=102642
+
+[Install]
+WantedBy=multi-user.target
