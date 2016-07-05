@@ -32,6 +32,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 public class UpdateUserPasswordResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -5298476899156498718L;
+
     private User user;
 
     private Boolean originalPasswordInvalid;

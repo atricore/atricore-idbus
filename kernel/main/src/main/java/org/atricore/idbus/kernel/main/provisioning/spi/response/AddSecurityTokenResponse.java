@@ -7,6 +7,8 @@ import org.atricore.idbus.kernel.main.authn.SecurityToken;
  */
 public class AddSecurityTokenResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -1398476899156498718L;
+
     private SecurityToken securityToken;
 
     public SecurityToken getSecurityToken() {

@@ -30,6 +30,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class RemoveGroupRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -4039068098156498718L;
+
     private String id;
 
     public String getId() {

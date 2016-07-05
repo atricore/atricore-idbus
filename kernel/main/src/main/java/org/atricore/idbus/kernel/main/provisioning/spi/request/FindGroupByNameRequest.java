@@ -30,6 +30,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class FindGroupByNameRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -2339068098156498718L;
+
     private String name;
 
     public String getName() {

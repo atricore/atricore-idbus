@@ -36,6 +36,8 @@ import java.util.Date;
  */
 public class AddUserRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -1539068098156498718L;
+
 //<--- General Information ---->
     private String userName;
     private String firstName;

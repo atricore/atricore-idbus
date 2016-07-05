@@ -35,6 +35,8 @@ import java.util.List;
  */
 public class SearchGroupResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -4498476899156498718L;
+
     private List<Group> groups;
 
     public void setGroups(List<Group> groups) {

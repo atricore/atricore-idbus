@@ -29,6 +29,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class FetchGroupMembershipRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -1839068098156498718L;
+
     private String username;
 
     public String getUsername() {

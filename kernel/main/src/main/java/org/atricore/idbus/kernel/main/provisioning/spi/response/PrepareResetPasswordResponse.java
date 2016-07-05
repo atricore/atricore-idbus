@@ -6,6 +6,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.response;
  */
 public class PrepareResetPasswordResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -3698476899156498718L;
+
     private String transactionId;
 
     private String code;

@@ -5,6 +5,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class RemoveSecurityTokenRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -4139068098156498718L;
+
     private String tokenId;
 
     public String getTokenId() {

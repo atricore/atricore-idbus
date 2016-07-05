@@ -4,6 +4,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
 
 public class AddUserAttributeRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -1439068098156498718L;
+
     private String name;
     private String description;
     private AttributeType type;

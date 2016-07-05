@@ -32,6 +32,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.UserSearchCriteria;
  */
 public class SearchUserRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -4639068098156498718L;
+
     private UserSearchCriteria searchCriteria;
 
     private long fromResult;

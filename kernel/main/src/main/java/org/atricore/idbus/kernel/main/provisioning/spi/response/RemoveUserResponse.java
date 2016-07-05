@@ -30,4 +30,7 @@ package org.atricore.idbus.kernel.main.provisioning.spi.response;
  * To change this template use File | Settings | File Templates.
  */
 public class RemoveUserResponse extends AbstractProvisioningResponse {
+
+    private static final long serialVersionUID = -4298476899156498718L;
+
 }

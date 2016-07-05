@@ -322,7 +322,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     logger.debug("Selected Security Token Emitter for token type [" + tokenType + " is " +
                         "[" + emitter.getId() + "]");
 
-                    SecurityToken st = emitter.emit(ctx, requestToken, tokenType);
+                    SecurityToken st = emitter.(ctx, requestToken, tokenType);
 
                     if (st != null) {
                         logger.debug("Emission successful for token [" + st.getId() + "] " +
@@ -387,6 +387,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
         }
 
+        // Persist remember me tokens
         if (rememberMe) {
 
             // User requested to be remembered, check weather this is the token to store.

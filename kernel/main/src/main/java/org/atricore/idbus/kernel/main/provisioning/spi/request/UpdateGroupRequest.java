@@ -32,6 +32,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
  */
 public class UpdateGroupRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -5039068098156498718L;
+
     private String id;
     private String name;
     private String description;

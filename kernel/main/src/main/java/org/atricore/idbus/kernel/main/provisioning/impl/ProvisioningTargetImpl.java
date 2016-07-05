@@ -19,6 +19,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.BeanUtils;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -61,10 +62,6 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private int maxTimeToLive = 600; // seconds
 
-    private OldTransactionsMonitor monitor;
-
-    private Thread monitorThread;
-
     private AuditingServer aServer;
 
     private String auditCategory = "";
@@ -79,47 +76,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         dictionary.add("123456");
     }
 
-    // TODO : Make it DB Persistent (add store ?)
-    private Map<String, PendingTransaction> pendingTransactions = new ConcurrentHashMap<String, PendingTransaction>();
-    private Map<String, PendingTransaction> pendingTransactionsByCode = new ConcurrentHashMap<String, PendingTransaction>();
+    private TransactionStore transactionStore;
 
     //private Map<String, >
 
     public void init() {
-        // Start session monitor.
-        monitor = new OldTransactionsMonitor(this);
-
-        monitorThread = new Thread(monitor);
-        monitorThread.setDaemon(true);
-        monitorThread.setName("ProvisioningTargetMonitor-" + name);
-        monitorThread.start();
-
         shortIdGen.setPrefix(null);
 
     }
 
     public void shutDown() {
-        pendingTransactions.clear();
-        pendingTransactionsByCode.clear();
-        monitor.stop = true;
-    }
 
-    public void purgeOldTransactions() {
-        List<String> expiredKeys = new ArrayList<String>();
-        long now = System.currentTimeMillis();
-
-        for (String key : pendingTransactions.keySet()) {
-            PendingTransaction t = pendingTransactions.get(key);
-            if (t.getExpiresOn() < now)
-                expiredKeys.add(key);
-        }
-
-        for (String key : expiredKeys) {
-            PendingTransaction t = pendingTransactions.remove(key);
-            pendingTransactionsByCode.remove(t.getCode());
-            t.rollback();
-
-        }
     }
 
     @Override
@@ -133,11 +100,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public boolean isTransactionValid(String transactionId) {
-        return transactionId != null && pendingTransactions.get(transactionId) != null;
+        if (transactionId != null) {
+            PendingTransaction t = transactionStore.retrieve(transactionId);
+            long now = System.currentTimeMillis();
+            return t.getExpiresOn() < now;
+        }
+
+        return false;
     }
 
     public AbstractProvisioningRequest lookupTransactionRequest(String transactionId) {
-        PendingTransaction t = pendingTransactions.get(transactionId);
+        PendingTransaction t = transactionStore.retrieve(transactionId);
         if (t != null)
             return t.getRequest();
 
@@ -1230,40 +1203,33 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     protected void storePendingTransaction(PendingTransaction t) {
-        this.pendingTransactions.put(t.getId(), t);
-        this.pendingTransactionsByCode.put(t.getCode(), t);
+        transactionStore.store(t);
     }
 
     /**
      * Looks for transactions by ID and Code
      */
-    protected PendingTransaction consumePendingTransaction(String id) throws TransactionExpiredException {
+    protected PendingTransaction consumePendingTransaction(String idOrCode) throws TransactionExpiredException {
 
         // Transaction Code is optional
 
-        PendingTransaction t = this.pendingTransactions.remove(id);
+        PendingTransaction t = transactionStore.remove(idOrCode);
+        if (t != null) {
+            // Did the transaction already expired
+            long now = System.currentTimeMillis();
+            if (t.getExpiresOn() < now) {
+                if (logger.isDebugEnabled())
+                    logger.trace("Transaction has expired ID Or Code : " + idOrCode);
 
-        if (t == null) {
-            // Look up for the transaction by code
-            t = this.pendingTransactionsByCode.remove(id);
-            if (t != null)
-                this.pendingTransactions.remove(t.getId());
-        } else if (t.getCode() != null){
-            // Found a transaction by ID, If it has a code, remove it from code idx
-            this.pendingTransactionsByCode.remove(t.getCode());
+                throw new TransactionExpiredException(idOrCode);
+            }
+            return t;
         }
 
-        // Did the transaction already expired
-        long now = System.currentTimeMillis();
-        if (t == null || t.getExpiresOn() < now) {
+        if (logger.isDebugEnabled())
+            logger.trace("Transaction not found ID Or Code : " + idOrCode);
 
-            if (logger.isDebugEnabled())
-                logger.trace("Transaction has expired " + id);
-
-            throw new TransactionExpiredException(id);
-        }
-
-        return t;
+        throw new TransactionExpiredException(idOrCode);
     }
     
     /**
@@ -1287,102 +1253,6 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         return digest;
 
-    }
-
-    protected class PendingTransaction {
-
-        private String id;
-
-        private String code;
-
-        private String username;
-
-        private long expiresOn;
-
-        private AbstractProvisioningRequest request;
-
-        private AbstractProvisioningResponse response;
-
-        public PendingTransaction(String id, String username, long expiresOn, AbstractProvisioningRequest request, AbstractProvisioningResponse response) {
-            this.id = id;
-            this.username = username;
-            this.expiresOn = expiresOn;
-            this.request = request;
-            this.response = response;
-        }
-
-        public PendingTransaction(String id, String code, String username, long expiresOn, AbstractProvisioningRequest request, AbstractProvisioningResponse response) {
-            this.id = id;
-            this.code = code;
-            this.username = username;
-            this.expiresOn = expiresOn;
-            this.request = request;
-            this.response = response;
-        }
-
-
-        public String getId() {
-            return id;
-        }
-
-        public long getExpiresOn() {
-            return expiresOn;
-        }
-
-        public AbstractProvisioningRequest getRequest() {
-            return request;
-        }
-
-        public AbstractProvisioningResponse getResponse() {
-            return response;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void rollback() {
-            // TODO : Undo some change, like deleting a temp user that did not confirmed the registration
-        }
-    }
-
-    public class OldTransactionsMonitor implements  Runnable {
-
-        protected boolean stop = false;
-
-        protected int interval = 1000 * 60; // One minute interval
-
-        private ProvisioningTarget provisioningTarget;
-
-        public OldTransactionsMonitor(ProvisioningTarget provisioningTarget) {
-            this.provisioningTarget = provisioningTarget;
-        }
-
-        public void run() {
-            stop = false;
-            do {
-                try {
-
-                    provisioningTarget.purgeOldTransactions();
-
-                    synchronized (this) {
-                        try {
-
-                            wait(interval);
-
-                        } catch (InterruptedException e) { /**/ }
-                    }
-
-                } catch (Exception e) {
-                    logger.warn("Exception received : " + e.getMessage() != null ? e.getMessage() : e.toString(), e);
-                }
-
-            } while (!stop);
-        }
     }
 
     public int getMaxTimeToLive() {
@@ -1465,6 +1335,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
+    @Override
+    public void purgeOldTransactions() {
+        // Not required  ...
+    }
+
     protected String generateSalt() {
         if (saltLength < 1)
             return saltValue;
@@ -1511,5 +1386,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public void setShortIdGen(UUIDGenerator shortIdGen) {
         this.shortIdGen = shortIdGen;
+    }
+
+    public TransactionStore getTransactionStore() {
+        return transactionStore;
+    }
+
+    public void setTransactionStore(TransactionStore transactionStore) {
+        this.transactionStore = transactionStore;
     }
 }

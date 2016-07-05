@@ -26,6 +26,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
 
 public class UpdateAclEntryRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -4839068098156498718L;
+
     private AclEntry aclEntry;
 
     public AclEntry getAclEntry() {

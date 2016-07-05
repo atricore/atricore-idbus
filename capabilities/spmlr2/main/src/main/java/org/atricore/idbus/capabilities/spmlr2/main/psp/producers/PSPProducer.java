@@ -370,46 +370,68 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         } else if (path.startsWith("/user")) {
-            UserSearchRequestType userSearchRequest = (UserSearchRequestType) spmlRequest;
 
             SearchUserRequest searchUserRequest = new SearchUserRequest();
-
             UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
-            userSearchCriteria.setUsername(userSearchRequest.getUserSearchCriteria().getUserName());
-            userSearchCriteria.setFirstName(userSearchRequest.getUserSearchCriteria().getFirstName());
-            userSearchCriteria.setLastName(userSearchRequest.getUserSearchCriteria().getLastName());
-            userSearchCriteria.setEmail(userSearchRequest.getUserSearchCriteria().getEmail());
-            userSearchCriteria.setExactMatch(userSearchRequest.getUserSearchCriteria().getExactMatch());
-            for (SearchAttributeType searchAttributeType : userSearchRequest.getUserSearchCriteria().getSearchAttribute()) {
-                SearchAttribute searchAttribute = new SearchAttribute();
-                searchAttribute.setName(searchAttributeType.getName());
-                searchAttribute.setValue(searchAttributeType.getValue());
-                searchAttribute.setType(AttributeType.fromValue(searchAttributeType.getType().name()));
-                userSearchCriteria.getAttributes().add(searchAttribute);
+
+
+            if (spmlRequest instanceof UserSearchRequestType) {
+
+                UserSearchRequestType userSearchRequest = (UserSearchRequestType) spmlRequest;
+
+                userSearchCriteria.setUsername(userSearchRequest.getUserSearchCriteria().getUserName());
+                userSearchCriteria.setFirstName(userSearchRequest.getUserSearchCriteria().getFirstName());
+                userSearchCriteria.setLastName(userSearchRequest.getUserSearchCriteria().getLastName());
+                userSearchCriteria.setEmail(userSearchRequest.getUserSearchCriteria().getEmail());
+                userSearchCriteria.setExactMatch(userSearchRequest.getUserSearchCriteria().getExactMatch());
+                for (SearchAttributeType searchAttributeType : userSearchRequest.getUserSearchCriteria().getSearchAttribute()) {
+                    SearchAttribute searchAttribute = new SearchAttribute();
+                    searchAttribute.setName(searchAttributeType.getName());
+                    searchAttribute.setValue(searchAttributeType.getValue());
+                    searchAttribute.setType(AttributeType.fromValue(searchAttributeType.getType().name()));
+                    userSearchCriteria.getAttributes().add(searchAttribute);
+                }
+
+                searchUserRequest.setFromResult(userSearchRequest.getFromResult());
+                searchUserRequest.setResultCount(userSearchRequest.getResultCount());
+
+                searchUserRequest.setSearchCriteria(userSearchCriteria);
+                SearchUserResponse res = target.searchUsers(searchUserRequest);
+                List<User> users = res.getUsers();
+
+                spmlResponse = new UserSearchResponseType();
+                for (User user : users) {
+                    spmlResponse.getPso().add(toSpmlUser(target, user));
+                }
+                ((UserSearchResponseType) spmlResponse).setNumOfUsers(res.getNumOfUsers());
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+
+            } else {
+                // TODO : Just for backward compatibility /users[userName='fwadmin']
+
+                if (path.startsWith("/users[userName='")) {
+                    String username = path.substring("/users[userName='".length(), path.length() - 2);
+                    userSearchCriteria.setUsername(username);
+                    userSearchCriteria.setExactMatch(true);
+
+                    //searchUserRequest.setFromResult(userSearchRequest.getFromResult());
+                    //searchUserRequest.setResultCount(userSearchRequest.getResultCount());
+
+                    searchUserRequest.setSearchCriteria(userSearchCriteria);
+                    SearchUserResponse res = target.searchUsers(searchUserRequest);
+                    List<User> users = res.getUsers();
+
+                    spmlResponse = new SearchResponseType();
+                    for (User user : users) {
+                        spmlResponse.getPso().add(toSpmlUser(target, user));
+                    }
+
+                    spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+                }
             }
-            searchUserRequest.setSearchCriteria(userSearchCriteria);
 
-            searchUserRequest.setFromResult(userSearchRequest.getFromResult());
-            searchUserRequest.setResultCount(userSearchRequest.getResultCount());
-
-            SearchUserResponse res = target.searchUsers(searchUserRequest);
-            List<User> users = res.getUsers();
-
-            /*JXPathContext jxp = JXPathContext.newContext(new TargetContainer(users.toArray(new User[users.size()])));
-            Iterator it = jxp.iteratePointers(path);
-            while (it.hasNext()) {
-                Pointer userPointer = (Pointer) it.next();
-                User user = (User) userPointer.getValue();
-                PSOType psoUser = toSpmlUser(target, user);
-                spmlResponse.getPso().add(psoUser);
-            }*/
-
-            spmlResponse = new UserSearchResponseType();
-            for (User user : users) {
-                spmlResponse.getPso().add(toSpmlUser(target, user));
-            }
-            ((UserSearchResponseType) spmlResponse).setNumOfUsers(res.getNumOfUsers());
-            spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         } else if (path.startsWith("/attrUser")) {
             // TODO : Improve this

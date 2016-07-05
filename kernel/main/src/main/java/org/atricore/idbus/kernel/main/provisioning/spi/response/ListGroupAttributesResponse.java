@@ -4,6 +4,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefiniti
 
 public class ListGroupAttributesResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -3098476899156498718L;
+
     private GroupAttributeDefinition[] groupAttributes;
 
     public GroupAttributeDefinition[] getGroupAttributes() {

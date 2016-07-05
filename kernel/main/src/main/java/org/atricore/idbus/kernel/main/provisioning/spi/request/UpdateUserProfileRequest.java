@@ -29,6 +29,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class UpdateUserProfileRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -5439068098156498718L;
+
     private String username;
     private String firstName;
     private String lastName;

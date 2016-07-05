@@ -28,6 +28,8 @@ import java.util.Iterator;
 
 /**
  * Producer that receives an assertion
+ *
+ * Receives an SSO Authentication Response, and issues an OpenID Authentication Response.
  */
 public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
