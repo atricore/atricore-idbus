@@ -88,11 +88,11 @@ public class DriverManagerDataSource implements DataSource
         try
         {
             Properties info = new Properties();
-            if( userName != null )
+            if( userName != null && !"".equals(userName))
             {
                 info.put("user", this.userName);
             }
-            if( password != null )
+            if( password != null && !"".equals(password))
             {
                 info.put("password", this.password);
             }

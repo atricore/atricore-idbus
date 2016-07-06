@@ -322,7 +322,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     logger.debug("Selected Security Token Emitter for token type [" + tokenType + " is " +
                         "[" + emitter.getId() + "]");
 
-                    SecurityToken st = emitter.(ctx, requestToken, tokenType);
+                    SecurityToken st = emitter.emit(ctx, requestToken, tokenType);
 
                     if (st != null) {
                         logger.debug("Emission successful for token [" + st.getId() + "] " +
