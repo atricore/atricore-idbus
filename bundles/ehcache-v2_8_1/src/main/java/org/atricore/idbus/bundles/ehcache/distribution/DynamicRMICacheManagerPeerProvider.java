@@ -109,7 +109,10 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
             } catch (Exception e) {
                     LOG.warn("Looking up rmiUrl " + rmiUrl + " through exception " + e.getMessage()
                             + ". This may be normal if a node has gone offline. Or it may indicate network connectivity"
-                            + " difficulties", e);
+                            + " difficulties");
+
+                if (LOG.isTraceEnabled())
+                    LOG.trace(e.getMessage(), e);
 
             }
 
