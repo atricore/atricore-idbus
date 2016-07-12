@@ -3,6 +3,8 @@ package org.atricore.idbus.capabilities.openidconnect.main.op;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionContext;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.session.SSOSession;
 
@@ -12,11 +14,7 @@ import java.io.Serializable;
 /**
  * Created by sgonzalez on 8/5/15.
  */
-public class OpenIDConnectSecurityTokenEmissionContext implements Serializable {
-
-        private Subject subject;
-
-        private String sessionIndex;
+public class OpenIDConnectSecurityTokenEmissionContext extends AbstractSecurityTokenEmissionContext {
 
         private AccessToken accessToken;
 
@@ -25,22 +23,6 @@ public class OpenIDConnectSecurityTokenEmissionContext implements Serializable {
         private String idToken;
 
         private String issuer;
-
-        public Subject getSubject() {
-                return subject;
-        }
-
-        public void setSubject(Subject subject) {
-                this.subject = subject;
-        }
-
-        public String getSessionIndex() {
-                return sessionIndex;
-        }
-
-        public void setSessionIndex(String sessionIndex) {
-                this.sessionIndex = sessionIndex;
-        }
 
         public void setAccessToken(AccessToken accessToken) {
                 this.accessToken = accessToken;

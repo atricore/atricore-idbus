@@ -34,6 +34,8 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.FindSecurityToken
 import org.atricore.idbus.kernel.main.provisioning.spi.request.RemoveSecurityTokenRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.AddSecurityTokenResponse;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityTokensByExpiresOnBeforeResponse;
+import org.atricore.idbus.kernel.main.session.SSOSessionManager;
+import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
@@ -78,6 +80,9 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     private SSOIdentityManager identityManager;
 
+    private SSOSessionManager sessionManager;
+
+
     /**
      * The provisioning target selected for this STS instance.
      */
@@ -121,6 +126,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             throw new IllegalArgumentException("Only token emission is supported");
         }
 
+        Object rstCtx = null;
         try {
 
             SecurityTokenProcessingContext processingContext = new SecurityTokenProcessingContext ();
@@ -133,7 +139,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 logger.debug( "Using RST Context [" + artifactContent + "] as artifact ID to access Artifact Queue Manager.");
 
                 Artifact rstArtifact = ArtifactImpl.newInstance( artifactContent );
-                Object rstCtx = artifactQueueManager.pullMessage(rstArtifact);
+                rstCtx = artifactQueueManager.pullMessage(rstArtifact);
                 if (rstCtx == null)
                     logger.warn("No RST Context found for artifact " + rstArtifact);
 
@@ -141,6 +147,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     logger.debug("Found RST Context artifact " + rstCtx);
 
                 processingContext.setProperty(RST_CTX, rstCtx);
+
 
             }
 
@@ -156,6 +163,28 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             subject = resolveSubject(subject);
 
             processingContext.setProperty(SUBJECT_PROP, subject);
+
+            if (sessionManager != null && rstCtx != null) {
+
+                if (rstCtx instanceof AbstractSecurityTokenEmissionContext) {
+
+                    AbstractSecurityTokenEmissionContext actx = (AbstractSecurityTokenEmissionContext) rstCtx;
+                    Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+
+                    if (ssoUsers.size() == 1) {
+                        SSOUser ssoUser = ssoUsers.iterator().next();
+                        try {
+                            Collection sessions = sessionManager.getUserSessions(ssoUser.getName());
+                            actx.setSessionCount(sessions != null ? sessions.size() : 0);
+                        } catch (NoSuchSessionException e) {
+                            actx.setSessionCount(0);
+                            if (logger.isTraceEnabled())
+                                logger.trace(e.getMessage());
+                        }
+                    }
+                }
+
+            }
 
             Set<PolicyEnforcementStatement> ssoPolicies = verify(processingContext, requestToken.getValue(), tokenType.getValue());
             if (ssoPolicies != null) {
@@ -574,6 +603,14 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     public void setIdentityManager(SSOIdentityManager identityManager) {
         this.identityManager = identityManager;
+    }
+
+    public SSOSessionManager getSessionManager() {
+        return sessionManager;
+    }
+
+    public void setSessionManager(SSOSessionManager sessionManager) {
+        this.sessionManager = sessionManager;
     }
 
     protected void checkExpiredTokens() {

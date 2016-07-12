@@ -26,6 +26,7 @@ import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.atricore.idbus.capabilities.sso.main.idp.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
+import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmissionContext;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.kernel.main.federation.AbstractPrincipal;
@@ -34,8 +35,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.session.SSOSession;
 
-import javax.security.auth.Subject;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,15 +42,9 @@ import java.util.List;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SamlR2SecurityTokenEmissionContext implements Serializable {
-
-    private Subject subject;
+public class SamlR2SecurityTokenEmissionContext extends AbstractSecurityTokenEmissionContext {
 
     private List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
-
-    private String sessionIndex;
-
-    private SSOSession ssoSession;
 
     private CircleOfTrustMemberDescriptor member;
 
@@ -107,14 +100,6 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
         this.roleMetadata = roleMetadata;
     }
 
-    public Subject getSubject() {
-        return subject;
-    }
-
-    public void setSubject(Subject subject) {
-        this.subject = subject;
-    }
-
     public List<AbstractPrincipalType> getProxyPrincipals() {
         return proxyPrincipals;
     }
@@ -137,22 +122,6 @@ public class SamlR2SecurityTokenEmissionContext implements Serializable {
 
     public AuthenticationState getAuthnState() {
         return authnState;
-    }
-
-    public void setSessionIndex(String sessionIndex) {
-        this.sessionIndex = sessionIndex;
-    }
-
-    public String getSessionIndex() {
-        return this.sessionIndex;
-    }
-
-    public SSOSession getSsoSession() {
-        return ssoSession;
-    }
-
-    public void setSsoSession(SSOSession ssoSession) {
-        this.ssoSession = ssoSession;
     }
 
     public MetadataEntry getIssuerMetadata() {

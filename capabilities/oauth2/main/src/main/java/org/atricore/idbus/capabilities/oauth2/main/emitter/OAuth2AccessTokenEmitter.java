@@ -5,10 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.*;
 import org.atricore.idbus.capabilities.oauth2.common.util.JasonUtils;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
-import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.capabilities.sts.main.*;
 import org.atricore.idbus.common.oauth._2_0.protocol.OAuthAccessTokenType;
 import org.atricore.idbus.common.oauth._2_0.protocol.ObjectFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
@@ -81,15 +78,22 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
 
             String ssoSessionId = null;
+            int ssoSessionCount = 0;
             List<AbstractPrincipalType> proxyPrincipals = null;
-            if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
-                SamlR2SecurityTokenEmissionContext samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
-                proxyPrincipals = samlr2Ctx.getProxyPrincipals();
-                ssoSessionId = samlr2Ctx.getSessionIndex();
+
+            if (rstCtx instanceof AbstractSecurityTokenEmissionContext) {
+
+                AbstractSecurityTokenEmissionContext emissionCtx = (AbstractSecurityTokenEmissionContext) rstCtx;
+                ssoSessionId = emissionCtx.getSessionIndex();
+                ssoSessionCount = emissionCtx.getSessionCount();
+
+                if (emissionCtx instanceof SamlR2SecurityTokenEmissionContext) {
+                    proxyPrincipals = ((SamlR2SecurityTokenEmissionContext)emissionCtx).getProxyPrincipals();
+                }
             }
 
             // Build an access token for the subject,
-            OAuth2AccessToken token = buildOAuth2AccessToken(subject, proxyPrincipals, requestToken, ssoSessionId);
+            OAuth2AccessToken token = buildOAuth2AccessToken(subject, proxyPrincipals, requestToken, ssoSessionId, ssoSessionCount);
 
             OAuth2AccessTokenEnvelope envelope = buildOAuth2AccessTokenEnvelope(token);
 
@@ -147,7 +151,11 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         return new OAuth2AccessTokenEnvelope(encryptAlg, sigAlg, sigValue, tokenValue, true);
     }
 
-    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject, List<AbstractPrincipalType> proxyPrincipals, Object requestToken, String ssoSessionId) {
+    protected OAuth2AccessToken buildOAuth2AccessToken(Subject subject,
+                                                       List<AbstractPrincipalType> proxyPrincipals,
+                                                       Object requestToken,
+                                                       String ssoSessionId,
+                                                       int ssoSessionCount) {
 
         // User
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
@@ -241,6 +249,8 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         if (ssoSessionId != null) {
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), "idpSsoSession", ssoSessionId));
         }
+
+        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), "idpSsoSessionCount", ssoSessionCount + ""));
 
         return at;
     }
