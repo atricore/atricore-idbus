@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.util.JasonUtils;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -254,9 +255,9 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
             // Add retries just in case we're in a cluster (they are disabled in non HA setups)
             int retryCount = getRetryCount();
             if (retryCount > 0) {
-                lState = ctx.retrieve("authorization_code", code, retryCount, getRetryDelay());
+                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code, retryCount, getRetryDelay());
             } else {
-                lState = ctx.retrieve("authorization_code", code);
+                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code);
             }
 
             // Add retries just in case we're in a cluster (they are disabled in non HA setups)
@@ -267,8 +268,8 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
                 // Create a new local state instance ?
                 state = createMediationState(exchange, params);
             } else {
+                // Restore a local state instance ...
                 state = new MediationStateImpl(lState);
-
             }
 
             return state;

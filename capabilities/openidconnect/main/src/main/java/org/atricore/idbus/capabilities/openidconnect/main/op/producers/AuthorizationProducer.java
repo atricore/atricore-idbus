@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2Constants;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMediator;
@@ -51,7 +52,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
 
         AuthenticationRequest authnReq = (AuthenticationRequest) in.getMessage().getContent();
         OpenIDConnectAuthnContext authnCtx =
-                (OpenIDConnectAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:authnCtx");
+                (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
         try {
             validateRequest(authnReq);
@@ -82,7 +83,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
             authnCtx.setAuthnRequest(authnReq);
 
             // Store state
-            in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:authnCtx", authnCtx);
+            in.getMessage().getState().setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
 
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
             out.setMessage(new MediationMessageImpl(request.getID(),

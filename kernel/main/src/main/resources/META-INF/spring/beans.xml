@@ -217,6 +217,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache.xml</prop>
+
+        <!-- HTTP Properties -->
         <prop key="binding.http.ajax">false</prop>
         <prop key="binding.http.secureCookies">false</prop>
         <prop key="binding.http.followRedirects">true</prop>

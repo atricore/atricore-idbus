@@ -88,10 +88,10 @@ public class JDBCIdentityStore extends AbstractDBIdentityStore {
 
         // Open a new connection
         Properties props = new Properties();
-        if (_connectionName != null)
+        if (_connectionName != null && !"".equals(_connectionName))
             props.put("user", _connectionName);
 
-        if (_connectionPassword != null)
+        if (_connectionPassword != null && !"".equals(_connectionPassword))
             props.put("password", _connectionPassword);
 
         try {

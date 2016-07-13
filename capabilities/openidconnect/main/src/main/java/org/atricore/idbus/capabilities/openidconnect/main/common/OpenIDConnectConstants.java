@@ -52,5 +52,10 @@ public interface OpenIDConnectConstants {
      * client authentication is optional.
      */
     GrantType JWT_BEARER_PWD = new GrantType("urn:ietf:params:oauth:grant-type:jwt-bearer-pwd");
-    
+
+
+
+    String SEC_CTX_AUTHZ_CODE_KEY = "authorization_code";
+
+    String AUTHN_CTX_KEY = "urn:org:atricore:idbus:capabilities:openidconnect:authnCtx";
 }

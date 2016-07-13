@@ -189,7 +189,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
 
             ds = new DriverDescriptor();
 
-            ds.setName("Dyamically added driver : " + driverClass);
+            ds.setName("Dynamically added driver : " + driverClass);
             ds.setDriverclassName(driverClass);
             ds.setJarFileNames(classPath);
             ds.setUrl(url);

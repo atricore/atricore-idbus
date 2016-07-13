@@ -93,10 +93,10 @@ public class DynamicJDBCIdentityStore extends AbstractDBIdentityStore {
 
         // Open a new connection
         Properties props = new Properties();
-        if (connectionUser != null)
+        if (connectionUser != null && !"".equals(connectionUser))
             props.put("user", connectionUser);
 
-        if (connectionPassword != null)
+        if (connectionPassword != null && !"".equals(connectionPassword))
             props.put("password", connectionPassword);
 
         try {

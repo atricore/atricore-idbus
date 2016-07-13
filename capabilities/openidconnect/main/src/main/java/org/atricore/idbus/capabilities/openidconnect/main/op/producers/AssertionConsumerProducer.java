@@ -13,6 +13,7 @@ import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectTokenType;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
@@ -49,7 +50,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
 
-        OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:authnCtx");
+        OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
         AuthenticationRequest  authnRequest = authnCtx.getAuthnRequest();
         SPInitiatedAuthnRequestType request = authnCtx != null ? authnCtx.getSsoAuthnRequest() : null;
@@ -68,9 +69,8 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         // Resolve response ED
         EndpointDescriptor ed = resolveRedirectUri(authnRequest, (AuthorizationResponse) authnResponse);
 
-
         // Ad alternate state key, to be used by back-channel.
-        state.getLocalState().addAlternativeId("authorization_code",
+        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY,
                 ((AuthenticationSuccessResponse) authnResponse).getAuthorizationCode().getValue());
 
         // TODO : Store unmarshalled tokens w/expiration
@@ -79,8 +79,19 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         authnCtx.setSsoAuthnRequest(null);
         authnCtx.setAuthnRequest(null);
 
+        // Store authz code
+        if (authnResponse instanceof AuthenticationSuccessResponse) {
+            AuthenticationSuccessResponse authnSuccessResponse = (AuthenticationSuccessResponse) authnResponse;
+            AuthorizationCode code = authnSuccessResponse.getAuthorizationCode();
+            authnCtx.setAuthorizationCode(code);
+            // TODO : authnCtx.setAuthorizationCodeNotOnOrAfter(???);
+        }
+
+        // Update state
+        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
+
         out.setMessage(new MediationMessageImpl(request.getID(),
-                null,
+                authnResponse,
                 "AuthorizationResponse",
                 null,
                 ed,
@@ -127,12 +138,19 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             } else if (tokenType.equals(OpenIDConnectTokenType.ACCESS_TOKEN)) {
                 accessToken = new BearerAccessToken(tokenValue);
             } else if (tokenType.equals(OpenIDConnectTokenType.ID_TOKEN)) {
+                // TODO : Get JWT ID Token
                 //idToken = tokenValue;
             }
+
         }
 
         AuthenticationResponse authnResponse = new AuthenticationSuccessResponse(authnRequest.getRedirectionURI(),
-                code, idToken, accessToken, authnRequest.getState(), null, authnRequest.getResponseMode());
+                code, 
+                idToken, 
+                accessToken, 
+                authnRequest.getState(), 
+                null, 
+                authnRequest.getResponseMode());
 
         return authnResponse;
     }

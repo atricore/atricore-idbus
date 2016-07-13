@@ -22,6 +22,7 @@ import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
@@ -123,7 +124,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // ----------------------------------------------
         if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
 
-            ctx = emitAccessTokenFromAuthzCode(clientInfo, (AuthorizationCodeGrant) grant, ctx);
+            ctx = emitAccessTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, ctx);
             at = ctx.getAccessToken();
             rt = ctx.getRefreshToken();
             idToken = ctx.getIDToken();
@@ -133,7 +134,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 grant.getType().equals(JWT_BEARER_PWD)) {
 
 
-            ctx = emitTokensForJWTBearer(clientInfo, (JWTBearerGrant) grant, ctx);
+            ctx = emitTokensForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, ctx);
             at = ctx.getAccessToken();
             rt = ctx.getRefreshToken();
             idToken = ctx.getIDToken();
@@ -309,7 +310,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
     /**
      * For now this only works for JWT Bearer PWD gratn (josso extension)
      */
-    protected OpenIDConnectSecurityTokenEmissionContext emitTokensForJWTBearer(ClientInformation clientInfo,
+    protected OpenIDConnectSecurityTokenEmissionContext emitTokensForJWTBearer(MediationState state, ClientInformation clientInfo,
                                                                                JWTBearerGrant grant,
                                                                                OpenIDConnectSecurityTokenEmissionContext ctx) throws OpenIDConnectProviderException {
 
@@ -399,7 +400,15 @@ public class TokenProducer extends AbstractOpenIDProducer {
         }
     }
 
-    protected OpenIDConnectSecurityTokenEmissionContext emitAccessTokenFromAuthzCode(ClientInformation clientInfo, AuthorizationCodeGrant grant, OpenIDConnectSecurityTokenEmissionContext ctx) {
+    protected OpenIDConnectSecurityTokenEmissionContext emitAccessTokenFromAuthzCode(MediationState state,
+                                                                                     ClientInformation clientInfo,
+                                                                                     AuthorizationCodeGrant grant,
+                                                                                     OpenIDConnectSecurityTokenEmissionContext ctx) {
+
+        OpenIDConnectAuthnContext authnContext = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+
+
+
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
