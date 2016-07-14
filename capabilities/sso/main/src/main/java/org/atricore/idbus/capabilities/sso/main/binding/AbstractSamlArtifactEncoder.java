@@ -35,8 +35,10 @@ public abstract class AbstractSamlArtifactEncoder implements SamlArtifactEncoder
     
     protected byte[] toBin(byte[] b, int length) {
 
+        // TODO/FIX: in case we set a "node" property in ArtifactGeneratorImpl, generated value can be greater than 20 and exception will be thrown
+
         if (length < b.length) {
-            throw new IllegalArgumentException("Cannot create binary value of lengt " + length +
+            throw new IllegalArgumentException("Cannot create binary value of length " + length +
                     " for value " + b.length + " bytes long");
         }
 

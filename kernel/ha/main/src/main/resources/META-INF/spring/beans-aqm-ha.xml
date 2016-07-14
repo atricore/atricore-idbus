@@ -59,6 +59,21 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <!--
     <bean name="aqm"
+          class="org.atricore.idbus.kernel.main.mediation.EHCacheMessageQueueManager"
+          init-method="init"
+          destroy-method="shutDown">
+        <property name="artifactGenerator">
+            <bean class="org.atricore.idbus.kernel.main.mediation.ArtifactGeneratorImpl">
+                <property name="node" value="${idbus.node}"/>
+            </bean>
+        </property>
+        <property name="jmsProviderDestinationName" value="Queue/IDBUS/Artifact"/>
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+    -->
+
+    <!--
+    <bean name="aqm"
           class="org.atricore.idbus.kernel.main.mediation.ActiveMQMessageQueueManager"
           depends-on="aqmBroker"
           init-method="init"
