@@ -18,7 +18,10 @@ import org.apache.wicket.settings.IRequestCycleSettings;
 import org.atricore.idbus.capabilities.sso.ui.*;
 import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
-import org.atricore.idbus.capabilities.sso.ui.spi.*;
+import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
@@ -29,6 +32,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.Serializable;
@@ -346,7 +350,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
             if (branding.getDefaultLocale() != null) {
                 logger.debug("Setting default locale to " + branding.getDefaultLocale());
-                Locale.setDefault(new Locale(branding.getDefaultLocale()));
+                Locale.setDefault(StringUtils.parseLocaleString((branding.getDefaultLocale())));
             }
         } else {
             logger.error("No branding configured for " + getAppConfig().getAppName() + " using ID : " + brandingId);

@@ -45,8 +45,7 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
 import org.osgi.framework.BundleContext;
-
-import java.util.Locale;
+import org.springframework.util.StringUtils;
 
 /**
  * Convenience base page for concrete SSO pages requiring a common layout and theme.
@@ -103,14 +102,14 @@ public class BasePage extends WebPage implements IHeaderContributor {
             // Set default locale if configured.
             String defaultLocale = app.getBranding().getDefaultLocale();
             if (defaultLocale != null)
-                getSession().setLocale(new Locale(defaultLocale));
+                getSession().setLocale(StringUtils.parseLocaleString(defaultLocale));
         }
         
         // Handle internationalization
         if (parameters != null) {
             String lang = parameters.get("lang").toString();
             if (lang != null) {
-                getSession().setLocale(new Locale(lang));
+                getSession().setLocale(StringUtils.parseLocaleString(lang));
             }
         }
     }
