@@ -199,6 +199,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
         <!-- AQM Properties -->
+        <prop key="aqm.builder">aqm-memory</prop>
+        <!--prop key="aqm.builder">aqm-ehcache</prop-->
+
+        <!-- For ActiveMQ MQM (deprecated) -->
         <prop key="aqm.brokerName">aq1</prop>
         <prop key="aqm.host">localhost</prop>
         <prop key="aqm.bind">127.0.0.1</prop>
@@ -211,9 +215,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="aqm.receiveTimeout">30000</prop>
         <prop key="aqm.useCompression">false</prop>
 
-        <!-- For memory AQM -->
+        <!-- For Memory MQM -->
         <prop key="aqm.monitorInterval">30</prop>
         <prop key="aqm.artifactTTL">30</prop>
+
+        <!-- For EHCache MQM -->
 
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache.xml</prop>

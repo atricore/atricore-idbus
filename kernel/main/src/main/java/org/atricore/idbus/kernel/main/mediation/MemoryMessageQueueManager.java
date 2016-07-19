@@ -4,6 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.IdGenerator;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.jms.ConnectionFactory;
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ import java.util.Map;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class MemoryMessageQueueManager implements MessageQueueManager {
+public class MemoryMessageQueueManager implements MessageQueueManager, DisposableBean, InitializingBean {
 
     private static final Log logger = LogFactory.getLog(MemoryMessageQueueManager.class);
 
@@ -61,6 +63,17 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
         this.artifactTTL = artifactTTL;
     }
 
+    @Override
+    public void destroy() throws Exception {
+        shutDown();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        init();
+    }
+
+    @Override
     public void init() throws Exception {
         msgs = new HashMap<String, Message>();
 
@@ -73,6 +86,7 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
         monitorThread.start();
     }
 
+    @Override
     public synchronized Object pullMessage(Artifact artifact) throws Exception {
         Message m = msgs.remove(artifact.getContent());
         if (m != null)
@@ -81,6 +95,7 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
         return null;
     }
 
+    @Override
     public synchronized Object peekMessage(Artifact artifact) throws Exception {
         Message m = msgs.get(artifact.getContent());
         if (m != null)
@@ -89,12 +104,14 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
         return null;
     }
 
+    @Override
     public synchronized Artifact pushMessage(Object msg) throws Exception {
         Artifact a = ArtifactImpl.newInstance(idGenerator.generateId());
         msgs.put(a.getContent(), new Message(a, msg));
         return a;
     }
 
+    @Override
     public void shutDown() throws Exception {
         msgs.clear();
         monitor.stop = true;
@@ -170,6 +187,7 @@ public class MemoryMessageQueueManager implements MessageQueueManager {
             this.interval = monitorInterval;
         }
 
+        @Override
         public void run() {
             stop = false;
             do {
