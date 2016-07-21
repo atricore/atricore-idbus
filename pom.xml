@@ -102,6 +102,7 @@
         <module>examples/custom-audit-handler</module>
         <module>examples/custom-session-manager-factory</module>
         <module>examples/custom-subject-authn-policies</module>
+        <module>examples/custom-ui</module>
         <module>examples/oidc-client</module>
         <module>examples/spring-boot-partnerapp</module>
 

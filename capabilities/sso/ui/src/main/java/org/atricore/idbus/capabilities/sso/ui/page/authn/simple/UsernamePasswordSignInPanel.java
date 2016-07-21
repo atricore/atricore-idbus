@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
@@ -135,6 +136,8 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
             add(rememberMe = new CheckBox("rememberMe", new PropertyModel<Boolean>(properties, "rememberMe")));
 
+            BaseWebApplication app = (BaseWebApplication) getApplication();
+            add(new BookmarkablePageLink<Void>("forgotPasswordLink", app.resolvePage("SS/REQPWDRESET")));
         }
 
         @Override
