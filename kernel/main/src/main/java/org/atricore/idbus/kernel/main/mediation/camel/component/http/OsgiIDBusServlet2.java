@@ -133,6 +133,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
             started = System.currentTimeMillis();
 
+            // Add node ID to response headers
+            String nodeId = null;
+            if (kernelConfig != null) {
+                nodeId = kernelConfig.getProperty("idbus.node");
+                if(nodeId != null)
+                    res.addHeader("X-IdBus-Node", nodeId);
+            }
+
             if (internalProcessingPolicy == null) {
                 org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
                         (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
