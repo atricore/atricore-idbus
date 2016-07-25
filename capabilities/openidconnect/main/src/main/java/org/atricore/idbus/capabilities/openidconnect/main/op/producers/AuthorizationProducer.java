@@ -50,6 +50,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         MediationState state = in.getMessage().getState();
         BindingChannel bChannel = (BindingChannel) channel;
 
+        // Received OpenIDConnect authentication request (Nimbus)
         AuthenticationRequest authnReq = (AuthenticationRequest) in.getMessage().getContent();
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
@@ -57,6 +58,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         try {
             validateRequest(authnReq);
 
+            // Create a SAML Authentication request based on configuration and received request.
             String idpAlias = null;
             String idpAliasB64 = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_IDPALIAS_VAR);
 

@@ -59,20 +59,16 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
 
             MediationState state = getState(exchange);
 
-            // Create map with all transient vars (includes http params).
-            Map<String, String> params = new HashMap<String, String>();
-            for (String var : state.getTransientVarNames()) {
-                params.put(var, state.getTransientVariable(var));
-            }
 
             // Build request object
-            java.net.URI uri = null; // TODO
+            java.net.URI uri = null;
 
             // ClientID
             ClientID clientID = state.getTransientVariable("client_id") != null ?
                     new ClientID(state.getTransientVariable("client_id")) : null;
 
             // Client Authentication mechanism: // TODO PKI, etc.
+            // TODO : Verify that the mechanism is enabled for the requesting RP
             ClientAuthentication clientAuthn = null;
             if (state.getTransientVariable("client_assertion") != null) {
                 String assertionType = state.getTransientVariable("client_assertion_type");
@@ -96,6 +92,11 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
             }
 
             // Authorization Grant
+            // Create map with all transient vars (includes http params).
+            Map<String, String> params = new HashMap<String, String>();
+            for (String var : state.getTransientVarNames()) {
+                params.put(var, state.getTransientVariable(var));
+            }
             AuthorizationGrant authzGrant = AuthorizationGrant.parse(params);
 
             // Scope
@@ -233,6 +234,7 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
         java.util.Map<String, String> params = null;
 
         try {
+
             MediationState state = null;
 
             // Read params now, but send them to state creation method later
@@ -242,9 +244,8 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
 
             String code = params.get("code");
             if (code == null) {
-
                 if (logger.isDebugEnabled())
-                    logger.debug("No authz_code received, creating new state ");
+                    logger.debug("No code received, creating new state ");
                 state = createMediationState(exchange, params);
                 return state;
             }

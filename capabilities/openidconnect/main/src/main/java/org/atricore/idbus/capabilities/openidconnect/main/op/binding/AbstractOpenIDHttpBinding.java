@@ -6,6 +6,7 @@ import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -55,8 +56,8 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
             if (logger.isDebugEnabled())
                 logger.debug("Creating HTML Redirect to " + ed.getLocation());
 
-            CamelMediationMessage httpOut = (CamelMediationMessage) exchange.getOut();
-            CamelMediationMessage httpIn = (CamelMediationMessage) exchange.getIn();
+            Message httpOut = exchange.getOut();
+            Message httpIn = exchange.getIn();
 
             Object openIdResponse = out.getContent();
 
@@ -66,12 +67,7 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
             if (openIdResponse instanceof AuthenticationSuccessResponse) {
 
                 AuthenticationSuccessResponse authnResponse = (AuthenticationSuccessResponse) openIdResponse;
-
                 location = buildHttpAuthnResponseLocation(openIdConnectOut, authnResponse, relayState, ed);
-
-                // Add alternative state key to keep state on back-channel requests
-                if (authnResponse.getAccessToken() != null)
-                    httpIn.getMessage().getState().getLocalState().addAlternativeId("authz_code", authnResponse.getAccessToken().getValue());
 
                 // TODO : Send response
 

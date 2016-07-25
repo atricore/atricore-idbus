@@ -57,6 +57,8 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
             } else if (ssoResponse instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
                 oasis.names.tc.saml._1_0.protocol.ResponseType r = (oasis.names.tc.saml._1_0.protocol.ResponseType) ssoResponse;
                 logger.debug("Relaying Response " + r.getResponseID());
+            } else {
+                logger.debug("Relaying Response " + ssoResponse);
             }
         }
 

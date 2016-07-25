@@ -68,6 +68,9 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
         // Set token expiration
         st.setExpiresOn(authzGrant.getExpiresOn());
 
+        // Mark it as a valid authentication grant token.
+        st.setIsAuthenticationGrant(true);
+
         logger.debug("Created new security token [" + st.getId() + "] with content " + (authzGrant.getClass().getSimpleName()));
 
         return st;

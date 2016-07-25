@@ -25,6 +25,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectB
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
+import org.atricore.idbus.capabilities.openidconnect.main.common.Util;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
@@ -41,6 +42,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.util.IdRegistry;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
@@ -49,6 +51,7 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
@@ -86,19 +89,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
         // If we have an authorization_code , the state MUST have the proper alternate key.
         AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
-        if (grant instanceof AuthorizationCodeGrant) {
-            // The Authorization Grant will be used to emit a JWT token and validated during the process.
-            String expectedAuthzCode = state.getLocalState().getAlternativeId("authorization_code");
-            if (expectedAuthzCode == null) {
-                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "authorization_code:n/a");
-            } else {
-                AuthorizationCodeGrant authzGrant = (AuthorizationCodeGrant) grant;
-                AuthorizationCode authzCode = authzGrant.getAuthorizationCode();
-                if (authzCode == null || !authzCode.getValue().equals(expectedAuthzCode))
-                    throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "authorization_code:" + authzCode);
-            }
-
-        }
 
         // Validate the incoming request
         OIDCClientInformation clientInfo = validateRequest(exchange, tokenRequest);
@@ -209,110 +199,16 @@ public class TokenProducer extends AbstractOpenIDProducer {
             throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED, "authn_failure");
         }
 
-
     }
 
-    private RequestSecurityTokenType buildRequestSecurityToken(ClientInformation client,
-                                                               String username,
-                                                               String password,
-                                                               String context) throws OpenIDConnectException {
-        logger.debug("generating RequestSecurityToken...");
-        org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
-
-        RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
-
-        rstRequest.getAny().add(of.createTokenType(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE));
-        rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
-
-        org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
-
-        // Send credentials with authn request:
-        UsernameTokenType usernameToken = new UsernameTokenType ();
-        org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString usernameString = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString();
-        usernameString.setValue(username);
-
-        usernameToken.setUsername(usernameString);
-        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password);
-        usernameToken.getOtherAttributes().put(CLIENT_ID, client.getID().getValue());
-
-        rstRequest.getAny().add(ofwss.createUsernameToken(usernameToken));
-
-        if (context != null)
-            rstRequest.setContext(context);
-
-        logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
-        return rstRequest;
-    }
-
-    /**
-     * This validates the received Token request.
-     *
-     * Verify authorization grant
-     *
-     * @param exchange
-     * @param tokenRequest
-     * @throws OpenIDConnectException
-     */
-    protected OIDCClientInformation validateRequest(CamelMediationExchange exchange, TokenRequest tokenRequest)
-            throws OpenIDConnectException {
-
-        // Authenticate Client:
-        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-        MediationState state = in.getMessage().getState();
-
-        long now = System.currentTimeMillis();
-
-        // ----------------------------------------------
-        // Client ID (also taken from request parameter)
-        // ----------------------------------------------
-        ClientID clientID = tokenRequest.getClientAuthentication() != null ?
-                tokenRequest.getClientAuthentication().getClientID() : tokenRequest.getClientID();
-
-        if (clientID == null)
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST, "client_id:n/a");
-
-        if (logger.isDebugEnabled())
-            logger.debug("Processing TokenRequest for " + clientID.getValue());
-
-        OIDCClientInformation clientInfo  = resolveClient(clientID);
-        if (clientInfo == null) {
-            throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "client_id:" + clientID.getValue());
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Processing TokenRequest for " + clientID.getValue());
-        ClientID expectedClientId = clientInfo.getID();
-
-        // ----------------------------------------------
-        // Authenticate Client
-        // ----------------------------------------------
-        authenticateClient(clientInfo, tokenRequest);
-
-        // ----------------------------------------------
-        // Verify that the Client support the Authorization Grant
-        // ----------------------------------------------
-        AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
-        if (grant == null)
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:n/a");
-        if (!clientInfo.getOIDCMetadata().getGrantTypes().contains(grant.getType())) {
-            if (logger.isDebugEnabled())
-                logger.debug("Invalid Authorization Grant ["+tokenRequest.getAuthorizationGrant()+"] for Client " + expectedClientId.getValue());
-
-            throw new OpenIDConnectProviderException(OAuth2Error.UNSUPPORTED_GRANT_TYPE, "grant_type:" + grant.getType().getValue());
-        }
-
-
-        return clientInfo;
-
-    }
 
     /**
      * For now this only works for JWT Bearer PWD gratn (josso extension)
      */
     protected OpenIDConnectSecurityTokenEmissionContext emitTokensForJWTBearer(MediationState state, ClientInformation clientInfo,
                                                                                JWTBearerGrant grant,
-                                                                               OpenIDConnectSecurityTokenEmissionContext ctx) throws OpenIDConnectProviderException {
+                                                                               OpenIDConnectSecurityTokenEmissionContext ctx)
+            throws Exception {
 
         try {
 
@@ -403,15 +299,193 @@ public class TokenProducer extends AbstractOpenIDProducer {
     protected OpenIDConnectSecurityTokenEmissionContext emitAccessTokenFromAuthzCode(MediationState state,
                                                                                      ClientInformation clientInfo,
                                                                                      AuthorizationCodeGrant grant,
-                                                                                     OpenIDConnectSecurityTokenEmissionContext ctx) {
+                                                                                     OpenIDConnectSecurityTokenEmissionContext ctx)
+            throws Exception {
 
         OpenIDConnectAuthnContext authnContext = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
+        AuthorizationCodeGrant authzGrant = (AuthorizationCodeGrant) grant;
+        AuthorizationCode authzCode = authzGrant.getAuthorizationCode();
 
+        MessageQueueManager aqm = getArtifactQueueManager();
 
-        throw new UnsupportedOperationException("Not implemented yet");
+        // -------------------------------------------------------
+        // Emit a new security token
+        // -------------------------------------------------------
+
+        // TODO : Improve communication mechanism between STS and IDP!
+        // Queue this contenxt and send the artifact as RST context information
+        Artifact emitterCtxArtifact = aqm.pushMessage(ctx);
+
+        SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
+        // Send artifact id as RST context information, similar to relay state.
+        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, authzGrant, emitterCtxArtifact.getContent());
+
+        if (logger.isDebugEnabled())
+            logger.debug("Requesting OAuth 2 Access Token (RST) w/context " + rst.getContext());
+
+        // Send request to STS
+        try {
+            RequestSecurityTokenResponseType rstrt = sts.requestSecurityToken(rst);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
+
+            // Recover emission context, to retrieve Subject information
+            ctx = (OpenIDConnectSecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
+
+            // Obtain access token from STS Response
+            JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
+            AccessToken accessToken = (AccessToken) token.getValue().getAny();
+            if (logger.isDebugEnabled())
+                logger.debug("Generated OAuth Access Token [" + accessToken.getValue() + "]");
+
+            ctx.setAccessToken(accessToken);
+
+            // Return context with Assertion and Subject
+            return ctx;
+
+        } catch (SecurityTokenAuthenticationFailure e) {
+            logger.error(e.getMessage());
+            throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED, "authn_failure");
+        }
+
     }
 
+    protected RequestSecurityTokenType buildRequestSecurityToken(ClientInformation client,
+                                                               String username,
+                                                               String password,
+                                                               String context) throws OpenIDConnectException {
+        logger.debug("generating RequestSecurityToken...");
+        org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
+
+        RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
+
+        rstRequest.getAny().add(of.createTokenType(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE));
+        rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
+
+        org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
+
+        // Send credentials with authn request:
+        UsernameTokenType usernameToken = new UsernameTokenType ();
+        org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString usernameString = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString();
+        usernameString.setValue(username);
+
+        usernameToken.setUsername(usernameString);
+        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password);
+        usernameToken.getOtherAttributes().put(CLIENT_ID, client.getID().getValue());
+
+        rstRequest.getAny().add(ofwss.createUsernameToken(usernameToken));
+
+        if (context != null)
+            rstRequest.setContext(context);
+
+        logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+        return rstRequest;
+    }
+
+    protected RequestSecurityTokenType buildRequestSecurityToken(ClientInformation client,
+                                                                 AuthorizationCodeGrant authzGrant,
+                                                                 String context) throws OpenIDConnectException {
+
+
+        logger.debug("generating RequestSecurityToken...");
+        try {
+            org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
+
+            RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
+
+            rstRequest.getAny().add(of.createTokenType(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE));
+            rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
+
+            org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
+
+            // Send credentials with authn request:
+            BinarySecurityTokenType authzGrantToken = new BinarySecurityTokenType();
+
+            authzGrantToken.setValue(Util.marshall(authzGrant.toParameters()));
+            authzGrantToken.setValueType(authzGrant.getType().getValue());
+            authzGrantToken.setEncodingType("json");
+
+            authzGrantToken.getOtherAttributes().put(new QName(Constants.AUTHZ_CODE_NS), client.getID().getValue());
+            authzGrantToken.getOtherAttributes().put(CLIENT_ID, client.getID().getValue());
+
+            rstRequest.getAny().add(ofwss.createBinarySecurityToken(authzGrantToken));
+
+            if (context != null)
+                rstRequest.setContext(context);
+
+            logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+            return rstRequest;
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectException(e);
+        }
+    }
+
+
+    /**
+     * This validates the received Token request.
+     *
+     * Verify authorization grant
+     *
+     * @param exchange
+     * @param tokenRequest
+     * @throws OpenIDConnectException
+     */
+    protected OIDCClientInformation validateRequest(CamelMediationExchange exchange, TokenRequest tokenRequest)
+            throws OpenIDConnectException {
+
+        // Authenticate Client:
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        MediationState state = in.getMessage().getState();
+
+        long now = System.currentTimeMillis();
+
+        // ----------------------------------------------
+        // Client ID (also taken from request parameter)
+        // ----------------------------------------------
+        ClientID clientID = tokenRequest.getClientAuthentication() != null ?
+                tokenRequest.getClientAuthentication().getClientID() : tokenRequest.getClientID();
+
+        if (clientID == null)
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST, "client_id:n/a");
+
+        if (logger.isDebugEnabled())
+            logger.debug("Processing TokenRequest for " + clientID.getValue());
+
+        OIDCClientInformation clientInfo  = resolveClient(clientID);
+        if (clientInfo == null) {
+            throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "client_id:" + clientID.getValue());
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Processing TokenRequest for " + clientID.getValue());
+        ClientID expectedClientId = clientInfo.getID();
+
+        // ----------------------------------------------
+        // Authenticate Client
+        // ----------------------------------------------
+        authenticateClient(clientInfo, tokenRequest);
+
+        // ----------------------------------------------
+        // Verify that the Client support the Authorization Grant
+        // ----------------------------------------------
+        AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
+        if (grant == null)
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:n/a");
+        if (!clientInfo.getOIDCMetadata().getGrantTypes().contains(grant.getType())) {
+            if (logger.isDebugEnabled())
+                logger.debug("Invalid Authorization Grant ["+tokenRequest.getAuthorizationGrant()+"] for Client " + expectedClientId.getValue());
+
+            throw new OpenIDConnectProviderException(OAuth2Error.UNSUPPORTED_GRANT_TYPE, "grant_type:" + grant.getType().getValue());
+        }
+
+
+        return clientInfo;
+
+    }
 
     protected void authenticateClient(ClientInformation clientInfo, TokenRequest tokenRequest) throws OpenIDConnectProviderException {
 

@@ -144,6 +144,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         if (init)
             return;
 
+        // Use the thread classloader (appliance classloader) instead of STS bundle classloader
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -190,6 +191,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public void store(ProviderStateContext ctx, LocalState s) {
 
+        // Use the thread classloader (appliance classloader) instead of STS bundle classloader
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -240,6 +242,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public LocalState retrieve(ProviderStateContext ctx, String keyName, String key) {
 
+        // Use the thread classloader (appliance classloader) instead of STS bundle classloader
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());

@@ -47,15 +47,14 @@ public interface OpenIDConnectConstants {
     QName SPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "RelayingPartyDesriptor");
 
 
+    String SEC_CTX_AUTHZ_CODE_KEY = "authorization_code";
+
+    String AUTHN_CTX_KEY = "urn:org:atricore:idbus:capabilities:openidconnect:authnCtx";
+
     /**
      * JWT bearer, as defined in draft-ietf-oauth-jwt-bearer-10. Explicit
      * client authentication is optional.
      */
     GrantType JWT_BEARER_PWD = new GrantType("urn:ietf:params:oauth:grant-type:jwt-bearer-pwd");
 
-
-
-    String SEC_CTX_AUTHZ_CODE_KEY = "authorization_code";
-
-    String AUTHN_CTX_KEY = "urn:org:atricore:idbus:capabilities:openidconnect:authnCtx";
 }

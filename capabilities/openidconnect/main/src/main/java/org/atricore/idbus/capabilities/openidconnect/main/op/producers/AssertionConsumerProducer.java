@@ -50,6 +50,8 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
 
+        // We have an SSO Authentication response
+
         OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
         AuthenticationRequest  authnRequest = authnCtx.getAuthnRequest();
@@ -63,7 +65,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         // Resolve OpenID client
 
-        // build response
+        // Build an OpenIDConnect authentication response based on the original request
         AuthenticationResponse authnResponse = buildAuthorizationResponse(exchange, authnCtx, authnRequest);
 
         // Resolve response ED
@@ -109,16 +111,24 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         return new EndpointDescriptorImpl("OpenIDConnectRedirectUri",
                 "OpenIDConnectRedirectUri",
-                OpenIDConnectBinding.SSO_REDIRECT.getValue(),
+                OpenIDConnectBinding.OPENID_PROVIDER_AUTHZ_HTTP.getValue(),
                 redirectUriStr, null);
     }
 
+    /**
+     * This creates an OpenIDConnect authn response
+     * @param exchange
+     * @param authnCtx
+     * @param authnRequest
+     * @return
+     */
     protected AuthenticationResponse buildAuthorizationResponse(CamelMediationExchange exchange,
                                                                    OpenIDConnectAuthnContext authnCtx,
-                                                                   AuthenticationRequest authnRequest) {
+                                                                   AuthenticationRequest authnRequest) throws OpenIDConnectException {
 
         // TODO : ERROR handling
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
 
         // Set all requested tokens as part of the response.
@@ -131,12 +141,21 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             ResponseType.Value responseTypeValue = iterator.next();
 
             OpenIDConnectTokenType tokenType = OpenIDConnectTokenType.asEnum(responseTypeValue.getValue());
+
+            // Look for the subject attribute that matches the token type we need to issue, if any!
             String tokenValue = resolveToken(response, tokenType.getFQTN());
+            if (tokenValue == null)
+                throw new OpenIDConnectException("No token type ["+tokenType.getFQTN()+"] found in response " + response.getID());
 
             if (tokenType.equals(OpenIDConnectTokenType.AUTHZ_CODE)) {
                 code = new AuthorizationCode(tokenValue);
+
+                // Add alternative state key to keep state on back-channel requests
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY , code.getValue());
+
             } else if (tokenType.equals(OpenIDConnectTokenType.ACCESS_TOKEN)) {
                 accessToken = new BearerAccessToken(tokenValue);
+
             } else if (tokenType.equals(OpenIDConnectTokenType.ID_TOKEN)) {
                 // TODO : Get JWT ID Token
                 //idToken = tokenValue;
@@ -188,11 +207,22 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         */
     }
 
+    /**
+     * Get token from the Subject
+     * @param response the SSO Autn
+     * @param tokenType
+     * @return
+     */
     protected String resolveToken(SPAuthnResponseType response, String tokenType) {
+
+        // Get subject from response
         SubjectType subject = response.getSubject();
 
+        // Look for a principal that matches our token type.
         for (AbstractPrincipalType p : subject.getAbstractPrincipal()) {
+
             if (p instanceof SubjectAttributeType) {
+
                 SubjectAttributeType attr = (SubjectAttributeType) p;
 
                 if (attr.getName().equals(tokenType)) {
@@ -200,6 +230,8 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
                 }
             }
         }
+
+        logger.debug("No Subject attribute found ["+tokenType+"] in Subject " );
 
         return null;
     }

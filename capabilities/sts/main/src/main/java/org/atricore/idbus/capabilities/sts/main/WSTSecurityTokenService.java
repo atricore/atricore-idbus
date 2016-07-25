@@ -82,6 +82,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     private SSOSessionManager sessionManager;
 
+    private TokenStore store;
+
 
     /**
      * The provisioning target selected for this STS instance.
@@ -440,6 +442,13 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
         }
 
+        // Store tokens that can be used for authentication later.
+        if (emitted.isAuthenticationGrant()) {
+            if (logger.isDebugEnabled())
+                logger.debug("Storing token " + emitted.getId());
+            store.store(emitted);
+        }
+
     }
 
     protected Subject resolveSubject(Subject subject) {
@@ -611,6 +620,14 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     public void setSessionManager(SSOSessionManager sessionManager) {
         this.sessionManager = sessionManager;
+    }
+
+    public TokenStore getTokenStore() {
+        return store;
+    }
+
+    public void setTokenStore(TokenStore store) {
+        this.store = store;
     }
 
     protected void checkExpiredTokens() {

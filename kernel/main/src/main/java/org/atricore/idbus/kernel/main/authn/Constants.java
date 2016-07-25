@@ -46,4 +46,8 @@ public interface Constants  {
 
     public static final String PREVIOUS_SESSION_NS = "urn:org:atricore:idbus:kernel:main:authn:previous-session";
 
+    public static final String CACHE_NS = "urn:org:atricore:idbus:kernel:main:authn:cache";
+
+    public static final String AUTHZ_CODE_NS = "urn:org:atricore:idbus:kernel:main:authn:authz-code";
+
 }

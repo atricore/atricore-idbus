@@ -24,6 +24,7 @@ import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
+import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 import javax.crypto.SecretKey;
@@ -77,8 +78,15 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
             }
 
             // We need a client ID
-            UsernameTokenType userCredentials = (UsernameTokenType) requestToken;
-            String clientId = userCredentials.getOtherAttributes().get(OpenIDConnectConstants.CLIENT_ID);
+            String clientId = null;
+            if (requestToken instanceof UsernameTokenType ) {
+                UsernameTokenType userCredentials = (UsernameTokenType) requestToken;
+                clientId = userCredentials.getOtherAttributes().get(OpenIDConnectConstants.CLIENT_ID);
+            } else if (requestToken instanceof BinarySecurityTokenType) {
+                BinarySecurityTokenType userCredentials = (BinarySecurityTokenType) requestToken;
+                clientId = userCredentials.getOtherAttributes().get(OpenIDConnectConstants.CLIENT_ID);
+            }
+
             if (clientId == null)
                 throw new SecurityTokenEmissionException(OpenIDConnectConstants.CLIENT_ID + " not provided as token attribute");
 
