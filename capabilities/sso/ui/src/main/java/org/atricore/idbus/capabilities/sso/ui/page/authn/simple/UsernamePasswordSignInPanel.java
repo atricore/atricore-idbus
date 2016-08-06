@@ -98,14 +98,12 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
     /**
      * Sign in form.
      */
-    public final class UsernamePasswordSignInForm extends StatelessForm<Void> {
-
-        private static final long serialVersionUID = 3245927593457623741L;
+    public class UsernamePasswordSignInForm extends StatelessForm<Void> {
 
         /**
          * Model for form.
          */
-        private final ValueMap properties = new ValueMap();
+        private ValueMap properties = new ValueMap();
 
         /**
          * Constructor.
@@ -191,7 +189,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
          * @see org.apache.wicket.markup.html.form.Form#onSubmit()
          */
         @Override
-        public final void onSubmit() {
+        public void onSubmit() {
 
             try {
                 String claimsConsumerUrl = signIn(getUsername(), getPassword(), isRememberMe());
@@ -329,7 +327,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
     /**
      * Removes persisted form data for the signin panel (forget me)
      */
-    public final void forgetMe() {
+    public void forgetMe() {
         // Remove persisted user data. Search for child component
         // of type UsernamePasswordSignInForm and remove its related persistence values.
         // getPage().removePersistedFormData(UsernamePasswordSignInForm.class, true);

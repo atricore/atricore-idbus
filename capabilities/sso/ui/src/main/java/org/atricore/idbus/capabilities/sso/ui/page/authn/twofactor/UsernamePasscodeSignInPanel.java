@@ -45,9 +45,8 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
 public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
-    private static final Log logger = LogFactory.getLog(UsernamePasscodeSignInPanel.class);
 
-    private static final long serialVersionUID = 1L;
+    private static final Log logger = LogFactory.getLog(UsernamePasscodeSignInPanel.class);
 
     /**
      * Field for user name.
@@ -64,7 +63,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
      * Sign in form.
      */
     public final class UsernamePasswordSignInForm extends StatelessForm<Void> {
-        private static final long serialVersionUID = 1L;
+
 
         /**
          * El-cheapo model for form.
