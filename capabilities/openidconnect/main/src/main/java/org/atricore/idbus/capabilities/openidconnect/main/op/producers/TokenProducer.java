@@ -322,7 +322,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, authzGrant, emitterCtxArtifact.getContent());
 
         if (logger.isDebugEnabled())
-            logger.debug("Requesting OAuth 2 Access Token (RST) w/context " + rst.getContext());
+            logger.debug("Requesting OpenID Connect 2 Access Token (RST) w/context " + rst.getContext());
 
         // Send request to STS
         try {
@@ -504,8 +504,10 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 return;
             }
 
-            if (!clientAuthn.getMethod().equals(enabledAuthnMethod))
+            if (!clientAuthn.getMethod().equals(enabledAuthnMethod)) {
+                logger.error("The authentiation method used by the client is not enabled: " + clientAuthn.getMethod());
                 throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue());
+            }
 
             if (clientAuthn instanceof ClientSecretBasic) {
                 ClientSecretBasic clientBasicAuthn = (ClientSecretBasic) clientAuthn;
