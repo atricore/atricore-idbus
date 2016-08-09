@@ -67,7 +67,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
     
     // Ten seconds (TODO : Get from mediator/console)
-    private long timeToleranceInMillis = 10L * 1000L;
+    private long timeToleranceInMillis = 5L * 60L * 1000L;
 
     public TokenProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
         super(endpoint);
