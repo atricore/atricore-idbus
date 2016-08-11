@@ -73,6 +73,7 @@ public class AddUserRequest extends AbstractProvisioningRequest {
     private Boolean accountDisabled;
     private Boolean accountExpires;
     private Date accountExpirationDate;
+    private Date lastAuthentication;
     private Boolean limitSimultaneousLogin;
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
@@ -317,6 +318,14 @@ public class AddUserRequest extends AbstractProvisioningRequest {
 
     public void setAccountExpirationDate(Date accountExpirationDate) {
         this.accountExpirationDate = accountExpirationDate;
+    }
+
+    public Date getLastAuthentication() {
+        return lastAuthentication;
+    }
+
+    public void setLastAuthentication(Date lastAuthentication) {
+        this.lastAuthentication = lastAuthentication;
     }
 
     public Boolean isLimitSimultaneousLogin() {

@@ -55,6 +55,7 @@ public class JDOUser implements Serializable {
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
     private Boolean preventNewSession;
+    private Date lastAuthentication;
 
 //<--- Security Password---->
     private Boolean allowUserToChangePassword;
@@ -323,6 +324,14 @@ public class JDOUser implements Serializable {
 
     public void setAccountExpirationDate(Date accountExpirationDate) {
         this.accountExpirationDate = accountExpirationDate;
+    }
+
+    public Date getLastAuthentication() {
+        return lastAuthentication;
+    }
+
+    public void setLastAuthentication(Date lastAuthentication) {
+        this.lastAuthentication = accountExpirationDate;
     }
 
     public Boolean isLimitSimultaneousLogin() {

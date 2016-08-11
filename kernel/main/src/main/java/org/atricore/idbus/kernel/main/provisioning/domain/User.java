@@ -49,6 +49,7 @@ public class User implements Serializable {
     private Boolean accountDisabled;
     private Boolean accountExpires;
     private Long accountExpirationDate;
+    private Long lastAuthentication;
     private Boolean limitSimultaneousLogin;
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
@@ -328,6 +329,14 @@ public class User implements Serializable {
 
     public void setAccountExpirationDate(Long accountExpirationDate) {
         this.accountExpirationDate = accountExpirationDate;
+    }
+
+    public Long getLastAuthentication() {
+        return lastAuthentication;
+    }
+
+    public void setLastAuthentication(Long lastAuthentication) {
+        this.lastAuthentication = lastAuthentication;
     }
 
     public Boolean isLimitSimultaneousLogin() {

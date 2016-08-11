@@ -140,6 +140,9 @@
             <field name="accountExpirationDate">
                 <column name="ACCOUNTEXPIRATIONDATE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
             </field>
+            <field name="lastAuthentication">
+                <column name="LASTAUTHENTICATION" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
+            </field>
             <field name="limitSimultaneousLogin">
                 <column name="LIMITSIMULTANEOUSLOGIN" />
             </field>

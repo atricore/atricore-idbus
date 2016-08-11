@@ -146,6 +146,11 @@ public class DefaultStore extends AbstractStore {
             ssoUser.addProperty(p);
         }
 
+        if (jdoUser.getLastAuthentication() != null) {
+            SSONameValuePair p = new SSONameValuePair("lastAuthentication", jdoUser.getLastAuthentication().toString());
+            ssoUser.addProperty(p);
+        }
+
         if (jdoUser.getPasswordExpirationDate() != null) {
             SSONameValuePair p = new SSONameValuePair("passwordExpirationDate", jdoUser.getPasswordExpirationDate().toString());
             ssoUser.addProperty(p);
