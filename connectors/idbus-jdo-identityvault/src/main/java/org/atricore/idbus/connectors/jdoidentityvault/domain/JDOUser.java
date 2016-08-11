@@ -331,7 +331,7 @@ public class JDOUser implements Serializable {
     }
 
     public void setLastAuthentication(Date lastAuthentication) {
-        this.lastAuthentication = accountExpirationDate;
+        this.lastAuthentication = lastAuthentication;
     }
 
     public Boolean isLimitSimultaneousLogin() {

@@ -28,6 +28,7 @@ import javax.jdo.JDOObjectNotFoundException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -1027,7 +1028,24 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     protected JDOUser toJDOUser(JDOUser jdoUser, User user, boolean keepUserPassword) {
         String pwd = jdoUser.getUserPassword();
 
-        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups", "acls", "attrs", "securityQuestions"});
+        BeanUtils.copyProperties(user, jdoUser, new String[] {"id",
+                "groups",
+                "acls",
+                "attrs",
+                "securityQuestions",
+                "lastAuthentication",
+                "passwordExpirationDate",
+                "accountExpirationDate"
+        });
+
+        if (user.getLastAuthentication() != null)
+            jdoUser.setLastAuthentication(new Date(user.getLastAuthentication()));
+
+        if (user.getAccountExpirationDate() != null)
+            jdoUser.setAccountExpirationDate(new Date(user.getAccountExpirationDate()));
+
+        if (user.getPasswordExpirationDate() != null)
+            jdoUser.setPasswordExpirationDate(new Date(user.getPasswordExpirationDate()));
 
         if (keepUserPassword)
             jdoUser.setUserPassword(pwd);
@@ -1138,12 +1156,23 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected User toUser(JDOUser jdoUser, boolean retrieveUserPassword) {
         User user = new User();
-        BeanUtils.copyProperties(jdoUser, user, new String[] {"id", "groups", "acls", "securityQuestions", "attrs"});
+        BeanUtils.copyProperties(jdoUser, user, new String[] {"id",
+                "groups", "acls", "securityQuestions", "attrs","lastAuthentication",
+                "passwordExpirationDate", "accountExpirationDate"});
 
         user.setId(jdoUser.getId() + "");
 
         if (!retrieveUserPassword)
             user.setUserPassword(null);
+
+        if(jdoUser.getAccountExpirationDate() != null)
+            user.setAccountExpirationDate(jdoUser.getAccountExpirationDate().getTime());
+
+        if(jdoUser.getPasswordExpirationDate() != null)
+            user.setPasswordExpirationDate(jdoUser.getPasswordExpirationDate().getTime());
+
+        if(jdoUser.getLastAuthentication() != null)
+            user.setLastAuthentication(jdoUser.getLastAuthentication().getTime());
 
         if (jdoUser.getGroups() != null) {
             Group[] groups = new Group[jdoUser.getGroups().length];
