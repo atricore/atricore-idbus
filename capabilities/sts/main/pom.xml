@@ -70,6 +70,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
             <scope>provided</scope>

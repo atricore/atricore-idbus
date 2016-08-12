@@ -23,10 +23,13 @@ package org.atricore.idbus.capabilities.sts.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sts.main.policies.SubjectAuthnPolicyRegistry;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.AddSecurityTokenRequest;
@@ -37,6 +40,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.FindSecurityToke
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
@@ -83,6 +87,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     private SSOSessionManager sessionManager;
 
     private TokenStore store;
+
+    private AuditingServer aServer;
+
+    private String auditCategory;
 
 
     /**
@@ -161,8 +169,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 logger.trace( "User " + subjectToString(subject) + " authenticated successfully" );
 
             // Resolve subject
-
             subject = resolveSubject(subject);
+            recordInfoAuditTrail("STS-AUTHN", ActionOutcome.SUCCESS, subject, processingContext);
 
             processingContext.setProperty(SUBJECT_PROP, subject);
 
@@ -630,6 +638,68 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         this.store = store;
     }
 
+    public AuditingServer getAuditingServer() {
+        return aServer;
+    }
+
+    public void setAuditingServer(AuditingServer aServer) {
+        this.aServer = aServer;
+    }
+
+    public String getAuditCategory() {
+        return auditCategory;
+    }
+
+    public void setAuditCategory(String auditCategory) {
+        this.auditCategory = auditCategory;
+    }
+
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, Subject subject, SecurityTokenProcessingContext processingContext) {
+        recordInfoAuditTrail(action, actionOutcome, subject, processingContext, null);
+    }
+
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, Subject subject, SecurityTokenProcessingContext processingContext, Properties otherProps) {
+
+        // Try to get the username/principal from Subject
+        Principal principal = getUserPrincipal(subject);
+
+        Properties props = new Properties();
+        String providerName = getName(); // Let' treat the STS as a 'provider'
+        props.setProperty("provider", providerName);
+/* TODO : Take from processing context  /  RST context ?!
+        String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+        if (remoteAddr != null) {
+            props.setProperty("remoteAddress", remoteAddr);
+        }
+
+        String session = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie.JSESSIONID");
+        if (session != null) {
+            props.setProperty("httpSession", session);
+        }
+
+        if (otherProps != null) {
+            props.putAll(otherProps);
+        }
+        */
+
+        aServer.processAuditTrail(getAuditCategory(), "INFO", action, actionOutcome, principal != null ? principal.getName() : "UNKNOWN", new java.util.Date(), null, props);
+    }
+
+    protected Principal getUserPrincipal(Subject subject) {
+        Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+        if (ssoUsers != null && ssoUsers.size() == 1) {
+            return ssoUsers.iterator().next();
+        }
+
+        Set<SimplePrincipal> simplePrincipals = subject.getPrincipals(SimplePrincipal.class);
+        if (simplePrincipals != null && simplePrincipals.size() == 1) {
+            return simplePrincipals.iterator().next();
+        }
+
+        logger.warn("No valid user principal found in subject: " + subject);
+        return null;
+    }
+
     protected void checkExpiredTokens() {
 
         try {
@@ -657,6 +727,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
     }
+
+
 
 
 }
