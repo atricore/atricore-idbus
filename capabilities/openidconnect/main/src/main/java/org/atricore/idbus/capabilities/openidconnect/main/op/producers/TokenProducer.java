@@ -567,32 +567,46 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 JWSVerifier verifier = new MACVerifier(KeyUtils.getKey(clientInfo).getEncoded());
                 SignedJWT assertion = clientJWTAuthn.getClientAssertion();
                 if (!assertion.verify(verifier)) {
-                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid signature");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid_signature");
                 }
 
                 // Audience
                 FederationChannel fChannel = (FederationChannel) channel;
                 Audience aud = clientJWTAuthn.getJWTAuthenticationClaimsSet().getAudience();
                 String expectedAudience = fChannel.getMember().getAlias();
-                if (!aud.getValue().equals(expectedAudience))
+                if (!aud.getValue().equals(expectedAudience)) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("aud (received/expected) : " + aud + "/" + expectedAudience);
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_audience " + aud.getValue());
+                }
 
-                // Expiration date
+                // Expiration date, it can be up to five minutes in the past
                 Date exp = clientJWTAuthn.getJWTAuthenticationClaimsSet().getExpirationTime();
-                if (exp == null || exp.getTime() < now + getTimeToleranceInMillis())
-                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : expired JWT");
+                if (exp == null || exp.getTime() < now - getTimeToleranceInMillis()) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("exp (received/now) : " + exp + " < " + new Date(now + getTimeToleranceInMillis()));
 
-                // Issue At time
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : expired_JWT");
+                }
+
+                // Issue At time, it can be up to five minutes in the future.
                 Date iat = clientJWTAuthn.getJWTAuthenticationClaimsSet().getIssueTime();
-                if (iat == null || iat.getTime() > now + getTimeToleranceInMillis())
-                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid iat");
+                if (iat == null || iat.getTime() > now + getTimeToleranceInMillis()) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("iat (received/now) : " + iat + " > " + new Date(now + getTimeToleranceInMillis()));
+
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid_iat");
+                }
 
                 // Unique JWT ID
                 JWTID jti = clientJWTAuthn.getJWTAuthenticationClaimsSet().getJWTID();
                 OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
                 IdRegistry idRegistry = mediator.getIdRegistry();
                 if (jti == null || idRegistry.isUsed(jti.getValue())) {
-                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid jti");
+                    if (logger.isDebugEnabled())
+                        logger.debug("jti (reused) : " + jti);
+
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid_jti");
                 }
 
                 idRegistry.register(jti.getValue(), 60 * 60); // Mark the JIT used for an hour.
