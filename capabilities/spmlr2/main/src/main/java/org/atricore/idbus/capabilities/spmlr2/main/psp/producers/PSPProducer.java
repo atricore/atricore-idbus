@@ -33,6 +33,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.w3c.dom.Element;
 
+import javax.transaction.InvalidTransactionException;
 import javax.xml.bind.JAXBElement;
 import java.util.Iterator;
 import java.util.List;
@@ -943,6 +944,17 @@ public class PSPProducer extends SpmlR2Producer {
             recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
 
         } catch (TransactionExpiredException e) {
+            logger.debug(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+
+            PolicyEnforcementStatementType stmtType = new PolicyEnforcementStatementType();
+            stmtType.setName("expiredTransactionOrCode");
+            stmtType.setNs("urn:org:atricore:idbus:policy:provisioning:transaction");
+            spmlResponse.getSsoPolicyEnforcements().add(stmtType);
+
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+
+        } catch (TransactionInvalidException e) {
             logger.debug(e.getMessage(), e);
             spmlResponse.setStatus(StatusCodeType.FAILURE);
 

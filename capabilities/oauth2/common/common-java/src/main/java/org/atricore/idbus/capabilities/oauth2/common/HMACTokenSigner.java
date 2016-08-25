@@ -4,6 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -21,16 +22,26 @@ public class HMACTokenSigner implements TokenSigner {
         try {
 
             Mac mac = Mac.getInstance(signAlg);
-            SecretKeySpec secret = new SecretKeySpec(key.getBytes(), mac.getAlgorithm());
+            SecretKeySpec secret = new SecretKeySpec(key.getBytes("UTF-8"), mac.getAlgorithm());
             mac.init(secret);
-            byte[] digest = mac.doFinal(tokenValue.getBytes());
-
+            byte[] digest = mac.doFinal(tokenValue.getBytes("UTF-8"));
             byte[] signature = new Base64().encode(digest);
-            return new String(signature);
 
+            String signatureStr = new String(signature, "UTF-8");
+
+            // On some platforms, newline may be added to the signature!
+            if (signatureStr.endsWith("\r\n"))
+                signatureStr = signatureStr.substring(0, signatureStr.length() -2);
+
+            if (signatureStr.endsWith("\n"))
+                signatureStr = signatureStr.substring(0, signatureStr.length() -1);
+
+            return signatureStr;
         } catch (NoSuchAlgorithmException e) {
             throw new OAuth2SignatureException(e);
         } catch (InvalidKeyException e) {
+            throw new OAuth2SignatureException(e);
+        } catch (UnsupportedEncodingException e) {
             throw new OAuth2SignatureException(e);
         }
     }

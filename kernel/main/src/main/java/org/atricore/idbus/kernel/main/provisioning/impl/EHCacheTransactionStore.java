@@ -30,6 +30,8 @@ public class EHCacheTransactionStore implements TransactionStore , InitializingB
 
     private ApplicationContext applicationContext;
 
+    private int expiredTransactionsTimeToLiveSecs = 3600;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -90,6 +92,14 @@ public class EHCacheTransactionStore implements TransactionStore , InitializingB
 
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
+    }
+
+    public int getExpiredTransactionsTimeToLiveSecs() {
+        return expiredTransactionsTimeToLiveSecs;
+    }
+
+    public void setExpiredTransactionsTimeToLiveSecs(int expiredTransactionsTimeToLiveSecs) {
+        this.expiredTransactionsTimeToLiveSecs = expiredTransactionsTimeToLiveSecs;
     }
 
     @Override
@@ -154,7 +164,7 @@ public class EHCacheTransactionStore implements TransactionStore , InitializingB
     public void store(PendingTransaction transaction) {
 
         long now = System.currentTimeMillis();
-        int ttlInSecs = (int) ((transaction.getExpiresOn() - now) / 1000L);
+        int ttlInSecs = (int) ((transaction.getExpiresOn() - now) / 1000L) + expiredTransactionsTimeToLiveSecs;
 
         Element transactionById = new Element(transaction.getId(), transaction);
         transactionById.setTimeToLive(ttlInSecs);

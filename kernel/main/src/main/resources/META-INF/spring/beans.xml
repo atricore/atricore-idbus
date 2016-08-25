@@ -115,7 +115,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <bean name="mailService" class="org.atricore.idbus.kernel.main.mail.MailServiceImpl">
         <property name="senders">
             <list>
-                <bean class="org.atricore.idbus.kernel.main.mail.MailSender" init-method="init">
+                <bean class="org.atricore.idbus.kernel.main.mail.MailSenderImpl" init-method="init">
                     <property name="name" value="default"/>
                     <property name="host" value="${mail.smtp.host}"/>
                     <property name="port" value="${mail.smtp.port}"/>

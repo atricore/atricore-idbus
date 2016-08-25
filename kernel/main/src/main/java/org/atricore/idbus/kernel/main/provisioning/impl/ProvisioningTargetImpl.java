@@ -1209,11 +1209,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     /**
      * Looks for transactions by ID and Code
      */
-    protected PendingTransaction consumePendingTransaction(String idOrCode) throws TransactionExpiredException {
+    protected PendingTransaction consumePendingTransaction(String idOrCode) throws ProvisioningException {
 
         // Transaction Code is optional
-
-        PendingTransaction t = transactionStore.remove(idOrCode);
+        PendingTransaction t = transactionStore.retrieve(idOrCode);
         if (t != null) {
             // Did the transaction already expired
             long now = System.currentTimeMillis();
@@ -1229,7 +1228,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         if (logger.isDebugEnabled())
             logger.trace("Transaction not found ID Or Code : " + idOrCode);
 
-        throw new TransactionExpiredException(idOrCode);
+        throw new TransactionInvalidException(idOrCode);
     }
     
     /**
