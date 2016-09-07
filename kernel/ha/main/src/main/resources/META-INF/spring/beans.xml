@@ -39,7 +39,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- Configuration Admin entry                                           -->
     <!-- =================================================================== -->
     <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
+
         <!-- AQM properties -->
+        <prop key="aqm.builder">aqm-ehcache</prop>
         <prop key="aqm.brokerName">idbusAqmBrokerHA</prop>
         <prop key="aqm.host">localhost</prop>
         <prop key="aqm.bind">0.0.0.0</prop>
