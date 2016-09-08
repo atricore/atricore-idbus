@@ -151,6 +151,8 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
                 }
 
                 user.setGroups(groups);
+            } else {
+                user.setGroups(new Group[0]);
             }
 
             if (spmlUser.getAttributeValue() != null) {
@@ -166,6 +168,8 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
                 }
 
                 user.setAttrs(attrs);
+            } else {
+                user.setAttrs(new UserAttributeValue[0]);
             }
             
             // Copy password if found
