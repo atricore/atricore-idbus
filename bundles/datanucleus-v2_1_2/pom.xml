@@ -28,20 +28,20 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>datanucleus-v2_1_2</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>pom</packaging>
     <name>Atricore IDBus :: Bundle : Datanucleus v2.1.2 OSGi</name>
 
     <properties>
 
-        <idbus.kernel.version>1.4.2-SNAPSHOT</idbus.kernel.version>
-        <idbus.bundle.javax-jdo-v3_0.version>1.4.2-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
+        <idbus.kernel.version>1.4.2</idbus.kernel.version>
+        <idbus.bundle.javax-jdo-v3_0.version>1.4.2</idbus.bundle.javax-jdo-v3_0.version>
 
         <datanucleus.version>2.1.2</datanucleus.version>
         <datanucleus.osgi.version>2.1.2</datanucleus.osgi.version>

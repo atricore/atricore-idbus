@@ -27,13 +27,13 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.common</groupId>
         <artifactId>common</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.common</groupId>
     <artifactId>org.atricore.idbus.kernel.common.boot</artifactId>
     <packaging>bundle</packaging>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <name>Atricore IDBus :: Common : Boot</name>
 
     <dependencies>

@@ -29,18 +29,18 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
         <artifactId>idconfirmation</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
     <artifactId>org.atricore.idbus.capabilities.idconfirmation.ui</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : Identity Confirmation UI Component</name>
 
     <properties>
-        <idbus.cap.idconf.version>1.4.2-SNAPSHOT</idbus.cap.idconf.version>
-        <idbus.cap.sso.version>1.4.2-SNAPSHOT</idbus.cap.sso.version>
+        <idbus.cap.idconf.version>1.4.2</idbus.cap.idconf.version>
+        <idbus.cap.sso.version>1.4.2</idbus.cap.sso.version>
         <ops4j.paxwicket.version>2.1.1</ops4j.paxwicket.version>
         <!--apache-wicket.version>1.4.19</apache-wicket.version-->
         <apache-wicket.version>6.7.0</apache-wicket.version>

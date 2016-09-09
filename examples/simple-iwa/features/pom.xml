@@ -10,12 +10,12 @@
     <parent>
         <groupId>org.atricore.idbus.examples.simple-iwa</groupId>
         <artifactId>org.atricore.idbus.examples.simple-iwa.project</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
 
     <groupId>org.atricore.idbus.examples.simple-iwa</groupId>
 	<artifactId>org.atricore.idbus.examples.simple-iwa.features</artifactId>
-    <version>1.4.2-SNAPSHOT</version>
+    <version>1.4.2</version>
     <name>Atricore IDBus :: Example : Simple Integrated Windows Authentication Identity Appliance Feature</name>
 	<packaging>jar</packaging>
 
