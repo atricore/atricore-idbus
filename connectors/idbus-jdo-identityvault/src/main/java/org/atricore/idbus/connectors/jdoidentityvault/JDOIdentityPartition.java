@@ -162,11 +162,11 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     // -------------------------------------< Group >
 
-//    @Transactional
+    //    @Transactional
     protected Group findGroupById(long id) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOGroup jdoGroup = groupDao.findById(id);
@@ -175,22 +175,22 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toGroup(jdoGroup);
 
         } catch (IncorrectResultSizeDataAccessException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupNotFoundException(id);
 
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -200,13 +200,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         return findGroupById(Long.parseLong(id));
     }
 
-//    @Transactional
+    //    @Transactional
     public Group findGroupByName(String name) throws ProvisioningException {
 
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
-        
+        TransactionStatus status = transactionManager.getTransaction(txDef);
+
         try {
             JDOGroup jdoGroup = groupDao.findByName(name);
             jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
@@ -214,22 +214,22 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toGroup(jdoGroup);
 
         } catch (IncorrectResultSizeDataAccessException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupNotFoundException(name);
 
             throw new ProvisioningException(e);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public Collection<Group> findGroupsByUserName(String userName) throws ProvisioningException {
-        
+
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findByUserName(userName);
@@ -237,17 +237,17 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toGroups(jdoGroups);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
 
-//    @Transactional
+    //    @Transactional
     public Collection<Group> findAllGroups() throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findAll();
@@ -256,16 +256,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toGroups(jdoGroups);
 
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public Group updateGroup(Group group) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOGroup jdoGroup = groupDao.findById(Long.parseLong(group.getId()));
@@ -297,25 +297,25 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toGroup(jdoGroup);
 
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(group.getId());
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(group.getId());
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(group.getId());
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public Group addGroup(Group group) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOGroup jdoGroup = toJDOGroup(group);
@@ -324,18 +324,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toGroup(jdoGroup);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public void deleteGroup(String groupId) throws ProvisioningException {
 
         long id = Long.parseLong(groupId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOGroup jdoGroup = groupDao.findById(id);
@@ -352,16 +352,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             }
             transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
@@ -370,16 +370,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     // -------------------------------------< User >
 
-//    @Transactional
+    //    @Transactional
     public Collection<User> getUsersByGroup(Group group) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-//    @Transactional
+    //    @Transactional
     protected User findUserById(long id) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
 
@@ -388,31 +388,31 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toUser(jdoUser, true);
         } catch (IncorrectResultSizeDataAccessException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserNotFoundException(id);
 
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public User findUserByUserName(String username) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOUser jdoUser = userDao.findByUserName(username);
@@ -420,7 +420,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toUser(jdoUser, true);
         } catch (IncorrectResultSizeDataAccessException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserNotFoundException(username);
 
@@ -434,11 +434,11 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         return findUserById(Long.parseLong(id));
     }
 
-//    @Transactional
+    //    @Transactional
     public Collection<User> findAllUsers() throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOUser> jdoUsers = userDao.findAll();
@@ -446,16 +446,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toUsers(jdoUsers, true);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public User addUser(User user) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOUser jdoUser = toJDOUser(user, false);
@@ -465,7 +465,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toUser(jdoUser, true);
 
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -474,7 +474,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public List<User> addUsers(List<User> users) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOUser> jdoUsers = new ArrayList<JDOUser>();
@@ -492,16 +492,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return savedUsers;
 
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public User updateUser(User user) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOUser jdoUser = userDao.findById(Long.parseLong(user.getId()));
@@ -532,27 +532,27 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toUser(jdoUser, true);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(user.getId());
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(user.getId());
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(user.getId());
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public void deleteUser(String userId) throws ProvisioningException {
 
         long id = Long.parseLong(userId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOUser jdoUser = userDao.findById(id);
@@ -581,16 +581,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             }
             transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -598,7 +598,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public Collection<User> findUsers(UserSearchCriteria searchCriteria, long fromResult, long resultCount, String sortColumn, boolean sortAscending) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOUser> jdoUsers = userDao.find(searchCriteria, fromResult, resultCount, sortColumn, sortAscending);
@@ -606,7 +606,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toUsers(jdoUsers, true);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -614,14 +614,14 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public Long findUsersCount(UserSearchCriteria searchCriteria) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Long usersCount = userDao.findCount(searchCriteria);
             transactionManager.commit(status);
             return usersCount;
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -629,14 +629,14 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public Collection<String> findUserNames(List<String> usernames) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<String> foundUsernames = userDao.findUserNames(usernames);
             transactionManager.commit(status);
             return foundUsernames;
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -646,7 +646,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public Collection<SecurityQuestion> findAllSecurityQuestions() throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOSecurityQuestion> securityQuestions = securityQuestionDAO.findAll();
@@ -654,18 +654,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return secQuestions;
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
     // -------------------------------------< ACLs >
 
-//    @Transactional
+    //    @Transactional
     public AclEntry findAclEntryByApprovalToken(String approvalToken) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findByApprovalToken(approvalToken);
@@ -673,23 +673,23 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toAclEntry(jdoAclEntry);
         } catch (IncorrectResultSizeDataAccessException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new AclEntryNotFoundException(approvalToken);
             throw new ProvisioningException(e);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public AclEntry findAclEntryById(String aclEntryId) throws ProvisioningException {
 
         long id = Long.parseLong(aclEntryId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findById(id);
@@ -697,21 +697,21 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toAclEntry(jdoAclEntry);
         } catch (IncorrectResultSizeDataAccessException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new AclEntryNotFoundException(id);
             throw new ProvisioningException(e);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
+    //    @Transactional
     public AclEntry updateAclEntry(AclEntry aclEntry) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findById(Long.parseLong(aclEntry.getId()));
@@ -721,28 +721,28 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toAclEntry(jdoAclEntry);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
     }
 
-//    @Transactional
+    //    @Transactional
     public void deleteAclEntry(String aclEntryId) throws ProvisioningException {
 
         long id = Long.parseLong(aclEntryId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOAclEntry jdoAclEntry = aclEntryDao.findById(id);
@@ -751,16 +751,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             }
             transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
@@ -768,11 +768,11 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     // -------------------------------------< SecurityTokens >
 
-//    @Transactional
+    //    @Transactional
     public SecurityToken addSecurityToken(SecurityToken securityToken) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOSecurityToken jdoSecurityToken = toJDOSecurityToken(securityToken);
@@ -782,17 +782,17 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toSecurityToken(jdoSecurityToken);
 
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
     }
 
-//    @Transactional
+    //    @Transactional
     public SecurityToken updateSecurityToken(SecurityToken securityToken) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(securityToken.getId());
@@ -802,26 +802,26 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toSecurityToken(jdoSecurityToken);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new SecurityTokenNotFoundException(securityToken.getId());
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new SecurityTokenNotFoundException(securityToken.getId());
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new SecurityTokenNotFoundException(securityToken.getId());
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
 
     }
 
-//    @Transactional
+    //    @Transactional
     public void deleteSecurityToken(String tokenId) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(tokenId);
@@ -830,25 +830,25 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             }
             transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
-    public SecurityToken findSecurityTokenByTokenId(String tokenId) throws ProvisioningException{
+    //    @Transactional
+    public SecurityToken findSecurityTokenByTokenId(String tokenId) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             JDOSecurityToken jdoSecurityToken = securityTokenDao.findByTokenId(tokenId);
@@ -857,22 +857,22 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             return toSecurityToken(jdoSecurityToken);
 
         } catch (IncorrectResultSizeDataAccessException e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new SecurityTokenNotFoundException(tokenId);
 
             throw new ProvisioningException(e);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
-    public Collection<SecurityToken> findSecurityTokensByIssueInstantBefore(long issueInstant ) throws ProvisioningException {
+    //    @Transactional
+    public Collection<SecurityToken> findSecurityTokensByIssueInstantBefore(long issueInstant) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOSecurityToken> jdoSecurityTokens = securityTokenDao.findByIssueInstantBefore(issueInstant);
@@ -880,16 +880,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toSecurityTokens(jdoSecurityTokens);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
-//    @Transactional
-    public Collection<SecurityToken> findSecurityTokensByExpiresOnBefore(long expiresOn ) throws ProvisioningException {
+    //    @Transactional
+    public Collection<SecurityToken> findSecurityTokensByExpiresOnBefore(long expiresOn) throws ProvisioningException {
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(txDef );
+        TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
             Collection<JDOSecurityToken> jdoSecurityTokens = securityTokenDao.findByExpiresOnBefore(expiresOn);
@@ -897,7 +897,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             transactionManager.commit(status);
             return toSecurityTokens(jdoSecurityTokens);
         } catch (Exception e) {
-            transactionManager.rollback(status);
+            if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -947,7 +947,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         int i = 0;
         for (JDOGroup jdoGroup : jdoGroups) {
             groups[i] = toGroup(jdoGroup);
-            i ++;
+            i++;
         }
         return groups;
 
@@ -962,7 +962,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         if (jdoGroup.getAttrs() != null) {
             List<GroupAttributeValue> attrs = new ArrayList<GroupAttributeValue>();
-            
+
             for (int i = 0; i < jdoGroup.getAttrs().length; i++) {
                 JDOGroupAttributeValue jdoAttr = jdoGroup.getAttrs()[i];
                 if (jdoAttr.getId() > 0) {
@@ -1028,7 +1028,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     protected JDOUser toJDOUser(JDOUser jdoUser, User user, boolean keepUserPassword) {
         String pwd = jdoUser.getUserPassword();
 
-        BeanUtils.copyProperties(user, jdoUser, new String[] {"id",
+        BeanUtils.copyProperties(user, jdoUser, new String[]{"id",
                 "groups",
                 "acls",
                 "attrs",
@@ -1075,7 +1075,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
                 jdoAcls[i] = jdoAcl;
                 JDOAclEntry[] jdoAclEntries = new JDOAclEntry[acl.getEntries().length];
-                for (int j =0; j < acl.getEntries().length; j++) {
+                for (int j = 0; j < acl.getEntries().length; j++) {
                     AclEntry aclEntry = acl.getEntries()[j];
 
                     JDOAclEntry jdoAclEntry;
@@ -1123,7 +1123,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         if (user.getSecurityQuestions() != null) {
             JDOUserSecurityQuestion[] jdoSecurityQuestions = new JDOUserSecurityQuestion[user.getSecurityQuestions().length];
 
-            for (int i = 0 ; i < user.getSecurityQuestions().length ; i++ ) {
+            for (int i = 0; i < user.getSecurityQuestions().length; i++) {
                 UserSecurityQuestion userSecurityQuestion = user.getSecurityQuestions()[i];
                 JDOUserSecurityQuestion jdoUserSecurityQuestion = null;
 
@@ -1156,8 +1156,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected User toUser(JDOUser jdoUser, boolean retrieveUserPassword) {
         User user = new User();
-        BeanUtils.copyProperties(jdoUser, user, new String[] {"id",
-                "groups", "acls", "securityQuestions", "attrs","lastAuthentication",
+        BeanUtils.copyProperties(jdoUser, user, new String[]{"id",
+                "groups", "acls", "securityQuestions", "attrs", "lastAuthentication",
                 "passwordExpirationDate", "accountExpirationDate"});
 
         user.setId(jdoUser.getId() + "");
@@ -1165,13 +1165,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         if (!retrieveUserPassword)
             user.setUserPassword(null);
 
-        if(jdoUser.getAccountExpirationDate() != null)
+        if (jdoUser.getAccountExpirationDate() != null)
             user.setAccountExpirationDate(jdoUser.getAccountExpirationDate().getTime());
 
-        if(jdoUser.getPasswordExpirationDate() != null)
+        if (jdoUser.getPasswordExpirationDate() != null)
             user.setPasswordExpirationDate(jdoUser.getPasswordExpirationDate().getTime());
 
-        if(jdoUser.getLastAuthentication() != null)
+        if (jdoUser.getLastAuthentication() != null)
             user.setLastAuthentication(jdoUser.getLastAuthentication().getTime());
 
         if (jdoUser.getGroups() != null) {
@@ -1217,7 +1217,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         if (jdoUser.getAttrs() != null) {
             List<UserAttributeValue> attrs = new ArrayList<UserAttributeValue>();
-            
+
             for (int i = 0; i < jdoUser.getAttrs().length; i++) {
                 JDOUserAttributeValue jdoAttr = jdoUser.getAttrs()[i];
                 if (jdoAttr.getId() > 0) {
@@ -1238,7 +1238,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         if (jdoUser.getSecurityQuestions() != null) {
             List<UserSecurityQuestion> securityQuestions = new ArrayList<UserSecurityQuestion>(jdoUser.getSecurityQuestions().length);
 
-            for (int i = 0 ; i < jdoUser.getSecurityQuestions().length ; i++) {
+            for (int i = 0; i < jdoUser.getSecurityQuestions().length; i++) {
                 JDOUserSecurityQuestion jdoUserSecurityQuestion = jdoUser.getSecurityQuestions()[i];
                 if (jdoUserSecurityQuestion.getId() > 0) {
 
@@ -1265,7 +1265,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         return user;
 
     }
-    
+
     protected Collection<User> toUsers(Collection<JDOUser> jdoUsers, boolean retrieveUserPassword) {
         List<User> users = new ArrayList<User>(jdoUsers.size());
         for (JDOUser jdoUser : jdoUsers) {
@@ -1388,7 +1388,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
 
         return a;
-    }    
+    }
 
 
 }
