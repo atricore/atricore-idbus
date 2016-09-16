@@ -305,7 +305,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         if (e == null) {
 
             int retry = 0;
-            while (e == null && retry <= receiveRetries) {
+            while (e == null && retry < receiveRetries) {
                 // Wait and try again, maybe state is on the road :)
                 if (logger.isTraceEnabled())
                     logger.trace("Cache miss, wait for " + 500 + " ms");
