@@ -145,10 +145,11 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
             try {
                 started = true;
                 logger.debug("Startup Derby Network Server..." + descriptor.getHostname() + ":" + descriptor.getPort());
+
                 // TODO : Send a different OS ?
                 derbyServer.start(new PrintWriter(System.err));
-                logger.debug("Startup Derby Network Server...OK ");
 
+                logger.debug("Startup Derby Network Server...OK ");
 
                 long timeout = descriptor.getTimeout() * 1000L;
                 long now = System.currentTimeMillis();
@@ -166,8 +167,8 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
                             Properties p = derbyServer.getCurrentProperties();
 
                             if (logger.isDebugEnabled()) {
-                                for (Object key : p.keySet()) {
-                                    Object v = p.get(key);
+                                for (String key : p.stringPropertyNames()) {
+                                    String v = p.getProperty(key);
                                     logger.debug(getId() + ":" + key + "=" + v);
                                 }
                             }

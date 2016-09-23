@@ -69,7 +69,7 @@ if "%KARAF_DATA%" == "" (
 )
 
 set LOCAL_CLASSPATH=%CLASSPATH%
-set DEFAULT_JAVA_OPTS=-server -Xmx1024M -XX:MaxPermSize=512M -Dderby.system.home="%KARAF_DATA%\derby" -Dderby.storage.fileSyncTransactionLog=true -Dcom.sun.management.jmxremote
+set DEFAULT_JAVA_OPTS=-server -Xmx1024M -XX:MaxPermSize=512M -Dderby.connection.requireAuthentication=TRUE -Dderby.system.home="%KARAF_DATA%\derby" -Dderby.storage.fileSyncTransactionLog=true -Dcom.sun.management.jmxremote
 set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
 set DEFAULT_JAVA_DEBUG_OPTS=-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
 set DEFAULT_IDBUS_MONITORING_OPTS=-Dnewrelic.bootstrap_classpath=true -javaagent:"%KARAF_HOME%\newrelic\newrelic.jar"
