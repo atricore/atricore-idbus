@@ -482,8 +482,19 @@ public class SingleSignOnProducer extends SSOProducer {
             if (spChannel.isProxyModeEnabled()) {
                 // We need to check the session with the proxied IdP
                 try {
-                    SPSessionHeartBeatResponseType resp = performIdPProxySessionHeartBeat(exchange, secCtx);
-                    isSsoSessionValid = resp.isValid();
+
+                    // Send SP SSO Access Session, using SOAP Binding
+                    BindingChannel spBindingChannel = (BindingChannel) spChannel.getProxy();
+                    if (spBindingChannel == null) {
+                        logger.error("No SP Binding channel found for channel " + channel.getName());
+                        throw new SSOException("No proxy channel configured");
+                    }
+
+                    EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
+                    if (ed != null) {
+                        SPSessionHeartBeatResponseType resp = performIdPProxySessionHeartBeat(exchange, secCtx);
+                        isSsoSessionValid = resp.isValid();
+                    }
                 } catch (SSOException e) {
                     logger.error(e.getMessage(), e);
                     isSsoSessionValid = false;
