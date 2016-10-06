@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.monitoring</groupId>
         <artifactId>monitoring</artifactId>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.monitoring</groupId>
