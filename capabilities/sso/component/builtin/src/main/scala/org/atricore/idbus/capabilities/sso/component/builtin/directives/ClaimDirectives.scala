@@ -79,7 +79,9 @@ trait ClaimDirectives extends Logging {
           val claimChannels = spChannel.getClaimProviders
 
           claimChannels.foreach { claimChannel =>
+            //log.trace("claimChannel:" + claimChannel.getName)
             claimChannel.getEndpoints.foreach { claimEndpoint =>
+              //log.trace("claimEndpoint:" + claimEndpoint.getName)
               if (claimEndpoint.getName == as.getCurrentClaimsEndpoint.getName) {
                 log.debug(
                   "Retrying claim endpoint " + claimEndpoint.getName + ". Already tried " +
@@ -108,10 +110,15 @@ trait ClaimDirectives extends Logging {
                     cc =>
                       cc.getEndpoints.filter{
                         ep =>
-                        // consider only unused artifact and local bindings
+
+                          //log.debug("Claims endpoint #" + ep.getName)
+
+                          // consider only unused artifact and local bindings
                           (ep.getBinding == SSOBinding.SSO_ARTIFACT.getValue ||
                             ep.getBinding == SSOBinding.SSO_LOCAL.getValue) &&
                             !as.getUsedClaimsEndpoints.contains(ep.getName)
+
+
                       }.filter {
                         ep =>
                             val authnCtxClass = AuthnCtxClass.asEnum(ep.getType)

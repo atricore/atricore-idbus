@@ -1749,6 +1749,7 @@ public class SingleSignOnProducer extends SSOProducer {
      */
     protected ClaimChannel selectNextClaimsEndpoint(AuthenticationState status, CamelMediationExchange exchange) {
 
+
         SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
         IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
 
