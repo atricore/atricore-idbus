@@ -408,6 +408,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
                 String salt = generateSalt();
 
                 user.setSalt(salt);
+                user.setLastPasswordChangeDate(System.currentTimeMillis());
                 user.setUserPassword(createPasswordHash(user.getUserPassword(), salt));
             } catch (Exception e) {
                 throw new ProvisioningException(e);
@@ -439,6 +440,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         String tmpPassword = RandomStringUtils.randomAlphanumeric(6);
         u.setSalt(salt);
         u.setUserPassword(createPasswordHash(tmpPassword, salt));
+        u.setLastPasswordChangeDate(System.currentTimeMillis());
         u.setAccountDisabled(true);
 
         u = identityPartition.addUser(u);
@@ -478,6 +480,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Password
         tmpUser.setUserPassword(createPasswordHash(confirmReq.getUserPassword(), tmpUser.getSalt()));
+        tmpUser.setLastPasswordChangeDate(System.currentTimeMillis());
 
         // Groups
         // tmpUser.setGroups(confirmReq.getGroups());
@@ -625,6 +628,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             // TODO : Apply password validation rules
             String newPwdHash = createPasswordHash(setPwdRequest.getNewPassword(), user.getSalt());
             user.setUserPassword(newPwdHash);
+            user.setLastPasswordChangeDate(System.currentTimeMillis());
             identityPartition.updateUser(user);
             SetPasswordResponse setPwdResponse = new SetPasswordResponse();
             
@@ -656,6 +660,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             String pwdHash = createPasswordHash(pwd, user.getSalt());
             user.setUserPassword(pwdHash);
+            user.setLastPasswordChangeDate(System.currentTimeMillis());
 
             identityPartition.updateUser(user);
 
@@ -734,6 +739,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             // Set user's password
 
             user.setUserPassword(pwdHash);
+            user.setLastPasswordChangeDate(System.currentTimeMillis());
 
             user = identityPartition.updateUser(user);
 

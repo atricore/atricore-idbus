@@ -155,6 +155,12 @@
             <field name="preventNewSession">
                 <column name="PREVENTNEWSESSION" />
             </field>
+            <field name="accountCreationDate">
+                <column name="CREATIONDATE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
+            </field>
+            <field name="accountModificationDate">
+                <column name="MODIFICATIONDATE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
+            </field>
             <field name="allowUserToChangePassword">
                 <column name="ALLOWUSERTOCHANGEPASSWORD" />
             </field>
@@ -172,6 +178,9 @@
             </field>
             <field name="daysBeforeExpiration">
                 <column name="DAYSBEFOREEXPIRATION" jdbc-type="INTEGER"/>
+            </field>
+            <field name="lastPasswordChangeDate">
+                <column name="LASTPWDCHANGE" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP"/>
             </field>
             <field name="userPassword">
                 <column name="USERPASSWORD" length="255" jdbc-type="VARCHAR"/>

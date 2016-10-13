@@ -109,7 +109,7 @@ public class AuthenticatorImpl implements Authenticator {
 
     /**
      * A prototype instance of the used authentication scheme is injected.
-     * This isntance will be cloned for each authentication process.
+     * This instance will be cloned for each authentication process.
      */
     public void setAuthenticationSchemes(AuthenticationScheme[] as) {
         _as = new ArrayList<AuthenticationScheme>();

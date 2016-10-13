@@ -56,6 +56,8 @@ public class JDOUser implements Serializable {
     private Boolean terminatePreviousSession;
     private Boolean preventNewSession;
     private Date lastAuthentication;
+    private Date accountCreationDate;
+    private Date accountModificationDate;
 
 //<--- Security Password---->
     private Boolean allowUserToChangePassword;
@@ -64,6 +66,7 @@ public class JDOUser implements Serializable {
     private Date passwordExpirationDate;
     private Boolean notifyPasswordExpiration;
     private Integer daysBeforeExpiration;
+    private Date lastPasswordChangeDate;
 
 //<--- Security Set Password---->
     private String userPassword;
@@ -334,6 +337,22 @@ public class JDOUser implements Serializable {
         this.lastAuthentication = lastAuthentication;
     }
 
+    public Date getAccountCreationDate() {
+        return accountCreationDate;
+    }
+
+    public void setAccountCreationDate(Date accountCreationDate) {
+        this.accountCreationDate = accountCreationDate;
+    }
+
+    public Date getAccountModificationDate() {
+        return accountModificationDate;
+    }
+
+    public void setAccountModificationDate(Date accountModificationDate) {
+        this.accountModificationDate = accountModificationDate;
+    }
+
     public Boolean isLimitSimultaneousLogin() {
         return limitSimultaneousLogin;
     }
@@ -436,6 +455,14 @@ public class JDOUser implements Serializable {
 
     public void setDaysBeforeExpiration(Integer daysBeforeExpiration) {
         this.daysBeforeExpiration = daysBeforeExpiration;
+    }
+
+    public Date getLastPasswordChangeDate() {
+        return lastPasswordChangeDate;
+    }
+
+    public void setLastPasswordChangeDate(Date lastPasswordChangeDate) {
+        this.lastPasswordChangeDate = lastPasswordChangeDate;
     }
 
     public String getUserPassword() {

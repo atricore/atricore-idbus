@@ -458,7 +458,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         TransactionStatus status = transactionManager.getTransaction(txDef);
 
         try {
+
+            Date now = new Date();
             JDOUser jdoUser = toJDOUser(user, false);
+
+            jdoUser.setAccountCreationDate(now);
+            jdoUser.setAccountModificationDate(now);
+
             jdoUser = userDao.save(jdoUser);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             transactionManager.commit(status);
@@ -479,7 +485,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         try {
             Collection<JDOUser> jdoUsers = new ArrayList<JDOUser>();
             for (User user : users) {
-                jdoUsers.add(toJDOUser(user, false));
+
+                Date now = new Date();
+                JDOUser jdoUser = toJDOUser(user, false);
+                jdoUser.setAccountCreationDate(now);
+                jdoUser.setAccountModificationDate(now);
+                jdoUsers.add(jdoUser);
             }
             userDao.saveAll(jdoUsers);
             jdoUsers = userDao.detachCopyAll(jdoUsers, FetchPlan.FETCH_SIZE_GREEDY);
@@ -526,6 +537,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
             // Do not let users to change the password!
             toJDOUser(jdoUser, user, false);
+            Date now = new Date();
+            jdoUser.setAccountModificationDate(now);
             jdoUser = userDao.save(jdoUser);
             usrAttrValDao.deleteRemovedValues(oldAttrs, jdoUser.getAttrs());
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
@@ -1035,8 +1048,21 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 "securityQuestions",
                 "lastAuthentication",
                 "passwordExpirationDate",
-                "accountExpirationDate"
+                "accountExpirationDate",
+                "lastPasswordChangeDate",
+                "accountCreationDate",
+                "accountModificationDate"
+
         });
+
+        if (user.getLastPasswordChangeDate() != null)
+            jdoUser.setLastPasswordChangeDate(new Date(user.getLastPasswordChangeDate()));
+
+        if (user.getAccountCreationDate() != null)
+            jdoUser.setAccountCreationDate(new Date(user.getAccountCreationDate()));
+
+        if (user.getAccountModificationDate() != null)
+            jdoUser.setAccountModificationDate(new Date(user.getAccountModificationDate()));
 
         if (user.getLastAuthentication() != null)
             jdoUser.setLastAuthentication(new Date(user.getLastAuthentication()));
@@ -1158,7 +1184,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         User user = new User();
         BeanUtils.copyProperties(jdoUser, user, new String[]{"id",
                 "groups", "acls", "securityQuestions", "attrs", "lastAuthentication",
-                "passwordExpirationDate", "accountExpirationDate"});
+                "passwordExpirationDate", "accountExpirationDate", "accountCreationDate", "accountModificationDate",
+                "lastPasswordChangeDate"});
 
         user.setId(jdoUser.getId() + "");
 
@@ -1168,8 +1195,17 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         if (jdoUser.getAccountExpirationDate() != null)
             user.setAccountExpirationDate(jdoUser.getAccountExpirationDate().getTime());
 
+        if (jdoUser.getAccountCreationDate() != null)
+            user.setAccountCreationDate(jdoUser.getAccountCreationDate().getTime());
+
+        if (jdoUser.getAccountModificationDate() != null)
+            user.setAccountModificationDate(jdoUser.getAccountModificationDate().getTime());
+
         if (jdoUser.getPasswordExpirationDate() != null)
             user.setPasswordExpirationDate(jdoUser.getPasswordExpirationDate().getTime());
+
+        if (jdoUser.getLastPasswordChangeDate() != null)
+            user.setLastPasswordChangeDate(jdoUser.getLastPasswordChangeDate().getTime());
 
         if (jdoUser.getLastAuthentication() != null)
             user.setLastAuthentication(jdoUser.getLastAuthentication().getTime());

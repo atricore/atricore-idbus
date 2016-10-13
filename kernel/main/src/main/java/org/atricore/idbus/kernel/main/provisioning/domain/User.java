@@ -54,6 +54,8 @@ public class User implements Serializable {
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
     private Boolean preventNewSession;
+    private Long accountCreationDate;
+    private Long accountModificationDate;
 
 //<--- Security Password---->
     private Boolean allowUserToChangePassword;
@@ -62,6 +64,7 @@ public class User implements Serializable {
     private Long passwordExpirationDate;
     private Boolean notifyPasswordExpiration;
     private Integer daysBeforeExpiration;
+    private Long lastPasswordChangeDate;
 
 //<--- Security Set Password---->
     private String userPassword;
@@ -383,6 +386,22 @@ public class User implements Serializable {
         this.preventNewSession = preventNewSession;
     }
 
+    public Long getAccountCreationDate() {
+        return accountCreationDate;
+    }
+
+    public void setAccountCreationDate(Long accountCreationDate) {
+        this.accountCreationDate = accountCreationDate;
+    }
+
+    public Long getAccountModificationDate() {
+        return accountModificationDate;
+    }
+
+    public void setAccountModificationDate(Long accountModificationDate) {
+        this.accountModificationDate = accountModificationDate;
+    }
+
     public Boolean isAllowUserToChangePassword() {
         return allowUserToChangePassword;
     }
@@ -441,6 +460,14 @@ public class User implements Serializable {
 
     public void setDaysBeforeExpiration(Integer daysBeforeExpiration) {
         this.daysBeforeExpiration = daysBeforeExpiration;
+    }
+
+    public Long getLastPasswordChangeDate() {
+        return lastPasswordChangeDate;
+    }
+
+    public void setLastPasswordChangeDate(Long lastPasswordChangeDate) {
+        this.lastPasswordChangeDate = lastPasswordChangeDate;
     }
 
     public String getUserPassword() {

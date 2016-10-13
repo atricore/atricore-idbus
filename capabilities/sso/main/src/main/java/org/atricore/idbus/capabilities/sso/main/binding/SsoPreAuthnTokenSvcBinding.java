@@ -101,12 +101,18 @@ public class SsoPreAuthnTokenSvcBinding extends AbstractMediationHttpBinding {
 
         StringBuilder ssoQryString = new StringBuilder();
 
+        Message httpOut = exchange.getOut();
+        Message httpIn = exchange.getIn();
+        String ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed);
+
         if (out.getContent() instanceof PreAuthenticatedTokenRequestType) {
 
             // Marshall pre-authn token request to query string
             PreAuthenticatedTokenRequestType req = (PreAuthenticatedTokenRequestType) out.getContent();
 
-            ssoQryString.append("?request_id=").append(req.getID());
+            ssoQryString.append(ssoRedirLocation.contains("?") ? "&" : "?");
+
+            ssoQryString.append("request_id=").append(req.getID());
 
             if (out.getRelayState() != null) {
                 ssoQryString.append("&relay_state=").append(out.getRelayState());
@@ -129,9 +135,7 @@ public class SsoPreAuthnTokenSvcBinding extends AbstractMediationHttpBinding {
             throw new IllegalStateException("Unsupported content type : " + out.getContent().getClass().getSimpleName());
         }
 
-        Message httpOut = exchange.getOut();
-        Message httpIn = exchange.getIn();
-        String ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed) + ssoQryString;
+        ssoRedirLocation += ssoQryString;
 
         if (logger.isDebugEnabled())
             logger.debug("Redirecting to " + ssoRedirLocation);

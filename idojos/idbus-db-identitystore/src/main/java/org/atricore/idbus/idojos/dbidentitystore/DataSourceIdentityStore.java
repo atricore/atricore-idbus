@@ -62,6 +62,10 @@ public class DataSourceIdentityStore extends AbstractDBIdentityStore {
         _datasource = null; // clear the previous reference to the DS.
     }
 
+    public void setDatasource(DataSource _datasource) {
+        this._datasource = _datasource;
+    }
+
     // --------------------------------------------------------------------------
     // Proteced utils
     // --------------------------------------------------------------------------
