@@ -64,15 +64,16 @@ public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
 
         setAuthenticated(false);
 
-        String username = getUsername(_inputCredentials);
+        String userid = getUserId(_inputCredentials);
         String password = getPassword(_inputCredentials);
+        String username = getUserName(_knowCredentials);
 
         // Check if all credentials are present.
-        if (username == null || username.length() == 0 ||
+        if (userid == null || userid.length() == 0 ||
                 password == null || password.length() == 0) {
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Username " + (username == null || username.length() == 0 ? " not" : "") + " provided. " +
+                logger.debug("Userid " + (userid == null || userid.length() == 0 ? " not" : "") + " provided. " +
                         "Password " + (password == null || password.length() == 0 ? " not" : "") + " provided.");
             }
 
@@ -83,12 +84,12 @@ public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
         // Authenticate the user against the configured store via a bind
         // The configured store could be using a LDAP server , a DB, etc.
         BindContext bindCtx = new BindContextImpl();
-        setAuthenticated(((BindableCredentialStore) _credentialStore).bind(username, password, bindCtx));
+        setAuthenticated(((BindableCredentialStore) _credentialStore).bind(userid, password, bindCtx));
 
         if (logger.isDebugEnabled()) {
             if (logger.isDebugEnabled())
                 logger.debug("[authenticate()], Principal "+(isAuthenticated() ? "IS" : "IS NOT")+" authenticated : "
-                        + username);
+                        + userid + "/" + username);
         }
 
         // Propagate bind context ppolicies, if any to subject.
@@ -109,7 +110,7 @@ public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
         if (c instanceof BindableCredentialStore) {
             super.setCredentialStore(c);
         } else {
-            throw new RuntimeException("Invalid credential store type, it must be instace of " + BindableCredentialStore.class.getName());
+            throw new RuntimeException("Invalid credential store type, it must be instance of " + BindableCredentialStore.class.getName());
         }
 
     }

@@ -53,6 +53,10 @@ public abstract class AbstractSecurityTokenAuthenticator implements SecurityToke
         this.auth = auth;
     }
 
+    public AbstractSecurityTokenAuthenticator(String id) {
+        this.id = id;
+    }
+
 
     public Subject authenticate(Object requestToken) throws SecurityTokenEmissionException {
         Credential[] credentials = null;

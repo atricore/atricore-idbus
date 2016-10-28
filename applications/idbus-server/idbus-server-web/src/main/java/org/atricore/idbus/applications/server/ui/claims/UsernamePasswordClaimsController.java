@@ -200,6 +200,7 @@ public class UsernamePasswordClaimsController extends SimpleFormController {
 
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new CredentialClaimImpl("username", cmd.getUsername()));
+        claims.addClaim(new CredentialClaimImpl("userid", cmd.getUsername()));
         claims.addClaim(new CredentialClaimImpl("password", cmd.getPassword()));
         claims.addClaim(new CredentialClaimImpl("rememberMe", cmd.isRememberMe()));
 

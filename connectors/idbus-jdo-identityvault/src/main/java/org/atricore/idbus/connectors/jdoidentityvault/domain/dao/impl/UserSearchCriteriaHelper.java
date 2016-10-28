@@ -66,6 +66,16 @@ public class UserSearchCriteriaHelper {
                     params.put("email", ".*" + searchCriteria.getEmail().toLowerCase() + ".*");
                 }
             }
+            if (StringUtils.isNotBlank(searchCriteria.getPhoneNumber())) {
+                if (searchCriteria.isExactMatch()) {
+                    searchCriteriaQuery.append("telephoneNumber == :telephoneNumber");
+                    params.put("telephoneNumber", searchCriteria.getPhoneNumber());
+                } else {
+                    searchCriteriaQuery.append("telephoneNumber.matches(:telephoneNumber)");
+                    params.put("telephoneNumber", ".*" + searchCriteria.getPhoneNumber() + ".*");
+                }
+            }
+
             // Custom attributes
             if (searchCriteria.getAttributes().size() > 0) {
                 if (params.size() > 0)

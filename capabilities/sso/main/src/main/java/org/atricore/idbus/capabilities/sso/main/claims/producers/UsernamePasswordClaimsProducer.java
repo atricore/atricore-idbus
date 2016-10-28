@@ -163,6 +163,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
         String password = null;
         String username = null;
+        String userid = null;
         boolean rememberMe = false;
 
         // Adapt received simple claims to SAMLR Required token
@@ -173,6 +174,9 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
                 if (credentialClaim.getQualifier().equalsIgnoreCase("username"))
                     username = (String) c.getValue();
+
+                if (credentialClaim.getQualifier().equalsIgnoreCase("userid"))
+                    userid = (String) c.getValue();
 
                 if (credentialClaim.getQualifier().equalsIgnoreCase("password"))
                     password = (String) c.getValue();
@@ -198,7 +202,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
         // Build a SAMLR2 Compatible Security token
         UsernameTokenType usernameToken = new UsernameTokenType ();
         AttributedString usernameString = new AttributedString();
-        usernameString.setValue( username );
+        usernameString.setValue( userid != null ? userid : username );  // Prefer userid
 
         usernameToken.setUsername( usernameString );
         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );

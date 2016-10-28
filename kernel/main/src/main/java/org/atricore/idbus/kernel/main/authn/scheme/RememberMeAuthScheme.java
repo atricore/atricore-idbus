@@ -56,6 +56,8 @@ public class RememberMeAuthScheme extends AbstractAuthenticationScheme {
 
     public static final String USERNAME_CREDENTIAL_NAME="username";
 
+    public static final String USERID_CREDENTIAL_NAME="userid";
+
     public static final String REMEMBER_ME_TOKEN_CREDENTIAL_NAME="remembermeToken";
 
     private static final Log logger = LogFactory.getLog(RememberMeAuthScheme.class);
@@ -105,7 +107,7 @@ public class RememberMeAuthScheme extends AbstractAuthenticationScheme {
         }
 
         if (name.equalsIgnoreCase(USERNAME_CREDENTIAL_NAME)) {
-            return new UsernameCredential(value);
+            return new UserIdCredential(value);
         }
 
         // Don't know how to handle this name ...
@@ -189,6 +191,11 @@ public class RememberMeAuthScheme extends AbstractAuthenticationScheme {
         return new SimplePrincipal(getUsername(_inputCredentials));
     }
 
+    @Override
+    public Principal getInputPrincipal() {
+        return getPrincipal();
+    }
+
     public Principal getPrincipal(Credential[] credentials) {
         return new SimplePrincipal(getUsername(credentials));
     }
@@ -232,19 +239,21 @@ public class RememberMeAuthScheme extends AbstractAuthenticationScheme {
         String remembermeToken = (String) rememberMe.getValue();
         String username = getUsernameForToken(remembermeToken);
         if (username == null) {
-            logger.debug("Username not provided, skiping UsernameCredential injection");
+            logger.debug("Username not provided, skiping UserIdCredential injection");
             return;
         }
 
         // Now, inject username credential
         Credential usernameCred = doMakeCredentialProvider().newCredential(USERNAME_CREDENTIAL_NAME, username);
-        this._inputCredentials = new Credential[_inputCredentials.length+1];
+        Credential useridCred = doMakeCredentialProvider().newCredential(USERID_CREDENTIAL_NAME, username);
+        this._inputCredentials = new Credential[_inputCredentials.length+2];
         for (int i = 0; i < userCredentials.length; i++) {
             Credential userCredential = userCredentials[i];
             _inputCredentials[i] = userCredential;
         }
 
-        _inputCredentials[_inputCredentials.length - 1] = usernameCred;
+        _inputCredentials[_inputCredentials.length - 2] = usernameCred;
+        _inputCredentials[_inputCredentials.length - 1] = useridCred;
 
     }
 
@@ -332,12 +341,12 @@ public class RememberMeAuthScheme extends AbstractAuthenticationScheme {
     }
 
     /**
-     * Finds the credential instance that is a UsernameCredential in the given set
+     * Finds the credential instance that is a UserIdCredential in the given set
      */
-    protected UsernameCredential getUsernameCredential(Credential[] credentials) {
+    protected UserIdCredential getUsernameCredential(Credential[] credentials) {
         for (int i = 0; i < credentials.length; i++) {
-            if (credentials[i] instanceof UsernameCredential) {
-                return (UsernameCredential) credentials[i];
+            if (credentials[i] instanceof UserIdCredential) {
+                return (UserIdCredential) credentials[i];
             }
         }
         return null;
@@ -349,7 +358,7 @@ public class RememberMeAuthScheme extends AbstractAuthenticationScheme {
      * @see #getUsernameCredential(org.atricore.idbus.kernel.main.authn.Credential[])
      */
     protected String getUsername(Credential[] creds) {
-        UsernameCredential cred = getUsernameCredential(creds);
+        UserIdCredential cred = getUsernameCredential(creds);
         if (cred == null)
             return null;
 

@@ -71,6 +71,7 @@ public class SampleClaimsMediator extends AbstractCamelMediator {
 
                                         ClaimSet cs = new ClaimSetImpl();
                                         cs.addClaim(new CredentialClaimImpl("username", "user1" ));
+                                        cs.addClaim(new CredentialClaimImpl("userid", "user1" ));
                                         cs.addClaim(new CredentialClaimImpl("password", "user1pwd"));
                                         CredentialClaimsResponse cr = new CredentialClaimsResponseImpl(
                                                 "FOO_ID",

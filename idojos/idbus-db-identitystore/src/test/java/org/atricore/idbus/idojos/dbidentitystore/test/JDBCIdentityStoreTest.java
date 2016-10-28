@@ -24,6 +24,7 @@ package org.atricore.idbus.idojos.dbidentitystore.test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
+import org.atricore.idbus.kernel.main.authn.scheme.UserIdCredential;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.junit.BeforeClass;
@@ -32,7 +33,6 @@ import org.atricore.idbus.idojos.dbidentitystore.JDBCIdentityStore;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordCredentialProvider;
-import org.atricore.idbus.kernel.main.authn.scheme.UsernameCredential;
 import org.atricore.idbus.kernel.main.authn.scheme.PasswordCredential;
 
 import javax.sql.DataSource;
@@ -84,7 +84,7 @@ public class JDBCIdentityStoreTest {
 
         Credential[] cs = db.loadCredentials( uk, new UsernamePasswordCredentialProvider() );
         assert cs.length == 2 : "expected 2 credentials got " + cs.length;
-        assert UsernameCredential.class.isInstance( cs[0] ) : "expected UsernameCredential class got " + cs[0].getClass().getName();
+        assert UserIdCredential.class.isInstance( cs[0] ) : "expected UserIdCredential class got " + cs[0].getClass().getName();
         assert PasswordCredential.class.isInstance( cs[1] ) : "expected PasswordCredential class got " + cs[1].getClass().getName();
     }
 

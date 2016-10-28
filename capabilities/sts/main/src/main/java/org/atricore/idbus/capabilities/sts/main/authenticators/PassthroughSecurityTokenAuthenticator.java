@@ -26,7 +26,7 @@ public class PassthroughSecurityTokenAuthenticator extends AbstractSecurityToken
     private QName previousSessionNs = new QName(Constants.PREVIOUS_SESSION_NS);
 
     public PassthroughSecurityTokenAuthenticator() {
-        super();
+        super("PASS_THROUGH");
     }
 
     @Override

@@ -39,11 +39,12 @@ public class DefaultStore extends AbstractStore {
 
             Credential usrCred = cp.newCredential(UsernamePasswordCredentialProvider.USERNAME_CREDENTIAL_NAME, user.getUserName());
             Credential pwdCred = cp.newCredential(UsernamePasswordCredentialProvider.PASSWORD_CREDENTIAL_NAME, user.getUserPassword());
+            Credential idCred = cp.newCredential(UsernamePasswordCredentialProvider.USERID_CREDENTIAL_NAME, key.toString());
             Credential saltCred = null;
             if (user.getSalt() != null)
                 saltCred = cp.newCredential(UsernamePasswordCredentialProvider.SALT_CREDENTIAL_NAME, user.getSalt());
 
-            return saltCred == null ? new Credential[]{usrCred, pwdCred} : new Credential[]{usrCred, pwdCred, saltCred};
+            return saltCred == null ? new Credential[]{usrCred, idCred, pwdCred} : new Credential[]{usrCred, idCred, pwdCred, saltCred};
 
         } catch (UserNotFoundException e) {
             return new Credential[0];

@@ -25,10 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.directory.server.configuration.ApacheDS;
 import org.atricore.idbus.idojos.ldapidentitystore.LDAPIdentityStore;
+import org.atricore.idbus.kernel.main.authn.scheme.UserIdCredential;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordCredentialProvider;
-import org.atricore.idbus.kernel.main.authn.scheme.UsernameCredential;
 import org.atricore.idbus.kernel.main.authn.scheme.PasswordCredential;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -103,8 +103,8 @@ public class LDAPIdentityStoreTest {
         Credential[] cs = ldap.loadCredentials( uk, new UsernamePasswordCredentialProvider() );
         assert cs.length == 2 : "expected 2 credentials got " + cs.length;
         for(Credential c : cs){
-            if(UsernameCredential.class.isInstance( c ))
-                assert ((UsernameCredential)c).getValue().toString().equals( "user1" ) : "expected User Credential \"user1\" got \"" + ((UsernameCredential)c).getValue() + "\"";
+            if(UserIdCredential.class.isInstance( c ))
+                assert ((UserIdCredential)c).getValue().toString().equals( "user1" ) : "expected User Credential \"user1\" got \"" + ((UserIdCredential)c).getValue() + "\"";
 
             if(PasswordCredential.class.isInstance( c ))
                 assert ((PasswordCredential)c).getValue().toString().equals( "user1pwd" ) : "expected Password Credential \"user1pwd\" got \"" + ((PasswordCredential)c).getValue() + "\"";

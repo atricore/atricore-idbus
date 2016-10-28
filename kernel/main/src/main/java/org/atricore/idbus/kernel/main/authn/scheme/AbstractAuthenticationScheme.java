@@ -167,7 +167,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
      */
     protected Credential[] getKnownCredentials() throws SSOAuthenticationException {
         try {
-            CredentialKey key = getCredentialStoreKeyAdapter().getKeyForPrincipal(getPrincipal());
+            CredentialKey key = getCredentialStoreKeyAdapter().getKeyForPrincipal(getInputPrincipal());
             return _credentialStore.loadCredentials(key, this);
         } catch (SSOIdentityException e) {
             throw new SSOAuthenticationException(e.getMessage(), e);

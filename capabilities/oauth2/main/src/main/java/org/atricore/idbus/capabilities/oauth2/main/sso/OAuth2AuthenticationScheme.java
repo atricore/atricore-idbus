@@ -83,6 +83,11 @@ public class OAuth2AuthenticationScheme extends AbstractAuthenticationScheme {
         }
     }
 
+    @Override
+    public Principal getInputPrincipal() {
+        return getPrincipal();
+    }
+
     public Principal getPrincipal() {
 
         String nameId = null;

@@ -92,6 +92,12 @@ public interface AuthenticationScheme extends CredentialProvider, Cloneable {
     Set<PolicyEnforcementStatement> getSSOPolicies();
 
     /**
+     * The username principal, could be the same as the user identifier or not (i.e. userid=email, .
+     * @return
+     */
+    Principal getInputPrincipal();
+
+    /**
      * This method returns the principal name derived from input credentials.
      */
     Principal getPrincipal();

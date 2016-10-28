@@ -70,7 +70,7 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
 
         setAuthenticated(false);
 
-        //String username = getUsername(_inputCredentials);
+        //String username = getUserId(_inputCredentials);
         X509Certificate x509Certificate = getX509Certificate(_inputCredentials);
 
         // Check if all credentials are present.
@@ -225,6 +225,11 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
         } else {
             return getPrincipal(_inputCredentials);
         }
+    }
+
+    @Override
+    public Principal getInputPrincipal() {
+        return getPrincipal();
     }
 
     /**

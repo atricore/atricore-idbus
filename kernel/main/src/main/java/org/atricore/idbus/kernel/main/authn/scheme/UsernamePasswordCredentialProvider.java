@@ -41,6 +41,15 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
     public static final String PASSWORD_CREDENTIAL_NAME = "password";
 
     /**
+     * The name of the credential representing a user identifier.
+     * Used to get a new credential instance based on its name and value.
+     * Value : username
+     *
+     * @see Credential newCredential(String name, Object value)
+     */
+    public static final String USERID_CREDENTIAL_NAME = "userid";
+
+    /**
      * The name of the credential representing a username.
      * Used to get a new credential instance based on its name and value.
      * Value : username
@@ -48,6 +57,7 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
      * @see Credential newCredential(String name, Object value)
      */
     public static final String USERNAME_CREDENTIAL_NAME = "username";
+
 
     /**
      * The name of the credential representing a salt.
@@ -69,8 +79,12 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
      * @return the Credential instance representing the supplied name-value pair.
      */
     public Credential newCredential(String name, Object value) {
+        if (name.equalsIgnoreCase(USERID_CREDENTIAL_NAME)) {
+            return new UserIdCredential(value);
+        }
+
         if (name.equalsIgnoreCase(USERNAME_CREDENTIAL_NAME)) {
-            return new UsernameCredential(value);
+            return new UserNameCredential(value);
         }
 
         if (name.equalsIgnoreCase(PASSWORD_CREDENTIAL_NAME)) {

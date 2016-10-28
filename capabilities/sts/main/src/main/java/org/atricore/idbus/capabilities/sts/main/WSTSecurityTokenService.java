@@ -271,7 +271,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         SecurityTokenAuthenticationFailure lastAuthnFailedException = null;
         for (SecurityTokenAuthenticator authenticator : authenticators) {
 
-            logger.debug("Checking whether authenticator " + authenticator.getId() + " can handle token of type " + tokenType);
+            logger.debug("Checking if authenticator " + authenticator.getId() + " can handle token of type " + tokenType + "[" + (requestToken != null ? requestToken.getClass().getName() : "") + "]");
+
             if (authenticator.canAuthenticate(requestToken)) {
 
                 try {

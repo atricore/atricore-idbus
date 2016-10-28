@@ -184,6 +184,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
 
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new CredentialClaimImpl("username", username));
+        claims.addClaim(new CredentialClaimImpl("userid", username));
         claims.addClaim(new CredentialClaimImpl("passcode", password));
 
         //claims.addClaim(new ClaimImpl("rememberMe", cmd.isRememberMe()));

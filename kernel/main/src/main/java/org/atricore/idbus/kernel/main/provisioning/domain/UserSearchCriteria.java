@@ -12,6 +12,7 @@ public class UserSearchCriteria implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    private String phoneNumber;
 
     private List<SearchAttribute> attributes;
 
@@ -47,6 +48,14 @@ public class UserSearchCriteria implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public List<SearchAttribute> getAttributes() {

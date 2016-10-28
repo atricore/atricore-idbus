@@ -24,18 +24,18 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 import org.atricore.idbus.kernel.main.authn.BaseCredential;
 
 /**
- * This credential represents a username.
+ * This credential represents a user identifier credential: I.E email, staff id, etc..
  *
  * @author <a href="mailto:sgonzalez@josso.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id: UsernameCredential.java 1040 2009-03-05 00:56:52Z gbrigand $
+ * @version $Id: UserIdCredential.java 1040 2009-03-05 00:56:52Z gbrigand $
  */
 
-public class UsernameCredential extends BaseCredential {
-    public UsernameCredential() {
+public class UserIdCredential extends BaseCredential {
+    public UserIdCredential() {
         super();
     }
 
-    public UsernameCredential(Object credential) {
+    public UserIdCredential(Object credential) {
         super(credential);
     }
 

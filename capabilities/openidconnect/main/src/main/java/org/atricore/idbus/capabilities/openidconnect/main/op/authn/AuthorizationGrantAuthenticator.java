@@ -23,7 +23,7 @@ public class AuthorizationGrantAuthenticator extends AbstractSecurityTokenAuthen
     public static final String SCHEME_NAME = "oidc-authzgrant-authentication";
 
     public AuthorizationGrantAuthenticator() {
-        super();
+        super(SCHEME_NAME);
         setScheme(SCHEME_NAME);
     }
 

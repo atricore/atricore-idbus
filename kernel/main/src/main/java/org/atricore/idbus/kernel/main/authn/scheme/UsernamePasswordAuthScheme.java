@@ -118,22 +118,46 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
     private String _saltPrefix;
 
+    protected Credential[] _knowCredentials;
+
     public UsernamePasswordAuthScheme() {
         this.setName("basic-authentication");
     }
 
     /**
-     * The username recieved as UsernameCredential instance, if any.
+     * The username recieved as UserIdCredential instance, if any.
      */
     public Principal getPrincipal() {
-        return new SimplePrincipal(getUsername(_inputCredentials));
+
+        String principalName = getUserName(_knowCredentials);
+        if (principalName == null)
+            principalName = getUserId(_knowCredentials);
+
+        return new SimplePrincipal(principalName);
     }
 
+    @Override
+    public Principal getInputPrincipal() {
+        String principalName = getUserName(_inputCredentials);
+        if (principalName == null)
+            principalName = getUserId(_inputCredentials);
+        return new SimplePrincipal(principalName);
+    }
+
+
     /**
-     * The username recieved as UsernameCredential instance, if any.
+     * The username recieved as UserIdCredential instance, if any.
      */
     public Principal getPrincipal(Credential[] credentials) {
-        return new SimplePrincipal(getUsername(credentials));
+        String username = getUserName(credentials);
+        if (username == null) {
+            username = getUserId(credentials);
+            logger.debug("Using UserId as username " + username);
+        } else {
+            logger.debug("Using UserName as username " + username);
+        }
+
+        return new SimplePrincipal(username);
     }
 
     /**
@@ -145,15 +169,16 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
         setAuthenticated(false);
 
-        String username = getUsername(_inputCredentials);
+        String userid = getUserId(_inputCredentials);
+        String username = getUserName(_inputCredentials);
         String password = getPassword(_inputCredentials);
 
         // Check if all credentials are present.
-        if (username == null || username.length() == 0 ||
+        if (userid == null || userid.length() == 0 ||
                 password == null || password.length() == 0) {
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Username " + (username == null || username.length() == 0 ? " not" : "") + " provided. " +
+                logger.debug("Username " + (userid == null || userid.length() == 0 ? " not" : "") + " provided. " +
                         "Password " + (password == null || password.length() == 0 ? " not" : "") + " provided.");
             }
 
@@ -161,20 +186,31 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
             return false;
         }
 
-        Credential[] knowCredentials = getKnownCredentials();
-        String knownUsername = getUsername(knowCredentials);
-        String expectedPassword = getPassword(knowCredentials);
+        _knowCredentials = getKnownCredentials();
+        String knownUserId = getUserId(_knowCredentials);
+        String knownUserName = getUserName(_knowCredentials);
+        String expectedPassword = getPassword(_knowCredentials);
+
+
 
         // We might have to hash the password.
-        password = createPasswordHash(password, knowCredentials);
+        password = createPasswordHash(password, _knowCredentials);
 
         // Validate user identity ...
-        if (!validateUsername(username, knownUsername) || !validatePassword(password, expectedPassword)) {
-            return false;
+        if (userid != null) {
+            if (!validateUser(userid, knownUserId) || !validatePassword(password, expectedPassword)) {
+                return false;
+            }
+            
+        } else {
+            if (!validateUser(username, knownUserName) || !validatePassword(password, expectedPassword)) {
+                return false;
+            }
+
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("[authenticate()], Principal authenticated : " + username);
+            logger.debug("[authenticate()], Principal authenticated [" + userid + "/" + knownUserName + "]");
 
         // We have successfully authenticated this user.
         setAuthenticated(true);
@@ -199,7 +235,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      * Only one username credential supported.
      */
     public Credential[] getPublicCredentials() {
-        Credential c = getUsernameCredential(_inputCredentials);
+        Credential c = getUserIdCredential(_inputCredentials);
         if (c == null)
             return new Credential[0];
 
@@ -257,7 +293,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      * @param inputUsername
      * @param expectedUsername
      */
-    protected boolean validateUsername(String inputUsername, String expectedUsername) {
+    protected boolean validateUser(String inputUsername, String expectedUsername) {
 
         if (logger.isDebugEnabled())
             logger.debug("Validating usernames [" + inputUsername + "/" + expectedUsername + "]");
@@ -406,11 +442,18 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      *
      * @param credentials
      */
-    protected String getUsername(Credential[] credentials) {
-        UsernameCredential c = getUsernameCredential(credentials);
+    protected String getUserId(Credential[] credentials) {
+        UserIdCredential c = getUserIdCredential(credentials);
         if (c == null)
             return null;
 
+        return (String) c.getValue();
+    }
+
+    protected String getUserName(Credential[] credentials) {
+        UserNameCredential c = getUserNameCredential(credentials);
+        if (c == null)
+            return null;
         return (String) c.getValue();
     }
 
@@ -465,16 +508,26 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     /**
      * Gets the credential that represents a Username.
      */
-    protected UsernameCredential getUsernameCredential(Credential[] credentials) {
+    protected UserIdCredential getUserIdCredential(Credential[] credentials) {
 
         for (int i = 0; i < credentials.length; i++) {
-            if (credentials[i] instanceof UsernameCredential) {
-                return (UsernameCredential) credentials[i];
+            if (credentials[i] instanceof UserIdCredential) {
+                return (UserIdCredential) credentials[i];
             }
         }
         return null;
     }
 
+
+    protected UserNameCredential getUserNameCredential(Credential[] credentials) {
+
+        for (int i = 0; i < credentials.length; i++) {
+            if (credentials[i] instanceof UserNameCredential) {
+                return (UserNameCredential) credentials[i];
+            }
+        }
+        return null;
+    }
 
     protected CredentialProvider doMakeCredentialProvider() {
         return new UsernamePasswordCredentialProvider();

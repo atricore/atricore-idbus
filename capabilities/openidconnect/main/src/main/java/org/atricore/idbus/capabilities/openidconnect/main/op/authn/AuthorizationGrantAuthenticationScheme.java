@@ -64,6 +64,11 @@ public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticati
     }
 
     @Override
+    public Principal getInputPrincipal() {
+        return getPrincipal();
+    }
+
+    @Override
     public Principal getPrincipal() {
         AuthorizationGrant authzGrant = (AuthorizationGrant) securityToken.getContent();
 
