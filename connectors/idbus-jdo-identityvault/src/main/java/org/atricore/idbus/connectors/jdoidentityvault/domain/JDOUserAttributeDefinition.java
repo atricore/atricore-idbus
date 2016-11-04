@@ -14,6 +14,10 @@ public class JDOUserAttributeDefinition implements Serializable {
 
     private JDOAttributeType type;
 
+    private JDOAttributePermission userPermission;
+
+    private JDOAttributePermission adminPermission;
+
     private Boolean required;
 
     private Boolean multivalued;
@@ -64,6 +68,22 @@ public class JDOUserAttributeDefinition implements Serializable {
 
     public void setType(JDOAttributeType type) {
         this.type = type;
+    }
+
+    public JDOAttributePermission getUserPermission() {
+        return userPermission;
+    }
+
+    public void setUserPermission(JDOAttributePermission userPermission) {
+        this.userPermission = userPermission;
+    }
+
+    public JDOAttributePermission getAdminPermission() {
+        return adminPermission;
+    }
+
+    public void setAdminPermission(JDOAttributePermission adminPermission) {
+        this.adminPermission = adminPermission;
     }
 
     @Override

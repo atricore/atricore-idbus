@@ -342,6 +342,14 @@
                 <column name="TYPE"/>
             </field>
 
+            <field name="userPermission">
+                <column name="USR_PERMISSION"/>
+            </field>
+
+            <field name="adminPermission">
+                <column name="ADMIN_PERMISSION"/>
+            </field>
+
             <field name="required">
                 <column name="REQUIRED"/>
             </field>

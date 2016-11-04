@@ -1,5 +1,6 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOAttributePermission;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOAttributeType;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroupAttributeDefinition;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeDefinition;
@@ -7,6 +8,7 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttribu
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeValueDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeDefinitionDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeValueDAO;
+import org.atricore.idbus.kernel.main.provisioning.domain.AttributePermission;
 import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
 import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
@@ -368,6 +370,16 @@ public class JDOSchemaManager extends AbstractSchemaManager {
                                                     UserAttributeDefinition userAttribute) {
 
         jdoUserAttribute.setType(JDOAttributeType.fromValue(userAttribute.getType().toString()));
+        if(userAttribute.getUserPermission() != null)
+            jdoUserAttribute.setUserPermission(JDOAttributePermission.fromValue(userAttribute.getUserPermission().toString()));
+        else
+            jdoUserAttribute.setUserPermission(JDOAttributePermission.WRITE);
+
+        if(userAttribute.getAdminPermission() != null)
+            jdoUserAttribute.setAdminPermission(JDOAttributePermission.fromValue(userAttribute.getAdminPermission().toString()));
+        else
+            jdoUserAttribute.setAdminPermission(JDOAttributePermission.WRITE);
+
         jdoUserAttribute.setName(userAttribute.getName());
         jdoUserAttribute.setDescription(userAttribute.getDescription());
         jdoUserAttribute.setMultivalued(userAttribute.isMultivalued());
@@ -381,6 +393,17 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
         userAttribute.setId(jdoUserAttribute.getId() + "");
         userAttribute.setType(AttributeType.fromValue(jdoUserAttribute.getType().toString()));
+
+        if (jdoUserAttribute.getUserPermission() != null)
+            userAttribute.setUserPermission(AttributePermission.fromValue(jdoUserAttribute.getUserPermission().toString()));
+        else
+            userAttribute.setUserPermission(AttributePermission.WRITE);
+
+        if (jdoUserAttribute.getAdminPermission() != null)
+            userAttribute.setAdminPermission(AttributePermission.fromValue(jdoUserAttribute.getAdminPermission().toString()));
+        else
+            userAttribute.setAdminPermission(AttributePermission.WRITE);
+
         userAttribute.setName(jdoUserAttribute.getName());
         userAttribute.setDescription(jdoUserAttribute.getDescription());
         userAttribute.setMultivalued(jdoUserAttribute.getMultivalued());
