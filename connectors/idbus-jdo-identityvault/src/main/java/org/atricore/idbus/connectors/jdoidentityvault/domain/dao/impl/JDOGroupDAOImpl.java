@@ -10,9 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -26,9 +24,11 @@ public class JDOGroupDAOImpl extends GenericDAOImpl<JDOGroup, Long> implements J
         PersistenceManager pm = getPersistenceManager();
 
         Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup" +
-                " WHERE this.name == '" + name + "'");
+                " WHERE this.name == :name");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", name);
 
-        Collection<JDOGroup> groups = (Collection<JDOGroup>) query.execute();
+        Collection<JDOGroup> groups = (Collection<JDOGroup>) query.executeWithMap(params);
         if (groups == null || groups.size() != 1)
             throw new IncorrectResultSizeDataAccessException(1, groups.size());
 
@@ -47,10 +47,11 @@ public class JDOGroupDAOImpl extends GenericDAOImpl<JDOGroup, Long> implements J
 //                " WHERE this.userName.toLowerCase() == '" + userName.toLowerCase() + "'");
 
         Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
-                " WHERE this.userName == '" + userName + "'");
+                " WHERE this.userName == :userName");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("userName", userName);
 
-
-        Collection<JDOUser> users = (Collection<JDOUser>) query.execute();
+        Collection<JDOUser> users = (Collection<JDOUser>) query.executeWithMap(params);
         if (users == null || users.size() != 1)
             throw new IncorrectResultSizeDataAccessException(1, users.size());
 

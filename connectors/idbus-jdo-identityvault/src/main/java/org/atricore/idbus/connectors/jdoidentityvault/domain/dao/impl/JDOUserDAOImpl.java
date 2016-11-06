@@ -11,7 +11,9 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO : Add case insensitive lookup parameter
@@ -22,7 +24,7 @@ public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser, Long> implements JDO
 
     private static final Log logger = LogFactory.getLog(JDOGroupDAOImpl.class);
 
-    public JDOUser findByUserName(String name) {
+    public JDOUser findByUserName(String username) {
 
         PersistenceManager pm = getPersistenceManager();
 
@@ -30,10 +32,13 @@ public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser, Long> implements JDO
 //                " WHERE this.userName.toLowerCase() == '" + name.toLowerCase() + "'");
 
          Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
-                " WHERE this.userName == '" + name + "'");
+                " WHERE this.userName == :userName");
 
 
-        Collection<JDOUser> users = (Collection<JDOUser>) query.execute();
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("userName", username);
+        Collection<JDOUser> users = (Collection<JDOUser>) query.executeWithMap(params);
+
         if (users == null || users.size() != 1)
             throw new IncorrectResultSizeDataAccessException(1, users.size());
 

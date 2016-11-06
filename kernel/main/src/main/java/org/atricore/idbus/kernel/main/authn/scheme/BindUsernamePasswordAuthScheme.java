@@ -24,10 +24,13 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.store.identity.BindContext;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
+
+import java.security.Principal;
 
 /**
  * Basic authentication scheme, supporting username and password credentials.
@@ -66,7 +69,7 @@ public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
 
         String userid = getUserId(_inputCredentials);
         String password = getPassword(_inputCredentials);
-        String username = getUserName(_knowCredentials);
+        String username = getUserName(_inputCredentials); // Bind authn scheme cannot retrieve input credentials
 
         // Check if all credentials are present.
         if (userid == null || userid.length() == 0 ||
@@ -104,6 +107,15 @@ public class BindUsernamePasswordAuthScheme extends UsernamePasswordAuthScheme {
 
 
         return isAuthenticated();
+    }
+
+    public Principal getPrincipal() {
+
+        String principalName = getUserName(_inputCredentials);
+        if (principalName == null)
+            principalName = getUserId(_inputCredentials);
+
+        return new SimplePrincipal(principalName);
     }
 
     public void setCredentialStore(CredentialStore c) {
