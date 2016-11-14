@@ -612,8 +612,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 throw new ProvisioningException(e);
             }
 
-            transactionManager.commit(status);
         }
+
+        transactionManager.commit(status);
 
         return updatedUsers;
     }
@@ -671,12 +672,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     @Override
     public void deleteUsers(List<User> users) throws ProvisioningException {
 
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef);
+
         for (User user : users) {
 
             Long id = Long.parseLong(user.getId());
 
-            DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
-            TransactionStatus status = transactionManager.getTransaction(txDef);
 
             try {
                 JDOUser jdoUser = userDao.findById(id);
@@ -716,9 +718,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 throw new ProvisioningException(e);
             }
 
-            transactionManager.commit(status);
-
         }
+
+        transactionManager.commit(status);
 
     }
 
