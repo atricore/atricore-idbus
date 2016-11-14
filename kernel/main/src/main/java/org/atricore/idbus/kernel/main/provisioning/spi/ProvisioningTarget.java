@@ -74,9 +74,12 @@ public interface ProvisioningTarget {
     RemoveUserResponse removeUser(RemoveUserRequest userRequest)
             throws ProvisioningException;
 
+    RemoveUsersResponse removeUsers(RemoveUsersRequest usersRequest) throws ProvisioningException;
+
     AddUserResponse addUser(AddUserRequest userRequest)
             throws ProvisioningException;
 
+    // Why!
     List<User> addUsers(List<User> users)
             throws ProvisioningException;
 
@@ -92,7 +95,6 @@ public interface ProvisioningTarget {
     FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest)
             throws ProvisioningException;
 
-
     ListUsersResponse listUsers(ListUsersRequest userRequest)
             throws ProvisioningException;
 
@@ -103,6 +105,9 @@ public interface ProvisioningTarget {
             throws ProvisioningException;
 
     UpdateUserResponse updateUser(UpdateUserRequest userRequest)
+            throws ProvisioningException;
+
+    UpdateUsersResponse updateUsers(UpdateUsersRequest usersRequest)
             throws ProvisioningException;
 
     GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest)

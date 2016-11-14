@@ -362,6 +362,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
+    @Override
+    public RemoveUsersResponse removeUsers(RemoveUsersRequest usersRequest) throws ProvisioningException {
+        try {
+            identityPartition.deleteUsers(usersRequest.getUsers());
+            return new RemoveUsersResponse();
+        } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_USERS.getValue(), ActionOutcome.FAILURE, null, null);
+            throw new ProvisioningException(e);
+        }
+    }
+
     public AddUserResponse addUser(AddUserRequest userRequest) throws ProvisioningException {
 
         // Make sure that the password meets the security requirements
@@ -411,6 +422,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
                 user.setLastPasswordChangeDate(System.currentTimeMillis());
                 user.setUserPassword(createPasswordHash(user.getUserPassword(), salt));
             } catch (Exception e) {
+                recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.FAILURE, user.getUserName(), null);
                 throw new ProvisioningException(e);
             }
         }
@@ -418,6 +430,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             users = identityPartition.addUsers(users);
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.FAILURE, null, null);
             throw new ProvisioningException(e);
         }
 
@@ -606,7 +619,22 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+    @Override
+    public UpdateUsersResponse updateUsers(UpdateUsersRequest usersRequest) throws ProvisioningException {
+
+        try {
+            List<User> users = identityPartition.updateUsers(usersRequest.getUsers());
+            UpdateUsersResponse resp = new UpdateUsersResponse();
+            resp.setUsers(users);
+            return resp;
+        } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_USERS.getValue(), ActionOutcome.FAILURE, null, null);
+            throw new ProvisioningException(e);
+        }
+
+
+    }
+
     public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByUserRequest) throws ProvisioningException {
         // TODO !
         throw new UnsupportedOperationException("Not Implemented yet!");

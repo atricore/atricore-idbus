@@ -80,6 +80,11 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
+    public void deleteUsers(List<User> users) throws ProvisioningException {
+
+    }
+
+    @Override
     public User findUserById(String id) throws ProvisioningException {
         return null;
     }
@@ -96,6 +101,11 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
 
     @Override
     public User updateUser(User user) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public List<User> updateUsers(List<User> users) throws ProvisioningException {
         return null;
     }
 

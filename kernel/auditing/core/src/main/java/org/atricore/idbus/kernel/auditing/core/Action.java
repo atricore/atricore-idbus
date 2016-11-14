@@ -79,6 +79,11 @@ public enum Action {
     ADD_USER("ADD-USER"),
 
     /**
+     * Add User (BATCH)
+     */
+    ADD_USER_BATCH("ADD-USER-BATCH"),
+
+    /**
      * Prepare Add User
      */
     PREPARE_ADD_USER("PREPARE-ADD-USER"),
@@ -94,9 +99,19 @@ public enum Action {
     UPDATE_USER("UPDATE-USER"),
 
     /**
+     * Update User (BATCH)
+     */
+    UPDATE_USERS("UPDATE-USER-BATCH"),
+
+    /**
      * Remove User
      */
     REMOVE_USER("REMOVE-USER"),
+
+    /**
+     * Remove User (BATCH)
+     */
+    REMOVE_USERS("REMOVE-USER-BATCH"),
 
     /**
      * Add User Attribute

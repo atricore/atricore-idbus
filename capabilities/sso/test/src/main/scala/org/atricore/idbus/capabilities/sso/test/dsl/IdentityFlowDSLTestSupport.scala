@@ -241,6 +241,8 @@ object MockProvisioningTarget extends ProvisioningTarget {
 
   def removeUser(userRequest: RemoveUserRequest): RemoveUserResponse = null
 
+  def removeUsers(usersRequest: RemoveUsersRequest): RemoveUsersResponse = null
+
   def addUser(userRequest: AddUserRequest): AddUserResponse = null
 
   def prepareAddUser(userRequest: AddUserRequest): PrepareAddUserResponse = null
@@ -262,6 +264,8 @@ object MockProvisioningTarget extends ProvisioningTarget {
   def searchUsers(userRequest: SearchUserRequest): SearchUserResponse = null
 
   def updateUser(userRequest: UpdateUserRequest): UpdateUserResponse = null
+
+  def updateUsers(usersRequest: UpdateUsersRequest): UpdateUsersResponse = null
 
   def getUsersByGroup(usersByGroupRequest: GetUsersByGroupRequest): GetUsersByGroupResponse = null
 

@@ -559,6 +559,65 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
     }
 
+    @Override
+    public List<User> updateUsers(List<User> users) throws ProvisioningException {
+        DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+        TransactionStatus status = transactionManager.getTransaction(txDef);
+
+        List<User> updatedUsers = new ArrayList<User>();
+
+        for (User user : users) {
+            try {
+
+                JDOUser jdoUser = userDao.findById(Long.parseLong(user.getId()));
+                jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+                List<JDOUserAttributeValue> oldAttrsList = new ArrayList<JDOUserAttributeValue>();
+                if (jdoUser.getAttrs() != null) {
+                    for (JDOUserAttributeValue oldUserAttr : jdoUser.getAttrs()) {
+                        if (oldUserAttr.getId() > 0) {
+                            oldAttrsList.add(oldUserAttr);
+                        }
+                    }
+
+                    if (oldAttrsList.size() != jdoUser.getAttrs().length) {
+                        jdoUser = userDao.findById(Long.parseLong(user.getId()));
+                        jdoUser.setAttrs(oldAttrsList.toArray(new JDOUserAttributeValue[]{}));
+                        jdoUser = userDao.save(jdoUser);
+                    }
+                }
+
+                jdoUser = userDao.findById(Long.parseLong(user.getId()));
+                JDOUserAttributeValue[] oldAttrs = jdoUser.getAttrs();
+
+                // Do not let users to change the password!
+                toJDOUser(jdoUser, user, false);
+                Date now = new Date();
+                jdoUser.setAccountModificationDate(now);
+                jdoUser = userDao.save(jdoUser);
+                usrAttrValDao.deleteRemovedValues(oldAttrs, jdoUser.getAttrs());
+                jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+
+                updatedUsers.add(toUser(jdoUser, true));
+            } catch (JdoObjectRetrievalFailureException e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new UserNotFoundException(user.getId());
+            } catch (JDOObjectNotFoundException e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new UserNotFoundException(user.getId());
+            } catch (NucleusObjectNotFoundException e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new UserNotFoundException(user.getId());
+            } catch (Exception e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new ProvisioningException(e);
+            }
+
+            transactionManager.commit(status);
+        }
+
+        return updatedUsers;
+    }
+
     //    @Transactional
     public void deleteUser(String userId) throws ProvisioningException {
 
@@ -606,6 +665,61 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
+    }
+
+
+    @Override
+    public void deleteUsers(List<User> users) throws ProvisioningException {
+
+        for (User user : users) {
+
+            Long id = Long.parseLong(user.getId());
+
+            DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
+            TransactionStatus status = transactionManager.getTransaction(txDef);
+
+            try {
+                JDOUser jdoUser = userDao.findById(id);
+                if (jdoUser != null) {
+
+                    // Get dependent tables
+                    JDOUserAttributeValue[] attrs = jdoUser.getAttrs();
+                    JDOUserSecurityQuestion[] secQuestions = jdoUser.getSecurityQuestions();
+
+                    // Clear relationship
+                    //jdoUser.setSecurityQuestions(null);
+                    jdoUser.setAttrs(null);
+
+                    // Save and delete
+                    userDao.save(jdoUser);
+                    userDao.flush();
+                    userDao.delete(id);
+
+                    // Delete dependants
+                    if (attrs != null) {
+                        for (JDOUserAttributeValue value : attrs)
+                            usrAttrValDao.delete(value.getId());
+                    }
+                }
+
+            } catch (JdoObjectRetrievalFailureException e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new UserNotFoundException(id);
+            } catch (JDOObjectNotFoundException e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new UserNotFoundException(id);
+            } catch (NucleusObjectNotFoundException e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new UserNotFoundException(id);
+            } catch (Exception e) {
+                if (!status.isCompleted()) transactionManager.rollback(status);
+                throw new ProvisioningException(e);
+            }
+
+            transactionManager.commit(status);
+
+        }
+
     }
 
     public Collection<User> findUsers(UserSearchCriteria searchCriteria, long fromResult, long resultCount, String sortColumn, boolean sortAscending) throws ProvisioningException {

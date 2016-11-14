@@ -40,6 +40,8 @@ public interface IdentityPartition {
 
     void deleteUser(String id) throws ProvisioningException;
 
+    void deleteUsers(List<User> users) throws ProvisioningException;
+
     User findUserById(String id) throws ProvisioningException;
 
     User findUserByUserName(String username) throws ProvisioningException;
@@ -47,6 +49,8 @@ public interface IdentityPartition {
     Collection<User> findAllUsers() throws ProvisioningException;
 
     User updateUser(User user) throws ProvisioningException;
+
+    List<User> updateUsers(List<User> users) throws ProvisioningException;
 
     Collection<User> getUsersByGroup(Group group) throws ProvisioningException;
 
