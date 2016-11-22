@@ -63,6 +63,7 @@ public class UUIDGenerator extends AbstractIdGenerator {
 
     public UUIDGenerator() {
         this.jdkIdGen = false;
+        setPrefix("id");
     }
 
     public String getFormat() {
