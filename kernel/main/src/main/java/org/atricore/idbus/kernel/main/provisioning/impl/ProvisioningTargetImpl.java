@@ -388,7 +388,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             user.setSalt(salt);
             user.setUserPassword(createPasswordHash(userRequest.getUserPassword(), salt));
-                
+
             Group[] groups = userRequest.getGroups();
             user.setGroups(groups);
 
