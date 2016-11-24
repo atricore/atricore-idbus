@@ -186,7 +186,9 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             if (user.getProperties() != null) {
                 for (SSONameValuePair property : user.getProperties()) {
                     usedProps.add(property.getName());
-                    at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
+
+                    if (property.getValue() != null && !"".equals(property.getValue()))
+                        at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
                 }
             }
 
@@ -213,7 +215,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                         }
 
                         String value = attr.getValue();
-                        if (!usedProps.contains(name)) {
+                        if (value != null && !"".equals(value) && !usedProps.contains(name)) {
                             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), name, value));
                             usedProps.add(name);
                         }
