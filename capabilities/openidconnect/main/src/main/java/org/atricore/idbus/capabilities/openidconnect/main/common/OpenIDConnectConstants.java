@@ -42,6 +42,8 @@ public interface OpenIDConnectConstants {
 
     QName LinkedInAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "LinkedInAuthzTokenConsumerService");
 
+    QName WeChatAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "WeChatAuthzTokenConsumerService");
+
     QName IDPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "ProviderDescriptor");
 
     QName SPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "RelayingPartyDesriptor");
