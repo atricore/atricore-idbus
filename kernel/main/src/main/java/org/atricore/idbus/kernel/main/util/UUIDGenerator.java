@@ -63,6 +63,7 @@ public class UUIDGenerator extends AbstractIdGenerator {
 
     public UUIDGenerator() {
         this.jdkIdGen = false;
+        this.artifactLength = 7;
         setPrefix("id");
     }
 
