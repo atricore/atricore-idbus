@@ -127,7 +127,10 @@ public enum AuthnCtxClass {
     OAUTH2_PREAUTHN_PASSIVE_CTX("urn:org:atricore:idbus:ac:classes:OAuth2:Passive", true),
 
     /** URI for Certus authentication context. */
-    CERTUS_CTX("urn:org:atricore:idbus:ac:classes:Certus", false)
+    CERTUS_CTX("urn:org:atricore:idbus:ac:classes:Certus", false),
+
+    /** URI FOR WIA **/
+    WINDOWS("urn:federation:authentication:windows", true)
 
     ;
 
