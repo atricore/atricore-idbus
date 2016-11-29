@@ -88,6 +88,7 @@
         <module>idojos/idbus-virtual-identitystore</module>
 
         <module>connectors/idbus-jdo-identityvault</module>
+        <module>connectors/jit-scim-provisioning</module>
 
         <module>applications/idbus-server</module>
         <module>examples/simple-federation</module>
@@ -448,6 +449,17 @@
                 <enabled>false</enabled>
             </snapshots>
 
+        </repository>
+
+        <repository>
+            <id>wso2</id>
+            <url>http://maven.wso2.org/nexus/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
