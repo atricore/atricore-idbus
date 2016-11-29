@@ -54,6 +54,11 @@ public class OpenIDConnectProxyComponent extends DefaultComponent {
                 endpoint = new LinkedInAuthzTokenConsumerEndpoint(uri, this, parameters);
                 break;
 
+            case WeChatAuthzTokenConsumerServiceProxy:
+                endpoint = new WeChatAuthzTokenConsumerEndpoint(uri, this, parameters);
+                break;
+
+
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID Connect endpoint " + remaining );
         }
