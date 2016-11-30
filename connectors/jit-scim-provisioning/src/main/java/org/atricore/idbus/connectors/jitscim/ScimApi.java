@@ -23,6 +23,9 @@ package org.atricore.idbus.connectors.jitscim;
 import org.scribe.builder.api.DefaultApi10a;
 import org.scribe.model.Token;
 
+/**
+ * Placeholder class for the OAuth1 client.
+ */
 public class ScimApi extends DefaultApi10a {
 
     @Override

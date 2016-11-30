@@ -38,7 +38,7 @@ import org.wso2.charon.core.schema.SCIMConstants;
 import org.wso2.charon.core.schema.SCIMSchemaDefinitions;
 
 /**
- * Extended SCIM Client API.
+ * SCIM Client API implementing a simplified flavor of the SCIM core schema.
  */
 public class ExtendedSCIMClient extends SCIMClient {
 

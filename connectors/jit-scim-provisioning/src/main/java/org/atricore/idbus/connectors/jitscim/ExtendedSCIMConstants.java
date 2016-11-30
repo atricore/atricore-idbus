@@ -22,6 +22,9 @@ package org.atricore.idbus.connectors.jitscim;
 
 import org.wso2.charon.core.schema.SCIMConstants;
 
+/**
+ * SCIM constants for the extended SCIM protocol.
+ */
 public class ExtendedSCIMConstants extends SCIMConstants {
     public static final String ATRICORE_SCHEMA_URI = "urn:scim:schemas:atricore:1.0";
 

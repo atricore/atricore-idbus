@@ -30,7 +30,9 @@ import org.wso2.charon.core.exceptions.AbstractCharonException;
 import org.wso2.charon.core.exceptions.CharonException;
 import org.wso2.charon.core.schema.SCIMConstants;
 
-
+/**
+ * Manages the RESTful message exchange between the SCIM client and server.
+ */
 public class ScimResponseHandler implements ClientHandler {
 
     private static final Log logger = LogFactory.getLog(ScimResponseHandler.class);
@@ -41,7 +43,7 @@ public class ScimResponseHandler implements ClientHandler {
         this.scimClient = scimClient;
     }
 
-    //@Override
+    @Override
     public ClientResponse handle(ClientRequest clientRequest, HandlerContext handlerContext)
             throws Exception {
 
@@ -67,15 +69,12 @@ public class ScimResponseHandler implements ClientHandler {
                         charonException = new CharonException(cr.getEntity(String.class));
                     }
                 } catch (CharonException e) {
-                    //TODO: remove sout and log any exception occurred in extracting the exception.
-                    System.out.println(e.getDescription());
+                    logger.error(e);
                 }
-                //TODO:log and throw the actual exception returned in the response.
                 if (charonException != null) {
                     throw charonException;
                 }
             } else {
-                //if it is a success, just return the response.
                 return cr;
             }
         }

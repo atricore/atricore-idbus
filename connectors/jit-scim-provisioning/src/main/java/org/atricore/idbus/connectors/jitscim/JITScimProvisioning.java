@@ -43,8 +43,16 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Just-in-time SCIM provisioner.
+ * Acts upon a user has been successfully identified by creating a corresponding user account onto the supplied SCIM
+ * service.
+ * If the user account doesn't exist in the target SCIM service it provisions one. If it does exist, it updates it's
+ * details - such as email address - in order to keep both the local and remote entries in sync.
+ *
+ * SCIM (RESTful) requests are authenticated using OAuth1 bearer tokens.
+ */
 public class JITScimProvisioning extends AbstractAuthenticationPolicy {
-
     private static final Log logger = LogFactory.getLog(JITScimProvisioning.class);
 
     private String endpoint;
@@ -54,6 +62,15 @@ public class JITScimProvisioning extends AbstractAuthenticationPolicy {
     private String tokenSecret;
     private String realm;
 
+    /**
+     * Main entry point of the SCIM just-in-time provisioning connector.
+     *
+     * @param subject the subject to be verified.
+     * @param context additional context information
+     *
+     * @return
+     * @throws SecurityTokenAuthenticationFailure
+     */
     @Override
     public Set<PolicyEnforcementStatement> verify(Subject subject, Object context) throws SecurityTokenAuthenticationFailure {
         String email = getProperty(subject, "email");
@@ -91,6 +108,21 @@ public class JITScimProvisioning extends AbstractAuthenticationPolicy {
         return null;
     }
 
+    /**
+     * Returns information for a single user.
+     * JSON requests look like :
+     * {
+     * method: "GET",
+     * email: "joelmcconaughy@gmail.com",
+     * subsidiary: 1
+     * }
+     *
+     * @param username username unique identifier for the user to be looked up
+     * @param subsidiary subsidiary associated with the user
+     *
+     * @return SCIM user object
+     * @throws SecurityTokenAuthenticationFailure
+     */
     protected ExtendedUser getUser(String username, Integer subsidiary) throws AbstractCharonException {
         ExtendedUser foundUser = null;
 
@@ -126,7 +158,21 @@ public class JITScimProvisioning extends AbstractAuthenticationPolicy {
         return foundUser;
     }
 
-
+    /**
+     * Creates a user based on the supplied subject.
+     * JSON requests look like :
+     * {
+     * method: "POST",
+     * email: "joelmcconaughy@gmail.com",
+     * firstName: "Joel",
+     * lastName: "McConaughy",
+     * subsidiary: 1
+     * }
+     * @param subject attributes for the user to be provisioned
+     *
+     * @return created user SCIM object
+     * @throws AbstractCharonException
+     */
     protected ExtendedUser createUser(Subject subject) throws AbstractCharonException {
         ExtendedUser createdUser = null;
 
@@ -166,6 +212,24 @@ public class JITScimProvisioning extends AbstractAuthenticationPolicy {
         return createdUser;
     }
 
+    /**
+     * Updates the email of the supplied SCIM user.
+     * JSON requests look like :
+     * {
+     * method: "PUT",
+     * email: "joelmcconaughy@gmail.com",
+     * newEmail: "bucket@head.com",
+     * firstName: "Joel",
+     * lastName: "McConaughy",
+     * subsidiary: 1
+     * }
+     *
+     * @param user SCIM user to the updated
+     * @param newEmail the new email of the supplied SCIM user
+     *
+     * @return SCIM object with updated email address.
+     * @throws AbstractCharonException
+     */
     protected ExtendedUser updateUserEMail(ExtendedUser user, String newEmail) throws AbstractCharonException {
         ExtendedUser updatedUser = null;
 
@@ -206,6 +270,12 @@ public class JITScimProvisioning extends AbstractAuthenticationPolicy {
         return updatedUser;
     }
 
+    /**
+     * Signs SCIM requests using OAuth1.
+     *
+     * @param resource the target SCIM request.
+     * @return OAuth1 signed request.
+     */
     private Resource oauthifyResource(Resource resource) {
         OAuthConfig authConfig = new OAuthConfig(consumerKey, consumerSecret, null, SignatureType.Header, null, null);
         Token token = new Token(tokenId, tokenSecret);
@@ -244,6 +314,7 @@ public class JITScimProvisioning extends AbstractAuthenticationPolicy {
         return propertyValue;
     }
 
+    /****** Property Getters and Setters ******/
     public String getEndpoint() {
         return endpoint;
     }

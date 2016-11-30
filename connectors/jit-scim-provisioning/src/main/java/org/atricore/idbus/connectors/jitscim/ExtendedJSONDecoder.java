@@ -44,6 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Unmarshalls SCIM messages.
+ */
 public class ExtendedJSONDecoder implements Decoder {
 
     private static final Log logger = LogFactory.getLog(ExtendedJSONDecoder.class);
@@ -60,74 +63,65 @@ public class ExtendedJSONDecoder implements Decoder {
             throws BadRequestException, CharonException {
         try {
             //decode the string into json representation
-            logger.debug("SCIM resource string : " + scimResourceString);
+            logger.trace("SCIM resource string [" + scimResourceString + "]");
             JSONObject decodedJsonObj = new JSONObject(new JSONTokener(scimResourceString));
             decodedJsonObj = decodedJsonObj.getJSONObject("Content").getJSONObject("data");
             //get the attribute schemas list from the schema that defines the given resource
             List<AttributeSchema> attributeSchemas = resourceSchema.getAttributesList();
             //iterate through the schema and extract the attributes.
             for (AttributeSchema attributeSchema : attributeSchemas) {
-                logger.debug("Looking for attribute : " + attributeSchema.getName());
+                logger.trace("Looking for attribute [" + attributeSchema.getName() + "]");
 
                 Object attributeValObj = decodedJsonObj.opt(attributeSchema.getName());
 
                 if (attributeValObj instanceof String) {
-                    logger.debug("Found attribute value " + attributeValObj);
+                    logger.trace("Found attribute value [" + attributeValObj + "]");
                     //If an attribute is passed without a value, no need to save it.
                     if (((String) attributeValObj).isEmpty()) {
                         continue;
                     }
                     //if the corresponding json value object is String, it is a SimpleAttribute.
                     scimObject.setAttribute(buildSimpleAttribute(attributeSchema, attributeValObj));
-                    logger.debug("Attribute " + attributeSchema.getName() + " set with value " + attributeValObj);
+                    logger.trace("Attribute [" + attributeSchema.getName() + "] set with value [" + attributeValObj + "]");
 
                 } else if (attributeValObj instanceof Integer) {
                     scimObject.setAttribute(buildSimpleAttribute(attributeSchema, Integer.toString((Integer) attributeValObj)));
-
-
                 } else if (attributeValObj instanceof Boolean) {
                     //if the corresponding json value object is String, it is a SimpleAttribute.
                     scimObject.setAttribute(buildSimpleAttribute(attributeSchema,
                             String.valueOf(attributeValObj)));
-
                 } else if (attributeValObj instanceof JSONArray) {
                     //if the corresponding json value object is JSONArray, it is a MultiValuedAttribute.
                     scimObject.setAttribute(
                             buildMultiValuedAttribute(attributeSchema, (JSONArray) attributeValObj));
-
-
                 } else if (attributeValObj instanceof JSONObject) {
                     //if the corresponding json value object is JSONObject, it is a ComplexAttribute.
                     scimObject.setAttribute(buildComplexAttribute(attributeSchema,
                             (JSONObject) attributeValObj));
-
                 }
             }
-            //return DefaultResourceFactory.createSCIMObject(resourceSchema, scimObject);
             return scimObject;
 
         } catch (JSONException e) {
-            //log error
-            String error = "JSON string could not be decoded properly.";
-            logger.error(error, e);
+            logger.error("JSON string could not be decoded properly.", e);
             throw new BadRequestException();
         } catch (CharonException e) {
-            //log error
-            String error = "Error in building resource from the JSON representation";
-            throw new CharonException(error);
+            throw new CharonException("Error in building resource from the JSON representation");
         }
     }
 
     /**
      * Decode the string sent in the SCIM response payload, which is an exception.
      * JSON encoded exception is usually like:
+     *
      * {
-     * "Errors":[
+     * Content:
      * {
-     * "description":"Resource 2819c223-7f76-453a-919d-413861904646 not found",
-     * "code":"404"
+     * status: “ERROR”,
+     * data: null,
+     * message: “Validation error”,
+     * code: “400”
      * }
-     * ]
      * }
      *
      * @param scimExceptionString
@@ -137,7 +131,7 @@ public class ExtendedJSONDecoder implements Decoder {
             throws CharonException {
         //decode the string into json representation
         try {
-            logger.debug("Decoding exception : " + scimExceptionString);
+            logger.trace("Decoding exception [" + scimExceptionString + "]");
             JSONObject decodedJsonObj = new JSONObject(new JSONTokener(scimExceptionString));
             JSONObject errorObject = decodedJsonObj.getJSONObject("Content");
 
@@ -147,61 +141,8 @@ public class ExtendedJSONDecoder implements Decoder {
             return new AbstractCharonException(Integer.parseInt(errorCode), message);
 
         } catch (JSONException e) {
-            //log error
-            String error = "Error in building exception from the JSON representation";
-            throw new CharonException(error);
+            throw new CharonException("Error in building exception from the JSON representation");
         }
-
-    }
-
-    /**
-     * Decode the listed resource sent in the payload of response for filter/retrieve requests.
-     *
-     * @param scimString
-     * @return
-     * @throws CharonException
-     */
-    public ListedResource decodeListedResource(String scimString,
-                                               ResourceSchema resourceSchemaOfListedResource,
-                                               AbstractSCIMObject scimObjectOfListedResource)
-            throws CharonException, BadRequestException {
-        ListedResource listedResource = null;
-        try {
-            //decode the string into json representation
-            JSONObject decodedJsonObj = new JSONObject(new JSONTokener(scimString));
-
-            /*Extract information and set in listed resource object as appropriate*/
-            //according to the format, this is assumed to be a string
-            Object totalResults = decodedJsonObj.opt(
-                    SCIMConstants.ListedResourcesConstants.TOTAL_RESULTS);
-            listedResource = new ListedResource();
-            listedResource.setTotalResults((Integer) totalResults);
-
-            //TODO:decode schemas - skip since it is not used currently after decoding.
-
-            //we expect this to be a non-empty JSONArray according to the format
-            Object resources = decodedJsonObj.opt(SCIMConstants.ListedResourcesConstants.RESOURCES);
-            List<SCIMObject> scimObjects = new ArrayList<SCIMObject>();
-            for (int i = 0; i < (((JSONArray) resources).length()); i++) {
-                Object object = ((JSONArray) resources).get(i);
-                String scimResourceString = null;
-                if (object instanceof String) {
-                    scimResourceString = ((JSONArray) resources).getString(i);
-                } else if (object instanceof JSONObject) {
-                    scimResourceString = ((JSONArray) resources).getJSONObject(i).toString();
-                }
-                SCIMObject scimObject = this.decodeResource(scimResourceString, resourceSchemaOfListedResource,
-                        scimObjectOfListedResource);
-                scimObjects.add(scimObject);
-            }
-            listedResource.setScimObjects(scimObjects);
-
-        } catch (JSONException e) {
-            //log error
-            String error = "JSON string could not be decoded properly.";
-            throw new BadRequestException();
-        }
-        return listedResource;
     }
 
     /**
@@ -262,9 +203,7 @@ public class ExtendedJSONDecoder implements Decoder {
             return (MultiValuedAttribute) DefaultAttributeFactory.createAttribute(attributeSchema,
                     multiValuedAttribute);
         } catch (JSONException e) {
-            //TODO:log the error
-            String error = "Error in accessing JSON value of multivalues attribute";
-            throw new CharonException(error);
+            throw new CharonException("Error in accessing JSON value of multivalues attribute");
         }
     }
 
@@ -291,9 +230,7 @@ public class ExtendedJSONDecoder implements Decoder {
             return (MultiValuedAttribute) DefaultAttributeFactory.createAttribute(attributeSchema,
                     multiValuedAttribute);
         } catch (JSONException e) {
-            String error = "Error in accessing the value of multivalued attribute.";
-            //log the error
-            throw new CharonException(error);
+            throw new CharonException("Error in accessing the value of multivalued attribute.");
         }
 
     }
@@ -323,9 +260,7 @@ public class ExtendedJSONDecoder implements Decoder {
             return (MultiValuedAttribute) DefaultAttributeFactory.createAttribute(attributeSchema,
                     multiValuedAttribute);
         } catch (JSONException e) {
-            String error = "Error in accessing the value of multivalued attribute.";
-            //log the error
-            throw new CharonException(error);
+            throw new CharonException("Error in accessing the value of multivalued attribute.");
         }
     }
 
@@ -474,7 +409,7 @@ public class ExtendedJSONDecoder implements Decoder {
 
 
     /**
-     * Decode BulkRequestData Json Sting
+     * Decode BulkRequestData Json String
      *
      * @param bulkResourceString
      * @return BulkRequestData Object
@@ -524,7 +459,7 @@ public class ExtendedJSONDecoder implements Decoder {
                             newRequestData.setPath(requestType);
 
                             userCreatingRequestList.add(newRequestData);
-                            logger.debug("User Request-" + i + "-" + newRequestData.toString());
+                            logger.trace("User Request-" + i + "-" + newRequestData.toString());
                         }
 
                         //create group request list
@@ -558,8 +493,7 @@ public class ExtendedJSONDecoder implements Decoder {
             bulkRequestDataObject.setGroupCreatingRequests(groupCreatingRequestList);
 
         } catch (JSONException e1) {
-            String error = "JSON string could not be decoded properly.";
-            logger.error(error);
+            logger.error("JSON string could not be decoded properly.");
             throw new BadRequestException();
         }
 
