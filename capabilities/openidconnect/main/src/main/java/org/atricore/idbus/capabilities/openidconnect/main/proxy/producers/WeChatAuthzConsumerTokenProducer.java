@@ -19,10 +19,16 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
+import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -31,6 +37,9 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sgonzalez.
@@ -172,6 +181,108 @@ grant_type	Yes	authorization_code
         httpclient.getConnectionManager().shutdown();
 
         // TODO : Parse JSON
+
+        /*
+
+            {
+            "access_token":"f1MiiWy9CsTNEwrFGzPHMGpkw74RrL7Fl_f9Ab7C2RrXWZlnohvsOKy4SFdm7Xfsgv8Wf_wSF3NhT8zuXSrRySaF_mH5BZ8G6zgnhE5ZHDY",
+            "expires_in":7200,
+            "refresh_token":"QVklhJRaFXp1A-nJjudmI403--4dbpqaQnMpIKTSawzEdLWJuYoLZV30swkLdhMEvePQmOILPQuqLDTVTHif1JHs6AjszhYGXR2A-g0oJ08",
+            "openid":"ojVeMxJqmVessDDO5T4PBjcwm2qI",
+            "scope":"snsapi_login",
+            "unionid":"oXzObv-Mk7u8FxoTgrRw77VMFi2Q"
+            }
+
+         */
+
+        Map<String, Object> map = (Map<String, Object>) fromJsonString(json, Map.class);
+
+        String openid = (String) map.get("openid");
+        String accessToken = (String) map.get("access_token");
+        String unionid = (String) map.get("unionid");
+        Integer accessTokenExpiresIn = (Integer) map.get("expires_in");
+
+        // Look up user by openid:
+
+        SubjectType subject;
+
+        List<SubjectAttributeType> attrs = new ArrayList<SubjectAttributeType>();
+
+        subject = new SubjectType();
+
+        SubjectNameIDType a = new SubjectNameIDType();
+        a.setName(openid);
+        a.setFormat(NameIDFormat.UNSPECIFIED.getValue());
+        a.setLocalName(openid);
+        a.setNameQualifier(getFederatedProvider().getName().toUpperCase());
+        a.setLocalNameQualifier(getFederatedProvider().getName().toUpperCase());
+
+        subject.getAbstractPrincipal().add(a);
+
+        SubjectAttributeType accessTokenAttr = new SubjectAttributeType();
+        accessTokenAttr.setName("accessToken");
+        accessTokenAttr.setValue(accessToken);
+        attrs.add(accessTokenAttr);
+
+        SubjectAttributeType accessTokenExpiresInAttr = new SubjectAttributeType();
+        accessTokenExpiresInAttr.setName("accessTokenExpiresIn");
+        accessTokenExpiresInAttr.setValue(accessTokenExpiresIn + "");
+        attrs.add(accessTokenExpiresInAttr);
+
+        SubjectAttributeType openIdSubjectAttr = new SubjectAttributeType();
+        openIdSubjectAttr.setName("openid");
+        openIdSubjectAttr.setValue(openid);
+        attrs.add(openIdSubjectAttr);
+
+        SubjectAttributeType unionOpenIdSubjectAttr = new SubjectAttributeType();
+        unionOpenIdSubjectAttr .setName("unionid");
+        unionOpenIdSubjectAttr .setValue(unionid);
+        attrs.add(unionOpenIdSubjectAttr );
+
+        SubjectAttributeType authnCtxClassAttr = new SubjectAttributeType();
+        authnCtxClassAttr.setName("authnCtxClass");
+        authnCtxClassAttr.setValue(AuthnCtxClass.PPT_AUTHN_CTX.getValue());
+        attrs.add(authnCtxClassAttr);
+
+        //addUserAttributes(user, attrs);
+        subject.getAbstractPrincipal().addAll(attrs);
+
+        SPAuthnResponseType ssoResponse = new SPAuthnResponseType();
+        ssoResponse.setID(uuidGenerator.generateId());
+        ssoResponse.setIssuer(getFederatedProvider().getName());
+        SPInitiatedAuthnRequestType ssoRequest =
+                (SPInitiatedAuthnRequestType) in.getMessage().getState().
+                        getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
+
+        if (ssoRequest != null) {
+            ssoResponse.setInReplayTo(ssoRequest.getID());
+        }
+
+        ssoResponse.setSessionIndex(sessionUuidGenerator.generateId());
+        ssoResponse.setSubject(subject);
+        ssoResponse.getSubjectAttributes().addAll(attrs);
+
+        // ------------------------------------------------------------------------------
+        // Send SP Authentication response
+        // ------------------------------------------------------------------------------
+        SPInitiatedAuthnRequestType authnRequest = (SPInitiatedAuthnRequestType) mediationState.getLocalVariable("urn:OPENID-CONNECT:1.0:authnRequest");
+
+        // Send response back
+        String destinationLocation = resolveSpProxyACS(authnRequest);
+
+        if (logger.isTraceEnabled())
+            logger.trace("Sending response to " + destinationLocation);
+
+        EndpointDescriptor destination =
+                new EndpointDescriptorImpl("EmbeddedSPAcs",
+                        "AssertionConsumerService",
+                        OpenIDConnectBinding.SSO_ARTIFACT.getValue(),
+                        destinationLocation, null);
+
+        out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
+                ssoResponse, "SPAuthnResponse", "", destination, in.getMessage().getState()));
+
+        exchange.setOut(out);
 
 
     }
