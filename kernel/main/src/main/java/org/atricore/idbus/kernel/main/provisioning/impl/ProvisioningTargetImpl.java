@@ -379,7 +379,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         validatePassword(userRequest.getUserPassword());
 
         try {
-            
+
             User user = new User();
 
             BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "securityQuestions", "acls", "userPassword"});

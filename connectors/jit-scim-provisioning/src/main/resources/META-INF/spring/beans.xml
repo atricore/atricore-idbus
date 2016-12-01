@@ -27,6 +27,7 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
                              http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
+    <!--
     <bean id="jitScimProvisioning" class="org.atricore.idbus.connectors.jitscim.JITScimProvisioning">
         <property name="name" value="jit-scim-provisioning"/>
         <property name="description" value="JIT SCIM Provisioning"/>
@@ -44,6 +45,6 @@
             <entry key="policyName" value="jit-scim-provisioning"/>
         </service-properties>
     </osgi:service>
-
+    -->
 
 </s:beans>

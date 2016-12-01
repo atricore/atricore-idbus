@@ -182,6 +182,16 @@
                             !com.sun.syndication*,
                             !org.codehaus.jettison*,
                             !org.eclipse.persistence*,
+                            javax.ejb;resolution:=optional,
+                            javax.enterprise.context;resolution:=optional,
+                            javax.enterprise.context.spi;resolution:=optional,
+                            javax.enterprise.event;resolution:=optional,
+                            javax.enterprise.inject;resolution:=optional,
+                            javax.enterprise.inject.spi;resolution:=optional,
+                            javax.enterprise.util;resolution:=optional,
+                            javax.inject;resolution:=optional,
+                            javax.interceptor;resolution:=optional,
+                            javax.servlet.annotation;resolution:=optional,
                             *
                         </Import-Package>
                         <Embed-Dependency>

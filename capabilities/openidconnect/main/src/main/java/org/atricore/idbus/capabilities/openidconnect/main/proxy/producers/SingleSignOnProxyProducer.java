@@ -25,6 +25,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Collections;
 
 /**
@@ -85,8 +87,13 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         String relayState = uuidGenerator.generateId();
 
         GenericUrl authorizationUrl;
+        String authorizationUrlStr;
 
-        if (OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType())) {
+        boolean weChat = OpenIDConnectConstants.WeChatAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType());
+        boolean twitter = OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType());
+
+
+        if (twitter) {
             OAuthHmacSigner signer = new OAuthHmacSigner();
             signer.clientSharedSecret = mediator.getClientSecret();
 
@@ -122,6 +129,9 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
             // Keep track of state
             mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:signer", signer);
             mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:requestToken", requestTokenResponse.token);
+
+            authorizationUrlStr = authorizationUrl.build();
+
         } else {
             authorizationUrl =
                     new AuthorizationCodeRequestUrl(mediator.getAuthzTokenServiceLocation(), mediator.getClientId());
@@ -147,8 +157,27 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
                 ((AuthorizationCodeRequestUrl) authorizationUrl).setScopes(Collections.singleton(scopes));
             }
 
+            /*
+            if (weChat) {
+                URL responseUrl = new URL(responseLocation.getLocation());
+                String redirectUri = responseUrl.getProtocol() + "://" + responseUrl.getHost();
+                ((AuthorizationCodeRequestUrl) authorizationUrl).setRedirectUri(redirectUri);
+            } else {
+                ((AuthorizationCodeRequestUrl) authorizationUrl).setRedirectUri(responseLocation.getLocation());
+            }*/
+
             ((AuthorizationCodeRequestUrl) authorizationUrl).setRedirectUri(responseLocation.getLocation());
+
+            authorizationUrlStr = authorizationUrl.build();
+
+        } if (weChat) {
+
+            authorizationUrlStr = authorizationUrlStr.replace("client_id", "appid");
+            authorizationUrlStr += "#wechat_redirect";
+
+            // snsapi_userinfo snsapi_base
         }
+        // Some changes for WeChat!
 
         // Keep track of state
         mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:relayState", relayState);
@@ -158,11 +187,11 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         EndpointDescriptor ed = new EndpointDescriptorImpl("authzCodeService",
                 OpenIDConnectConstants.AuthzCodeProviderService_QNAME.getLocalPart(),
                 OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.getValue(),
-                authorizationUrl.build(),
+                authorizationUrlStr,
                 null);
 
         out.setMessage(new MediationMessageImpl(relayState,
-                authorizationUrl,
+                authorizationUrlStr,
                 "OpenIDAuthenticationRequest",
                 relayState,
                 ed,

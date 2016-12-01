@@ -1,9 +1,24 @@
 package org.atricore.idbus.capabilities.openidconnect.main.proxy.producers;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
-import com.google.api.client.http.GenericUrl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
@@ -12,6 +27,10 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Created by sgonzalez.
@@ -62,9 +81,100 @@ public class WeChatAuthzConsumerTokenProducer extends AuthzTokenConsumerProducer
         // Request access token
         // ---------------------------------------------------------------
 
-        EndpointDescriptor accessTokenConsumerLocation = resolveAccessTokenConsumerEndpoint(OpenIDConnectConstants.WeChatAuthzTokenConsumerService_QNAME.toString());
-        GenericUrl requestUrl = new GenericUrl(mediator.getAccessTokenServiceLocation());
+        String accessTokenSvcLocation = mediator.getAccessTokenServiceLocation();
 
-        // TODO :
+
+        /*
+
+Parameter	Required	Description
+appid	Yes	The unique ID of the official account
+secret	Yes	The appsecret of the official account
+code	Yes	The code parameter obtained in the first step
+grant_type	Yes	authorization_code
+         */
+
+        accessTokenSvcLocation += ("?appid=" + mediator.getClientId());
+        accessTokenSvcLocation += ("&secret=" + mediator.getClientSecret());
+        accessTokenSvcLocation += ("&code=" + code);
+        accessTokenSvcLocation += ("&grant_type=authorization_code");
+
+// SSL
+        // general setup
+        SchemeRegistry supportedSchemes = new SchemeRegistry();
+
+        // Register the "http" and "https" protocol schemes, they are
+        // required by the default operator to look up socket factories.
+        supportedSchemes.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+
+        SSLSocketFactory sslSocketFactory = SSLSocketFactory.getSocketFactory();
+        sslSocketFactory.setHostnameVerifier(new AllowAllHostnameVerifier());
+        supportedSchemes.register(new Scheme("https", sslSocketFactory, 443));
+
+        // prepare parameters
+        HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setContentCharset(params, "UTF-8");
+        HttpProtocolParams.setUseExpectContinue(params, true);
+        ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, supportedSchemes);
+
+        DefaultHttpClient httpclient = new DefaultHttpClient(ccm, params);
+
+        HttpGet httpget = new HttpGet(accessTokenSvcLocation);
+
+        if (logger.isTraceEnabled()) logger.trace("executing request " + httpget.getURI());
+
+        HttpResponse response = httpclient.execute(httpget);
+        // TODO : Error handling
+
+        if (logger.isTraceEnabled())
+            logger.trace(response.getStatusLine());
+
+        // Get hold of the response entity
+        HttpEntity entity = response.getEntity();
+
+
+        // If the response does not enclose an entity, there is no need
+        // to bother about connection release
+        String json = "";
+        if (entity != null) {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(entity.getContent()));
+            try {
+
+                // do something useful with the response
+                json +=reader.readLine();
+
+            } catch (IOException ex) {
+
+                // In case of an IOException the connection will be released
+                // back to the connection manager automatically
+                throw ex;
+
+            } catch (RuntimeException ex) {
+
+                // In case of an unexpected exception you may want to abort
+                // the HTTP request in order to shut down the underlying
+                // connection and release it back to the connection manager.
+                httpget.abort();
+                throw ex;
+
+            } finally {
+
+                // Closing the input stream will trigger connection release
+                reader.close();
+
+            }
+        }
+
+        // When HttpClient instance is no longer needed,
+        // shut down the connection manager to ensure
+        // immediate deallocation of all system resources
+        httpclient.getConnectionManager().shutdown();
+
+        // TODO : Parse JSON
+
+
     }
+
+
 }
