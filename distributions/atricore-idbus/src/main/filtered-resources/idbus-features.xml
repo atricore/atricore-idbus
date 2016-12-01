@@ -95,7 +95,7 @@
 
     <feature name="atricore-connectors" version="${version}">
         <bundle>mvn:org.atricore.idbus.connectors/org.atricore.idbus.connectors.jdoidentityvault/${idbus.connectors.jdoidentityvault.version}</bundle>
-        <bundle>mvn:org.atricore.idbus.connectors/org.atricore.idbus.connectors.org.atricore.idbus.connectors.jitscim/${idbus.connectors.jitscim.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.connectors/org.atricore.idbus.connectors.jitscim/${idbus.connectors.jitscim.version}</bundle>
     </feature>
 
     <feature name="atricore-idojos" version="${version}">
