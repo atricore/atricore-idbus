@@ -176,7 +176,6 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
             Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
             Set<String> usedRoles = new HashSet<String>();
-
             for (SSORole ssoRole : ssoRoles) {
                 at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ROLE.toString(), ssoRole.getName()));
                 usedRoles.add(ssoRole.getName());
@@ -187,8 +186,13 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                 for (SSONameValuePair property : user.getProperties()) {
                     usedProps.add(property.getName());
 
-                    if (property.getValue() != null && !"".equals(property.getValue()))
+                    if (property.getValue() != null && !"".equals(property.getValue())) {
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Property: [" + property.getName() + "=" + property.getValue() + "]");
+
                         at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), property.getName(), property.getValue()));
+                    }
                 }
             }
 
@@ -216,6 +220,10 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
                         String value = attr.getValue();
                         if (value != null && !"".equals(value) && !usedProps.contains(name)) {
+
+                            if (logger.isDebugEnabled())
+                                logger.debug("Property: [" + name + "=" + value + "]");
+
                             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.toString(), name, value));
                             usedProps.add(name);
                         }
