@@ -117,59 +117,16 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
             SPSecurityContext secCtx =
                     (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
-
             if (secCtx != null && secCtx.getSessionIndex() != null) {
                 // Support no authentication request !
                 if (ssoAuthnReq != null && ssoAuthnReq.getForceAuthn() != null && ssoAuthnReq.getForceAuthn()) {
                     logger.debug("SSO Session found " + secCtx.getSessionIndex() + ", but SP requested 'forceAuthn'. Destroying security context");
                     // Destroy current session/secCtx !
+                    in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_LAST_SECURITY_CTX", secCtx.copy());
+
                     destroySPSecurityContext(exchange, secCtx);
                 }
             }
-
-                /*
-                    // TODO ! Check that the session belongs to the IdP associated with this request
-                    logger.debug("SSO Session found on SP " + secCtx.getSessionIndex());
-
-                    SPAuthnResponseType ssoResponse = new SPAuthnResponseType ();
-                    ssoResponse.setID(uuidGenerator.generateId());
-                    ssoResponse.setIssuer(getProvider().getName());
-
-                    SPInitiatedAuthnRequestType ssoRequest =
-                            (SPInitiatedAuthnRequestType) in.getMessage().getState().
-                                    getLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest");
-
-                    if (ssoRequest != null) {
-                        ssoResponse.setInReplayTo(ssoRequest.getID());
-                    } else if (ssoAuthnReq != null) {
-                        ssoResponse.setInReplayTo(ssoAuthnReq.getID());
-                    }
-
-                    SubjectType subjectType = toSubjectType(secCtx.getSubject());
-                    ssoResponse.setSessionIndex(secCtx.getSessionIndex());
-                    ssoResponse.setSubject(subjectType);
-
-                    String destinationLocation = resolveSpBindingACS();
-
-                    EndpointDescriptor destination =
-                        new EndpointDescriptorImpl("EmbeddedSPAcs",
-                                "AssertionConsumerService",
-                                SSOBinding.SSO_ARTIFACT.getValue(),
-                                destinationLocation, null);
-
-                    CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-                    out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
-                            ssoResponse, "SPAuthnResposne", relayState, destination, in.getMessage().getState()));
-
-                    exchange.setOut(out);
-                    return;
-                } else {
-                    logger.debug("SSO Session found " + secCtx.getSessionIndex() + ", but SP requested 'forceAuthn'. Destroying security context");
-                    // Destroy current session/secCtx !
-                    destroySPSecurityContext(exchange, secCtx);
-                }
-
-            } */
 
             // ------------------------------------------------------
             // Resolve IDP configuration!

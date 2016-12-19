@@ -40,7 +40,13 @@ public class UidAccountLinkEmitter implements AccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( UidAccountLinkEmitter.class );
 
-    public AccountLink emit ( Subject subject ) {
+    @Override
+    public AccountLink emit(Subject subject) {
+        return emit(subject, null);
+    }
+
+    @Override
+    public AccountLink emit ( Subject subject , Object ctx) {
 
         Set<SubjectAttribute> subjectAttrs = subject.getPrincipals( SubjectAttribute.class );
 

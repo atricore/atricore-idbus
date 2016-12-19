@@ -29,8 +29,10 @@ import oasis.names.tc.saml._2_0.protocol.StatusType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
+import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
+import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 
 /**
@@ -49,8 +51,12 @@ public class SetAuthnResponseStatusAction extends AbstractSSOAction {
         if (logger.isDebugEnabled())
             logger.debug("Setting SAMLR2 Status Code");
 
+        ContextInstance ctx = executionContext.getContextInstance();
+
         StatusCodeType statusCode = new StatusCodeType();
-        AssertionType assertion = (AssertionType) executionContext.getContextInstance().getVariable(VAR_SAMLR2_ASSERTION);
+        AssertionType assertion = (AssertionType) ctx.getVariable(VAR_SAMLR2_ASSERTION);
+
+        AuthenticationState authnState = (AuthenticationState ) ctx.getVariable(VAR_SAMLR2_AUTHN_STATE);
 
         // TODO : Check error variable to provide different status codes!
         if (assertion != null) {
@@ -80,6 +86,7 @@ public class SetAuthnResponseStatusAction extends AbstractSSOAction {
                 if (logger.isDebugEnabled())
                     logger.debug("Setting secondary status code to AUTHN FAILED");
 
+
                 StatusCodeType secStatusCode = new StatusCodeType();
                 secStatusCode.setValue(StatusCode.AUTHN_FAILED.getValue());
                 statusCode.setStatusCode(secStatusCode);
@@ -89,6 +96,10 @@ public class SetAuthnResponseStatusAction extends AbstractSSOAction {
 
         StatusType status = new StatusType();
         status.setStatusCode(statusCode);
+
+        if (authnState != null && authnState.getErrorMessage() != null) {
+            status.setStatusMessage(authnState.getErrorMessage());
+        }
 
         response.setStatus(status);
 

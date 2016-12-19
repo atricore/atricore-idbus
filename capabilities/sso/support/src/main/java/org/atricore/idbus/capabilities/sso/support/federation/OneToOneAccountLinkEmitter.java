@@ -42,7 +42,13 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( OneToOneAccountLinkEmitter.class );
 
-    public AccountLink emit ( Subject subject ) {
+    @Override
+    public AccountLink emit(Subject subject) {
+        return emit(subject, null);
+    }
+
+    @Override
+    public AccountLink emit ( Subject subject, Object ctx ) {
 
         Set<SubjectNameID> subjectNameIDs = subject.getPrincipals( SubjectNameID.class );
         if ( logger.isDebugEnabled() )

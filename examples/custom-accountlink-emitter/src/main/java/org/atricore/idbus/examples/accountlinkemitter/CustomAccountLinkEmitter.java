@@ -15,6 +15,11 @@ public class CustomAccountLinkEmitter implements AccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog(CustomAccountLinkEmitter.class);
 
+    @Override
+    public AccountLink emit(Subject subject) {
+        return emit(subject, null);
+    }
+
     /**
      * Emit an AccountLink for the remote Subject
      * @param subject received from the IdP
@@ -22,7 +27,7 @@ public class CustomAccountLinkEmitter implements AccountLinkEmitter {
      * @return the new AccountLink instance
      */
     @Override
-    public AccountLink emit(Subject subject) {
+    public AccountLink emit(Subject subject, Object ctx) {
         Set<SubjectNameID> subjectNameIDs = subject.getPrincipals( SubjectNameID.class );
         if ( logger.isDebugEnabled() )
             logger.debug( "Principals found: " + subjectNameIDs.size() );

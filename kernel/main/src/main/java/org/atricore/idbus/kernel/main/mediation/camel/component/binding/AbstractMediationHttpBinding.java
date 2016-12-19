@@ -140,6 +140,24 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
                         ByteArrayInputStream baos = new ByteArrayInputStream(htmlStr.getBytes());
                         httpOut.setBody(baos);
+                    } else if (ErrorBinding.GET.equals(errorBinding)) {
+                        IdentityMediationFault err = fault.getMessage().getFault();
+
+                        errorUrl += errorUrl.contains("?") ? "&" : "?";
+                        errorUrl += "status_code=" + err.getFaultCode();
+
+                        if (err.getSecFaultCode() != null)
+                            errorUrl += "&secondary_status_code=" + err.getSecFaultCode();
+
+                        if (err.getStatusDetails() != null)
+                            errorUrl += "&status_details=" + err.getStatusDetails();
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Configured error URL " + errorUrl + ".  Redirecting.");
+
+                        httpOut.getHeaders().put("http.responseCode", 302);
+                        httpOut.getHeaders().put("Location", errorUrl);
+
                     } else {
                         // Artifact binding
                         Artifact a = mediator.getArtifactQueueManager().pushMessage(fault.getMessage());

@@ -49,9 +49,7 @@ import oasis.names.tc.saml._2_0.idbus.SPEntryType;
 import oasis.names.tc.saml._2_0.idbus.SPListType;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
-import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
-import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import oasis.names.tc.saml._2_0.protocol.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1384,7 +1382,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Just in case
                 if (authnCtx == null) {
-                    logger.warn("Unsing unspecified AuthnCtxClass, no value found in proxy response");
+                    logger.warn("Using unspecified AuthnCtxClass, no value found in proxy response");
                     authnCtx = AuthnCtxClass.UNSPECIFIED_AUTHN_CTX;
                 }
 
@@ -1508,8 +1506,11 @@ public class SingleSignOnProducer extends SSOProducer {
 
             }
 
+            authnState.setErrorMessage(proxyResponse.getSecondaryErrorCode());
+
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed, requiredSpChannel);
+
             oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response = null;
 
             // --------------------------------------------------------------------
@@ -2128,6 +2129,7 @@ public class SingleSignOnProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, spEndpoint);
         idPlanExchange.setProperty(VAR_REQUEST, authnState.getAuthnRequest());
         idPlanExchange.setProperty(VAR_RESPONSE_MODE, authnState.getResponseMode());
+        idPlanExchange.setProperty(VAR_SAMLR2_AUTHN_STATE, authnState);
 
         // Create in/out artifacts
         IdentityArtifact<AuthnRequestType> in =

@@ -42,7 +42,13 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
 
     boolean stripEmailDomain = false;
 
-    public AccountLink emit ( Subject subject ) {
+    @Override
+    public AccountLink emit(Subject subject) {
+        return emit(subject, null);
+    }
+
+    @Override
+    public AccountLink emit ( Subject subject, Object ctx) {
 
         // If subjectName ID  is email formatted, use it
         Set<SubjectNameID> nameIds = subject.getPrincipals(SubjectNameID.class);

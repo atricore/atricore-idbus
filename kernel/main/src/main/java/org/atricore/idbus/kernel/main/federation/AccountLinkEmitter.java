@@ -32,4 +32,6 @@ public interface AccountLinkEmitter {
 
     AccountLink emit(Subject subject);
 
+    AccountLink emit(Subject subject, Object ctx);
+
 }
