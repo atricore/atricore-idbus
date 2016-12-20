@@ -467,7 +467,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         if (ssoUsers != null && ssoUsers.size() > 0) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Emitting token for Subject with SSOUser");
+                logger.debug("Emitting token for Subject with SSOUser [STS: " + this.getName() + "]");
 
             // Build Subject
             // s = new Subject(true, s.getPrincipals(), s.getPrivateCredentials(), s.getPublicCredentials());
@@ -482,24 +482,19 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 SSOIdentityManager idMgr = getIdentityManager();
 
                 if (idMgr == null) {
-                    logger.trace("No IdentityManger configured, using default subject");
+                    logger.trace("No IdentityManger configured, using default subject [STS: " + this.getName() + "]");
                     return subject;
                 }
 
                 // Obtain SSOUser principal
                 SSOUser ssoUser = null;
                 SSORole[] ssoRoles = null;
-                if (idMgr != null) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Resolving SSOUser for " + username);
-                    ssoUser = idMgr.findUser(username);
-                    ssoRoles = idMgr.findRolesByUsername(username);
-                } else {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Not resolving SSOUser for " + username);
-                    ssoUser = new BaseUserImpl(username);
-                    ssoRoles = new BaseRoleImpl[0];
-                }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Resolving SSOUser [" + username + "] [STS: " + this.getName() + "]");
+
+                ssoUser = idMgr.findUser(username);
+                ssoRoles = idMgr.findRolesByUsername(username);
 
                 Set<Principal> principals = new HashSet<Principal>();
 
@@ -510,7 +505,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 Set<PolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(PolicyEnforcementStatement.class);
                 if (ssoPolicies != null) {
                     if (logger.isDebugEnabled())
-                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");
+                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals [STS: " + this.getName() + "]");
 
                     principals.addAll(ssoPolicies);
                 }

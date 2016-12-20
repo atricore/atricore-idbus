@@ -4,11 +4,13 @@ import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -128,7 +130,15 @@ grant_type	Yes	authorization_code
 
         DefaultHttpClient httpclient = new DefaultHttpClient(ccm, params);
 
+        if (System.getProperty("http.proxyHost") != null) {
+            int proxyPort = System.getProperty("http.proxyPort") != null ? Integer.parseInt(System.getProperty("http.proxyPort")) : 8080;
+            HttpHost proxy = new HttpHost(System.getProperty("http.proxyHost"), proxyPort, "http");
+            httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        }
+
         HttpGet httpget = new HttpGet(accessTokenSvcLocation);
+
+
 
         if (logger.isTraceEnabled()) logger.trace("executing request " + httpget.getURI());
 

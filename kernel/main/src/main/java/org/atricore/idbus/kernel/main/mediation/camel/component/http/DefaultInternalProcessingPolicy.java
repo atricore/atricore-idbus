@@ -6,9 +6,9 @@ import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -23,7 +23,29 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
     private List<String> includedUrls = new ArrayList<String>();
 
+    private Map<String, Set<String>> aliases = new HashMap<String, Set<String>>();
+
     public void afterPropertiesSet() throws Exception {
+
+        String aliasesStr = kernelConfig.getProperty("binding.http.followRedirects.aliases");
+        if (aliasesStr != null) {
+            String[] aliasesMappings = aliasesStr.split(",");
+            for (String aliasMapping : aliasesMappings) {
+                String[] nameValue = aliasMapping.split("=");
+                String host = nameValue[0];
+                String alias = nameValue[1];
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Binding host [" + host + "] with alias [" + alias + "]");
+
+                Set<String> aliasesSet = aliases.get(host);
+                if (aliasesSet == null) {
+                    aliasesSet = new HashSet<String>();
+                    aliases.put(host, aliasesSet);
+                }
+                aliasesSet.add(alias);
+            }
+        }
 
         String excludedUrlsCsv = kernelConfig.getProperty("binding.http.followRedirects.excludeUrls");
         if (excludedUrlsCsv != null) {
@@ -40,7 +62,7 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
             StringTokenizer st = new StringTokenizer(includedUrlsCsv, ",");
             while (st.hasMoreTokens()) {
                 String url = st.nextToken().trim();
-                logger.info("Not following redirects for ["+url+"]");
+                logger.info("Following redirects for ["+url+"]");
                 includedUrls.add(url);
             }
         }
@@ -51,9 +73,34 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
     public boolean match(HttpServletRequest originalReq, String redirectUrl) {
 
         if (logger.isTraceEnabled())
-            logger.trace("Matching URL [" + redirectUrl+ "]");
+            logger.trace("Matching: [" + redirectUrl + "], original: [" + originalReq.getRequestURL() + "]");
 
         // Force includes/excludes
+        try {
+            URL redir = new URL(redirectUrl);
+            String originalServer = originalReq.getServerName();
+            String redirServer = redir.getHost();
+
+            if (!originalServer.equals(redirServer)) {
+
+                Set<String> aliasesSet = aliases.get(redirServer);
+                if (aliasesSet == null || !aliasesSet.contains(originalServer)) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Not Following, Matching URL to [" + redirectUrl + "] " + originalServer + "!=" + redirServer);
+                    return false;
+
+                }
+            }
+
+
+        } catch (MalformedURLException e) {
+            if (logger.isTraceEnabled())
+                logger.trace("Invalid target URL ["+redirectUrl+"] " + e.getMessage(), e);
+        }
+
+        if (logger.isTraceEnabled())
+            logger.trace("Matching URL [" + redirectUrl+ "]");
 
         for (String includedUrl : includedUrls) {
             if (redirectUrl.length() >= includedUrl.length()) {
@@ -103,6 +150,9 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
     }
 
     public boolean match(HttpServletRequest req) {
+
+        if (logger.isTraceEnabled())
+            logger.trace("Matching: [" + req.getRequestURL() + "]");
 
         // Already internal, ignore it.
         if (req.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST) != null)

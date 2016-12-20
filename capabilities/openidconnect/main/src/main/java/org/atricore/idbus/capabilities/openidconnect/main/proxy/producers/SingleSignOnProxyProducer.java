@@ -172,6 +172,8 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
         } if (weChat) {
 
+            // TODO : Mobile browser support! user different URL
+
             authorizationUrlStr = authorizationUrlStr.replace("client_id", "appid");
             authorizationUrlStr += "#wechat_redirect";
 
