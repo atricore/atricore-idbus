@@ -21,6 +21,7 @@ import org.apache.http.client.protocol.RequestAddCookies;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
@@ -228,6 +229,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
         // Create HTTP Client
         HttpClient httpClient = getHttpClient();
+        HttpProtocolParams.setUserAgent(httpClient.getParams(), req.getHeader("User-Agent"));
 
         // Create an HTTP Context to publish resources for our client components
         HttpContext httpContext = new BasicHttpContext();
@@ -491,7 +493,6 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 }
 
             }
-
 
             if (followTargetUrl) {
 

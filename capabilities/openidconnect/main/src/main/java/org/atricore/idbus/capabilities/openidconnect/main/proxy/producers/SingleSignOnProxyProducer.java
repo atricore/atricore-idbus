@@ -83,6 +83,8 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         if (logger.isDebugEnabled())
             logger.debug("AuthzTokenConsumer: " + responseLocation.getLocation());
 
+        String userAgent = (String) in.getHeader("org.atricore.idbus.http.UserAgent");
+
         // redirect to the authorization flow
         String relayState = uuidGenerator.generateId();
 
@@ -91,7 +93,12 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
         boolean weChat = OpenIDConnectConstants.WeChatAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType());
         boolean twitter = OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType());
+        boolean mobile = isMobile(userAgent);
 
+        if (logger.isTraceEnabled())
+            logger.trace("WeChat: "  + weChat +
+                    ", Twitter: " + twitter +
+                    " Mobile: " + mobile);
 
         if (twitter) {
             OAuthHmacSigner signer = new OAuthHmacSigner();
@@ -133,8 +140,10 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
             authorizationUrlStr = authorizationUrl.build();
 
         } else {
-            authorizationUrl =
-                    new AuthorizationCodeRequestUrl(mediator.getAuthzTokenServiceLocation(), mediator.getClientId());
+
+            authorizationUrl = (!weChat || !mobile ?
+                    new AuthorizationCodeRequestUrl(mediator.getAuthzTokenServiceLocation(), mediator.getClientId()) :
+                    new AuthorizationCodeRequestUrl(mediator.getMobileAuthzTokenServiceLocation(), mediator.getClientId()));
 
             // Keep track of state
             ((AuthorizationCodeRequestUrl) authorizationUrl).setState(relayState);
@@ -170,7 +179,9 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
             authorizationUrlStr = authorizationUrl.build();
 
-        } if (weChat) {
+        }
+
+        if (weChat) {
 
             // TODO : Mobile browser support! user different URL
 
@@ -179,6 +190,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
             // snsapi_userinfo snsapi_base
         }
+
         // Some changes for WeChat!
 
         // Keep track of state

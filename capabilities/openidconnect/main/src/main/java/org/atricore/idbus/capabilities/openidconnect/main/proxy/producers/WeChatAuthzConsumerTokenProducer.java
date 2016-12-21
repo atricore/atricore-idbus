@@ -138,8 +138,6 @@ grant_type	Yes	authorization_code
 
         HttpGet httpget = new HttpGet(accessTokenSvcLocation);
 
-
-
         if (logger.isTraceEnabled()) logger.trace("executing request " + httpget.getURI());
 
         HttpResponse response = httpclient.execute(httpget);
