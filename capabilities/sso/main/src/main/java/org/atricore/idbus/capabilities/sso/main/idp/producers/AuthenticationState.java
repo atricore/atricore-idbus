@@ -66,6 +66,8 @@ public class AuthenticationState implements java.io.Serializable {
 
     private AuthnCtxClass authnCtxClass;
 
+    private String errorMessage;
+
     // The last authn request
     private AuthnRequestType authnRequest;
 
@@ -175,5 +177,13 @@ public class AuthenticationState implements java.io.Serializable {
 
     public Locale getLocale() {
         return this.locale;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

@@ -36,7 +36,14 @@ import java.util.Set;
  * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
  */
 public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
+
+    @Override
     public AccountLink emit(Subject subject) {
+        return emit(subject, null);
+    }
+
+    @Override
+    public AccountLink emit(Subject subject, Object ctx) {
 
         Set<SubjectAttribute> idpAttrs = subject.getPrincipals(SubjectAttribute.class);
 

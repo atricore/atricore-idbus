@@ -3,7 +3,8 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 public enum ErrorBinding {
 
     ARTIFACT("urn:org:atricore:idbus:error:bindings:HTTP-Artifact"),
-    JSON("urn:org:atricore:idbus:error:bindings:HTTP-POST");
+    JSON("urn:org:atricore:idbus:error:bindings:HTTP-POST"),
+    GET("urn:org:atricore:idbus:error:bindings:HTTP-GET");
 
     private String binding;
 

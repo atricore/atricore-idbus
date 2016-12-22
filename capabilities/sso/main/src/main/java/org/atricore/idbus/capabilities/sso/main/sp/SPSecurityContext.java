@@ -146,4 +146,20 @@ public class SPSecurityContext implements Serializable {
     public AuthnCtxClass getAuthnCtxClass() {
         return authnCtxClass;
     }
+
+    public SPSecurityContext copy() {
+
+        SPSecurityContext c = new SPSecurityContext();
+
+        c.idpAlias = idpAlias;
+        c.subject = subject;
+        c.acctLink = acctLink;
+        c.sessionIndex = sessionIndex;
+        c.idpSsoSession = idpSsoSession;
+        c.requester = requester;
+        c.lastIdPSessionHeartBeat = lastIdPSessionHeartBeat;
+        c.authnCtxClass = authnCtxClass;
+
+        return c;
+    }
 }

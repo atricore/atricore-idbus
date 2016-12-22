@@ -78,6 +78,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         }
 
         // Export additional information in CAMEL headers
+        httpMessage.getHeaders().put("org.atricore.idbus.http.UserAgent", httpServletRequest.getHeader("User-Agent"));
         httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", httpServletRequest.getRequestURL().toString());
         httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", httpServletRequest.getQueryString());
 

@@ -35,6 +35,8 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private String authzTokenServiceLocation;
 
+    private String mobileAuthzTokenServiceLocation;
+
     private String accessTokenServiceLocation;
 
     private String requestTokenServiceLocation;
@@ -255,6 +257,14 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public void setAuthzTokenServiceLocation(String authzTokenServiceLocation) {
         this.authzTokenServiceLocation = authzTokenServiceLocation;
+    }
+
+    public String getMobileAuthzTokenServiceLocation() {
+        return mobileAuthzTokenServiceLocation;
+    }
+
+    public void setMobileAuthzTokenServiceLocation(String mobileAuthzTokenServiceLocation) {
+        this.mobileAuthzTokenServiceLocation = mobileAuthzTokenServiceLocation;
     }
 
     public String getAccessTokenServiceLocation() {

@@ -1,0 +1,19 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  Content: {
+    status: "SUCCESS",
+    data: {
+      internalId: 1,
+      email: "joelmcconaughy@gmail.com",
+      firstName: "Joel",
+      lastName: "McConaughy",
+      companyName: "Explore Consulting",
+      stage: "CUSTOMER",
+      subsidiary: 1
+    },
+    message: null,
+    code: "200"
+  }
+}

@@ -212,8 +212,15 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 
         } else if (!status.equals(StatusCode.TOP_SUCCESS)) {
+
+            throw new IdentityMediationFault(status.getValue(),
+                    (secStatus != null ? secStatus.getValue() : null),
+                    response.getStatus().getStatusMessage(),
+                    null,
+                    null);
+            /*
             throw new SSOException("Unexpected IDP Status Code " + status.getValue() +
-                    (secStatus != null ? "/" + secStatus.getValue() : ""));
+                    (secStatus != null ? "/" + secStatus.getValue() : "")); */
 
         }
 
@@ -230,12 +237,20 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
 
 
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
         AccountLinkLifecycle accountLinkLifecycle = fChannel.getAccountLinkLifecycle();
 
         // ------------------------------------------------------------------
         // Build IDP Subject from response
         // ------------------------------------------------------------------
         Subject idpSubject = buildSubjectFromResponse(response);
+
+        // This is a no longer valid sec. ctx.
+        SPSecurityContext lastSecCtx =
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_LAST_SECURITY_CTX");
+
+        CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
 
         AccountLink acctLink = null;
         AccountLinkEmitter accountLinkEmitter = fChannel.getAccountLinkEmitter();
@@ -244,7 +259,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
         // Emit account link information
-        acctLink = accountLinkEmitter.emit(idpSubject);
+        acctLink = accountLinkEmitter.emit(idpSubject, lastSecCtx);
 
         if (logger.isDebugEnabled())
             logger.debug("Emitted Account Link [" +
@@ -252,74 +267,84 @@ public class AssertionConsumerProducer extends SSOProducer {
                     "] [" + fChannel.getName() + "] " +
                     " for IDP Subject [" + idpSubject + "]" );
 
+        SPAuthnResponseType ssoResponse = null;
+
         if (acctLink == null) {
+
+            // Build error sso response
+
+            ssoResponse = new SPAuthnResponseType();
+
+            ssoResponse.setFailed(true);
+            ssoResponse.setID(uuidGenerator.generateId());
+            ssoResponse.setInReplayTo(ssoRequest.getID());
+            ssoResponse.setPrimaryErrorCode(StatusCode.TOP_REQUESTER.getValue());
+            ssoResponse.setSecondaryErrorCode(StatusDetails.NO_ACCOUNT_LINK.getValue());
+            ssoResponse.setIssuer(((FederationChannel) channel).getFederatedProvider().getName());
 
             logger.error("No Account Link for Channel [" + fChannel.getName() + "] " +
                     " Response [" + response.getID() + "]");
 
-            throw new IdentityMediationFault(StatusCode.TOP_REQUESTER.getValue(),
-                    null,
-                    StatusDetails.NO_ACCOUNT_LINK.getValue(),
-                    idpSubject.toString(), null);
-        }
+        } else {
 
-        // ------------------------------------------------------------------
-        // fetch local account for subject, if any
-        // ------------------------------------------------------------------
-        Subject localAccountSubject = accountLinkLifecycle.resolve(acctLink);
-        if (logger.isTraceEnabled())
-            logger.trace("Account Link [" + acctLink.getId() + "] resolved to " +
-                     "Local Subject [" + localAccountSubject + "] ");
-
-        Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
-
-        // having both remote and local accounts information, is now time to apply custom identity mapping rules
-        if (fChannel.getIdentityMapper() != null) {
-            IdentityMapper im = fChannel.getIdentityMapper();
-
+            // ------------------------------------------------------------------
+            // fetch local account for subject, if any
+            // ------------------------------------------------------------------
+            Subject localAccountSubject = accountLinkLifecycle.resolve(acctLink);
             if (logger.isTraceEnabled())
-                logger.trace("Using identity mapper : " + im.getClass().getName());
+                logger.trace("Account Link [" + acctLink.getId() + "] resolved to " +
+                        "Local Subject [" + localAccountSubject + "] ");
 
-            federatedSubject = im.map(idpSubject, localAccountSubject );
+            Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
+
+            // having both remote and local accounts information, is now time to apply custom identity mapping rules
+            if (fChannel.getIdentityMapper() != null) {
+                IdentityMapper im = fChannel.getIdentityMapper();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Using identity mapper : " + im.getClass().getName());
+
+                federatedSubject = im.map(idpSubject, localAccountSubject);
+            }
+
+            // Add IDP Name to federated Subject
+            if (logger.isDebugEnabled())
+                logger.debug("IDP Subject [" + idpSubject + "] mapped to Subject [" + federatedSubject + "] " +
+                        "through Account Link [" + acctLink.getId() + "]");
+
+            // ---------------------------------------------------
+            // Create SP Security context and session!
+            // ---------------------------------------------------
+
+
+
+            // We must have an assertion!
+            SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
+                    (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
+                    idp,
+                    acctLink,
+                    federatedSubject,
+                    idpSubject,
+                    (AssertionType) response.getAssertionOrEncryptedAssertion().get(0));
+
+            Properties auditProps = new Properties();
+            auditProps.put("federatedProvider", spSecurityCtx.getIdpAlias());
+            auditProps.put("idpSession", spSecurityCtx.getIdpSsoSession());
+
+            Set<SubjectNameID> principals = federatedSubject.getPrincipals(SubjectNameID.class);
+            SubjectNameID principal = null;
+            if (principals.size() == 1) {
+                principal = principals.iterator().next();
+            }
+            recordInfoAuditTrail(Action.SP_SSOR.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+
+            Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(fChannel.getFederatedProvider(),
+                    SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
+
+            ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, spSecurityCtx, destination);
+
+
         }
-
-        // Add IDP Name to federated Subject
-        if (logger.isDebugEnabled())
-            logger.debug("IDP Subject [" + idpSubject + "] mapped to Subject [" + federatedSubject + "] " +
-                     "through Account Link [" + acctLink.getId() + "]" );
-
-        // ---------------------------------------------------
-        // Create SP Security context and session!
-        // ---------------------------------------------------
-
-        CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
-
-        // We must have an assertion!
-        SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
-                (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
-                idp,
-                acctLink,
-                federatedSubject,
-                idpSubject,
-                (AssertionType) response.getAssertionOrEncryptedAssertion().get(0));
-
-        Properties auditProps = new Properties();
-        auditProps.put("federatedProvider", spSecurityCtx.getIdpAlias());
-        auditProps.put("idpSession", spSecurityCtx.getIdpSsoSession());
-
-        Set<SubjectNameID> principals = federatedSubject.getPrincipals(SubjectNameID.class);
-        SubjectNameID principal = null;
-        if (principals.size() == 1) {
-            principal = principals.iterator().next();
-        }
-        recordInfoAuditTrail(Action.SP_SSOR.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
-
-        Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(fChannel.getFederatedProvider(),
-                SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
-
-        SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, spSecurityCtx, destination);
-
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
         // ---------------------------------------------------
         // We must tell our Entity selector about the IdP we're using.  It's considered a selection.

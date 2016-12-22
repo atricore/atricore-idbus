@@ -129,6 +129,9 @@ public enum AuthnCtxClass {
     /** URI for Certus authentication context. */
     CERTUS_CTX("urn:org:atricore:idbus:ac:classes:Certus", false),
 
+    /** URI FOR WIA **/
+    WINDOWS("urn:federation:authentication:windows", true)
+
     ;
 
 

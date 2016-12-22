@@ -1,7 +1,7 @@
 /*
  * Atricore IDBus
  *
- * Copyright (c) 2009, Atricore Inc.
+ * Copyright (c) 2016, Atricore Inc.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -18,20 +18,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.atricore.idbus.connectors.jitscim;
 
-package org.atricore.idbus.kernel.main.federation;
-
-import javax.security.auth.Subject;
+import org.wso2.charon.core.protocol.ResponseCodeConstants;
 
 /**
- *
- * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
- * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
+ * SCIM Protocol uses the response status codes defined in HTTP to indicate
+ * operation success or failure. This class includes those code and relevant description as constants.
  */
-public interface AccountLinkEmitter {
+public class ExtendedResponseCodeConstants {
 
-    AccountLink emit(Subject subject);
-
-    AccountLink emit(Subject subject, Object ctx);
+    //when errors returned in response, this goes as the heading of the body:
+    public static final String STATUS = "status";
+    public static final String MESSAGE = "message";
+    public static final String CODE = ResponseCodeConstants.CODE;
 
 }

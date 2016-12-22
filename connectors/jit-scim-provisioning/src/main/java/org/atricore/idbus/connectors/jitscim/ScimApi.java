@@ -1,7 +1,7 @@
 /*
  * Atricore IDBus
  *
- * Copyright (c) 2009, Atricore Inc.
+ * Copyright (c) 2016, Atricore Inc.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
@@ -18,20 +18,29 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.atricore.idbus.connectors.jitscim;
 
-package org.atricore.idbus.kernel.main.federation;
-
-import javax.security.auth.Subject;
+import org.scribe.builder.api.DefaultApi10a;
+import org.scribe.model.Token;
 
 /**
- *
- * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
- * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
+ * Placeholder class for the OAuth1 client.
  */
-public interface AccountLinkEmitter {
+public class ScimApi extends DefaultApi10a {
 
-    AccountLink emit(Subject subject);
+    @Override
+    public String getAccessTokenEndpoint() {
+        return null;
+    }
 
-    AccountLink emit(Subject subject, Object ctx);
+    @Override
+    public String getAuthorizationUrl(Token arg0) {
+        return null;
+    }
+
+    @Override
+    public String getRequestTokenEndpoint() {
+        return null;
+    }
 
 }
