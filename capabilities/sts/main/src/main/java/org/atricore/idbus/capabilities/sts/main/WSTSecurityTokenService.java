@@ -323,19 +323,36 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         Set<PolicyEnforcementStatement> warnStmts = new HashSet<PolicyEnforcementStatement>();
         Set<PolicyEnforcementStatement> errorStmts = new HashSet<PolicyEnforcementStatement>();
 
+        if (logger.isTraceEnabled())
+            logger.trace("Using configured policies: " + subjectAuthnPolicies.size());
+
         for (SubjectAuthenticationPolicy policy : subjectAuthnPolicies) {
             Subject subject = (Subject) ctx.getProperty(SUBJECT_PROP);
             try {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Invoking policy verify for " + policy.getName() + ", " + (policy.getDescription() != null ? policy.getDescription() : ""));
+
                 Set<PolicyEnforcementStatement> stmts = policy.verify(subject, ctx);
-                if (stmts != null)
+                if (stmts != null) {
                     warnStmts.addAll(stmts);
+                    if (logger.isTraceEnabled())
+                        logger.trace("Policy verify for " + policy.getName() + ", provided warning statements: " + stmts.size());
+
+                }
             } catch (SecurityTokenAuthenticationFailure e) {
                 logger.debug(e.getMessage(), e);
                 if (e.getSsoPolicyEnforcements() != null) {
                     errorStmts.addAll(e.getSsoPolicyEnforcements());
+                    if (logger.isTraceEnabled())
+                        logger.trace("Policy verify for " + policy.getName() + ", provided error statements: " + e.getSsoPolicyEnforcements().size() + " for error " + e.getMessage(), e);
+
                 } else {
                     AuthnErrorPolicyEnforcementStatement p = new AuthnErrorPolicyEnforcementStatement(e);
                     errorStmts.add(p);
+                    if (logger.isTraceEnabled())
+                        logger.trace("Policy verify for " + policy.getName() + ", produced error : " + e.getMessage(), e);
+
                 }
             }
         }
