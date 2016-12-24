@@ -7,7 +7,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -22,7 +21,6 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
@@ -46,13 +44,13 @@ import java.util.Map;
 /**
  * Created by sgonzalez.
  */
-public class WeChatAuthzConsumerTokenProducer extends AuthzTokenConsumerProducer {
+public class WeChatAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer {
 
-    private static final Log logger = LogFactory.getLog(WeChatAuthzConsumerTokenProducer.class);
+    private static final Log logger = LogFactory.getLog(WeChatAuthzTokenConsumerProducer.class);
 
     private static final int MAX_NUM_OF_USER_INFO_RETRIES = 1;
 
-    public WeChatAuthzConsumerTokenProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
+    public WeChatAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
     }
 

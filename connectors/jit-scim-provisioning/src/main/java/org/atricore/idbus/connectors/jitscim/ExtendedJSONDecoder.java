@@ -39,6 +39,7 @@ import org.wso2.charon.core.objects.bulk.BulkRequestData;
 import org.wso2.charon.core.schema.*;
 import org.wso2.charon.core.util.AttributeUtil;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -138,7 +139,14 @@ public class ExtendedJSONDecoder implements Decoder {
             String status = (String) errorObject.opt(ExtendedResponseCodeConstants.STATUS);
             String message = (String) errorObject.opt(ExtendedResponseCodeConstants.MESSAGE);
             String errorCode = (String) errorObject.opt(ExtendedResponseCodeConstants.CODE);
-            return new AbstractCharonException(Integer.parseInt(errorCode), message);
+
+            try {
+                int code = Integer.parseInt(errorCode);
+                return new AbstractCharonException(Integer.parseInt(errorCode), message);
+            } catch (NumberFormatException e) {
+                return new AbstractCharonException(-1, "errorCode:["+errorCode+"] " + message);
+            }
+
 
         } catch (JSONException e) {
             throw new CharonException("Error in building exception from the JSON representation");
