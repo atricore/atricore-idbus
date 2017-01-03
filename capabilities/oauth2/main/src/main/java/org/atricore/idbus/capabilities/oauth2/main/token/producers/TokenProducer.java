@@ -80,7 +80,7 @@ public class TokenProducer extends AbstractCamelProducer<CamelMediationExchange>
             //securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
 
-            emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
+            securityTokenEmissionCtx = emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
 
             // Call STS and wait for OAuth AccessToken
             OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
