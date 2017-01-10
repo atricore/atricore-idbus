@@ -451,7 +451,7 @@ public class IdentityDAO {
      * @param query
      * @throws SQLException
      */
-    private PreparedStatement createPreparedStatement(String query)
+    protected PreparedStatement createPreparedStatement(String query)
             throws SQLException {
 
         if (logger.isDebugEnabled())
