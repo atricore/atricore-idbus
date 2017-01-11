@@ -1,8 +1,9 @@
 package org.atricore.idbus.kernel.main.mediation.state;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -16,7 +17,7 @@ public abstract class AbstractLocalState implements LocalState {
 
     public AbstractLocalState(String id) {
         this.id = id;
-        this.alternativeIds = new ConcurrentHashMap<String, String>();
+        this.alternativeIds = Collections.synchronizedMap(new HashMap<String, String>());
     }
 
     public String getId() {
