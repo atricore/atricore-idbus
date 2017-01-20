@@ -98,6 +98,8 @@ public class BaseSessionImpl implements BaseSession {
             int timeIdle = (int) ((timeNow - _lastAccessedTime) / 1000L);
             if (timeIdle >= _maxInactiveInterval) {
                 expire();
+            } else {
+                logger.trace("Not expiring session " + _id + ", idle time is " + timeIdle);
             }
         }
 

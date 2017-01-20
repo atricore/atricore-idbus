@@ -94,6 +94,9 @@ public class EHCacheSessionMonitor implements SSOSessionMonitor, CacheEventListe
         if (logger.isDebugEnabled())
             logger.debug("Cache element expired ["+ehcache.getName()+"], session ["+session.getUsername()+"] " + session.getId());
 
+        // Kill the session so that we don't leave dangling cache entries behind.
+        session.expire();
+
         manager.checkValidSessions(new BaseSession[]{session});
 
     }

@@ -221,7 +221,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             // We have sessions bye username stored in the cache.
             // If a username starts with 'id', the load method can handle it.
             if (strKey.startsWith("id")) {
-                BaseSession s = load(strKey);
+                BaseSession s = load(strKey, true);
                 if (s != null)
                     allSessions.add(s);
             }
@@ -231,33 +231,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
     }
 
     public BaseSession load(String id) throws SSOSessionException {
-        ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
-
-            Element e = retrieveElement(id);
-            if (e != null) {
-                Object value = e.getObjectValue();
-                // We have different type of entries,
-                if (value instanceof BaseSession) {
-
-                    BaseSession s = (BaseSession) value;
-
-                    // Refresh user sessions access time
-                    retrieveElement(s.getUsername());
-
-                    if (logger.isTraceEnabled())
-                        logger.trace("Loaded session " + s.getId() + " for user " + s.getUsername());
-
-                    return s;
-                }
-            }
-
-            return null;
-
-        } finally {
-            Thread.currentThread().setContextClassLoader(orig);
-        }
+        return load(id, false);
     }
 
     public BaseSession[] loadByUsername(String name) throws SSOSessionException {
@@ -265,7 +239,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
-            Element e = retrieveElement(name);
+            Element e = retrieveElement(name, false);
 
             if (e != null) {
 
@@ -321,14 +295,14 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
-            BaseSession s = load(id);
+            BaseSession s = load(id, true);
             if (s != null) {
 
                 // Remove this session
                 cache.remove(id);
 
                 // Update user sessions list
-                Element e = retrieveElement(s.getUsername());
+                Element e = retrieveElement(s.getUsername(), true);
                 Set<String> sessionKeys = (Set<String>) e.getObjectValue();
                 sessionKeys.remove(id);
                 cache.put(e);
@@ -362,12 +336,16 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             Element s = new Element(session.getId(), session);
-            s.setTimeToIdle(session.getMaxInactiveInterval());
-            s.setTimeToLive(0);
+            // Make sure that the cache element expires after the session, so that when this condition is triggered the session
+            // will be stale and therefore ready to be disposed.
+            s.setTimeToIdle(session.getMaxInactiveInterval() + 60);
+            // Let's put a limit - 12 hs - to the life of the cache element so that in case it's not explicitly removed, the
+            // the cache manager will.
+            s.setTimeToLive(12 * 60 * 60);
 
             // Update user sessions table
             // Concurrency should be low, a user normally does not have that many sessions
-            Element u = retrieveElement(session.getUsername());
+            Element u = retrieveElement(session.getUsername(), false);
             if (u == null) {
                 // Concurrent HashMap backing a Set
                 Set<String> sessions = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
@@ -391,8 +369,41 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         }
     }
 
-    protected Element retrieveElement(String key) {
-        Element e = cache.get(key);
+    protected BaseSession load(String id, boolean quiet) throws SSOSessionException {
+        ClassLoader orig = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
+
+            Element e = retrieveElement(id, quiet);
+            if (e != null) {
+                Object value = e.getObjectValue();
+                // We have different type of entries,
+                if (value instanceof BaseSession) {
+
+                    BaseSession s = (BaseSession) value;
+
+                    // Refresh user sessions access time
+                    retrieveElement(s.getUsername(), quiet);
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Loaded session " + s.getId() + " for user " + s.getUsername());
+
+                    return s;
+                }
+            }
+
+            return null;
+
+        } finally {
+            Thread.currentThread().setContextClassLoader(orig);
+        }
+    }
+
+
+    protected Element retrieveElement(String key, boolean quiet) {
+        Element e;
+        e = quiet ? cache.getQuiet(key) : cache.get(key);
+
         if (e == null) {
 
             int retry = 0;
@@ -402,7 +413,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                     logger.trace("Cache miss, wait for " + loadRetryDelay + " ms");
 
                 try { Thread.sleep(loadRetryDelay); } catch (InterruptedException ie ) { /* Ignore this */ }
-                e = cache.get(key);
+                e = quiet ? cache.getQuiet(key) : cache.get(key);
                 retry ++;
             }
         }
