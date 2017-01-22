@@ -1,8 +1,7 @@
 package org.atricore.idbus.kernel.main.util;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import net.sf.ehcache.*;
+import net.sf.ehcache.event.CacheEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
@@ -26,10 +25,15 @@ public class EHCacheIdRegistry implements IdRegistry, InitializingBean,
 
     private Cache cache;
 
+    private long cachePurgeLastRun = 0;
+
+    // check cache elements for expiration every 3 minutes
+    private long cachePurgeInterval = 3 * 60 * 1000;
+
     private boolean init = false;
 
-    // 1 hour (3600 secs)
-    private int defaultTimteToLive = 60 * 60;
+    // 5 minute for cache entries
+    private int defaultTimeToLive = 5 * 60;
 
     private ApplicationContext applicationContext;
 
@@ -57,9 +61,10 @@ public class EHCacheIdRegistry implements IdRegistry, InitializingBean,
             }
 
             cache = cacheManager.getCache(cacheName);
+            cache.getCacheEventNotificationService().registerListener(new IDRegistryCacheStateListener());
 
             if (cache == null) {
-                logger.error("No chache definition found with name '" + cacheName + "'");
+                logger.error("No cache definition found with name '" + cacheName + "'");
                 return;
             } else {
                 if (logger.isTraceEnabled()) {
@@ -103,11 +108,12 @@ public class EHCacheIdRegistry implements IdRegistry, InitializingBean,
 
     @Override
     public void register(String id) {
-        register(id, defaultTimteToLive);
+        register(id, defaultTimeToLive);
     }
 
     @Override
     public void register(String id, int timeToLive) {
+        purgeCache();
 
         Element e = new Element(id, id);
         e.setTimeToLive(timeToLive);
@@ -118,6 +124,48 @@ public class EHCacheIdRegistry implements IdRegistry, InitializingBean,
 
         if (logger.isTraceEnabled())
             logger.trace("Stored ID " + id + " in cache " + cacheName);
+
+    }
+
+    protected void purgeCache() {
+        long now = System.currentTimeMillis();
+
+        logger.trace("Running: " + cachePurgeLastRun + ", " + cachePurgeInterval);
+
+        // Still not needed to run ...
+        if (cachePurgeLastRun  + cachePurgeInterval > now)
+            return;
+
+        try {
+            if (logger.isTraceEnabled())
+                logger.trace("Checking expired elements for " + cache.getName());
+
+            cachePurgeLastRun = now;
+            long size = cache.getSize();
+            // -------------------------------------------------
+            // The time taken is O(n).
+            // On a single cpu 1.8Ghz P4, approximately 8ms is required for each 1000 entries.
+            // -------------------------------------------------
+            // List allKeys = cache.getKeys();
+
+            // -------------------------------------------------
+            // Very expensive call when caches are large ...
+            // This will trigger the expired event !
+            // -------------------------------------------------
+            cache.evictExpiredElements();
+            cache.getKeysWithExpiryCheck();
+
+            long execTime = now - System.currentTimeMillis();
+
+            if (execTime > 1000)
+                logger.warn("ID registry cache [" + cache.getName() + "] needs tuning. getKeysWithExpiryCheck(): exec=" + execTime + "ms");
+
+            if (logger.isTraceEnabled())
+                logger.trace("Evicted (aprox) " + (size - cache.getSize()) + " elements from " + cache.getName() + ". Current cache size is " + cache.getSize());
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     public CacheManager getCacheManager() {
@@ -143,4 +191,55 @@ public class EHCacheIdRegistry implements IdRegistry, InitializingBean,
     public void setCacheName(String cacheName) {
         this.cacheName = cacheName;
     }
+
+    class IDRegistryCacheStateListener implements CacheEventListener {
+
+        @Override
+        public void notifyElementRemoved(Ehcache ehcache, Element element) throws CacheException {
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementRemoved:" + ehcache.getName() + "/" +  element.getObjectKey());
+        }
+
+        @Override
+        public void notifyElementPut(Ehcache ehcache, Element element) throws CacheException {
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementPut:" + ehcache.getName() + "/" + element.getObjectKey());
+        }
+
+        @Override
+        public void notifyElementUpdated(Ehcache ehcache, Element element) throws CacheException {
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementUpdated:" + ehcache.getName() + "/" + element.getObjectKey());
+        }
+
+        @Override
+        public void notifyElementExpired(Ehcache ehcache, Element element) {
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementExpired:" + ehcache.getName() + "/" + element.getObjectKey());
+
+            cache.remove(element.getObjectKey());
+        }
+
+        @Override
+        public void notifyElementEvicted(Ehcache ehcache, Element element) {
+            if (logger.isTraceEnabled())
+                logger.trace("notifyElementEvicted:" + ehcache.getName() + "/" + element.getObjectKey());
+        }
+
+        @Override
+        public void notifyRemoveAll(Ehcache ehcache) {
+            logger.trace("notifyRemoveAll:" + ehcache.getName() );
+        }
+
+        @Override
+        public void dispose() {
+
+        }
+
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
+    }
+
 }
