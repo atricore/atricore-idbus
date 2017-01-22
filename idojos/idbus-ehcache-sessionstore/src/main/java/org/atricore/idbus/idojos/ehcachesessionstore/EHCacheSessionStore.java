@@ -350,6 +350,8 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                 // Concurrent HashMap backing a Set
                 Set<String> sessions = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
                 u = new Element(session.getUsername(), sessions);
+                u.setTimeToIdle(s.getTimeToIdle());
+                u.setTimeToLive(s.getTimeToLive());
             }
 
             Set<String> sessions = (Set<String>) u.getObjectValue();
