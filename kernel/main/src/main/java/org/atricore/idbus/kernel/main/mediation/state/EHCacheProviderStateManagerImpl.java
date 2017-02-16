@@ -535,13 +535,14 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 // -------------------------------------------------
                 cache.evictExpiredElements();
                 cache.getKeysWithExpiryCheck();
+                //cache.flush();
                 long execTime = now - System.currentTimeMillis();
 
                 if (execTime > 1000)
                     logger.warn("Provider state manager cache [" + cache.getName() + "] needs tuning. getKeysWithExpiryCheck(): exec=" + execTime + "ms");
 
                 if (logger.isTraceEnabled())
-                    logger.trace("Evicted (aprox) " + (size - cache.getSize()) + " elements from " + cache.getName());
+                    logger.trace("Evicted (aprox) " + (size - cache.getSize()) + " elements from " + cache.getName() + ". Current cache size is " + cache.getSize());
 
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

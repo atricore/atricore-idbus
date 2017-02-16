@@ -431,6 +431,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
                 // Only expire sessions handled by this node
                 if (_node != null) {
+                    // TODO: This doesn't work. The last node property value is never set (i.e. null)
                     String lastNode = session.getLastNode();
                     if (lastNode != null && !_node.equals(lastNode)) {
                         logger.trace("Session " + session.getId() + " is not handled by this node (" + _node + "/" + lastNode + ")");
@@ -444,6 +445,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
                     if (logger.isTraceEnabled())
                         logger.trace("[checkValidSessions()] Session expired : " + session.getId());
+                } else {
+                    logger.warn("Cannot remove session " + session.getId() + " from store as it's still valid");
                 }
 
 

@@ -1,10 +1,7 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import com.nimbusds.oauth2.sdk.AuthorizationResponse;
-import com.nimbusds.oauth2.sdk.ResponseType;
-import com.nimbusds.oauth2.sdk.SerializeException;
+import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
@@ -17,6 +14,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectTokenType;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -54,11 +52,17 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
+        if (authnCtx == null) {
+            // State was lost or this is IdP initiated (not supported).
+            logger.error("IdP initiated not supported (or state was lost)");
+            throw new OpenIDConnectException("IdP initiated not supported (or state was lost)");
+        }
+
         AuthenticationRequest  authnRequest = authnCtx.getAuthnRequest();
-        SPInitiatedAuthnRequestType request = authnCtx != null ? authnCtx.getSsoAuthnRequest() : null;
+        SPInitiatedAuthnRequestType request = authnCtx.getSsoAuthnRequest();
         if (request == null) {
             // TODO : Process unsolicited response
-            // validateUnsolicitedAuthnResposne(exchange, response);
+            // validateUnsolicitedAuthnResponse(exchange, response);
         } else {
             validateSolicitedAuthnResponse(exchange, request, response);
         }
