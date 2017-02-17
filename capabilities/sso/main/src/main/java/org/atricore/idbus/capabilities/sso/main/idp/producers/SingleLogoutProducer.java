@@ -439,6 +439,9 @@ public class SingleLogoutProducer extends SSOProducer {
             doProcessSLORequest(exchange, (LogoutRequestType) sloRequest, relayState);
         } else if (sloRequest instanceof IDPInitiatedLogoutRequestType) {
             doProcessIdPInitiatedSLORequest(exchange, (IDPInitiatedLogoutRequestType) sloRequest);
+        } else if ((sloRequest == null)) {
+            // IDP Initiated SLO ?
+            throw new SSOException("Unknown SLO Request type " + sloRequest);
         } else {
             throw new SSOException("Unknown SLO Request type " + sloRequest);
         }
@@ -926,8 +929,10 @@ public class SingleLogoutProducer extends SSOProducer {
                                           LogoutRequestType sloRequest,
                                           String relayState) throws Exception {
 
-        CircleOfTrustMemberDescriptor targetSp = resolveProviderDescriptor(sloRequest.getIssuer());
+
+        CircleOfTrustMemberDescriptor targetSp = sloRequest != null ? resolveProviderDescriptor(sloRequest.getIssuer()) : null;
         SPChannel requiredSpChannel = (SPChannel) resolveSpChannel(targetSp);
+
 
         // Get security context information
         String ssoSessionId = secCtx != null ? secCtx.getSessionIndex() : "<NONE>";

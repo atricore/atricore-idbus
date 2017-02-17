@@ -379,6 +379,10 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         FederatedLocalProvider idp = (FederatedLocalProvider) getProvider();
 
         FederationChannel spChannel = idp.getChannel();
+
+        if (targetSp == null)
+            return spChannel;
+
         for (FederationChannel fChannel : idp.getChannels()) {
 
             FederatedProvider sp = fChannel.getTargetProvider();
