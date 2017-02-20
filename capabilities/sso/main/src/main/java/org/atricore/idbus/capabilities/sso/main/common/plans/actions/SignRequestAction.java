@@ -55,8 +55,9 @@ public class SignRequestAction extends AbstractSSOAction {
 
         // TODO : Support signing some requests: i.e. when IdP requires authn. requests to be signed
 
-        boolean signRequest = false;
+        boolean signRequest = mediator.isSignRequests();
 
+        // SAML MD overrides default
         if (request instanceof AuthnRequestType) {
             CircleOfTrustMemberDescriptor idp = (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable( VAR_DESTINATION_COT_MEMBER );
             if (idp != null) {
@@ -64,14 +65,9 @@ public class SignRequestAction extends AbstractSSOAction {
             }
         }
 
-        if (!signRequest && !mediator.isSignRequests()) {
+        if (!signRequest) {
             if (logger.isDebugEnabled())
                 logger.debug("Signature disabled for " + channel.getName());
-
-            signRequest = false;
-        }
-
-        if (!signRequest) {
             return ;
         }
 
