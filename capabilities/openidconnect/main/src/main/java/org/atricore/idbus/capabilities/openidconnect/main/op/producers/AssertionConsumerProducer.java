@@ -58,22 +58,22 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             throw new OpenIDConnectException("IdP initiated not supported (or state was lost)");
         }
 
-        AuthenticationRequest  authnRequest = authnCtx.getAuthnRequest();
-        SPInitiatedAuthnRequestType request = authnCtx.getSsoAuthnRequest();
-        if (request == null) {
+        AuthenticationRequest  samlAuthnRequest = authnCtx.getAuthnRequest();
+        SPInitiatedAuthnRequestType ssoAuthnRequest = authnCtx.getSsoAuthnRequest();
+        if (ssoAuthnRequest == null) {
             // TODO : Process unsolicited response
             // validateUnsolicitedAuthnResponse(exchange, response);
         } else {
-            validateSolicitedAuthnResponse(exchange, request, response);
+            validateSolicitedAuthnResponse(exchange, ssoAuthnRequest, response);
         }
 
         // Resolve OpenID client
 
         // Build an OpenIDConnect authentication response based on the original request
-        AuthenticationResponse authnResponse = buildAuthorizationResponse(exchange, authnCtx, authnRequest);
+        AuthenticationResponse authnResponse = buildAuthorizationResponse(exchange, authnCtx, samlAuthnRequest);
 
         // Resolve response ED
-        EndpointDescriptor ed = resolveRedirectUri(authnRequest, (AuthorizationResponse) authnResponse);
+        EndpointDescriptor ed = resolveRedirectUri(samlAuthnRequest, (AuthorizationResponse) authnResponse);
 
         // Ad alternate state key, to be used by back-channel.
         state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY,
@@ -96,7 +96,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         // Update state
         state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
 
-        out.setMessage(new MediationMessageImpl(request.getID(),
+        out.setMessage(new MediationMessageImpl(ssoAuthnRequest.getID(),
                 authnResponse,
                 "AuthorizationResponse",
                 null,

@@ -104,7 +104,7 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
                 IDTokenClaimsSet claimsSet = buildClaimSet(ctx, subject, null, client);
                 if (claimsSet == null) {
-                    logger.debug("No claim set created for subject, probably no SSOUser principal found. " + subject);
+                    logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
                     return null;
                 }
 
@@ -151,7 +151,7 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
         if (ssoUsers == null || ssoUsers.size() < 1) {
-            logger.debug("Can't build ID Token for SimplePrincipal");
+            logger.error("Can't build ID Token for SimplePrincipal.  Try attaching an ID vault to your IDP/VP");
             return null;
         }
 

@@ -469,7 +469,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
         // Store tokens that can be used for authentication later.
-        if (emitted.isAuthenticationGrant()) {
+        if (emitted != null && emitted.isAuthenticationGrant()) {
             if (logger.isDebugEnabled())
                 logger.debug("Storing token " + emitted.getId());
             store.store(emitted);
