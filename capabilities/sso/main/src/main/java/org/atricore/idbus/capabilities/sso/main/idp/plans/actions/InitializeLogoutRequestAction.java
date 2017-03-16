@@ -10,10 +10,12 @@ import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.capabilities.sso.support.profiles.slo.LogoutReason;
 import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
+import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
+import javax.security.auth.Subject;
 import java.util.Date;
 import java.util.Set;
 
@@ -67,22 +69,19 @@ public class InitializeLogoutRequestAction extends AbstractSSOAction {
         subjectNameID.setValue(user.getName());
 
 
-        // Subject idpSubject = secCtx.etSubject();
-        // Set<SubjectNameID> ids = idpSubject.getPrincipals( SubjectNameID.class );
-        /*
-        if ( ids == null || ids.size() != 1 ) {
-            throw new IdentityMediationFault(StatusCode.TOP_REQUESTER.getValue(),
-                    StatusCode.UNKNOWN_PRINCIPAL.getValue() ,
-                    null,
-                    "Found " + (ids != null ? ids.size() : "0") + " subjecst",
-                    null);
-        } */
+        Subject idpSubject = secCtx.getSubject();
 
-        //SubjectNameID idpSubjectNameID = ids.iterator().next();
-        //subjectNameID.setFormat( idpSubjectNameID.getFormat() );
-        //subjectNameID.setValue( idpSubjectNameID.getName() );
-        //subjectNameID.setNameQualifier( idpSubjectNameID.getNameQualifier() );
-        //subjectNameID.setSPNameQualifier( idpSubjectNameID.getLocalNameQualifier() );
+        if (idpSubject != null) {
+            Set<SubjectNameID> ids = idpSubject.getPrincipals(SubjectNameID.class);
+
+            if (ids != null && ids.size() == 1) {
+                SubjectNameID idpSubjectNameID = ids.iterator().next();
+                subjectNameID.setFormat(idpSubjectNameID.getFormat());
+                subjectNameID.setValue(idpSubjectNameID.getName());
+                subjectNameID.setNameQualifier(idpSubjectNameID.getNameQualifier());
+                subjectNameID.setSPNameQualifier(idpSubjectNameID.getLocalNameQualifier());
+            }
+        }
 
         sloReq.setNameID( subjectNameID );
 

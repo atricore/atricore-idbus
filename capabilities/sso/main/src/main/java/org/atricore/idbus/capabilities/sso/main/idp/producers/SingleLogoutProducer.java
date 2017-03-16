@@ -203,7 +203,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
 
-        // We can perform back channel SLO no matter what time of endpoint is this
+        // We can perform back channel SLO no matter what type of endpoint is this
         performBackChannelSlo(exchange, secCtx, null);
 
         // If endpoint is front-channel, perform front channel SLO
