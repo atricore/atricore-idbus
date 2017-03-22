@@ -149,20 +149,57 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         SPSSODescriptorType destinationSPMetadata = (SPSSODescriptorType) entity.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().get(0);
 
-        IndexedEndpointType acEndpoint = null;
+        IndexedEndpointType defaultACSEndpoint = null;
+        IndexedEndpointType requestedACSEndpoint = null;
 
-        // select first ACS endpoint
-        acEndpoint = destinationSPMetadata.getAssertionConsumerService().get(0);
+
+        // Go through the metadata and select the ACS endpoint as follow:
+        // 1. Matches the requested ACS
+        // 2. Matches the requested protocol binding
+        // 3. Is the default ACS
+        // 4. Has the lower idx
+
+        String protocolBinding = ssoAuthnReq.getProtocolBinding();
+        String acsUrl = ssoAuthnReq.getAssertionConsumerServiceURL();
+        for (IndexedEndpointType ace : destinationSPMetadata.getAssertionConsumerService()) {
+
+            if (protocolBinding != null && protocolBinding.equals(ace.getBinding())) {
+                requestedACSEndpoint = ace;
+                if (logger.isDebugEnabled())
+                    logger.debug("Selected ACS endpoint [" + requestedACSEndpoint.getLocation() + "] based on protocol binding [" + protocolBinding + "] for " + entity.getEntityID());
+                break;
+            } else if (acsUrl != null) {
+                if (acsUrl.equals(ace.getLocation())) {
+                    requestedACSEndpoint = ace;
+                    if (logger.isDebugEnabled())
+                        logger.debug("Selected ACS endpoint (Location) [" + requestedACSEndpoint.getLocation() + "] based on ACS URL [" + acsUrl + "] for " + entity.getEntityID());
+                    break;
+                }
+
+            } else if (ace.getIsDefault()) {
+                defaultACSEndpoint = ace;
+            } else if (defaultACSEndpoint == null || (!defaultACSEndpoint.getIsDefault() && defaultACSEndpoint.getIndex() > ace.getIndex())) {
+                // Don't have a default, use the lower index ACS as default
+                defaultACSEndpoint = ace;
+            }
+
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Selected default ACS endpoint [" + defaultACSEndpoint.getLocation() + "] for " + entity.getEntityID());
+
+        if (requestedACSEndpoint == null)
+            requestedACSEndpoint = defaultACSEndpoint;
 
         if (logger.isTraceEnabled())
             logger.trace("Resolved ACS endpoint " +
-                    acEndpoint.getLocation() + "/" +
-                    acEndpoint.getBinding());
+                    requestedACSEndpoint.getLocation() + "/" +
+                    requestedACSEndpoint.getBinding() + " for " + entity.getEntityID());
 
-        assert acEndpoint != null : "Cannot resolve Assertion Consumer Service Endpoint for Destination SP : " + destinationSPMetadata.getID();
+        assert requestedACSEndpoint != null : "Cannot resolve Assertion Consumer Service Endpoint for Destination SP : " + destinationSPMetadata.getID();
 
-        authn.setAssertionConsumerServiceURL(acEndpoint.getLocation());
-        authn.setProtocolBinding(acEndpoint.getBinding()); 
+        authn.setAssertionConsumerServiceURL(requestedACSEndpoint.getLocation());
+        authn.setProtocolBinding(requestedACSEndpoint.getBinding());
 
         // Attach Security Token (in case any has been supplied)
         if (securityToken != null) {

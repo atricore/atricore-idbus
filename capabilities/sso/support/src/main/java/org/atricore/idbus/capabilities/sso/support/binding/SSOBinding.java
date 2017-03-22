@@ -66,7 +66,6 @@ public enum SSOBinding {
     /** URI for IDBUS HTTP Redirect binding, this is NOT SAML Normative*/
     AJAX_POST("urn:org:atricore:idbus:sso:bindings:AJAX-POST", true, false),
 
-
     /** URI for IDBUS SOAP binding, this is NOT SAML Normtive */
     SSO_SOAP("urn:org:atricore:idbus:sso:bindings:SOAP", false, false),
 
@@ -78,6 +77,12 @@ public enum SSOBinding {
 
     /** URI for SAML 2.0 IdP initiated bindings */
     SSO_PREAUTHN("urn:org:atricore:idbus:sso:bindings:HTTP-PreAuthn", true, false),
+
+    /** URI for SSO JSON Bindings */
+    SSO_JSON_FRONT_CHANNEL("urn:org:atricore:idbus:sso:bindings:JSON-FrontChannel", true, false),
+
+    /** URI for SSO JSON Bindings */
+    SSO_JSON_BACK_CHANNEL("urn:org:atricore:idbus:sso:bindings:JSON-BackChannel", false, false),
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
     SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.0:bindings:HTTP-Artifact", true, false),

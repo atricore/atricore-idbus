@@ -541,7 +541,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         form.setEnctype("application/x-www-form-urlencoded");
 
         {
-            // Noscript paragraph
+            // No script paragraph
 
             P paragraph = new P();
             paragraph.setTitle("Note: Since your browser does not support JavaScript, you must press the Continue button once to proceed.");  // TODO : i18n

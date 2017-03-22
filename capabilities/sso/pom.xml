@@ -58,6 +58,7 @@
         <cxf.version>2.2.2</cxf.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
+        <jackson.version>1.9.1</jackson.version>
         <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
         <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
         <jetty.version>6.1.22</jetty.version>
@@ -218,6 +219,18 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${felix.osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-core-asl</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
             <dependency>

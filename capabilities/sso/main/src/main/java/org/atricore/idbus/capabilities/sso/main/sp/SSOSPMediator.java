@@ -94,6 +94,7 @@ public class SSOSPMediator extends AbstractSSOMediator {
                         case SAMLR2_ARTIFACT:
                         case SAMLR2_POST:
                         case SAMLR2_REDIRECT:
+                        case SSO_JSON_FRONT_CHANNEL:
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:

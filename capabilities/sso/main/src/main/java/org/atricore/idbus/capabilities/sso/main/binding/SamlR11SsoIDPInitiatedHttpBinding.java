@@ -106,6 +106,22 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
             idpInitReq.getRequestAttribute().add(a);
         }
 
+
+        // Valid values are from SSOBinding
+        String bindingStr =  state.getTransientVariable("protocol_binding");
+        if (bindingStr != null) {
+            try {
+                SSOBinding binding = SSOBinding.asEnum(bindingStr);
+                idpInitReq.setProtocolBinding(binding.getValue());
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using protocol binding: " + binding.getValue());
+
+            } catch (IllegalArgumentException e) {
+                logger.error ("Ignoring requested binding: " + e.getMessage());
+            }
+        }
+
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
                 idpInitReq,
                 null,

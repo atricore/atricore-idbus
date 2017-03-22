@@ -973,7 +973,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
             if (dashboardUrl == null)
                 logger.error("User Dashboard not available for " + requiredSpChannel.getName());
-
+            else
+                logger.debug("Using cofigured dashboard URL: ["+dashboardUrl+"]");
 
         } else {
 

@@ -97,6 +97,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
                         case SAMLR2_REDIRECT:
                         case SSO_ARTIFACT:
                         case SSO_REDIRECT:
+                        case SSO_JSON_FRONT_CHANNEL:
                         case SSO_IDP_INITIATED_SSO_HTTP_SAML2:
                         case SSO_IDP_INITIATED_SSO_HTTP_SAML11:
 

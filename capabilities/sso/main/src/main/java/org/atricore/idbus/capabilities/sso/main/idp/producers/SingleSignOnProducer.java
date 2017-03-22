@@ -1279,6 +1279,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
             authnState.setResponseMode("unsolicited");
             authnState.setAuthnRequest(authnRequest);
+
+
         } else {
             NameIDType issuer = authnRequest.getIssuer();
             sp = resolveProviderDescriptor(issuer);
@@ -2222,6 +2224,24 @@ public class SingleSignOnProducer extends SSOProducer {
 
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
+
+        // Valid values are from SSOBinding
+        String bindingStr =  state.getTransientVariable("protocol_binding");
+        if (bindingStr != null) {
+            try {
+                SSOBinding binding = SSOBinding.asEnum(bindingStr);
+                idpInitReq.setProtocolBinding(binding.getValue());
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using protocol binding: " + binding.getValue());
+
+            } catch (IllegalArgumentException e) {
+                logger.error ("Ignoring requested binding: " + e.getMessage());
+            }
+        }
+
+
+
 
         // Alias or SP should be our SP proxy
         // We can send several attributes within the request.
