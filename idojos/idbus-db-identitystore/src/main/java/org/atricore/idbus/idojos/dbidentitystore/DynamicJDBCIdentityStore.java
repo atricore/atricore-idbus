@@ -4,6 +4,7 @@ import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCManagerException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.util.List;

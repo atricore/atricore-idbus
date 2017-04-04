@@ -205,7 +205,7 @@ case class URLResource(url: URL) extends WriteableResource {
           case e: URISyntaxException => f = new File(url.getPath)
         }
       } catch {
-        case e => debug(e, "While converting " + url + " to a File I caught: " + e)
+        case e: Throwable => debug(e, "While converting " + url + " to a File I caught: " + e)
       }
     }
     if (f != null && f.exists && f.isFile) {

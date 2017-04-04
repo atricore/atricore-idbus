@@ -62,7 +62,7 @@ object ClassLoaders {
         Some(classLoader.loadClass(className))
       }
       catch {
-        case e => None
+        case e: Throwable => None
       }
     }
     classLoaders.map(tryLoadClass).find(_.isDefined) match {
@@ -80,7 +80,7 @@ object ClassLoaders {
         classLoader.getResource(name)
       }
       catch {
-        case e => null
+        case e: Throwable => null
       }
     }
     classLoaders.map(tryLoadClass).find(_ != null)
