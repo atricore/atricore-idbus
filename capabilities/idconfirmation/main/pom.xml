@@ -26,9 +26,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-            <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
-            <artifactId>idconfirmation</artifactId>
-            <version>1.4.2-SNAPSHOT</version>
+        <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
+        <artifactId>idconfirmation</artifactId>
+        <version>1.4.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
@@ -39,7 +39,7 @@
 
     <properties>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-   </properties>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -57,97 +57,120 @@
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sts</groupId>
             <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.planning</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.monitoring</groupId>
             <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.auditing</groupId>
             <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sso</groupId>
             <artifactId>org.atricore.idbus.capabilities.sso.dsl</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
-            <scope>provided</scope>
+            <version>${camel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-http</artifactId>
+            <version>${camel.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <scope>provided</scope>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <scope>provided</scope>
+            <version>${spring.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
+            <version>${spring.osgi.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -167,11 +190,35 @@
                 </exclusion>
             </exclusions>
 
-            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+            <version>${servicemix.specs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
+            <version>${servicemix.jaxb-impl.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${felix.osgi.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons-logging.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -185,13 +232,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.scalatra.scalate</groupId>
+            <artifactId>scalate-core_2.11</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2_2.9.1</artifactId>
+            <artifactId>specs2-core_2.11</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -202,9 +254,8 @@
         <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.3-SNAPSHOT</version>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <goals>
@@ -216,7 +267,6 @@
                                 <!--
                                 <arg>-Xprint:typer</arg>
                                 -->
-                                <arg>-make:transitive</arg>
                                 <arg>-dependencyfile</arg>
                                 <arg>${project.build.directory}/.scala_dependencies</arg>
                             </args>
@@ -246,34 +296,24 @@
                     </instructions>
                 </configuration>
             </plugin>
-     <plugin>
-      <groupId>org.fusesource.scalate</groupId>
-      <artifactId>maven-scalate-plugin_2.9</artifactId>
-      <version>1.6.1</version>
-      <configuration>
-         <contextClass>org.fusesource.scalate.DefaultRenderContext</contextClass>
-      </configuration>
-      <executions>
-        <execution>
-          <goals>
-            <goal>precompile</goal>
-          </goals>
-        </execution>
-      </executions>
-    </plugin>
             <plugin>
-                <groupId>com.mmakowski</groupId>
-                <artifactId>maven-specs2-plugin</artifactId>
-                <version>0.3.0</version>
+                <groupId>org.scalatra.scalate</groupId>
+                <artifactId>maven-scalate-plugin_2.11</artifactId>
+                <version>1.7.1</version>
+                <configuration>
+                    <contextClass>org.fusesource.scalate.DefaultRenderContext</contextClass>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>verify</id>
-                        <phase>verify</phase>
                         <goals>
-                            <goal>run-specs</goal>
+                            <goal>precompile</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.mmakowski</groupId>
+                <artifactId>specs2-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

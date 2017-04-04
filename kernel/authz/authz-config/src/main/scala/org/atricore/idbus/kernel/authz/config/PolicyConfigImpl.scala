@@ -1,7 +1,8 @@
 package org.atricore.idbus.kernel.authz.config
 
 import org.springframework.core.io.Resource
-import reflect.BeanProperty
+
+import scala.beans.BeanProperty
 
 class PolicyConfigImpl extends PolicyConfig {
 

@@ -468,7 +468,7 @@ class AuthorizationEngine(var sourceDirectories: Traversable[File] = None, var m
           try {
             cl.loadClass(className.stripPrefix(packagePrefix).stripPrefix("."))
           } catch {
-            case _ => throw e
+            case _: Throwable => throw e
           }
         }
     }
