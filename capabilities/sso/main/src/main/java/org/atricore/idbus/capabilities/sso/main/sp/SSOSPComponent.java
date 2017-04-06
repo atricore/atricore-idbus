@@ -60,6 +60,7 @@ public class SSOSPComponent extends DefaultComponent {
         SSOService e = getSamlR2Service( remaining );
 
         switch ( e ) {
+            case ProxySingleLogoutService:
             case SingleLogoutService:
                 endpoint = new SingleLogoutEndpoint( uri, this, parameters );
                 break;

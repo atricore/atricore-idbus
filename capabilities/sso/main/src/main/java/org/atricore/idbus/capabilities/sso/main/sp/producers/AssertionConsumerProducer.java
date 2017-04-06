@@ -109,7 +109,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-        // Incomming message
+        // Incoming message
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         if (in.getMessage().getContent() instanceof ResponseType) {

@@ -15,4 +15,5 @@ public interface IdentityProviderConstants {
     public static final int SP_SLO_SUCCESS = 20;
 
     public static final int SP_SLO_FAILED = 30;
+
 }

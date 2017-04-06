@@ -183,6 +183,24 @@
         </complexContent>
     </complexType>
 
+    <element name="IDPPRoxyInitiatedLogoutRequest" type="ssop:IDPProxyInitiatedLogoutRequestType"/>
+    <complexType name="IDPProxyInitiatedLogoutRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="ssoSessionId" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="IDPPRoxyInitiatedLogoutResponse" type="ssop:IDPPRoxyInitiatedLogoutResponseType"/>
+    <complexType name="IDPPRoxyInitiatedLogoutResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+            </extension>
+        </complexContent>
+    </complexType>
+
+
     <element name="AssertIdentityWithSimpleAuthenticationRequest" type="ssop:AssertIdentityWithSimpleAuthenticationRequestType"/>
     <complexType name="AssertIdentityWithSimpleAuthenticationRequestType">
         <complexContent>

@@ -86,7 +86,7 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
                 EndpointDescriptor slo = resolveIdPSloEndpoint(idpAlias, new SSOBinding[]{
                         SSOBinding.SAMLR2_REDIRECT, SSOBinding.SAMLR2_POST, SSOBinding.SAMLR2_ARTIFACT}, true);
 
-                // TODO : Use a plan
+                // TODO : Use a plan. This is not signed/encrypted
                 LogoutRequestType sloRequest = new LogoutRequestType();
                 sloRequest.setID(uuidGenerator.generateId());
                 sloRequest.setVersion(SAMLR2Constants.SAML_VERSION);

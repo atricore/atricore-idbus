@@ -138,6 +138,11 @@ public class SingleLogoutProducer extends SSOProducer {
                 }
                 return;
 
+            } // SSO 1.0 IDP Logout Request
+            else if (content instanceof IDPProxyInitiatedLogoutRequestType) {
+                metric += "doProcessIdPProxyInitiatedSLORequestAsProxy";
+                doProcessIdPProxyInitiatedSLORequestAsProxy(exchange, (IDPProxyInitiatedLogoutRequestType) content);
+                return;
             } // SSO 1.0 Logout Response
             else if (content instanceof SSOResponseType) {
                 // Do process proxy response, we only get an SSO response when acting as proxy.
@@ -283,6 +288,62 @@ public class SingleLogoutProducer extends SSOProducer {
 
     }
 
+    protected void doProcessIdPProxyInitiatedSLORequestAsProxy(CamelMediationExchange exchange, IDPProxyInitiatedLogoutRequestType sloRequest) throws Exception {
+        // TODO :
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
+
+        // Store original SLO request and relay state.
+        state.setLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest", sloRequest);
+        state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORelayState");
+
+        String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
+        IdPSecurityContext secCtx = (IdPSecurityContext) state.getLocalVariable(varName);
+
+        Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
+
+        // We can perform back channel SLO no matter what type of endpoint is this
+        performBackChannelSlo(exchange, secCtx, null);
+
+        // If endpoint is front-channel, perform front channel SLO
+        if (SSOBinding.asEnum(endpoint.getBinding()).isFrontChannel()) {
+            if (logger.isDebugEnabled())
+                logger.debug("Trigger front-channel SLO for endpoint " + endpoint.getName());
+            performFrontChannelSlo(exchange, secCtx, null, null);
+            return;
+        }
+
+        // Invalidate SSO Session, security context
+        if (secCtx != null) {
+            SPChannel spChannel = (SPChannel) channel;
+            SSOSessionManager sessionMgr = spChannel.getSessionManager();
+            try {
+                sessionMgr.invalidate(secCtx.getSessionIndex());
+            } catch (NoSuchSessionException e) {
+                logger.debug(e.getMessage());
+            }
+            secCtx.clear();
+            state.removeLocalVariable(varName);
+        }
+
+        // We assume this is a TOUT SLO (although it could be triggered using SOAP)
+        recordInfoAuditTrail(Action.SLO_TOUT.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange);
+
+        // Send status response!
+        if (logger.isDebugEnabled())
+            logger.debug("Building SLO Response for SSO Session "  + (secCtx != null ? secCtx.getSessionIndex() : "<NONE>"));
+
+        SSOResponseType response = buildSsoResponse(sloRequest);
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+        // This is probably a back-channel message (local, soap, etc), we don't need a destination
+        out.setMessage(new MediationMessageImpl(response.getID(),
+                response, "SSOResponse", in.getMessage().getRelayState(), null, in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+    }
+
     protected void doProcessSLORequest(CamelMediationExchange exchange, LogoutRequestType sloRequest, String relayState) throws Exception {
 
         CircleOfTrustMemberDescriptor targetSp = resolveProviderDescriptor(sloRequest.getIssuer());
@@ -376,21 +437,7 @@ public class SingleLogoutProducer extends SSOProducer {
         Principal ssoUser = secCtx != null ? secCtx.getSubject().getPrincipals(SimplePrincipal.class).iterator().next() : null;
 
         try {
-
-            for (ProviderSecurityContext pSecCtx : secCtx.lookupProviders()) {
-                if (pSecCtx.getSloStatus() == IdentityProviderConstants.SP_SLO_IN_PROGRESS)
-                    pSecCtxCurrent = pSecCtx;
-
-                if (pSecCtx.getSloStatus() == IdentityProviderConstants.SP_SLO_NONE) {
-                    pSecCtxNext = pSecCtx;
-                    break;
-                }
-
-            }
-
-            // TODO : Compare
-            NameIDType issuer = sloResponse.getIssuer();
-            NameIDType expected = pSecCtxCurrent.getProviderId();
+            Properties auditProps = new Properties();
 
             validateResponse(sloRequest,
                     sloResponse,
@@ -398,13 +445,31 @@ public class SingleLogoutProducer extends SSOProducer {
                     null,
                     state);
 
-            Properties auditProps = new Properties();
-            auditProps.put("spId", pSecCtxCurrent.getProviderId().getValue());
-            if (issuer != null)
-                auditProps.put("federatedProvider", issuer.getValue());
+            if (secCtx != null) {
+                for (ProviderSecurityContext pSecCtx : secCtx.lookupProviders()) {
+                    if (pSecCtx.getSloStatus() == IdentityProviderConstants.SP_SLO_IN_PROGRESS)
+                        pSecCtxCurrent = pSecCtx;
 
-            pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_SUCCESS);
-            recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+                    if (pSecCtx.getSloStatus() == IdentityProviderConstants.SP_SLO_NONE) {
+                        pSecCtxNext = pSecCtx;
+                        break;
+                    }
+
+                }
+
+                // TODO : Compare
+                NameIDType issuer = sloResponse.getIssuer();
+                if (issuer != null)
+                    auditProps.put("federatedProvider", issuer.getValue());
+
+                NameIDType expected = pSecCtxCurrent.getProviderId();
+                auditProps.put("spId", pSecCtxCurrent.getProviderId().getValue());
+
+                pSecCtxCurrent.setSloStatus(IdentityProviderConstants.SP_SLO_SUCCESS);
+                recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
+
+            }
+
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -963,7 +1028,40 @@ public class SingleLogoutProducer extends SSOProducer {
 
         EndpointDescriptor destination = null;
         StatusResponseType ssoResponse = null;
+        // TODO : Check for IdPProxyInitiatedLogoutRequest!
+
+
         if (sloRequest == null) {
+
+            if (state.getLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest") != null &&
+                    state.getLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest") instanceof IDPProxyInitiatedLogoutRequestType) {
+                IDPProxyInitiatedLogoutRequestType idpProxyReq = (IDPProxyInitiatedLogoutRequestType) state.getLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest");
+
+                // Send SSOResponse back to requesting party
+                IDPPRoxyInitiatedLogoutResponseType ssoProxyResponse = new IDPPRoxyInitiatedLogoutResponseType();
+                ssoProxyResponse.setInReplayTo(idpProxyReq.getID());
+
+
+                // TODO : Check if we need to notify the IDP selector!!!
+                EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, requiredSpChannel);
+
+                if (idpSelectorCallbackEndpoint != null) {
+                    logger.warn("NOT Sending Current Selected IdP request (IMPLEMENT), callback location : " + idpSelectorCallbackEndpoint);
+                }
+
+                EndpointDescriptor proxyEd = new EndpointDescriptorImpl("idp-proxy-init-slo-repsonse",
+                        "SLOService",
+                        SSOBinding.SSO_ARTIFACT.toString(),
+                        idpProxyReq.getReplyTo(),
+                        null);
+
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        ssoProxyResponse, "IDPPRoxyInitiatedLogoutResponse", null, proxyEd, in.getMessage().getState()));
+
+                exchange.setOut(out);
+                return;
+
+            }
             SSOIDPMediator mediator = (SSOIDPMediator) requiredSpChannel.getIdentityMediator();
             String dashboardUrl = mediator.getDashboardUrl();
             destination = new EndpointDescriptorImpl("user-slo-url",
@@ -1046,7 +1144,7 @@ public class SingleLogoutProducer extends SSOProducer {
         exchange.setOut(out);
 
     }
-
+    public static final int SP_SLO_FAILED = 30;
     protected void performBackChannelSlo(CamelMediationExchange exchange,
                                             IdPSecurityContext secCtx,
                                             LogoutRequestType sloRequest) throws Exception {
@@ -1180,6 +1278,13 @@ public class SingleLogoutProducer extends SSOProducer {
                     recordInfoAuditTrail(Action.SLOR.getValue(), ActionOutcome.SUCCESS, ssoUser != null ? ssoUser.getName() : null, exchange, auditProps);
                 }
 
+            }
+
+            // After completing the SLO, reset those that failed.
+            for (ProviderSecurityContext pSecCtx : secCtx.lookupProviders()) {
+                if (pSecCtx.getSloStatus() == IdentityProviderConstants.SP_SLO_FAILED) {
+                    pSecCtx.setSloStatus(IdentityProviderConstants.SP_SLO_NONE);
+                }
             }
 
 
