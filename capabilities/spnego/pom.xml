@@ -45,8 +45,8 @@
         <idbus.bundle.ini4j-v0_5_1.version>1.4.3-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
         <karaf.version>2.2.3</karaf.version>
         <camel.version>1.6.1</camel.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <!--<spring.version>3.0.6.RELEASE</spring.version>-->
+        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <felix.plugin.version>2.1.0</felix.plugin.version>
    </properties>
 

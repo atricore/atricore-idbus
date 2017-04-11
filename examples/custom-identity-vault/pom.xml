@@ -23,8 +23,8 @@
         <idbus.kernel.version>1.4.3-SNAPSHOT</idbus.kernel.version>
         <idbus.cap.samlr.version>1.4.3-SNAPSHOT</idbus.cap.samlr.version>
 
-        <spring.version>3.0.6.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <!--<spring.version>3.0.6.RELEASE</spring.version>-->
+        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
     </properties>

@@ -45,7 +45,7 @@
         <commons-digester.version>1.8.1</commons-digester.version>
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <!--<spring.version>3.0.6.RELEASE</spring.version>-->
     </properties>
 
     <dependencies>

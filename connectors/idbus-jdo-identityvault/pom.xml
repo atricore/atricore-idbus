@@ -58,8 +58,8 @@
         <javax.jdo.osgi.version>2.3.0</javax.jdo.osgi.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
+        <!--<spring.version>3.0.6.RELEASE</spring.version>-->
         <xbean.version>3.7</xbean.version>
     </properties>
 

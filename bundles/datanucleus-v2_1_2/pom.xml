@@ -48,8 +48,8 @@
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <javax.jdo.osgi.version>2.3.0</javax.jdo.osgi.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
+        <!--<spring.version>3.0.6.RELEASE</spring.version>-->
 
     </properties>
 
