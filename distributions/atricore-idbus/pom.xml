@@ -1647,26 +1647,26 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.scala-library-v2_9_1</artifactId>
-            <version>${idbus.bundle.scala-library-v2_9_1.version}</version>
+            <artifactId>org.atricore.idbus.bundles.scala-library-v2_11_8</artifactId>
+            <version>${idbus.bundle.scala-library-v2_11_8.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.scala-library-v2_9_1</artifactId>
-            <version>${idbus.bundle.scala-library-v2_9_1.version}</version>
+            <artifactId>org.atricore.idbus.bundles.scala-library-v2_11_8</artifactId>
+            <version>${idbus.bundle.scala-library-v2_11_8.version}</version>
             <type>pom</type>
         </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.scala-compiler-v2_9_1</artifactId>
-            <version>${idbus.bundle.scala-compiler-v2_9_1.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.scala-compiler-v2_9_1</artifactId>
-            <version>${idbus.bundle.scala-compiler-v2_9_1.version}</version>
-            <type>pom</type>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.atricore.idbus.bundles</groupId>-->
+            <!--<artifactId>org.atricore.idbus.bundles.scala-compiler-v2_9_1</artifactId>-->
+            <!--<version>${idbus.bundle.scala-compiler-v2_9_1.version}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.atricore.idbus.bundles</groupId>-->
+            <!--<artifactId>org.atricore.idbus.bundles.scala-compiler-v2_9_1</artifactId>-->
+            <!--<version>${idbus.bundle.scala-compiler-v2_9_1.version}</version>-->
+            <!--<type>pom</type>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.fusesource.scalate</groupId>
             <artifactId>scalate-core_2.9</artifactId>

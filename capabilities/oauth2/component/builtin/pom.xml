@@ -144,7 +144,7 @@
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
                         <Require-Bundle>
                             org.atricore.idbus.capabilities.sso.dsl,
-                            org.atricore.idbus.bundles.scala-library-v2_9_1
+                            org.atricore.idbus.bundles.scala-library-v2_11_8
                         </Require-Bundle>
                         <Import-Package>
                             !${project.artifactId},

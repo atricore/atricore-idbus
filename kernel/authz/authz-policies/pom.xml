@@ -33,7 +33,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Require-Bundle>
                             org.atricore.idbus.kernel.authz.core,
-                            org.atricore.idbus.bundles.scala-library-v2_9_1
+                            org.atricore.idbus.bundles.scala-library-v2_11_8
                         </Require-Bundle>
                         <Export-Package>
                             .

@@ -396,8 +396,9 @@
     </feature>
 
     <feature name="scala" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_9_1/${idbus.bundle.scala-library-v2_9_1.version}</bundle>
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-compiler-v2_9_1/${idbus.bundle.scala-compiler-v2_9_1.version}</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_11_8/${idbus.bundle.scala-library-v2_11_8.version}</bundle>
+        <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_9_1/${idbus.bundle.scala-library-v2_9_1.version}</bundle>-->
+        <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-compiler-v2_9_1/${idbus.bundle.scala-compiler-v2_9_1.version}</bundle>-->
     </feature>
 
     <feature name="mysql-connector-java" version="5.1.10">
