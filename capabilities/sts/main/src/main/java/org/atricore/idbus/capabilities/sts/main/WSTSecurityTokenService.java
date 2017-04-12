@@ -41,6 +41,7 @@ import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
+import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
@@ -92,6 +93,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     private String auditCategory;
 
+    private MonitoringServer mServer;
+
+    private String metricsPrefix;
+
 
     /**
      * The provisioning target selected for this STS instance.
@@ -119,6 +124,9 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
     public RequestSecurityTokenResponseType requestSecurityToken(RequestSecurityTokenType rst) {
 
+        long startMilis = 0;
+        long endMilis = 0;
+
         JAXBElement<String> requestType;
         JAXBElement requestToken;
 
@@ -138,6 +146,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
         Object rstCtx = null;
         try {
+
+            startMilis = System.currentTimeMillis();
 
             SecurityTokenProcessingContext processingContext = new SecurityTokenProcessingContext ();
 
@@ -161,15 +171,40 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
             }
 
+            endMilis = System.currentTimeMillis();
+
+            if (logger.isDebugEnabled())
+                logger.debug("requestSecurityToken.pullCtx [MILIS] " + (endMilis - startMilis));
+
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metricsPrefix + "/pullCtx", endMilis - startMilis);
+
             // -----------------------------------------
             // 1. Authenticate
             // -----------------------------------------
+            startMilis = System.currentTimeMillis();
+
             subject = authenticate(requestToken.getValue(), tokenType.getValue());
+
+            endMilis = System.currentTimeMillis();
+
             if (logger.isTraceEnabled())
-                logger.trace( "User " + subjectToString(subject) + " authenticated successfully" );
+                logger.trace( "User " + subjectToString(subject) + " authenticated successfully [MILIS] " + (endMilis - startMilis));
+
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metricsPrefix + "/authenticate", endMilis - startMilis);
 
             // Resolve subject
+            startMilis = System.currentTimeMillis();
             subject = resolveSubject(subject);
+            endMilis = System.currentTimeMillis();
+
+            if (logger.isTraceEnabled())
+                logger.trace( "User " + subjectToString(subject) + " resolved successfully [MILIS] " + (endMilis - startMilis));
+
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metricsPrefix + "/resolveSubject", endMilis - startMilis);
+
             recordInfoAuditTrail("STS-AUTHN", ActionOutcome.SUCCESS, subject, processingContext);
 
             processingContext.setProperty(SUBJECT_PROP, subject);
@@ -177,6 +212,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             if (sessionManager != null && rstCtx != null) {
 
                 if (rstCtx instanceof AbstractSecurityTokenEmissionContext) {
+
+                    startMilis = System.currentTimeMillis();
 
                     AbstractSecurityTokenEmissionContext actx = (AbstractSecurityTokenEmissionContext) rstCtx;
                     Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
@@ -192,11 +229,31 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                                 logger.trace(e.getMessage());
                         }
                     }
+
+                    endMilis = System.currentTimeMillis();
+
+                    if (logger.isTraceEnabled())
+                        logger.trace( "Emission context update [MILIS] " + (endMilis - startMilis));
+
+                    if (mServer != null)
+                        mServer.recordResponseTimeMetric(metricsPrefix + "/contextUpdate", endMilis - startMilis);
+
                 }
 
             }
 
+            startMilis = System.currentTimeMillis();
+
             Set<PolicyEnforcementStatement> ssoPolicies = verify(processingContext, requestToken.getValue(), tokenType.getValue());
+
+            endMilis = System.currentTimeMillis();
+
+            if (logger.isTraceEnabled())
+                logger.trace( "verifyPolicies [MILIS] " + (endMilis - startMilis));
+
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metricsPrefix + "/verifyPolicies", endMilis - startMilis);
+
             if (ssoPolicies != null) {
                 if (logger.isDebugEnabled())
                     logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals");
@@ -209,23 +266,53 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             // -----------------------------------------
             // 2. Emit security token
             // -----------------------------------------
+            startMilis = System.currentTimeMillis();
+
             securityToken = emit(processingContext, requestToken.getValue(), tokenType.getValue());
+
+            endMilis = System.currentTimeMillis();
+
+            if (logger.isTraceEnabled())
+                logger.trace( "emit [MILIS] " + (endMilis - startMilis));
+
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metricsPrefix + "/emit", endMilis - startMilis);
 
             logger.debug("Security Token " + securityToken + " emitted successfully");
 
             if (processingContext.getProperty(RST_CTX) != null) {
+                startMilis = System.currentTimeMillis();
+
                 rstCtxArtifact = artifactQueueManager.pushMessage(processingContext.getProperty(RST_CTX));
                 if (logger.isDebugEnabled())
                     logger.debug("Sent RST Context, artifact " + rstCtxArtifact);
+
+                endMilis = System.currentTimeMillis();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("requestSecurityToken.pushCtx [MILIS] " + (endMilis - startMilis));
+
+                if (mServer != null)
+                    mServer.recordResponseTimeMetric(metricsPrefix + "/pushCtx", endMilis - startMilis);
 
             }
 
             // -----------------------------------------
             // Some token processing
             // -----------------------------------------
+            startMilis = System.currentTimeMillis();
+
             for (SecurityToken emitted : processingContext.getEmittedTokens()) {
                 postProcess(processingContext, requestToken.getValue(), tokenType.getValue(), emitted);
             }
+            endMilis = System.currentTimeMillis();
+
+            if (logger.isTraceEnabled())
+                logger.trace("requestSecurityToken.postProcess [MILIS] " + (endMilis - startMilis));
+
+            if (mServer != null)
+                mServer.recordResponseTimeMetric(metricsPrefix + "/postProcess", endMilis - startMilis);
+
 
         } catch(SecurityTokenAuthenticationFailure e) {
             throw e;
@@ -269,11 +356,17 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         // Authenticate the request token!
         SecurityTokenAuthenticator selectedAuthenticator = null;
         SecurityTokenAuthenticationFailure lastAuthnFailedException = null;
+
+        long startMilis = 0;
+        long endMilis = 0;
+
         for (SecurityTokenAuthenticator authenticator : authenticators) {
 
             logger.debug("Checking if authenticator " + authenticator.getId() + " can handle token of type " + tokenType + "[" + (requestToken != null ? requestToken.getClass().getName() : "") + "]");
 
             if (authenticator.canAuthenticate(requestToken)) {
+
+                startMilis = System.currentTimeMillis();
 
                 try {
                     selectedAuthenticator = authenticator;
@@ -282,8 +375,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                             "[" + selectedAuthenticator.getId() + "]");
 
                     // Return the authenticated subject
-
                     return authenticator.authenticate(requestToken);
+
 
                 } catch (SecurityTokenAuthenticationFailure e) {
 
@@ -295,7 +388,14 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     if (logger.isTraceEnabled())
                         logger.trace(e.getMessage(), e);
 
+                } finally {
+                    endMilis = System.currentTimeMillis();
+
+                    if (mServer != null)
+                        mServer.recordResponseTimeMetric(metricsPrefix + "/" + authenticator.getId() + "/authnTime", endMilis - startMilis);
+
                 }
+
             }
 
         }
@@ -320,6 +420,9 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     protected Set<PolicyEnforcementStatement> verify(SecurityTokenProcessingContext ctx, Object requestToken, String tokenType)
             throws SecurityTokenAuthenticationFailure {
 
+        long startMilis = 0;
+        long endMilis = 0;
+
         Set<PolicyEnforcementStatement> warnStmts = new HashSet<PolicyEnforcementStatement>();
         Set<PolicyEnforcementStatement> errorStmts = new HashSet<PolicyEnforcementStatement>();
 
@@ -333,7 +436,13 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 if (logger.isTraceEnabled())
                     logger.trace("Invoking policy verify for " + policy.getName() + ", " + (policy.getDescription() != null ? policy.getDescription() : ""));
 
+                startMilis = System.currentTimeMillis();
                 Set<PolicyEnforcementStatement> stmts = policy.verify(subject, ctx);
+                endMilis = System.currentTimeMillis();
+
+                if (mServer != null)
+                    mServer.recordResponseTimeMetric(metricsPrefix + "/" + policy.getName() + "/verifyTime", endMilis - startMilis);
+
                 if (stmts != null) {
                     warnStmts.addAll(stmts);
                     if (logger.isTraceEnabled())
@@ -367,6 +476,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
         SecurityToken securityToken = null;
 
+        long startMilis = 0;
+        long endMilis = 0;
+
+
         for (SecurityTokenEmitter emitter : emitters) {
 
             if(logger.isDebugEnabled())
@@ -379,19 +492,24 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                     logger.debug("Selected Security Token Emitter for token type [" + tokenType + " is " +
                         "[" + emitter.getId() + "]");
 
+                    startMilis = System.currentTimeMillis();
                     SecurityToken st = emitter.emit(ctx, requestToken, tokenType);
+                    endMilis = System.currentTimeMillis();
 
                     if (st != null) {
                         logger.debug("Emission successful for token [" + st.getId() + "] " +
                                      " type [" + tokenType + "] using " +
-                                     "[" + emitter.getId() + "]");
+                                     "[" + emitter.getId() + "] [MILIS] " + (endMilis - startMilis));
+
+                        if (mServer != null)
+                            mServer.recordResponseTimeMetric(metricsPrefix + "/" + emitter.getId() + "/emitTime", endMilis - startMilis);
                     }
 
                     if (emitter.isTargetedEmitter(ctx, requestToken, tokenType)) {
 
                         logger.debug("Emission successful for token [" + st.getId() + "] " +
                                      " type [" + tokenType + "] using targeted " +
-                                     "[" + emitter.getId() + "]");
+                                     "[" + emitter.getId() + "] [MILIS] " + (endMilis - startMilis));
 
                         if (securityToken != null) {
                             logger.warn("Multiple emitters configured as target emitter!!! Token " + st + " replaced " + securityToken);
@@ -658,6 +776,24 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     public void setAuditingServer(AuditingServer aServer) {
         this.aServer = aServer;
     }
+
+
+    public MonitoringServer getMonitoringServer() {
+        return mServer;
+    }
+
+    public void setMonitoringServer(MonitoringServer mServer) {
+        this.mServer = mServer;
+    }
+
+    public String getMetricsPrefix() {
+        return metricsPrefix;
+    }
+
+    public void setMetricsPrefix(String metricsPrefix) {
+        this.metricsPrefix = metricsPrefix;
+    }
+
 
     public String getAuditCategory() {
         return auditCategory;

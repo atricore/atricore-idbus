@@ -184,7 +184,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
             } else if ((defaultACSEndpoint.getIsDefault() == null || !defaultACSEndpoint.getIsDefault())) {
                 if (defaultACSEndpoint.getIndex() > ace.getIndex())
                     defaultACSEndpoint = ace;
-            } dfx
+            }
 
         }
 

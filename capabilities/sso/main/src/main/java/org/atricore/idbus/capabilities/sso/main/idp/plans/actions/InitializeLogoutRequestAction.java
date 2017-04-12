@@ -67,7 +67,7 @@ public class InitializeLogoutRequestAction extends AbstractSSOAction {
         NameIDType subjectNameID = new NameIDType();
         subjectNameID.setFormat(NameIDFormat.UNSPECIFIED.getValue());
         subjectNameID.setValue(user.getName());
-
+        subjectNameID.setSPNameQualifier(sp.getAlias());
 
         Subject idpSubject = secCtx.getSubject();
 
