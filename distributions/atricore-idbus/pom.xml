@@ -145,8 +145,7 @@
         <idbus.bundle.wadi-v2_1_2.version>1.4.3-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
         <idbus.bundle.apacheds-v1_5_7.server.version>1.4.3-SNAPSHOT</idbus.bundle.apacheds-v1_5_7.server.version>
         <idbus.bundle.ini4j-v0_5_1.version>1.4.3-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
-        <idbus.bundle.scala-library-v2_9_1.version>1.4.3-SNAPSHOT</idbus.bundle.scala-library-v2_9_1.version>
-        <idbus.bundle.scala-compiler-v2_9_1.version>1.4.3-SNAPSHOT</idbus.bundle.scala-compiler-v2_9_1.version>
+        <idbus.bundle.scala-library-v2_11_8.version>1.4.3-SNAPSHOT</idbus.bundle.scala-library-v2_11_8.version>
 
         <idbus.bundle.nimbus-jose-jwt-v3_10.version>1.4.3-SNAPSHOT</idbus.bundle.nimbus-jose-jwt-v3_10.version>
         <idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>1.4.3-SNAPSHOT</idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>
