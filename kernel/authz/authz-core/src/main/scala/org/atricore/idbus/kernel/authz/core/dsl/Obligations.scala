@@ -21,10 +21,10 @@ package org.atricore.idbus.kernel.authz.core.dsl
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-import collection.mutable.{Stack, ListBuffer}
-import org.atricore.idbus.kernel.authz.core.{AttributeAssignment, Obligation}
-import org.scala_tools.subcut.inject.{Injectable, BindingModule, NewBindingModule, MutableBindingModule}
+import com.escalatesoft.subcut.inject.{BindingModule, Injectable, MutableBindingModule, NewBindingModule}
 
+import collection.mutable.{ListBuffer, Stack}
+import org.atricore.idbus.kernel.authz.core.{AttributeAssignment, Obligation}
 
 /**
  * Second-level/Auxiliary DSL for specifying authorization obligations.

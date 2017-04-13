@@ -25,15 +25,17 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator
 import org.apache.commons.logging.LogFactory
 import org.apache.camel.builder.RouteBuilder
 import org.atricore.idbus.kernel.main.mediation.{Channel, IdentityMediationException}
-import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
+import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptor, EndpointDescriptorImpl}
+
 import scala.collection.JavaConversions._
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import org.atricore.idbus.capabilities.idconfirmation.component.builtin.IdentityConfirmationBindings
 import IdentityConfirmationBindings._
 import org.atricore.idbus.kernel.main.mediation.camel.logging.MediationLogger
 import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel
-import reflect.BeanProperty
 import org.atricore.idbus.kernel.main.mail.MailService
+
+import scala.beans.BeanProperty
 
 /**
  * Exposes identity confirmation services.

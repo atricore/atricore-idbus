@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.idconfirmation.ui
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 
 trait IdentityConfirmationModel {
 
