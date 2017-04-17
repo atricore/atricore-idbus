@@ -72,7 +72,7 @@
                         <Bundle-SymbolicName>org.atricore.idbus.bundles.scala-library-v2_11_8</Bundle-SymbolicName>
                         <Export-Package>scala.*,
                         </Export-Package>
-                        <Import-Package>sun.misc;resolution:=optional,*</Import-Package>
+                        <Import-Package>sun.misc;resolution:=optional,scala.*;version=!,*</Import-Package>
                         <_failok>true</_failok>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
