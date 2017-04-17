@@ -120,6 +120,9 @@
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <spring.version>3.1.0.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
+        <scala.major.version>2.11</scala.major.version>
+        <scala.version>${scala.major.version}.8</scala.version>
+        <scalate.version>1.7.1</scalate.version>
     </properties>
 
 
@@ -605,22 +608,22 @@
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
-                <version>2.11.8</version>
+                <version>${scala.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
-                <version>2.11.8</version>
+                <version>${scala.version}</version>
                 <classifier>sources</classifier>
             </dependency>
             <dependency>
                 <groupId>org.scala-lang.modules</groupId>
-                <artifactId>scala-parser-combinators_2.11</artifactId>
+                <artifactId>scala-parser-combinators_${scala.major.version}</artifactId>
                 <version>1.0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.specs2</groupId>
-                <artifactId>specs2-core_2.11</artifactId>
+                <artifactId>specs2-core_${scala.major.version}</artifactId>
                 <version>3.7</version>
                 <scope>test</scope>
             </dependency>

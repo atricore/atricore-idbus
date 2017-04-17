@@ -407,8 +407,8 @@
 
     <feature name="scalate" version="${scalate.version}">
         <feature version="${version}">scala</feature>
-        <bundle start-level="40">mvn:org.scalatra.scalate/scalate-util_2.11/${scalate.version}</bundle>
-        <bundle start-level="40">mvn:org.scalatra.scalate/scalate-core_2.11/${scalate.version}</bundle>
+        <bundle start-level="40">mvn:org.scalatra.scalate/scalate-util_${scala.major.version}/${scalate.version}</bundle>
+        <bundle start-level="40">mvn:org.scalatra.scalate/scalate-core_${scala.major.version}/${scalate.version}</bundle>
     </feature>
 
 </features>

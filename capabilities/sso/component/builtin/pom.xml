@@ -91,7 +91,7 @@
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2-core_2.11</artifactId>
+            <artifactId>specs2-core_${scala.major.version}</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

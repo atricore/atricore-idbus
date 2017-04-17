@@ -233,8 +233,8 @@
         </dependency>
         <dependency>
             <groupId>org.scalatra.scalate</groupId>
-            <artifactId>scalate-core_2.11</artifactId>
-            <version>1.7.1</version>
+            <artifactId>scalate-core_${scala.major.version}</artifactId>
+            <version>${scalate.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -243,7 +243,7 @@
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2-core_2.11</artifactId>
+            <artifactId>specs2-core_${scala.major.version}</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -298,8 +298,8 @@
             </plugin>
             <plugin>
                 <groupId>org.scalatra.scalate</groupId>
-                <artifactId>maven-scalate-plugin_2.11</artifactId>
-                <version>1.7.1</version>
+                <artifactId>maven-scalate-plugin_${scala.major.version}</artifactId>
+                <version>${scalate.version}</version>
                 <configuration>
                     <contextClass>org.fusesource.scalate.DefaultRenderContext</contextClass>
                 </configuration>
