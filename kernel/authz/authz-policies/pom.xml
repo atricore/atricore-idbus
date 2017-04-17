@@ -33,10 +33,14 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Require-Bundle>
                             org.atricore.idbus.kernel.authz.core,
-                            org.atricore.idbus.bundles.scala-library-v2_11_8
+                            org.scala-lang.scala-library; bundle-version=${scala.version},
                         </Require-Bundle>
                         <Export-Package>
                             .
+                            <Import-Package>
+                                scala.*;version=${scala.version},
+                                *
+                            </Import-Package>
                         </Export-Package>
                     </instructions>
                 </configuration>

@@ -68,6 +68,7 @@
 
     <feature name="atricore-support" version="${version}">
         <feature version="${version}">common</feature>
+        <feature version="${scala.version}">scala</feature>
         <feature version="${version}">web</feature>
         <feature version="${cxf.version}">cxf</feature>
         <feature version="${version}">persistence</feature>
@@ -121,7 +122,7 @@
     </feature>
 
     <feature name="atricore-saml2" version="${version}">
-        <feature version="${version}">scala</feature>
+        <feature version="${scala.version}">scala</feature>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.dsl/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.component.container/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.component.builtin/${idbus.cap.sso.version}</bundle>
@@ -132,7 +133,7 @@
     </feature>
 
     <feature name="atricore-idconfirmation" version="1.4.3-SNAPSHOT">
-        <feature version="${version}">scala</feature>
+        <feature version="${scala.version}">scala</feature>
         <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.main/1.4.3-SNAPSHOT</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.ui/1.4.3-SNAPSHOT</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.component.builtin/1.4.3-SNAPSHOT</bundle>
@@ -395,8 +396,13 @@
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-spring31-v1_9_2/${idbus.bundle.jasypt-v1_9_2.version}</bundle>
     </feature>
 
-    <feature name="scala" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_11_8/${idbus.bundle.scala-library-v2_11_8.version}</bundle>
+    <feature name="scala" version="${scala.version}">
+        <bundle start-level="40">mvn:org.scala-lang/scala-library/${scala.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang/scala-reflect/${scala.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang/scala-compiler/${scala.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang.modules/scala-parser-combinators_${scala.major.version}/${scala.modules.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang.modules/scala-xml_${scala.major.version}/${scala.modules.version}</bundle>
+        <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_11_8/${idbus.bundle.scala-library-v2_11_8.version}</bundle>-->
         <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_9_1/${idbus.bundle.scala-library-v2_9_1.version}</bundle>-->
         <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-compiler-v2_9_1/${idbus.bundle.scala-compiler-v2_9_1.version}</bundle>-->
     </feature>
@@ -406,7 +412,7 @@
     </feature>
 
     <feature name="scalate" version="${scalate.version}">
-        <feature version="${version}">scala</feature>
+        <feature version="${scala.version}">scala</feature>
         <bundle start-level="40">mvn:org.scalatra.scalate/scalate-util_${scala.major.version}/${scalate.version}</bundle>
         <bundle start-level="40">mvn:org.scalatra.scalate/scalate-core_${scala.major.version}/${scalate.version}</bundle>
     </feature>

@@ -144,13 +144,14 @@
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
                         <Require-Bundle>
                             org.atricore.idbus.capabilities.sso.dsl,
-                            org.atricore.idbus.bundles.scala-library-v2_11_8
+                            org.scala-lang.scala-library; bundle-version=${scala.version},
                         </Require-Bundle>
                         <Import-Package>
                             !${project.artifactId},
                             org.apache.aries.blueprint,
                             org.osgi.service.blueprint.container,
                             org.osgi.service.blueprint.reflect,
+                            scala.*;version=${scala.version},
                             *
                         </Import-Package>
                         <Private-Package>

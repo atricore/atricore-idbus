@@ -60,7 +60,7 @@
         <module>bundles/ini4j-v0_5_1</module>
         <!--<module>bundles/scala-library-v2_9_1</module>-->
         <!--<module>bundles/scala-compiler-v2_9_1</module>-->
-        <module>bundles/scala-library-v2_11_8</module>
+        <!--<module>bundles/scala-library-v2_11_8</module>-->
         <module>bundles/jasypt-v1_9_2</module>
         <module>bundles/jasypt-spring31-v1_9_2</module>
         <module>capabilities/spmlr2</module>
@@ -122,6 +122,8 @@
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <scala.major.version>2.11</scala.major.version>
         <scala.version>${scala.major.version}.8</scala.version>
+        <scala.modules.version>1.0.5</scala.modules.version>
+        <!--<scala.osgi.version>${scala.version}.v20160304-115712-1706a37eb8</scala.osgi.version>-->
         <scalate.version>1.7.1</scalate.version>
     </properties>
 
@@ -619,7 +621,24 @@
             <dependency>
                 <groupId>org.scala-lang.modules</groupId>
                 <artifactId>scala-parser-combinators_${scala.major.version}</artifactId>
-                <version>1.0.5</version>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-xml_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-reflect</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.specs2</groupId>
