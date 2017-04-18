@@ -142,24 +142,47 @@ grant_type	Yes	authorization_code
 
 
         int retryCount = 1;
-        HttpResponse response = httpclient.execute(httpget);
+        HttpResponse response = null;
+        Exception lastError = null;
 
-        while (retryCount < MAX_NUM_OF_USER_INFO_RETRIES && response.getStatusLine().getStatusCode() != 200) {
-
-            if (logger.isTraceEnabled())
-                logger.trace("Error retrieving WeChat user info (retry #  " + retryCount + ") " + response.getStatusLine());
-
-            response = httpclient.execute(httpget);
-            retryCount ++;
+        try {
+            response =httpclient.execute(httpget);
+            if (response.getStatusLine().getStatusCode() != 200)
+                logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + response.getStatusLine());
+            lastError = null;
+        } catch (Exception e) {
+            response = null;
+            logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + e.getMessage(), e);
+            lastError = e;
         }
 
-        if (logger.isTraceEnabled())
-            logger.trace("WeChat last status : " + response.getStatusLine());
+        while (retryCount < MAX_NUM_OF_USER_INFO_RETRIES &&
+                (response == null || response.getStatusLine().getStatusCode() != 200)) {
 
-        if (response.getStatusLine().getStatusCode() != 200) {
+            try {
+                retryCount++;
+                response = httpclient.execute(httpget);
+                lastError = null;
+                if (response.getStatusLine().getStatusCode() != 200)
+                    logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + response.getStatusLine());
+            } catch (Exception e) {
+                response = null;
+                logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + e.getMessage(), e);
+                lastError = e;
+            }
+        }
+
+
+        if (lastError != null) {
+            logger.error("Cannot resolve WeChat token " + lastError.getMessage(), lastError);
+            throw new IdentityMediationException("Cannot resolve WeChat token " + lastError.getMessage(), lastError);
+        }
+
+        if (response != null && response.getStatusLine().getStatusCode() != 200) {
             logger.error("Cannot resolve WeChat token " + response.getStatusLine());
             throw new IdentityMediationException("Cannot resolve WeChat token " + response.getStatusLine());
         }
+
 
         // Get hold of the response entity
         HttpEntity entity = response.getEntity();
