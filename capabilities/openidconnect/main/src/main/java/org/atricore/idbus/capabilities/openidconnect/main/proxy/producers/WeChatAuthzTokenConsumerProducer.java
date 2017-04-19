@@ -20,6 +20,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.tools.ant.taskdefs.condition.Http;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
@@ -28,6 +29,7 @@ import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -48,7 +50,7 @@ public class WeChatAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
 
     private static final Log logger = LogFactory.getLog(WeChatAuthzTokenConsumerProducer.class);
 
-    private static final int MAX_NUM_OF_USER_INFO_RETRIES = 1;
+    private static final int MAX_NUM_OF_USER_INFO_RETRIES = 3;
 
     public WeChatAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -138,11 +140,49 @@ grant_type	Yes	authorization_code
 
         if (logger.isTraceEnabled()) logger.trace("executing request " + httpget.getURI());
 
-        HttpResponse response = httpclient.execute(httpget);
-        // TODO : Error handling
 
-        if (logger.isTraceEnabled())
-            logger.trace(response.getStatusLine());
+        int retryCount = 1;
+        HttpResponse response = null;
+        Exception lastError = null;
+
+        try {
+            response =httpclient.execute(httpget);
+            if (response.getStatusLine().getStatusCode() != 200)
+                logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + response.getStatusLine());
+            lastError = null;
+        } catch (Exception e) {
+            response = null;
+            logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + e.getMessage(), e);
+            lastError = e;
+        }
+
+        while (retryCount < MAX_NUM_OF_USER_INFO_RETRIES &&
+                (response == null || response.getStatusLine().getStatusCode() != 200)) {
+
+            try {
+                retryCount++;
+                response = httpclient.execute(httpget);
+                lastError = null;
+                if (response.getStatusLine().getStatusCode() != 200)
+                    logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + response.getStatusLine());
+            } catch (Exception e) {
+                response = null;
+                logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + e.getMessage(), e);
+                lastError = e;
+            }
+        }
+
+
+        if (lastError != null) {
+            logger.error("Cannot resolve WeChat token " + lastError.getMessage(), lastError);
+            throw new IdentityMediationException("Cannot resolve WeChat token " + lastError.getMessage(), lastError);
+        }
+
+        if (response != null && response.getStatusLine().getStatusCode() != 200) {
+            logger.error("Cannot resolve WeChat token " + response.getStatusLine());
+            throw new IdentityMediationException("Cannot resolve WeChat token " + response.getStatusLine());
+        }
+
 
         // Get hold of the response entity
         HttpEntity entity = response.getEntity();
