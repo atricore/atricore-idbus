@@ -1323,7 +1323,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 // Build STS Context
                 // -------------------------------------------------------
                 // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
-                // It will transport back the Subject wich is not supported by the WST protocol
+                // It will transport back the Subject which is not supported by the WST protocol
                 SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
                 // Send extra information to STS, using the emission context
 
@@ -1354,7 +1354,7 @@ public class SingleSignOnProducer extends SSOProducer {
                                     logger.debug("Using authnCtxClass " + attr.getValue());
                                 break;
                             } catch (Exception e) {
-                                logger.error("Unknonw AuthnCtxClass type " + attr.getValue());
+                                logger.error("Unknown AuthnCtxClass type " + attr.getValue());
                             }
                         }
                     }
@@ -1423,8 +1423,12 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Do some handling on special attributes:
                 for (AbstractPrincipalType principal : securityTokenEmissionCtx.getProxyPrincipals())  {
+
                     if (principal instanceof SubjectAttributeType) {
                         SubjectAttributeType attr = (SubjectAttributeType) principal;
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("["+ this.channelRef + ":" + this.endpointRef + "] ProxyPrincipal: " + attr.getName() + "=" + attr.getValue());
                         // -----------------------------------------------------------
 
                         // TODO : Improve ? Strategy to detect proxied attributes maybe

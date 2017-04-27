@@ -145,6 +145,8 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
                     new AuthorizationCodeRequestUrl(mediator.getAuthzTokenServiceLocation(), mediator.getClientId()) :
                     new AuthorizationCodeRequestUrl(mediator.getMobileAuthzTokenServiceLocation(), mediator.getClientId()));
 
+
+
             // Keep track of state
             ((AuthorizationCodeRequestUrl) authorizationUrl).setState(relayState);
 
@@ -157,7 +159,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
             // Request the proper scopes, this varies from IdP to IdP:
 
-            String scopes = mediator.getScopes();
+            String scopes = (!weChat || !mobile ? mediator.getScopes() : mediator.getMobileScopes());
 
             if (logger.isDebugEnabled())
                 logger.debug("Setting scopes URL parameter to [" + scopes + "]");
