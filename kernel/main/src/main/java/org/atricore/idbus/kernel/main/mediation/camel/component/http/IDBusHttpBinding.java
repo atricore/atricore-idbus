@@ -35,6 +35,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Set;
 
@@ -87,6 +88,15 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
         if (httpServletRequest.getAttribute("org.atricore.idbus.http.SecureCookies") != null)
             httpMessage.getHeaders().put("org.atricore.idbus.http.SecureCookies", httpServletRequest.getAttribute("org.atricore.idbus.http.SecureCookies"));
+
+        X509Certificate certChain[] = (X509Certificate[]) httpServletRequest.getAttribute("javax.servlet.request.X509Certificate");
+        if (certChain != null) {
+            httpMessage.getHeaders().put("org.atricore.idbus.http.X509Certificate", certChain);
+            for (int i = 0; i < certChain.length; i++) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Received client certificate [" + i + "] = " + certChain[i].toString());
+            }
+        }
 
         String parentThread = httpServletRequest.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST);
         if (parentThread == null) {

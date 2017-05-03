@@ -50,4 +50,6 @@ public interface Constants  {
 
     public static final String AUTHZ_CODE_NS = "urn:org:atricore:idbus:kernel:main:authn:authz-code";
 
+    public static final String CSCA_NS = "urn:org:atricore:idbus:kernel:main:authn:csca";
+
 }
