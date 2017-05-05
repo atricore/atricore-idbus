@@ -209,6 +209,9 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
             // Build Subject
             subject = new Subject(true, principals, subject.getPublicCredentials(), subject.getPrivateCredentials());
 
+            if (logger.isTraceEnabled())
+                logger.trace("Subject for assertion:\n" + subject);
+
 
             // We have a valid IPD Subject now, with a SSOUser as one of the principals
             ex.setProperty(WSTConstants.SUBJECT_PROP, subject);

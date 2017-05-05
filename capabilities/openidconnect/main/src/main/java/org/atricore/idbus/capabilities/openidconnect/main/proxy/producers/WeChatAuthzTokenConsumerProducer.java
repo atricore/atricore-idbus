@@ -241,12 +241,22 @@ grant_type	Yes	authorization_code
 
          */
 
-        Map<String, Object> map = (Map<String, Object>) fromJsonString(json, Map.class);
+        Map<String, Object> weChatClaims = (Map<String, Object>) fromJsonString(json, Map.class);
 
-        String openid = (String) map.get("openid");
-        String accessToken = (String) map.get("access_token");
-        String unionid = (String) map.get("unionid");
-        Integer accessTokenExpiresIn = (Integer) map.get("expires_in");
+        String openid = (String) weChatClaims.get("openid");
+        String accessToken = (String) weChatClaims.get("access_token");
+        String unionid = (String) weChatClaims.get("unionid");
+        Integer accessTokenExpiresIn = (Integer) weChatClaims.get("expires_in");
+
+
+        if (logger.isTraceEnabled()) {
+            for (String key : weChatClaims.keySet()) {
+                logger.debug("Received "+key+" : " + (weChatClaims.get(key) != null ? weChatClaims.get(key) : "N/A") + " for code ["+ code +"]");
+            }
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Received openid : " + (openid != null ? openid : "N/A") + " for code ["+ code +"]");
 
         // Look up user by openid:
 
