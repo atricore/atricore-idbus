@@ -49,6 +49,8 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private String scopes;
 
+    private String mobileScopes;
+
     private String googleAppsDomain;
 
     private String userFields;
@@ -289,6 +291,14 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public void setScopes(String scopes) {
         this.scopes = scopes;
+    }
+
+    public String getMobileScopes() {
+        return mobileScopes;
+    }
+
+    public void setMobileScopes(String mobileScopes) {
+        this.mobileScopes = mobileScopes;
     }
 
     public String getGoogleAppsDomain() {

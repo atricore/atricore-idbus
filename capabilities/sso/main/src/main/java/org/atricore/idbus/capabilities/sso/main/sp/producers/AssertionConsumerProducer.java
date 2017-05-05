@@ -498,7 +498,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (response.getAssertionOrEncryptedAssertion().get(0) instanceof AssertionType) {
                 assertion = (AssertionType) response.getAssertionOrEncryptedAssertion().get(0);
             } else {
-                throw new RuntimeException("Response should be already decripted!");
+                throw new RuntimeException("Response should be already decrypted!");
             }
 
             // store subject identification information
@@ -659,7 +659,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     for (JAXBElement<?> authnContext : authnContextItems) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Context to IDP Subject " +
+                            logger.debug("Adding Authentication Context to IDP Subject " +
                                     authnContext.getValue() + ":" +
                                     SubjectAuthenticationAttribute.Name.AUTHENTICATION_CONTEXT) ;
                         }
@@ -682,7 +682,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getAuthnInstant() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getAuthnInstant().toString() + ":" +
                                     SubjectAuthenticationAttribute.Name.AUTHENTICATION_INSTANT) ;
                         }
@@ -697,7 +697,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSessionIndex() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSessionIndex() + ":" +
                                     SubjectAuthenticationAttribute.Name.SESSION_INDEX) ;
                         }
@@ -711,7 +711,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSessionNotOnOrAfter() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSessionNotOnOrAfter().toString() + ":" +
                                     SubjectAuthenticationAttribute.Name.SESSION_NOT_ON_OR_AFTER) ;
                         }
@@ -725,7 +725,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSubjectLocality() != null && authnStmt.getSubjectLocality().getAddress() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSubjectLocality().getAddress() + ":" +
                                     SubjectAuthenticationAttribute.Name.SUBJECT_LOCALITY_ADDRESS) ;
                         }
@@ -740,7 +740,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSubjectLocality() != null && authnStmt.getSubjectLocality().getDNSName() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSubjectLocality().getDNSName() + ":" +
                                     SubjectAuthenticationAttribute.Name.SUBJECT_LOCALITY_DNSNAME) ;
                         }
