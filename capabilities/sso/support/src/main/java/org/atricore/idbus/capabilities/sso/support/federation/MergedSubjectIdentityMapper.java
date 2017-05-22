@@ -43,8 +43,8 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
     }
 
     public boolean isUseLocalId() {
-        return useLocalId;
-    }
+        return true;
+    } // TODO : FIX
 
     public void setUseLocalId(boolean useLocalId) {
         this.useLocalId = useLocalId;
@@ -60,10 +60,16 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
 
         Set<Principal> merged = new HashSet<Principal>();
 
-        if (useLocalId) {
+        if (isUseLocalId()) {
+
+
             Set<SubjectNameID> subjectNameID = localSubject.getPrincipals(SubjectNameID.class);
             // federated subject is identified using local account name identifier
             for (SubjectNameID sc : subjectNameID) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Using local subject ID : " + sc.getName());
+
                 merged.add(sc);
             }
 
@@ -71,6 +77,10 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
             Set<SubjectNameID> subjectNameID = remoteSubject.getPrincipals(SubjectNameID.class);
             // federated subject is identified using local account name identifier
             for (SubjectNameID sc : subjectNameID) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Using remote subject ID : " + sc.getName());
+
                 merged.add(sc);
             }
         }

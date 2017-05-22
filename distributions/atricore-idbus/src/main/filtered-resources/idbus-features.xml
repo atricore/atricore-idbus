@@ -14,6 +14,7 @@
         <feature version="${version}">atricore-spml2</feature>
         <feature version="${version}">atricore-josso</feature>
         <feature version="${version}">atricore-spnego</feature>
+        <feature version="${version}">atricore-csca</feature>
         <feature version="${version}">atricore-openid</feature>
         <feature version="${version}">atricore-openidconnect</feature>
         <feature version="${version}">atricore-oauth2</feature>
@@ -147,6 +148,11 @@
     <feature name="atricore-spnego" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.spnego/org.atricore.idbus.capabilities.spnego/${idbus.cap.spnego.version}</bundle>
     </feature>
+
+    <feature name="atricore-csca" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.csca/org.atricore.idbus.capabilities.csca/${idbus.cap.csca.version}</bundle>
+    </feature>
+
 
     <feature name="atricore-openid" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.openid/org.atricore.idbus.capabilities.openid.main/${idbus.cap.openid.version}</bundle>

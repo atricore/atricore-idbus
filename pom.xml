@@ -73,7 +73,7 @@
         <module>capabilities/oauth2</module>
         <module>capabilities/atricoreid</module>
 
-        <module>capabilities/client-cert-authn</module>
+        <module>capabilities/csca</module>
         <module>capabilities/idconfirmation</module>
 
         <module>idojos/idbus-db-identitystore</module>
@@ -674,6 +674,7 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
+                        <compilerArgument>-XDignore.symbol.file</compilerArgument>
                     </configuration>
                 </plugin>
                 <plugin>

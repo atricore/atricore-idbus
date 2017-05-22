@@ -596,6 +596,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     }
 
     protected Subject resolveSubject(Subject subject) {
+
+        long startMilis = 0;
+        long endMilis = 0;
+
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
         Set<SimplePrincipal> simplePrincipals = subject.getPrincipals(SimplePrincipal.class);
 
@@ -628,8 +632,21 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 if (logger.isTraceEnabled())
                     logger.trace("Resolving SSOUser [" + username + "] [STS: " + this.getName() + "]");
 
+                startMilis = System.currentTimeMillis();
                 ssoUser = idMgr.findUser(username);
+                endMilis = System.currentTimeMillis();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("findUser "  + username + " [MILIS] " + (endMilis - startMilis));
+
+                startMilis = System.currentTimeMillis();
                 ssoRoles = idMgr.findRolesByUsername(username);
+                endMilis = System.currentTimeMillis();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("findRolesByUsername "  + username + " [MILIS] " + (endMilis - startMilis));
+
+                startMilis = System.currentTimeMillis();
 
                 Set<Principal> principals = new HashSet<Principal>();
 
@@ -647,6 +664,12 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
                 // Build Subject
                 subject = new Subject(false, principals, subject.getPublicCredentials(), subject.getPrivateCredentials());
+
+                endMilis = System.currentTimeMillis();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("buildSubjectI "  + username + " [MILIS] " + (endMilis - startMilis));
+
 
             } catch (Exception e) {
                 throw new SecurityTokenEmissionException(e);
