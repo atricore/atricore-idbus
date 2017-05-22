@@ -50,7 +50,7 @@
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <jdo.version>2.3.0</jdo.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <spring.version>3.1.0.RELEASE</spring.version>
 
     </properties>
 

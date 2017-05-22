@@ -41,7 +41,7 @@
 
     <properties>
         <commons-logging.version>1.1.1</commons-logging.version>
-        <spring.version>3.0.6.RELEASE</spring.version>
+        <spring.version>3.1.0.RELEASE</spring.version>
         <xbean.version>3.7</xbean.version>
         <juni.version>4.4</juni.version>
         <log4j.version>1.2.16</log4j.version>
