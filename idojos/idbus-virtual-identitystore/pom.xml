@@ -29,13 +29,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.idojos</groupId>
     <artifactId>org.atricore.idbus.idojos.virtualidentitystore</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: IDOJO : Virtual Identity Store</name>
 

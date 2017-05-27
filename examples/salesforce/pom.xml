@@ -28,13 +28,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
 
     <groupId>org.atricore.idbus.examples</groupId>
     <artifactId>org.atricore.idbus.examples.salesforce.idau</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Example : Salesforce Identity Appliance Unit</name>
 
@@ -43,28 +43,28 @@
         <!--felix.plugin.version>2.1.0-SNAPSHOT</felix.plugin.version-->
 
         <!-- IDBUS -->
-        <idbus.kernel.version>1.4.3-SNAPSHOT</idbus.kernel.version>
-        <idbus.examples.version>1.4.3-SNAPSHOT</idbus.examples.version>
-        <idbus.app.server.version>1.4.3-SNAPSHOT</idbus.app.server.version>
+        <idbus.kernel.version>1.4.3</idbus.kernel.version>
+        <idbus.examples.version>1.4.3</idbus.examples.version>
+        <idbus.app.server.version>1.4.3</idbus.app.server.version>
 
-        <idbus.cap.josso.version>1.4.3-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.samlr2.version>1.4.3-SNAPSHOT</idbus.cap.samlr2.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.4.3-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.4.3-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.4.3-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
-        <idbus.bundle.datanucleus-core-v2_0_0-m2.version>1.4.3-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_0-m2.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>1.4.3-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>
-        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.4.3-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
-        <idbus.bundle.javax-jstl-v1_2.version>1.4.3-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.4.3-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.cap.josso.version>1.4.3</idbus.cap.josso.version>
+        <idbus.cap.samlr2.version>1.4.3</idbus.cap.samlr2.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.4.3</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.4.3</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.4.3</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
+        <idbus.bundle.datanucleus-core-v2_0_0-m2.version>1.4.3</idbus.bundle.datanucleus-core-v2_0_0-m2.version>
+        <idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>1.4.3</idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>
+        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.4.3</idbus.bundle.javax-jdo2-v2_3_ec.version>
+        <idbus.bundle.javax-jstl-v1_2.version>1.4.3</idbus.bundle.javax-jstl-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.4.3</idbus.bundle.josso-ws-v1_2.version>
 
-        <idbus.idojo.dbidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.dbsessionstore.version>1.4.3-SNAPSHOT</idbus.idojo.dbsessionstore.version>
-        <idbus.idojo.ldapidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.4.3-SNAPSHOT</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.4.3-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.4.3-SNAPSHOT</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.dbidentitystore.version>1.4.3</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.dbsessionstore.version>1.4.3</idbus.idojo.dbsessionstore.version>
+        <idbus.idojo.ldapidentitystore.version>1.4.3</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.4.3</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.4.3</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.4.3</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.4.3</idbus.idojo.strongauthscheme.version>
 
         <!--<spring.version>3.1.0.RELEASE</spring.version>-->
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->

@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.sso</groupId>
         <artifactId>sso</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.3</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>org.atricore.idbus.capabilities.sso.management</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SSO Management Component</name>
 

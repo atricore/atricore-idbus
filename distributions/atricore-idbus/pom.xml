@@ -28,13 +28,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>distributions</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.3</version>
     </parent>
 
     <groupId>org.atricore.idbus</groupId>
     <artifactId>atricore-idbus</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3</version>
     <name>Atricore :: Distribution : Atricore Identity Bus Standalone</name>
 
     <url>http://www.atricore.org</url>
@@ -110,69 +110,69 @@
         <karaf.version>2.2.3</karaf.version>
         <karaf.deployer.war.version>2.1.5</karaf.deployer.war.version>
 
-        <idbus.version>1.4.3-SNAPSHOT</idbus.version>
+        <idbus.version>1.4.3</idbus.version>
         <!-- Actually the enteprise version depends on us -->
-        <!--idbus.enterprise.version>1.4.3-SNAPSHOT</idbus.enterprise.version-->
-        <idbus.kernel.version>1.4.3-SNAPSHOT</idbus.kernel.version>
-        <idbus.examples.version>1.4.3-SNAPSHOT</idbus.examples.version>
-        <idbus.app.server.version>1.4.3-SNAPSHOT</idbus.app.server.version>
+        <!--idbus.enterprise.version>1.4.3</idbus.enterprise.version-->
+        <idbus.kernel.version>1.4.3</idbus.kernel.version>
+        <idbus.examples.version>1.4.3</idbus.examples.version>
+        <idbus.app.server.version>1.4.3</idbus.app.server.version>
 
-        <atricore.console.version>1.4.3-SNAPSHOT</atricore.console.version>
+        <atricore.console.version>1.4.3</atricore.console.version>
 
-        <idbus.cap.josso.version>1.4.3-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.sso.version>1.4.3-SNAPSHOT</idbus.cap.sso.version>
-        <idbus.cap.spml2.version>1.4.3-SNAPSHOT</idbus.cap.spml2.version>
-        <idbus.cap.sts.version>1.4.3-SNAPSHOT</idbus.cap.sts.version>
-        <idbus.cap.spnego.version>1.4.3-SNAPSHOT</idbus.cap.spnego.version>
-        <idbus.cap.csca.version>1.4.3-SNAPSHOT</idbus.cap.csca.version>
-        <idbus.cap.oauth2.version>1.4.3-SNAPSHOT</idbus.cap.oauth2.version>
-        <idbus.cap.openid.version>1.4.3-SNAPSHOT</idbus.cap.openid.version>
-        <idbus.cap.openidconnect.version>1.4.3-SNAPSHOT</idbus.cap.openidconnect.version>
-        <idbus.cap.idconfirmation.version>1.4.3-SNAPSHOT</idbus.cap.idconfirmation.version>
+        <idbus.cap.josso.version>1.4.3</idbus.cap.josso.version>
+        <idbus.cap.sso.version>1.4.3</idbus.cap.sso.version>
+        <idbus.cap.spml2.version>1.4.3</idbus.cap.spml2.version>
+        <idbus.cap.sts.version>1.4.3</idbus.cap.sts.version>
+        <idbus.cap.spnego.version>1.4.3</idbus.cap.spnego.version>
+        <idbus.cap.csca.version>1.4.3</idbus.cap.csca.version>
+        <idbus.cap.oauth2.version>1.4.3</idbus.cap.oauth2.version>
+        <idbus.cap.openid.version>1.4.3</idbus.cap.openid.version>
+        <idbus.cap.openidconnect.version>1.4.3</idbus.cap.openidconnect.version>
+        <idbus.cap.idconfirmation.version>1.4.3</idbus.cap.idconfirmation.version>
 
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.4.3-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.4.3-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.4.3-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
-        <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.4.3-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
-        <idbus.bundle.datanucleus-v2_1_2.version>1.4.3-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
-        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.4.3-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
-        <idbus.bundle.javax-jdo-v3_0.version>1.4.3-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
-        <idbus.bundle.javax-jstl-v1_2.version>1.4.3-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.4.3-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
-        <idbus.bundle.apache-maven-v3_0.version>1.4.3-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
-        <idbus.bundle.ehcache-v2_8_1.version>1.4.3-SNAPSHOT</idbus.bundle.ehcache-v2_8_1.version>
-        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.4.3-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
-        <idbus.bundle.pax-web-runtime-v0_7_2.version>1.4.3-SNAPSHOT</idbus.bundle.pax-web-runtime-v0_7_2.version>
-        <idbus.bundle.wadi-v2_1_2.version>1.4.3-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
-        <idbus.bundle.apacheds-v1_5_7.server.version>1.4.3-SNAPSHOT</idbus.bundle.apacheds-v1_5_7.server.version>
-        <idbus.bundle.ini4j-v0_5_1.version>1.4.3-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
-        <!--<idbus.bundle.scala-library-v2_11_8.version>1.4.3-SNAPSHOT</idbus.bundle.scala-library-v2_11_8.version>-->
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.4.3</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.4.3</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.4.3</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
+        <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.4.3</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
+        <idbus.bundle.datanucleus-v2_1_2.version>1.4.3</idbus.bundle.datanucleus-v2_1_2.version>
+        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.4.3</idbus.bundle.javax-jdo2-v2_3_ec.version>
+        <idbus.bundle.javax-jdo-v3_0.version>1.4.3</idbus.bundle.javax-jdo-v3_0.version>
+        <idbus.bundle.javax-jstl-v1_2.version>1.4.3</idbus.bundle.javax-jstl-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.4.3</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.apache-maven-v3_0.version>1.4.3</idbus.bundle.apache-maven-v3_0.version>
+        <idbus.bundle.ehcache-v2_8_1.version>1.4.3</idbus.bundle.ehcache-v2_8_1.version>
+        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.4.3</idbus.bundle.pax-web-jetty-v0_7_2.version>
+        <idbus.bundle.pax-web-runtime-v0_7_2.version>1.4.3</idbus.bundle.pax-web-runtime-v0_7_2.version>
+        <idbus.bundle.wadi-v2_1_2.version>1.4.3</idbus.bundle.wadi-v2_1_2.version>
+        <idbus.bundle.apacheds-v1_5_7.server.version>1.4.3</idbus.bundle.apacheds-v1_5_7.server.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.4.3</idbus.bundle.ini4j-v0_5_1.version>
+        <!--<idbus.bundle.scala-library-v2_11_8.version>1.4.3</idbus.bundle.scala-library-v2_11_8.version>-->
 
-        <idbus.bundle.nimbus-jose-jwt-v3_10.version>1.4.3-SNAPSHOT</idbus.bundle.nimbus-jose-jwt-v3_10.version>
-        <idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>1.4.3-SNAPSHOT</idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>
-        <idbus.bundle.jasypt-v1_9_2.version>1.4.3-SNAPSHOT</idbus.bundle.jasypt-v1_9_2.version>
+        <idbus.bundle.nimbus-jose-jwt-v3_10.version>1.4.3</idbus.bundle.nimbus-jose-jwt-v3_10.version>
+        <idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>1.4.3</idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>
+        <idbus.bundle.jasypt-v1_9_2.version>1.4.3</idbus.bundle.jasypt-v1_9_2.version>
 
-        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.3-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
-        <idbus.connectors.jdoidentityvault.version>1.4.3-SNAPSHOT</idbus.connectors.jdoidentityvault.version>
-        <idbus.connectors.jitscim.version>1.4.3-SNAPSHOT</idbus.connectors.jitscim.version>
+        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.3</idbus.fragment.mysql-connector-java_v5_1_10.version>
+        <idbus.connectors.jdoidentityvault.version>1.4.3</idbus.connectors.jdoidentityvault.version>
+        <idbus.connectors.jitscim.version>1.4.3</idbus.connectors.jitscim.version>
 
-        <idbus.idojo.dbidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.ldapidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.4.3-SNAPSHOT</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.dbsessionstore.version>1.4.3-SNAPSHOT</idbus.idojo.dbsessionstore.version>
-        <idbus.idojo.ehcachesessionstore.version>1.4.3-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.4.3-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.4.3-SNAPSHOT</idbus.idojo.strongauthscheme.version>
-        <idbus.idojo.impusr.version>1.4.3-SNAPSHOT</idbus.idojo.impusr.version>
-        <idbus.idojo.gateinidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.gateinidentitystore.version>
-        <idbus.idojo.virtualidentitystore.version>1.4.3-SNAPSHOT</idbus.idojo.virtualidentitystore.version>
+        <idbus.idojo.dbidentitystore.version>1.4.3</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.ldapidentitystore.version>1.4.3</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.4.3</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.4.3</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.dbsessionstore.version>1.4.3</idbus.idojo.dbsessionstore.version>
+        <idbus.idojo.ehcachesessionstore.version>1.4.3</idbus.idojo.ehcachesessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.4.3</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.4.3</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.impusr.version>1.4.3</idbus.idojo.impusr.version>
+        <idbus.idojo.gateinidentitystore.version>1.4.3</idbus.idojo.gateinidentitystore.version>
+        <idbus.idojo.virtualidentitystore.version>1.4.3</idbus.idojo.virtualidentitystore.version>
 
-        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.3-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
+        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.4.3</idbus.fragment.mysql-connector-java_v5_1_10.version>
 
-        <idbus.extensions.version>1.4.3-SNAPSHOT</idbus.extensions.version>
+        <idbus.extensions.version>1.4.3</idbus.extensions.version>
 
-        <josso1.version>1.8.12-SNAPSHOT</josso1.version>
+        <josso1.version>1.8.12</josso1.version>
 
 
         <!-- IDBUS 3rd party -->
