@@ -1939,10 +1939,16 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.csca</groupId>
+            <artifactId>org.atricore.idbus.capabilities.csca</artifactId>
+            <version>${idbus.cap.csca.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.spnego</groupId>
             <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
             <version>${idbus.cap.spnego.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.capabilities.openid</groupId>
             <artifactId>openid</artifactId>
