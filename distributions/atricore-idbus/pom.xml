@@ -217,6 +217,7 @@
         <httpclient.version>4.3.3</httpclient.version>
         <jackson.version>1.9.1</jackson.version>
         <json-smart.version>1.3.1</json-smart.version>
+        <javaee-api.version>6.0</javaee-api.version>
         <javax.mail.version>1.4.1_2</javax.mail.version>
         <jaxb.api.version>2.1</jaxb.api.version>
         <jaxb.impl.version>2.1.12_1</jaxb.impl.version>
@@ -2717,6 +2718,12 @@
             <type>pom</type>
         </dependency>
 
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>${javaee-api.version}</version>
+        </dependency>
+
         <!-- Required by maven 3 rutime -->
 
         <!-- Maven runtime and plugins -->
@@ -2733,6 +2740,8 @@
             <version>1.0.11</version>
             <type>pom</type>
         </dependency>
+
+
 
     </dependencies>
     <build>
