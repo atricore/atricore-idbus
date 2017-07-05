@@ -21,25 +21,39 @@
 
 package org.atricore.idbus.kernel.main.federation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
  */
 public class AccountLinkageException extends Exception {
-    public AccountLinkageException() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
-    }
+
+
+    private String errorDetails;
 
     public AccountLinkageException(String message) {
-        super(message);    //To change body of overridden methods use File | Settings | File Templates.
+        super(message);
+    }
+
+    public AccountLinkageException(String message, String details) {
+        super(message);
+        this.errorDetails = details;
+    }
+
+    public AccountLinkageException(String message, String details, Throwable cause) {
+        super(message, cause);
+        this.errorDetails = details;
     }
 
     public AccountLinkageException(String message, Throwable cause) {
-        super(message, cause);    //To change body of overridden methods use File | Settings | File Templates.
+        super(message, cause);
     }
 
-    public AccountLinkageException(Throwable cause) {
-        super(cause);    //To change body of overridden methods use File | Settings | File Templates.
+
+    public String getErrorDetails() {
+        return errorDetails;
     }
 }

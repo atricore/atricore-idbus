@@ -20,7 +20,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.apache.tools.ant.taskdefs.condition.Http;
+
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
@@ -130,23 +130,28 @@ grant_type	Yes	authorization_code
 
         DefaultHttpClient httpclient = new DefaultHttpClient(ccm, params);
 
-        if (System.getProperty("http.proxyHost") != null) {
-            int proxyPort = System.getProperty("http.proxyPort") != null ? Integer.parseInt(System.getProperty("http.proxyPort")) : 8080;
+        String proxyHost = System.getProperty("http.proxyHost");
+        int proxyPort = System.getProperty("http.proxyPort") != null ? Integer.parseInt(System.getProperty("http.proxyPort")) : 8080;
+
+        if (proxyHost != null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("http.proxyHost/http.proxyPort [" + proxyHost + "/" + proxyPort + "]");
+
             HttpHost proxy = new HttpHost(System.getProperty("http.proxyHost"), proxyPort, "http");
             httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
         }
 
         HttpGet httpget = new HttpGet(accessTokenSvcLocation);
 
-        if (logger.isTraceEnabled()) logger.trace("executing request " + httpget.getURI());
-
+        if (logger.isTraceEnabled()) logger.trace("executing request [" + accessTokenSvcLocation + "]");
 
         int retryCount = 1;
         HttpResponse response = null;
         Exception lastError = null;
 
         try {
-            response =httpclient.execute(httpget);
+            response = httpclient.execute(httpget);
             if (response.getStatusLine().getStatusCode() != 200)
                 logger.warn("Error retrieving WeChat user info (retry #  " + retryCount + ") " + response.getStatusLine());
             lastError = null;

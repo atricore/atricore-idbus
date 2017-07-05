@@ -23,9 +23,11 @@ package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -36,6 +38,8 @@ import java.util.Set;
 public class AuthenticationState implements java.io.Serializable {
 
     private Locale locale;
+    private List<SubjectAttributeType> errorAttributes;
+    private String errorDetails;
 
     public AuthenticationState() {
 
@@ -185,5 +189,21 @@ public class AuthenticationState implements java.io.Serializable {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public void setErrorAttributes(List<SubjectAttributeType> errorAttributes) {
+        this.errorAttributes = errorAttributes;
+    }
+
+    public List<SubjectAttributeType> getErrorAttributes() {
+        return errorAttributes;
+    }
+
+    public void setErrorDetails(String errorDetails) {
+        this.errorDetails = errorDetails;
+    }
+
+    public String getErrorDetails() {
+        return errorDetails;
     }
 }

@@ -118,6 +118,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
                     if (ErrorBinding.JSON.equals(errorBinding)) {
                         // Create JSON response
+                        // TODO : Add error details (may be a JSON string )
                         IdentityMediationFault err = fault.getMessage().getFault();
                         String stackTrace = getStackTrace(err);
                         String jsonError = "{\n" +
@@ -140,7 +141,9 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
                         ByteArrayInputStream baos = new ByteArrayInputStream(htmlStr.getBytes());
                         httpOut.setBody(baos);
+
                     } else if (ErrorBinding.GET.equals(errorBinding)) {
+
                         IdentityMediationFault err = fault.getMessage().getFault();
 
                         errorUrl += errorUrl.contains("?") ? "&" : "?";
@@ -151,6 +154,9 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
                         if (err.getStatusDetails() != null)
                             errorUrl += "&status_details=" + err.getStatusDetails();
+
+                        if (err.getErrorDetails() !=  null)
+                            errorUrl += "&error_details=" + err.getErrorDetails();
 
                         if (logger.isDebugEnabled())
                             logger.debug("Configured error URL " + errorUrl + ".  Redirecting.");

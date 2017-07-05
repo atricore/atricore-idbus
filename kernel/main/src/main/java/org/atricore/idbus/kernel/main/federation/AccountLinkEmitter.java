@@ -30,8 +30,14 @@ import javax.security.auth.Subject;
  */
 public interface AccountLinkEmitter {
 
-    AccountLink emit(Subject subject);
+    String LAST_LINKED_SUBJECT = "lastLinkedSubject";
 
-    AccountLink emit(Subject subject, Object ctx);
+    String LAST_UNLINKED_IDP_SUBJECT = "lastUnlinkedIdPSubject";
+
+    String LAST_UNLINKED_IDP= "lastUnlinkedIdP";
+
+    AccountLink emit(Subject subject) throws AccountLinkageException;
+
+    AccountLink emit(Subject subject, Object ctx) throws AccountLinkageException;
 
 }

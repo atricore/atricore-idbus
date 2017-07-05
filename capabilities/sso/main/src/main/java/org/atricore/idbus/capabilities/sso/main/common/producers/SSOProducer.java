@@ -23,6 +23,9 @@ package org.atricore.idbus.capabilities.sso.main.common.producers;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.metadata.*;
+import oasis.names.tc.saml._2_0.protocol.StatusCodeType;
+import oasis.names.tc.saml._2_0.protocol.StatusDetailType;
+import oasis.names.tc.saml._2_0.protocol.StatusType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -64,6 +67,7 @@ import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
 
 import javax.security.auth.Subject;
+import javax.xml.bind.JAXBElement;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -646,6 +650,26 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, soapEndpoint);
 
         return null;
+    }
+
+    protected String getErrorDetails(StatusType status) {
+        String errorDetails = null;
+
+        StatusDetailType details = status.getStatusDetail();
+        if (details != null && details.getAny() != null && details.getAny().size() > 0) {
+
+            for (Object o : details.getAny()) {
+                if (o instanceof JAXBElement) {
+                    JAXBElement e = (JAXBElement) o;
+
+                    if (e.getValue() instanceof String) {
+                        errorDetails = (String) e.getValue();
+                    }
+                }
+            }
+        }
+
+        return errorDetails;
     }
 
     

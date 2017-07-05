@@ -22,12 +22,15 @@
 package org.atricore.idbus.capabilities.sso.main.sp.producers;
 
 import oasis.names.tc.saml._2_0.assertion.*;
+import oasis.names.tc.saml._2_0.assertion.SubjectType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import oasis.names.tc.saml._2_0.protocol.StatusDetailType;
+import oasis.names.tc.saml._2_0.protocol.StatusType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +44,7 @@ import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
@@ -53,9 +57,7 @@ import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
-import org.atricore.idbus.common.sso._1_0.protocol.CurrentEntityRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
-import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
@@ -174,15 +176,15 @@ public class AssertionConsumerProducer extends SSOProducer {
         String issuerAlias = response.getIssuer().getValue();
 
         // Response is valid, check received status!
-        StatusCode status = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
+        StatusCode statusCode = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
         StatusCode secStatus = response.getStatus().getStatusCode().getStatusCode() != null ?
                 StatusCode.asEnum(response.getStatus().getStatusCode().getStatusCode().getValue()) : null;
 
         if (logger.isDebugEnabled())
-            logger.debug("Received status code " + status.getValue() +
+            logger.debug("Received status code " + statusCode.getValue() +
                 (secStatus != null ? "/" + secStatus.getValue() : ""));
 
-        if (status.equals(StatusCode.TOP_RESPONDER) &&
+        if (statusCode.equals(StatusCode.TOP_RESPONDER) &&
             secStatus != null &&
             secStatus.equals(StatusCode.NO_PASSIVE)) {
 
@@ -211,12 +213,16 @@ public class AssertionConsumerProducer extends SSOProducer {
             return;
 
 
-        } else if (!status.equals(StatusCode.TOP_SUCCESS)) {
+        } else if (!statusCode.equals(StatusCode.TOP_SUCCESS)) {
 
-            throw new IdentityMediationFault(status.getValue(),
+            StatusType status = response.getStatus();
+            StatusDetailType details = status.getStatusDetail();
+
+
+            throw new IdentityMediationFault(statusCode.getValue(),
                     (secStatus != null ? secStatus.getValue() : null),
                     response.getStatus().getStatusMessage(),
-                    null,
+                    getErrorDetails(status),
                     null);
             /*
             throw new SSOException("Unexpected IDP Status Code " + status.getValue() +
@@ -246,9 +252,31 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ------------------------------------------------------------------
         Subject idpSubject = buildSubjectFromResponse(response);
 
-        // This is a no longer valid sec. ctx.
+        // This is a no longer valid sec. ctx. (optional, may not be available) Is the previous valid SecCtx
         SPSecurityContext lastSecCtx =
                 (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_LAST_SECURITY_CTX");
+
+        Map<String, Object> ctx = new HashMap<String, Object>();
+
+        Subject lastLinkedSubject = null;
+        if (lastSecCtx != null && lastSecCtx.getSubject() != null) {
+            // We have a previous valid subject
+            if (logger.isDebugEnabled())
+                logger.debug("Found previous linked subject ");
+            lastLinkedSubject = lastSecCtx.getSubject();
+            ctx.put(AccountLinkEmitter.LAST_LINKED_SUBJECT, lastLinkedSubject);
+        }
+
+        Subject lastUnlinkedIdPSubject = (Subject) state.getLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubject");
+        CircleOfTrustMemberDescriptor lastUnlinkedIdP = (CircleOfTrustMemberDescriptor) state.getLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubjectIdP");
+
+        if (lastUnlinkedIdPSubject != null) {
+            // We have a previous unlinked
+            if (logger.isDebugEnabled())
+                logger.debug("Found previous unlinked subject ");
+            ctx.put(AccountLinkEmitter.LAST_UNLINKED_IDP_SUBJECT, lastUnlinkedIdPSubject);
+            ctx.put(AccountLinkEmitter.LAST_UNLINKED_IDP, lastUnlinkedIdP);
+        }
 
         CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
 
@@ -259,7 +287,13 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
         // Emit account link information
-        acctLink = accountLinkEmitter.emit(idpSubject, lastSecCtx);
+       String errorDetails = null;
+        try {
+            acctLink = accountLinkEmitter.emit(idpSubject, ctx);
+        } catch (AccountLinkageException e) {
+            logger.debug(e.getMessage(), e);
+            errorDetails = e.getErrorDetails();
+        }
 
         if (logger.isDebugEnabled())
             logger.debug("Emitted Account Link [" +
@@ -271,7 +305,11 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         if (acctLink == null) {
 
-            // Build error sso response
+            // Build error sso response, include unlinked IDP Subject
+
+            // Store unlinked subject
+            state.setLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubject", idpSubject);
+            state.setLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubjectIdP", idp);
 
             ssoResponse = new SPAuthnResponseType();
 
@@ -280,7 +318,36 @@ public class AssertionConsumerProducer extends SSOProducer {
             ssoResponse.setInReplayTo(ssoRequest.getID());
             ssoResponse.setPrimaryErrorCode(StatusCode.TOP_REQUESTER.getValue());
             ssoResponse.setSecondaryErrorCode(StatusDetails.NO_ACCOUNT_LINK.getValue());
+
             ssoResponse.setIssuer(((FederationChannel) channel).getFederatedProvider().getName());
+
+            org.atricore.idbus.common.sso._1_0.protocol.SubjectType st = new org.atricore.idbus.common.sso._1_0.protocol.SubjectType();
+
+            if (errorDetails != null) {
+                ssoResponse.setErrorDetails(errorDetails);
+            }
+
+
+            Collection<SubjectNameID> ids = idpSubject.getPrincipals(SubjectNameID.class);
+
+            if (ids != null && ids.size() == 1) {
+
+                SubjectNameID id = ids.iterator().next();
+
+                SubjectNameIDType a = new SubjectNameIDType();
+                a.setName(id.getName());
+                a.setFormat(NameIDFormat.UNSPECIFIED.getValue());
+                a.setLocalName(id.getLocalName());
+                a.setNameQualifier(id.getNameQualifier());
+                a.setLocalNameQualifier(id.getLocalNameQualifier());
+
+                st.getAbstractPrincipal().add(a);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Unlinked subject [" + id.getName() + "] ");
+
+                ssoResponse.setSubject(st);
+            }
 
             logger.error("No Account Link for Channel [" + fChannel.getName() + "] " +
                     " Response [" + response.getID() + "]");
@@ -315,8 +382,6 @@ public class AssertionConsumerProducer extends SSOProducer {
             // ---------------------------------------------------
             // Create SP Security context and session!
             // ---------------------------------------------------
-
-
 
             // We must have an assertion!
             SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,

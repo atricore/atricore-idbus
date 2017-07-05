@@ -657,6 +657,7 @@ public class SingleLogoutProducer extends SSOProducer {
             }
 
         } catch (CircleOfTrustManagerException e) {
+            logger.debug(e.getMessage(), e);
             throw new SSOResponseException(spSloResponse,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
@@ -990,9 +991,9 @@ public class SingleLogoutProducer extends SSOProducer {
     }
 
     protected void performFrontChannelSloCommit(CamelMediationExchange exchange,
-                                          IdPSecurityContext secCtx,
-                                          LogoutRequestType sloRequest,
-                                          String relayState) throws Exception {
+                                                IdPSecurityContext secCtx,
+                                                LogoutRequestType sloRequest,
+                                                String relayState) throws Exception {
 
 
         CircleOfTrustMemberDescriptor targetSp = sloRequest != null ? resolveProviderDescriptor(sloRequest.getIssuer()) : null;
@@ -1146,8 +1147,8 @@ public class SingleLogoutProducer extends SSOProducer {
     }
     public static final int SP_SLO_FAILED = 30;
     protected void performBackChannelSlo(CamelMediationExchange exchange,
-                                            IdPSecurityContext secCtx,
-                                            LogoutRequestType sloRequest) throws Exception {
+                                         IdPSecurityContext secCtx,
+                                         LogoutRequestType sloRequest) throws Exception {
 
         // -----------------------------------------------------------------------------
         // Invalidate SSO Session

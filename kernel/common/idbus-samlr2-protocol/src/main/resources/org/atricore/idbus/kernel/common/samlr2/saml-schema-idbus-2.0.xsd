@@ -73,4 +73,6 @@
         <attribute name="Loc" type="anyURI" use="optional"/>
     </complexType>
 
+    <element name="ErrorDetails" type="string"/>
+
 </schema>

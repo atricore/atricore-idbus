@@ -18,26 +18,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/*
- * Atricore IDBus
- *
- * Copyright (c) 2009, Atricore Inc.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
 
 package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
@@ -1313,10 +1293,20 @@ public class SingleSignOnProducer extends SSOProducer {
             List<PolicyEnforcementStatement> stmts = null;
             AssertionType assertion = null;
 
-            if (proxyResponse.getSubject() == null) {
+            if (proxyResponse.getPrimaryErrorCode() != null || proxyResponse.getSubject() == null) {
+
                 // The authentication failed!
                 if (logger.isDebugEnabled())
                     logger.debug("Authentication failed, no subject received");
+
+                if (proxyResponse.getSubject() != null &&
+                        proxyResponse.getSecondaryErrorCode() != null &&
+                        StatusDetails.NO_ACCOUNT_LINK.toString().equals(proxyResponse.getSecondaryErrorCode())) {
+
+                    // We have a subject that could not be linked.  Store it, we could create a link later.
+                    logger.warn("Unlinked subject " + proxyResponse.getSubject());
+                }
+
             } else {
 
                 // -------------------------------------------------------
@@ -1513,6 +1503,7 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
             authnState.setErrorMessage(proxyResponse.getSecondaryErrorCode());
+            authnState.setErrorDetails(proxyResponse.getErrorDetails());
 
             // Build a response for the SP
             ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed, requiredSpChannel);

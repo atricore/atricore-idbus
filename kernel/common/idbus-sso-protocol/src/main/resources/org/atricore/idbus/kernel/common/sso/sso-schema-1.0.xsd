@@ -253,6 +253,7 @@
 
     <element name="SSOResponse" type="ssop:SSOResponseType"/>
     <complexType name="SSOResponseType" >
+
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="InReplayTo" type="ID" use="required"/>
         <attribute name="issuer" type="string" use="optional"/>
@@ -263,6 +264,7 @@
         -->
         <attribute name="PrimaryErrorCode" type="string" use="optional"/>
         <attribute name="SecondaryErrorCode" type="string" use="optional"/>
+        <attribute name="ErrorDetails" type="string" use="optional"/>
 
     </complexType>
 
