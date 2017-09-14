@@ -29,14 +29,14 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.jasypt-spring31-v1_9_2</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Jasypt Spring31 v${jasypt-spring31.version} OSGi</name>
 

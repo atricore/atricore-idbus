@@ -29,14 +29,14 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Apache Derby Client v${derby-version} OSGi</name>
 

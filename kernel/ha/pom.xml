@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel</groupId>
         <artifactId>kernel</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.ha</groupId>
