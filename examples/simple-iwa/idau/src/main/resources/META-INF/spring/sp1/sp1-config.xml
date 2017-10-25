@@ -50,7 +50,7 @@
             <bean class="org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory"/>
         </property>
         <property name="logger">
-            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="sp1-mediation-logger">
+            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger" name="sp1-mediation-logger">
                 <property name="category">
                     <value>org.atricore.idbus.examples.simple-iwa.wire.sp1</value>
                 </property>

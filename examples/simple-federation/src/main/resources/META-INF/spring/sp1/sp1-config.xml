@@ -402,7 +402,7 @@
 
         <property name="logger" >
             <bean name="sp1-1-mediation-logger"
-                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger">
+                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger">
                 <property name="messageBuilders">
                     <list>
                         <bean class="org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder"/>

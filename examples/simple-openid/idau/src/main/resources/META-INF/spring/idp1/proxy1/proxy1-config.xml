@@ -32,7 +32,7 @@
             <bean class="org.atricore.idbus.capabilities.openid.main.binding.OpenIDBindingFactory"/>
         </property>
         <property name="logger">
-            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="proxy1-mediation-logger">
+            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger" name="proxy1-mediation-logger">
                 <property name="category">
                     <value>org.atricore.idbus.examples.simple-openid.wire.proxy1</value>
                 </property>
@@ -197,7 +197,7 @@
             <bean class="org.atricore.idbus.capabilities.sso.main.binding.SamlR2BindingFactory"/>
         </property>
         <property name="logger">
-            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="proxy1-cc-mediation-logger">
+            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger" name="proxy1-cc-mediation-logger">
                 <property name="category">
                     <value>org.atricore.idbus.examples.simple-openid.wire.cc1</value>
                 </property>

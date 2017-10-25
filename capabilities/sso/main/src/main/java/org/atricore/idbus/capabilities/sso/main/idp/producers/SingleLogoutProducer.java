@@ -500,6 +500,9 @@ public class SingleLogoutProducer extends SSOProducer {
         state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest");
         state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORelayState");
 
+
+        // TODO : sloRequest is instanceof IDPProxyInitiatedLogoutRequestType
+
         if (sloRequest instanceof LogoutRequestType ) {
             doProcessSLORequest(exchange, (LogoutRequestType) sloRequest, relayState);
         } else if (sloRequest instanceof IDPInitiatedLogoutRequestType) {
