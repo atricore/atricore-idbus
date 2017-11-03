@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
+import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
@@ -100,11 +101,16 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
 
             if (message instanceof CamelMediationMessage) {
                 CamelMediationMessage camlMsg = (CamelMediationMessage) message;
+
                 MediationMessage msg = camlMsg.getMessage();
+
+                CamelMediationExchange camlExchange = camlMsg.getExchange();
+                CamelMediationEndpoint camlEndpoint = camlExchange.getEndpoint();
 
                 if (msg != null) {
                     EndpointDescriptor destination = msg.getDestination();
 
+                    logEntry.append(" channel=\"" + camlEndpoint.getChannelRef() + "\"");
                     logEntry.append(" location=\"").append(destination.getLocation()).append("\"");
                     logEntry.append(" resposneLocation=\"").append(destination.getResponseLocation()).append("\"");
                     logEntry.append(" binding=\"").append(destination.getBinding()).append("\"");
@@ -125,6 +131,7 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
             if (logger.isDebugEnabled())
                 logger.debug("Logging incoming ...");
 
+
             StringBuffer logEntry = new StringBuffer(2048);
             logEntry.append(" message id=\"").append(message.getMessageId()).append("\" direction=\"IN\"");
 
@@ -134,6 +141,7 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
                 CamelMediationExchange camlExchange = camlMsg.getExchange();
                 CamelMediationEndpoint camlEndpoint = camlExchange.getEndpoint();
 
+                logEntry.append(" channel=\"" + camlEndpoint.getChannelRef() + "\"");
                 logEntry.append(" endpoint-uri=\"").append(camlEndpoint.getEndpointUri()).append("\"");
                 logEntry.append(" binding=\"").append(camlEndpoint.getBinding()).append("\"");
 

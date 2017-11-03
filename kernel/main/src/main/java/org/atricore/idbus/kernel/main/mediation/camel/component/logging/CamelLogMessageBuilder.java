@@ -53,9 +53,9 @@ public class CamelLogMessageBuilder implements LogMessageBuilder {
         // CAREFUL! Camel will eagerly create message parts if you try to access them and are not yet initialized!
 
         logMsg.append(" camel-message-id=\"").append(message.getMessageId()).append("\" ").
-                append("class=\"").append(message.getClass().getName()).append("\" ").
+                append("class=\"").append(message.getClass().getSimpleName()).append("\" ").
                 append("exchange-id=\"").append(message.getExchange().getExchangeId()).append("\" ").
-                append("exchange-class=\"").append(message.getExchange().getClass().getName()).append("\" ");
+                append("exchange-class=\"").append(message.getExchange().getClass().getSimpleName()).append("\" ");
 
         Map<String, Object> headers  =message.getHeaders();
         for (String header : headers.keySet()) {

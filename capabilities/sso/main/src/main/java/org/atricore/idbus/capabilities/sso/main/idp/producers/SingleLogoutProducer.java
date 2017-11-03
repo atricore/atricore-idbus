@@ -507,6 +507,8 @@ public class SingleLogoutProducer extends SSOProducer {
             doProcessSLORequest(exchange, (LogoutRequestType) sloRequest, relayState);
         } else if (sloRequest instanceof IDPInitiatedLogoutRequestType) {
             doProcessIdPInitiatedSLORequest(exchange, (IDPInitiatedLogoutRequestType) sloRequest);
+        } else if (sloRequest instanceof IDPProxyInitiatedLogoutRequestType) {
+            // TODO: Implement!
         } else if ((sloRequest == null)) {
             // IDP Initiated SLO ?
             throw new SSOException("Unknown SLO Request type " + sloRequest);
