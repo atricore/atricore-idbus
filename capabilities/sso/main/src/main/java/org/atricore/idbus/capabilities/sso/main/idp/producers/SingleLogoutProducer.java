@@ -1185,6 +1185,10 @@ public class SingleLogoutProducer extends SSOProducer {
                 Properties auditProps = new Properties();
                 auditProps.put("spId", pSecCtx.getProviderId().getValue());
 
+                if (logger.isDebugEnabled())
+                    logger.debug("Verify if SP requires SLO : " + pSecCtx.getProviderId().getValue());
+
+
                 // Skip from the list the SP that requested SLO, if any
                 if (sloRequest != null &&
                         pSecCtx.getProviderId().getValue().equals(sloRequest.getIssuer().getValue())) {
@@ -1210,7 +1214,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
                 if (localEd != null) {
                     if (logger.isDebugEnabled())
-                        logger.debug("Adding SLO endpoint " + localEd.getName() + " for " + pSecCtx.getProviderId());
+                        logger.debug("Adding SLO endpoint " + localEd.getName() + " for " + pSecCtx.getProviderId().getValue());
 
                     eds.add(localEd);
                 } else {
@@ -1220,14 +1224,14 @@ public class SingleLogoutProducer extends SSOProducer {
 
                     if (soapEd != null) {
                         if (logger.isDebugEnabled())
-                            logger.debug("Adding SLO endpoint " + soapEd.getName() + " for " + pSecCtx.getProviderId());
+                            logger.debug("Adding SLO endpoint " + soapEd.getName() + " for " + pSecCtx.getProviderId().getValue());
                         eds.add(soapEd);
                     }
                 }
 
                 if (eds.size() == 0) {
                     if (logger.isTraceEnabled())
-                        logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId());
+                        logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId().getValue());
                     continue;
                 }
 

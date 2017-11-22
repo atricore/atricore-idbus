@@ -526,11 +526,17 @@ public class SingleSignOnProducer extends SSOProducer {
                     ServiceProvider spProxy = (ServiceProvider) bChannel.getProvider();
                     FederationService spProxySvc = spProxy.getDefaultFederationService();
 
+                    if (logger.isTraceEnabled())
+                        logger.trace("Processing PreAuthenticatedAuthnRequest as proxy: " +
+                                "binding-channel ["+ bChannel.getName()+"] " +
+                                "sp-proxy [" + spProxy.getName() + "] " +
+                                "sp-proxy-svc [" + spProxySvc.getName() + "]");
+
                     // Internal/Proxied IdP
                     IdentityProvider idp = null;
                     String idpAlias = ((SSOSPMediator) bChannel.getIdentityMediator()).getPreferredIdpAlias();
 
-                    // Look for the target IdP in an overrided channel
+                    // Look for the target IdP in an overridden channel
                     for (FederationChannel fChannel : spProxySvc.getOverrideChannels()) {
                         if (fChannel.getTargetProvider() == null) {
                             logger.error("Channel MUST have a target provider " + fChannel.getName());
@@ -545,7 +551,8 @@ public class SingleSignOnProducer extends SSOProducer {
                                     idp = (IdentityProvider) fp;
                                     idpChannelProxy = (IdPChannel) fChannel;
                                     if (logger.isDebugEnabled())
-                                        logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
+                                        logger.debug("Found Target IdP [" + idp.getName() + "] for SP Proxy [" +
+                                                spProxy.getName() + "] in overridden channel [" + idpChannelProxy.getName() + "]");
                                     break;
                                 } else {
                                     logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
@@ -571,7 +578,8 @@ public class SingleSignOnProducer extends SSOProducer {
                                         idp = (IdentityProvider) fp;
                                         idpChannelProxy = (IdPChannel) spProxySvc.getChannel();
                                         if (logger.isDebugEnabled())
-                                            logger.debug("FoundTarget IdP [" + idp.getName() + "] for SP Proxy [" + spProxy.getName() + "] in " + idpChannelProxy.getName());
+                                            logger.debug("Found Target IdP [" + idp.getName() + "] for SP Proxy [" +
+                                                    spProxy.getName() + "] in  default channel [" + idpChannelProxy.getName() + "]");
                                         break;
                                     } else {
                                         logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
@@ -591,8 +599,9 @@ public class SingleSignOnProducer extends SSOProducer {
                     EndpointDescriptor proxyEndpoint = resolveIDPInitiatedSSOProxyEndpointDescriptor(exchange, spProxy, idp);
 
                     // Send IdP initiated pre-authn request (using proxy SP as response-to
-                    PreAuthenticatedIDPInitiatedAuthnRequestType authnProxyRequest = buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(exchange,
-                            spProxy.getDefaultFederationService().getChannel().getMember(),  // Default SP alias
+                    PreAuthenticatedIDPInitiatedAuthnRequestType authnProxyRequest = buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(
+                            exchange,
+                            idpChannelProxy.getMember(),  // Use IDP channel alias!
                             (PreAuthenticatedAuthnRequestType) authnRequest);
 
                     in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
@@ -3003,7 +3012,7 @@ public class SingleSignOnProducer extends SSOProducer {
                     if (logger.isTraceEnabled())
                         logger.trace("Found SSO IDP Initiated endpoint " + ed.getName());
 
-                    // WARN : Overrided locations not supported
+                    // WARN : Override locations not supported
                     String location = targetSpChannel.getLocation() + ed.getLocation();
                     String responseLocation = ed.getResponseLocation() != null ?
                             targetSpChannel.getLocation() + ed.getResponseLocation() : null;
