@@ -32,15 +32,36 @@ import java.util.Map;
 public class AccountLinkageException extends Exception {
 
 
+    // ID already exists for a user
+    public static final int DUPLICATE_ID = 1;
+
+    // ID Already used for another social service, ID source
+    public static final int USED_ID = 2;
+
+    // No account link found.
+    public static final int NO_ACCOUNT_LINK = 3;
+
+
+
     private String errorDetails;
+
+    private int error = NO_ACCOUNT_LINK;
+
 
     public AccountLinkageException(String message) {
         super(message);
     }
 
-    public AccountLinkageException(String message, String details) {
+    public AccountLinkageException(int error, String message, String details) {
         super(message);
         this.errorDetails = details;
+        this.error = error;
+    }
+
+    public AccountLinkageException(int error, String message, String details, Throwable cause) {
+        super(message, cause);
+        this.errorDetails = details;
+        this.error = error;
     }
 
     public AccountLinkageException(String message, String details, Throwable cause) {
@@ -55,5 +76,9 @@ public class AccountLinkageException extends Exception {
 
     public String getErrorDetails() {
         return errorDetails;
+    }
+
+    public int getError() {
+        return error;
     }
 }
