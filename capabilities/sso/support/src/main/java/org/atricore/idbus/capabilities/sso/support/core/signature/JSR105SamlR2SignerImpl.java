@@ -71,7 +71,7 @@ import java.security.cert.*;
 import java.util.*;
 
 /**
- * This will sign and verify SAML 2.0 identity artifacts (assertion, requet, response) signatures usign a JSR 105 Provider.
+ * This will sign and verify saml2 identity artifact (assertion, requet, response) signatures usign a JSR 105 Provider.
  * <p/>
  * The provider can be injected or a FQCN can be specified as a system property. A default value will be used if no provider
  * is injected nor configured as system property.
@@ -111,7 +111,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
     private SSOKeyResolver keyResolver;
 
     // Validate certificate expiration, CA, etc.
-    private boolean validateCertificate = false;
+    private boolean validateCertificate = true;
 
     public Provider getProvider() {
         return provider;
@@ -650,6 +650,19 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
+    public void validateDom(RoleDescriptorType md, Document doc, String elementId) throws SamlR2SignatureException {
+
+        NodeList nodes = evaluateXPath(doc, "//*[@ID='"+elementId+"']");
+        if (nodes.getLength() > 1)
+            throw new SamlR2SignatureException("Duplicate ID ["+elementId+"] in document ");
+
+        if (nodes.getLength() < 1)
+            throw new SamlR2SignatureException("Invalid element ID " + elementId);
+
+        validate(md, doc, nodes.item(0));
+
+    }
+
 
     public void validateDom(RoleDescriptorType md, String domStr, String elementId) throws SamlR2SignatureException {
         try {
@@ -660,15 +673,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(new ByteArrayInputStream(domStr.getBytes()));
 
-            NodeList nodes = evaluateXPath(doc, "//*[@ID='"+elementId+"']");
-            if (nodes.getLength() > 1)
-                throw new SamlR2SignatureException("Duplicate ID ["+elementId+"] in document ");
-
-            if (nodes.getLength() < 1)
-                throw new SamlR2SignatureException("Invalid element ID " + elementId);
-
-            validate(md, doc, nodes.item(0));
-
+            validateDom(md, doc, elementId);
         } catch (ParserConfigurationException e) {
             throw new SamlR2SignatureException(e);
         } catch (SAXException e) {
@@ -908,7 +913,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     protected boolean validateCertificate(RoleDescriptorType md, Key publicKey) {
 
-
         X509Certificate x509Cert = getX509Certificate(md);
 
         if (x509Cert == null) {
@@ -937,6 +941,8 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             }
         }
 
+        // TODO : Make this verification configurable
+
         String verifyDatesStr = System.getProperty("org.atricore.idbus.capabiligies.sso.verifyCertificateDate", "true");
         boolean verifyDates = Boolean.parseBoolean(verifyDatesStr);
 
@@ -963,10 +969,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         // Just print-out that the certificate will expire soon.
         if (x509Cert.getNotAfter().after(aMonthFromNow.getTime()))
             logger.warn("X509 Certificate wil expired in less that 30 days for SAML 2.0 Metadata Role " + md.getID());
-
-
-        // TODO : Validate CRLs , etc !!!!
-
 
         return true;
 
