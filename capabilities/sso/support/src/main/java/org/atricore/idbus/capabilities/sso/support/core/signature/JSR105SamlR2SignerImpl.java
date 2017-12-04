@@ -908,7 +908,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     protected boolean validateCertificate(RoleDescriptorType md, Key publicKey) {
 
-        /*
+
         X509Certificate x509Cert = getX509Certificate(md);
 
         if (x509Cert == null) {
@@ -963,7 +963,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
 
         // TODO : Validate CRLs , etc !!!!
-        */
+
 
         return true;
 
