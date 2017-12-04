@@ -942,9 +942,12 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             }
         }
 
+        String verifyDatesStr = System.getProperty("org.atricore.idbus.capabiligies.sso.verifyCertificateDate", "true");
+        boolean verifyDates = Boolean.parseBoolean(verifyDatesStr);
+
         Date now = new Date();
         if (x509Cert.getNotBefore() != null && x509Cert.getNotBefore().before(now)) {
-            if (validateCertificate) {
+            if (validateCertificate && verifyDates) {
                 logger.error("Certificate should not be used before " + x509Cert.getNotBefore());
                 return false;
             }
@@ -952,7 +955,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
 
         if (x509Cert.getNotAfter() != null && x509Cert.getNotAfter().after(now)) {
-            if (validateCertificate) {
+            if (validateCertificate && verifyDates) {
                 logger.error("X509 Certificate has expired " + x509Cert.getNotAfter());
                 return false;
             }
