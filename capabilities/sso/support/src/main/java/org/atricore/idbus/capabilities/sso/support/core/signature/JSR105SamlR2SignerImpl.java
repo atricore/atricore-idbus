@@ -111,7 +111,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
     private SSOKeyResolver keyResolver;
 
     // Validate certificate expiration, CA, etc.
-    private boolean validateCertificate = false;
+    private boolean validateCertificate = true;
 
     public Provider getProvider() {
         return provider;
@@ -913,7 +913,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     protected boolean validateCertificate(RoleDescriptorType md, Key publicKey) {
 
-
         X509Certificate x509Cert = getX509Certificate(md);
 
         if (x509Cert == null) {
@@ -942,6 +941,8 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             }
         }
 
+        // TODO : Make this verification configurable
+
         String verifyDatesStr = System.getProperty("org.atricore.idbus.capabiligies.sso.verifyCertificateDate", "true");
         boolean verifyDates = Boolean.parseBoolean(verifyDatesStr);
 
@@ -968,10 +969,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         // Just print-out that the certificate will expire soon.
         if (x509Cert.getNotAfter().after(aMonthFromNow.getTime()))
             logger.warn("X509 Certificate wil expired in less that 30 days for SAML 2.0 Metadata Role " + md.getID());
-
-
-        // TODO : Validate CRLs , etc !!!!
-
 
         return true;
 
