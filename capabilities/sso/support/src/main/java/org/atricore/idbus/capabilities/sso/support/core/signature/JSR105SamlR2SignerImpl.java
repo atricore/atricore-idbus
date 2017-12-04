@@ -111,7 +111,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
     private SSOKeyResolver keyResolver;
 
     // Validate certificate expiration, CA, etc.
-    private boolean validateCertificate = false;
+    private boolean validateCertificate = true;
 
     public Provider getProvider() {
         return provider;
