@@ -913,7 +913,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     protected boolean validateCertificate(RoleDescriptorType md, Key publicKey) {
 
-        /*
         X509Certificate x509Cert = getX509Certificate(md);
 
         if (x509Cert == null) {
@@ -942,6 +941,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             }
         }
 
+        // TODO : Make this verification configurable
         Date now = new Date();
         if (x509Cert.getNotBefore() != null && x509Cert.getNotBefore().before(now)) {
             if (validateCertificate) {
@@ -965,10 +965,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         // Just print-out that the certificate will expire soon.
         if (x509Cert.getNotAfter().after(aMonthFromNow.getTime()))
             logger.warn("X509 Certificate wil expired in less that 30 days for SAML 2.0 Metadata Role " + md.getID());
-
-
-        // TODO : Validate CRLs , etc !!!!
-        */
 
         return true;
 

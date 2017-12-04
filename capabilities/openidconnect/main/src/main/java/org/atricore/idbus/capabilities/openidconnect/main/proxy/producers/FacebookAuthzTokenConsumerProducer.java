@@ -35,7 +35,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
 
     private static final Log logger = LogFactory.getLog(FacebookAuthzTokenConsumerProducer.class);
 
-    private static final int MAX_NUM_OF_FB_API_CALL_RETRIES = 1;
+    private static final int MAX_NUM_OF_FB_API_CALL_RETRIES = 3;
 
     private static final String TOKEN_FOR_BUSINESS_USER_ATTR_NAME = "fbBusinessToken";
 
