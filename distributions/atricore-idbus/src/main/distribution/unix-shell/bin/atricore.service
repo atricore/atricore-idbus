@@ -6,6 +6,9 @@ After=syslog.target network.target
 Type=idle
 RemainAfterExit=yes
 
+# You can specify your JAVA_HOME here 
+#Environment=JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk/jre/
+
 ExecStart=/opt/atricore/josso-ee-2.4.2/bin/start
 ExecStop=/opt/atricore/josso-ee-2.4.2/bin/stop
 
