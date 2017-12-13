@@ -53,6 +53,8 @@ public class OAuth2Client implements ConfigurationConstants {
                     config.getProperty(AUTHN_ENDPOINT),
                     config.getProperty(WSDL_LOCATION));
 
+            requestor.setLogMessages(Boolean.parseBoolean(config.getProperty(LOG_MESSAGES, "false")));
+
             init = true;
         } catch (IOException e) {
             throw new OAuth2ClientException(e);

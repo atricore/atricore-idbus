@@ -24,12 +24,22 @@ public class AccessTokenRequestor {
 
     private OAuthPortType wsClient;
 
+    private boolean logMessages;
+
     public AccessTokenRequestor(String clientId, String clientSecret, String endpoint, String wsdlLocation) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.endpoint = endpoint;
         this.wsdlLocation = wsdlLocation;
         this.wsClient = doMakeWsClient();
+    }
+
+    public boolean isLogMessages() {
+        return logMessages;
+    }
+
+    public void setLogMessages(boolean logMessages) {
+        this.logMessages = logMessages;
     }
 
     public String requestTokenForUsernamePassword(String username, String password) throws Exception {
@@ -58,8 +68,11 @@ public class AccessTokenRequestor {
     protected OAuthPortType doMakeWsClient() {
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
 
-        factory.getInInterceptors().add(new LoggingInInterceptor());
-        factory.getOutInterceptors().add(new LoggingOutInterceptor());
+        if (logMessages) {
+            factory.getInInterceptors().add(new LoggingInInterceptor());
+            factory.getOutInterceptors().add(new LoggingOutInterceptor());
+        }
+
         factory.setServiceClass(OAuthPortType.class);
         factory.setAddress(endpoint);
         if (wsdlLocation != null && !wsdlLocation.equals(""))

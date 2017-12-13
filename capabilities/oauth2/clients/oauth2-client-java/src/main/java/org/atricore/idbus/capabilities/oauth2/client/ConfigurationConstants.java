@@ -20,4 +20,6 @@ public interface ConfigurationConstants {
     public static final String SP_ALIAS = "oauth2.spAlias";
 
     public static final String WSDL_LOCATION = "oauth2.wsdlLocation";
+
+    public static final String LOG_MESSAGES = "oauth2.logMessages";
 }
