@@ -947,7 +947,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         boolean verifyDates = Boolean.parseBoolean(verifyDatesStr);
 
         Date now = new Date();
-        if (x509Cert.getNotBefore() != null && x509Cert.getNotBefore().before(now)) {
+        if (x509Cert.getNotBefore() != null && x509Cert.getNotBefore().after(now)) {
             if (validateCertificate && verifyDates) {
                 logger.error("Certificate should not be used before " + x509Cert.getNotBefore());
                 return false;
@@ -967,7 +967,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         aMonthFromNow.add(Calendar.DAY_OF_MONTH, 30);
 
         // Just print-out that the certificate will expire soon.
-        if (x509Cert.getNotAfter().after(aMonthFromNow.getTime()))
+        if (x509Cert.getNotAfter() != null && x509Cert.getNotAfter().after(aMonthFromNow.getTime()))
             logger.warn("X509 Certificate wil expired in less that 30 days for SAML 2.0 Metadata Role " + md.getID());
 
         return true;
