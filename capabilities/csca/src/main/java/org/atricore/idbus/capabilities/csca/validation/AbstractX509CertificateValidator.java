@@ -24,8 +24,6 @@ public abstract class AbstractX509CertificateValidator implements X509Certificat
             .getLog(AbstractX509CertificateValidator.class);
 
     protected String _url;
-    protected String _httpProxyHost;
-    protected String _httpProxyPort;
     protected String _trustStore;
     protected String _trustPassword;
     protected List<String> _caCertAliases;
@@ -160,34 +158,6 @@ public abstract class AbstractX509CertificateValidator implements X509Certificat
     }
 
     /**
-     * @return the httpProxyHost
-     */
-    public String getHttpProxyHost() {
-        return _httpProxyHost;
-    }
-
-    /**
-     * @param httpProxyHost the httpProxyHost to set
-     */
-    public void setHttpProxyHost(String httpProxyHost) {
-        _httpProxyHost = httpProxyHost;
-    }
-
-    /**
-     * @return the httpProxyPort
-     */
-    public String getHttpProxyPort() {
-        return _httpProxyPort;
-    }
-
-    /**
-     * @param httpProxyPort the httpProxyPort to set
-     */
-    public void setHttpProxyPort(String httpProxyPort) {
-        _httpProxyPort = httpProxyPort;
-    }
-
-    /**
      * @return the trustStore
      */
     public String getTrustStore() {
@@ -241,5 +211,9 @@ public abstract class AbstractX509CertificateValidator implements X509Certificat
      */
     public void setCaCertAliases(List<String> caCertAliases) {
         _caCertAliases = caCertAliases;
+    }
+
+    public boolean isInitialized() {
+        return this._initialized;
     }
 }

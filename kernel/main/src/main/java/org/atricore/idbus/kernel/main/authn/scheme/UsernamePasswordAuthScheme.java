@@ -125,7 +125,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     }
 
     /**
-     * The username recieved as UserIdCredential instance, if any.
+     * The username received as UserNameCredential instance, if any.  Otherwise the UserIdCredential
      */
     public Principal getPrincipal() {
 

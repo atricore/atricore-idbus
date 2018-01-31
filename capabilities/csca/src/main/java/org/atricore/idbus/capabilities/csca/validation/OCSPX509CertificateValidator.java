@@ -21,27 +21,32 @@ public class OCSPX509CertificateValidator extends AbstractX509CertificateValidat
     private String _ocspResponderCertificateAlias;
     private X509Certificate _ocspCert;
 
+    @Override
+    public synchronized void initialize() {
+
+        if (isInitialized())
+            return;
+
+        super.initialize();
+
+        // activate OCSP
+        Security.setProperty("ocsp.enable", "true");
+
+        if (_url != null) {
+            log.debug("Using the OCSP server at: " + _url);
+            Security.setProperty("ocsp.responderURLocsp.responderURL", _url);
+        } else {
+            log.debug("Using the OCSP server specified in the " +
+                    "Authority Info Access (AIA) extension " +
+                    "of the certificate");
+        }
+    }
+
     public void validate(X509Certificate certificate)
             throws X509CertificateValidationException {
 
         try {
-            if (_url != null) {
-                log.debug("Using the OCSP server at: " + _url);
-                Security.setProperty("ocsp.responderURLocsp.responderURL", _url);
-            } else {
-                log.debug("Using the OCSP server specified in the " +
-                        "Authority Info Access (AIA) extension " +
-                        "of the certificate");
-            }
 
-            // TODO STRONG-AUTH Move to system settings
-            if (_httpProxyHost != null && _httpProxyPort != null) {
-                System.setProperty("http.proxyHost", _httpProxyHost);
-                System.setProperty("http.proxyPort", _httpProxyPort);
-            } else {
-                System.clearProperty("http.proxyHost");
-                System.clearProperty("http.proxyPort");
-            }
 
             // get certificate path
             CertPath cp = generateCertificatePath(certificate);
@@ -70,10 +75,9 @@ public class OCSPX509CertificateValidator extends AbstractX509CertificateValidat
             // activate certificate revocation checking
             params.setRevocationEnabled(true);
 
-            // activate OCSP
-            Security.setProperty("ocsp.enable", "true");
-
             // perform validation
+            log.debug("Performing validation for " + certificate.getSubjectDN());
+
             CertPathValidator cpv = CertPathValidator.getInstance("PKIX");
             PKIXCertPathValidatorResult cpvResult = (PKIXCertPathValidatorResult) cpv
                     .validate(cp, params);
@@ -81,19 +85,19 @@ public class OCSPX509CertificateValidator extends AbstractX509CertificateValidat
                     .getTrustAnchor().getTrustedCert();
 
             if (trustedCert == null) {
-                log.debug("Trsuted Cert = NULL");
+                log.debug("Trusted Cert = NULL");
             } else {
                 log.debug("Trusted CA DN = " + trustedCert.getSubjectDN());
             }
 
         } catch (CertPathValidatorException e) {
-            log.error(e, e);
+            log.debug(e, e);
             throw new X509CertificateValidationException(e);
         } catch (Exception e) {
             log.error(e, e);
             throw new X509CertificateValidationException(e);
         }
-        log.debug("CERTIFICATE VALIDATION SUCCEEDED");
+        log.debug("CERTIFICATE VALIDATION SUCCEEDED for " + certificate.getSubjectDN());
     }
 
     /**
