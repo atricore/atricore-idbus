@@ -203,7 +203,7 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
         X500Principal p = certificate.getSubjectX500Principal();
         CertificatePrincipal targetPrincipal = null;
 
-        if (_uidOID == null) {
+        if (_uidOID == null || _uidOID.equalsIgnoreCase("cn")) {
             HashMap compoundName = parseCompoundName(p.getName());
 
             // Extract from the Distinguished Name (DN) only the Common Name (CN) since its
@@ -213,10 +213,14 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
 
             if (cn == null)
                 logger.error("Invalid Subject DN. Cannot create Principal : " +
-                        p.getName()
+                                p.getName()
                 );
 
             targetPrincipal = new CertificatePrincipal(cn, certificate);
+
+        } else if (_uidOID.equalsIgnoreCase("dn")) {
+            targetPrincipal = new CertificatePrincipal(p.getName(), certificate);
+
         } else {
             try {
                 byte[] oidValue = getOIDBitStringValueFromCert(certificate, _uidOID);

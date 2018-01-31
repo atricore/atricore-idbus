@@ -130,6 +130,9 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         JAXBElement<String> requestType;
         JAXBElement requestToken;
 
+        if (rst.getAny().size() < 3)
+            throw new SecurityTokenAuthenticationFailure("Not enough elements in request");
+
         JAXBElement<String> tokenType = (JAXBElement<String>) rst.getAny().get(0);
 
         requestType = (JAXBElement<String>) rst.getAny().get(1);
