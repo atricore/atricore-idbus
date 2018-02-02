@@ -60,7 +60,7 @@
     	<bundle start-level="35">mvn:org.springframework/spring-web/${spring2.version}</bundle>
 		<bundle start-level="35">mvn:org.springframework/spring-webmvc/${spring2.version}</bundle>
     </feature>
-    -->
+
     <feature name="spring" version="${spring.version}" resolver="(obr)">
         <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/${aopalliance.bundle.version}</bundle>
         <bundle start-level="35">mvn:org.springframework/spring-core/${spring.version}</bundle>
@@ -71,6 +71,22 @@
         <bundle start-level="35">mvn:org.springframework/spring-context/${spring.version}</bundle>
         <bundle start-level="35">mvn:org.springframework/spring-context-support/${spring.version}</bundle>
     </feature>
+    -->
+    <feature name="spring" description="Spring 3.2.x support" version="${spring.version}">
+        <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.aopalliance/${aopalliance.bundle.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/${spring.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/${spring.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/${spring.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/${spring.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/${spring.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/${spring.version}</bundle>
+    </feature>
+
+    <feature name="spring-aspects" description="Spring 3.2.x AOP support" version="${spring.version}">
+        <feature version="[${spring.version},3.3)">spring</feature>
+        <bundle start-level="30">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aspects/${spring.version}</bundle>
+    </feature>
+    
     <feature name="spring-web" version="${spring.version}" resolver="(obr)">
     	<feature version="${spring.version}">spring</feature>
     	<feature version="${karaf.version}">http</feature>

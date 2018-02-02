@@ -118,7 +118,7 @@
     <properties>
         <compiler.fork>true</compiler.fork>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <spring.version>3.1.0.RELEASE</spring.version>
+        <spring.version>3.2.18.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <scala.major.version>2.11</scala.major.version>
         <scala.version>${scala.major.version}.8</scala.version>
