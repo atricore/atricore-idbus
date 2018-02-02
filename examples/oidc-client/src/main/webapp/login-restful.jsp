@@ -23,6 +23,7 @@
 <%@ page import="java.net.URLDecoder" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse" %>
 <%@ page import="com.nimbusds.jwt.*" %>
+<%@ page import="com.nimbusds.oauth2.sdk.http.HTTPResponse" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -134,16 +135,23 @@
         Scope scope = Scope.parse(props.getProperty("oidc.client.scopes"));
 
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, authzGrant, scope);
-        TokenResponse tokenRespose = OIDCAccessTokenResponse.parse(tokenRequest.toHTTPRequest().send());
+        HTTPResponse httpTokenResponse = tokenRequest.toHTTPRequest().send();
 
-        if (! tokenRespose.indicatesSuccess()) {
+        if (httpTokenResponse.getStatusCode() != 200) {
+            throw new RuntimeException(httpTokenResponse.getContent());
+
+        }
+
+        TokenResponse tokenResponse = OIDCAccessTokenResponse.parse(httpTokenResponse);
+
+        if (!tokenResponse.indicatesSuccess()) {
             // We got an error response...
-            TokenErrorResponse errorResponse = (TokenErrorResponse) tokenRespose;
+            TokenErrorResponse errorResponse = (TokenErrorResponse) tokenResponse;
             error = errorResponse.getErrorObject();
 
         } else {
 
-            OIDCAccessTokenResponse successResponse = (OIDCAccessTokenResponse) tokenRespose;
+            OIDCAccessTokenResponse successResponse = (OIDCAccessTokenResponse) tokenResponse;
 
             // Get the access token, the server may also return a refresh token
             accessToken = successResponse.getAccessToken();
@@ -158,12 +166,12 @@
             claims = signedIdToken.getJWTClaimsSet();
 
         }
+    } catch (ParseException e) {
+        error = e.getErrorObject();
 
-
-
-//    } catch (Exception e) {
-//        error = e.getMessage();
-
+    } catch (GeneralException e) {
+        error = e.getErrorObject();
+        if (error == null) throw e;
     } finally {
         //
     }
@@ -194,3 +202,4 @@
 } %>
 <br>
 </html>
+
