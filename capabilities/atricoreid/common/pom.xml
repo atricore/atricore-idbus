@@ -26,12 +26,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
         <artifactId>atricoreid</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.4-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.atricoreid</groupId>
     <artifactId>org.atricore.idbus.capabilities.atricoreid.common</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : AtricoreID Common Component</name>
 

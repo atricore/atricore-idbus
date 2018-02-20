@@ -29,12 +29,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.josso</groupId>
         <artifactId>josso</artifactId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.4.4-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.josso</groupId>
     <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
-    <version>1.4.3-SNAPSHOT</version>
+    <version>1.4.4-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : JOSSO Main Component</name>
 
@@ -45,13 +45,13 @@
 
     <properties>
 
-        <idbus.kernel.version>1.4.3-SNAPSHOT</idbus.kernel.version>
-        <idbus.cap.sso.version>1.4.3-SNAPSHOT</idbus.cap.sso.version>
+        <idbus.kernel.version>1.4.4-SNAPSHOT</idbus.kernel.version>
+        <idbus.cap.sso.version>1.4.4-SNAPSHOT</idbus.cap.sso.version>
 
-        <idbus.bundle.josso-ws-v1_2.version>1.4.3-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.4.4-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         
         <!-- local party -->
-        <josso1.version>1.8.12-SNAPSHOT</josso1.version>
+        <josso1.version>1.8.13-SNAPSHOT</josso1.version>
 
         <!-- some standards -->
         <servlet.version>2.3</servlet.version>
