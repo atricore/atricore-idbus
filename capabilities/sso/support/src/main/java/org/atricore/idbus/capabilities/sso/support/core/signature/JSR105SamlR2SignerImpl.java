@@ -35,6 +35,7 @@ import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sso.support.core.util.NamespaceFilterXMLStreamWriter;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
+import org.jcp.xml.dsig.internal.dom.DOMSignatureMethod;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -92,15 +93,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      */
     public static final String DEFAULT_JSR105_PROVIDER_FQCN = "org.jcp.xml.dsig.internal.dom.XMLDSigRI";
 
-    // TODO : Support SHA-256, make dynamic !
-    private static final String SHA1_WITH_DSA = "SHA1withDSA";
-
-    // TODO : Support SHA-256, make dynamic !
-    private static final String SHA1_WITH_RSA = "SHA1withRSA";
-
-    // TODO : Support SHA-256, make dynamic !
-    private static final String SHA256_WITH_RSA = "SHA256withRSA";
-
     private static final Log logger = LogFactory.getLog(JSR105SamlR2SignerImpl.class);
 
     /**
@@ -112,6 +104,8 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     // Validate certificate expiration, CA, etc.
     private boolean validateCertificate = true;
+
+    private String signMethodSpec;
 
     public Provider getProvider() {
         return provider;
@@ -131,6 +125,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     public void setValidateCertificate(boolean validateCertificate) {
         this.validateCertificate = validateCertificate;
+    }
+
+    public String getSignMethodSpec() {
+        return signMethodSpec;
+    }
+
+    public void setSignMethodSpec(String signMethodSpec) {
+        this.signMethodSpec = signMethodSpec;
     }
 
     /**
@@ -286,16 +288,18 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             PrivateKey privateKey = (PrivateKey) this.getKeyResolver().getPrivateKey();
 
             String keyAlgorithm = privateKey.getAlgorithm();
+            String digest = "SHA256"; // TODO : Make dynamic!!!
             Signature signature = null;
             String algURI = null;
-            if (keyAlgorithm.equals("RSA")) {
-                signature = Signature.getInstance(SHA1_WITH_RSA);
+
+            try {
+                SignMethod sm = SignMethod.fromValues(digest, keyAlgorithm);
+                signature = Signature.getInstance(sm.getName());
                 algURI = SignatureMethod.RSA_SHA1;
-            } else if (keyAlgorithm.equals("DSA")) {
-                signature = Signature.getInstance(SHA1_WITH_DSA);
-                algURI = SignatureMethod.DSA_SHA1;
-            } else {
-                throw new SamlR2SignatureException("SAML 2.0 Signature does not support provided key's algorithm " + keyAlgorithm);
+
+            } catch (IllegalArgumentException e) {
+                logger.error(e.getMessage(), e);
+                throw new SamlR2SignatureException("SAML 2.0 Signature does not support provided key's algorithm " + keyAlgorithm, e);
             }
 
             if (queryString.charAt(queryString.length() - 1) != '&') {
@@ -463,11 +467,12 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             // get Signature instance based on algorithm
             // TODO : Support SHA-256
             Signature signature = null;
-            if (sigAlgValue.equals(SignatureMethod.DSA_SHA1)) {
-                signature = Signature.getInstance(SHA1_WITH_DSA);
-            } else if (sigAlgValue.equals(SignatureMethod.RSA_SHA1)) {
-                signature = Signature.getInstance(SHA1_WITH_RSA);
-            } else {
+
+            try {
+                SignMethod sm = SignMethod.fromSpec(sigAlgValue);
+                signature = Signature.getInstance(sm.getName());
+            } catch (IllegalArgumentException e) {
+                logger.error (e.getMessage(), e);
                 throw new SamlR2SignatureException("SAML 2.0 Siganture does not support algorithm " + sigAlgValue);
             }
 
@@ -1011,9 +1016,23 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                             null, null);
 
             // Use signature method based on key algorithm.
-            String signatureMethod = SignatureMethod.DSA_SHA1;
-            if (keyResolver.getPrivateKey().getAlgorithm().equals("RSA"))
-                signatureMethod = SignatureMethod.RSA_SHA1;
+            Key pk = keyResolver.getPrivateKey();
+
+            String signatureMethod = null;
+            if (pk.getAlgorithm().equals("RSA")) {
+
+                if (signMethodSpec != null) {
+                    signatureMethod = SignMethod.fromSpec(signMethodSpec).getSpec();
+                } else {
+                    signatureMethod = SignMethod.SHA1_WITH_RSA.getSpec();
+                }
+
+            } else if (pk.getAlgorithm().equals("DSA")) {
+                signatureMethod = SignMethod.SHA1_WITH_DSA.getSpec();
+            } else {
+                logger.error("Unsupported Key algorithm : " + pk.getAlgorithm());
+                throw new SamlR2SignatureException("Unsupported Key algorithm : " + pk.getAlgorithm());
+            }
 
             logger.debug("Using signature method " + signatureMethod);
 

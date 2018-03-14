@@ -62,9 +62,6 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     private String idpSelector;
 
-    private Map<String, ChannelConfiguration> channelConfigs = new HashMap<String, ChannelConfiguration>();
-
-
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
         
@@ -411,25 +408,12 @@ public class SSOIDPMediator extends AbstractSSOMediator {
         this.claimEndpointSelection = claimEndpointSelection;
     }
 
-    public Map<String, ChannelConfiguration> getChannelConfigs() {
-        return channelConfigs;
-    }
-
-    public void setChannelConfigs(Map<String, ChannelConfiguration> channelConfigs) {
-        this.channelConfigs = channelConfigs;
-    }
-
     public String getIdpSelector() {
         return idpSelector;
     }
 
     public void setIdpSelector(String idpSelector) {
         this.idpSelector = idpSelector;
-    }
-
-
-    public ChannelConfiguration getChannelConfig(String name) {
-        return this.channelConfigs.get(name);
     }
 
     public boolean isEncryptAssertion(String name) {

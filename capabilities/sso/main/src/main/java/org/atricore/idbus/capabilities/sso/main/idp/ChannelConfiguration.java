@@ -13,6 +13,8 @@ public class ChannelConfiguration implements Serializable {
 
     private String encryptAssertionAlgorithm;
 
+    private String signatureAlgorithm;
+
     public ChannelConfiguration(String name) {
         this.name = name;
     }
@@ -37,4 +39,11 @@ public class ChannelConfiguration implements Serializable {
         this.encryptAssertionAlgorithm = encryptAssertionAlgorithm;
     }
 
+    public String getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
+
+    public void setSignatureAlgorithm(String signatureAlgorithm) {
+        this.signatureAlgorithm = signatureAlgorithm;
+    }
 }
