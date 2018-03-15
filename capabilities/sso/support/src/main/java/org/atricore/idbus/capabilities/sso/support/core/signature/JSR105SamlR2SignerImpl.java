@@ -468,7 +468,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             } else if (sigAlgValue.equals(SignatureMethod.RSA_SHA1)) {
                 signature = Signature.getInstance(SHA1_WITH_RSA);
             } else {
-                throw new SamlR2SignatureException("SAML 2.0 Siganture does not support algorithm " + sigAlgValue);
+                throw new SamlR2SignatureException("SAML 2.0 Signature does not support algorithm " + sigAlgValue);
             }
 
             // now verify signature
@@ -731,7 +731,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             for (int k = 0; k < signatureNodes.getLength(); k++) {
 
                 DOMValidateContext valContext = new DOMValidateContext
-                        (new RawX509KeySelector(), signatureNodes.item(k));
+                        (new RawX509KeySelector(getX509Certificate(md)), signatureNodes.item(k));
 
                 // unmarshal the XMLSignature
                 XMLSignature signature = fac.unmarshalXMLSignature(valContext);
@@ -1040,7 +1040,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             //KeyValue kv = kif.newKeyValue(keyResolver.getCertificate().getPublicKey());
 
             KeyInfo ki = kif.newKeyInfo(Collections.singletonList(kv));
-            javax.xml.crypto.dsig.XMLSignature signature = fac.newXMLSignature(si, ki);
+            javax.xml.crypto.dsig.XMLSignature signature = fac.newXMLSignature(si, ki); // set ki to null to avoid KeyInfo tag
 
             if (logger.isDebugEnabled())
                 logger.debug("Signing SAMLR2 Identity Artifact ...");
@@ -1184,13 +1184,25 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      */
     public static class RawX509KeySelector extends KeySelector {
 
+        private X509Certificate defaultCert;
+
+
+        public RawX509KeySelector(X509Certificate cert) {
+            this.defaultCert = cert;
+        }
+
+
         public KeySelectorResult select(KeyInfo keyInfo,
                                         KeySelector.Purpose purpose,
                                         AlgorithmMethod method,
                                         XMLCryptoContext context)
                 throws KeySelectorException {
             if (keyInfo == null) {
-                throw new KeySelectorException("Null KeyInfo object!");
+                logger.debug("No key info, returning default");
+
+                return new SimpleKeySelectorResult
+                        (defaultCert.getPublicKey());
+
             }
             // search for X509Data in keyinfo
             Iterator iter = keyInfo.getContent().iterator();
