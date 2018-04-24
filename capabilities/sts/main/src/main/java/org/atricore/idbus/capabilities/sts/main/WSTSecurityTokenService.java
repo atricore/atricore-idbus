@@ -138,6 +138,8 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         requestType = (JAXBElement<String>) rst.getAny().get(1);
         requestToken =  (JAXBElement) rst.getAny().get(2);
 
+        // TODO : Get Authoritative source : rst.getOtherAttributes();
+
         SecurityToken securityToken = null;
         Subject subject = null;
 

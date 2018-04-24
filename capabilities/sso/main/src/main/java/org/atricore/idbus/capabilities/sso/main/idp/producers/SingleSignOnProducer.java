@@ -47,6 +47,7 @@ import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmiss
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
@@ -799,7 +800,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
             securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
-            securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)mediator).getChannelConfig(channel.getName()));
+            securityTokenEmissionCtx.setSpChannelConfig((SPChannelConfiguration) mediator.getChannelConfig(channel.getName()));
 
             // Add any proxy principals available
             if (secCtx.getProxyPrincipals() != null)
@@ -920,7 +921,7 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setSessionIndex(sessionUuidGenerator.generateId());
             securityTokenEmissionCtx.setSpAcs(ed);
             securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
-            securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)channel.getIdentityMediator()).getChannelConfig(channel.getName()));
+            securityTokenEmissionCtx.setSpChannelConfig((SPChannelConfiguration) ((SSOIDPMediator)channel.getIdentityMediator()).getChannelConfig(channel.getName()));
 
             // ----------------------------------------------------------------------------------------
             // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
@@ -1334,7 +1335,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 securityTokenEmissionCtx.setSessionIndex(sessionUuidGenerator.generateId());
                 securityTokenEmissionCtx.setSpAcs(ed);
                 securityTokenEmissionCtx.setAttributeProfile(requiredSpChannel.getAttributeProfile());
-                securityTokenEmissionCtx.setSpChannelConfig(((SSOIDPMediator)mediator).getChannelConfig(requiredSpChannel.getName()));
+                securityTokenEmissionCtx.setSpChannelConfig((SPChannelConfiguration) mediator.getChannelConfig(requiredSpChannel.getName()));
 
                 // in order to request a security token we need to map the claims sent by the proxy to
                 // STS claims
@@ -2646,12 +2647,25 @@ public class SingleSignOnProducer extends SSOProducer {
 
         for (Claim c : claims.getClaims()) {
 
+            // check if authn-source is specified
+            if (c instanceof  UserClaim) {
+                UserClaim userClaim = (UserClaim) c;
+                if (userClaim.getName().equals(WSTConstants.WST_AUTHN_SOURCE)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Using authn-source claim " + c);
+                    rstRequest.getOtherAttributes().put(new QName(WSTConstants.WST_AUTHN_SOURCE), (String) userClaim.getValue());
+                    continue;
+                }
+            }
+
+            // ignore other non-credential claims
             if (!(c instanceof CredentialClaim)) {
                 if (logger.isTraceEnabled())
                     logger.trace("Ignoring non-credential claim " + c);
                 continue;
             }
 
+            // verify token type
             CredentialClaim credentialClaim = (CredentialClaim) c;
 
             if (logger.isDebugEnabled())

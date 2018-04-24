@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.capabilities.sts.main;
 
+import javax.xml.namespace.QName;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: WSTConstants.java 1220 2009-05-28 03:57:34Z sgonzalez $
@@ -76,4 +78,5 @@ public interface WSTConstants {
 
     static final String IDENTITY_PLAN_PROP = "urn:org:atricore:idbus:kernel:main:sts:IdentityPlan";
 
+    static final String WST_AUTHN_SOURCE = "urn:org:atricore:idbus:kernel:main:sts:AuthnSource";
 }

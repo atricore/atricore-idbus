@@ -33,8 +33,6 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Saml v2.0 SP Mediator realizing IDP SSO Role for Single SignOn profiles.
@@ -417,12 +415,12 @@ public class SSOIDPMediator extends AbstractSSOMediator {
     }
 
     public boolean isEncryptAssertion(String name) {
-        ChannelConfiguration cfg = getChannelConfig(name);
+        SPChannelConfiguration cfg = (SPChannelConfiguration) getChannelConfig(name);
         return cfg != null && cfg.isEncryptAssertion();
     }
 
     public String getEncryptAssertionAlgorithm(String name) {
-        ChannelConfiguration cfg = getChannelConfig(name);
+        SPChannelConfiguration cfg = (SPChannelConfiguration) getChannelConfig(name);
         return cfg != null ? cfg.getEncryptAssertionAlgorithm() : null;
     }
 

@@ -1,26 +1,22 @@
 package org.atricore.idbus.capabilities.sso.main.idp;
 
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
+
 import java.io.Serializable;
 
 /**
  *
  */
-public class ChannelConfiguration implements Serializable {
-
-    private String name;
+public class SPChannelConfiguration extends ChannelConfiguration {
 
     private boolean encryptAssertion;
 
     private String encryptAssertionAlgorithm;
 
-    private String signatureAlgorithm;
+    private String signatureHash;
 
-    public ChannelConfiguration(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
+    public SPChannelConfiguration(String name) {
+        super(name);
     }
 
     public boolean isEncryptAssertion() {
@@ -39,11 +35,11 @@ public class ChannelConfiguration implements Serializable {
         this.encryptAssertionAlgorithm = encryptAssertionAlgorithm;
     }
 
-    public String getSignatureAlgorithm() {
-        return signatureAlgorithm;
+    public String getSignatureHash() {
+        return signatureHash;
     }
 
-    public void setSignatureAlgorithm(String signatureAlgorithm) {
-        this.signatureAlgorithm = signatureAlgorithm;
+    public void setSignatureHash(String signatureHash) {
+        this.signatureHash = signatureHash;
     }
 }

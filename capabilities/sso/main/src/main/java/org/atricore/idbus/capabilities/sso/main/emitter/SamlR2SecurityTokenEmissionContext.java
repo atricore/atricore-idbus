@@ -24,16 +24,13 @@ package org.atricore.idbus.capabilities.sso.main.emitter;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
-import org.atricore.idbus.capabilities.sso.main.idp.ChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
 import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmissionContext;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
-import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
-import org.atricore.idbus.kernel.main.federation.AbstractPrincipal;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
-import org.atricore.idbus.kernel.main.session.SSOSession;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +63,7 @@ public class SamlR2SecurityTokenEmissionContext extends AbstractSecurityTokenEmi
 
     private String attributeProfile;
 
-    private ChannelConfiguration spChannelConfig;
+    private SPChannelConfiguration spChannelConfig;
 
     public SamlR2SecurityTokenEmissionContext() {
     }
@@ -156,11 +153,11 @@ public class SamlR2SecurityTokenEmissionContext extends AbstractSecurityTokenEmi
         this.attributeProfile = attributeProfile;
     }
 
-    public ChannelConfiguration getSpChannelConfig() {
+    public SPChannelConfiguration getSpChannelConfig() {
         return spChannelConfig;
     }
 
-    public void setSpChannelConfig(ChannelConfiguration spChannelConfig) {
+    public void setSpChannelConfig(SPChannelConfiguration spChannelConfig) {
         this.spChannelConfig = spChannelConfig;
     }
 

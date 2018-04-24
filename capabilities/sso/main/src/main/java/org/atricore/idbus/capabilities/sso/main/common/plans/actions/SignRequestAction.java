@@ -63,6 +63,7 @@ public class SignRequestAction extends AbstractSSOAction {
             if (idp != null) {
                 signRequest = wantAuthnRequestsSigned(idp);
             }
+
         }
 
         if (!signRequest) {
