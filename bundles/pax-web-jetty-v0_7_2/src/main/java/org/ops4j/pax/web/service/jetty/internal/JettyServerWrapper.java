@@ -3,6 +3,8 @@ package org.ops4j.pax.web.service.jetty.internal;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.*;
@@ -35,17 +37,21 @@ public class JettyServerWrapper extends Server {
 
     private SessionHandlerBuilder m_sessionHandlerBuilder;
 
+    private Properties m_kernelProps;
+
     private Map<String, Object> m_contextAttributes;
     private Integer m_sessionTimeout;
     private String m_sessionCookie;
     private String m_sessionUrl;
     private String m_sessionWorkerName;
 
-    JettyServerWrapper( ServerModel serverModel, SessionHandlerBuilder sessionHandlerBuilder )
+    JettyServerWrapper( ServerModel serverModel, SessionHandlerBuilder sessionHandlerBuilder, Properties kernelProps )
     {
         m_serverModel = serverModel;
         m_contexts = new IdentityHashMap<HttpContext, Context>();
         m_sessionHandlerBuilder = sessionHandlerBuilder;
+        m_kernelProps = kernelProps;
+        this.setSendServerVersion(false);
     }
 
     public void setSessionHandlerBuilder(SessionHandlerBuilder b) {
@@ -125,7 +131,8 @@ public class JettyServerWrapper extends Server {
                                                   ),
                 model.getContextModel().getContextName(),
                 model.getContextModel().getHttpContext(),
-                model.getContextModel().getAccessControllerContext()
+                model.getContextModel().getAccessControllerContext(),
+                m_kernelProps
         );
         context.setClassLoader( model.getContextModel().getClassLoader() );
         Integer sessionTimeout = model.getContextModel().getSessionTimeout();

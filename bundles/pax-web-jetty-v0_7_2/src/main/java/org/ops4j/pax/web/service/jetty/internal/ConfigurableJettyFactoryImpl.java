@@ -7,6 +7,8 @@ import org.ops4j.lang.NullArgumentException;
 import org.ops4j.pax.web.service.jetty.spi.SessionHandlerBuilder;
 import org.ops4j.pax.web.service.spi.model.ServerModel;
 
+import java.util.Properties;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
@@ -19,6 +21,8 @@ public class ConfigurableJettyFactoryImpl implements JettyFactory {
     private final ServerModel m_serverModel;
 
     private SessionHandlerBuilder m_sessionHandlerBuilder;
+
+    private Properties m_kernelProps;
 
     /**
      * Constrcutor.
@@ -39,12 +43,20 @@ public class ConfigurableJettyFactoryImpl implements JettyFactory {
         this.m_sessionHandlerBuilder = m_sessionHandlerBuilder;
     }
 
+    public Properties getKernelProps() {
+        return m_kernelProps;
+    }
+
+    public void setKernelProps(Properties m_kernelProps) {
+        this.m_kernelProps = m_kernelProps;
+    }
+
     /**
      * {@inheritDoc}
      */
     public JettyServer createServer()
     {
-        JettyServerImpl s = new JettyServerImpl( m_serverModel, m_sessionHandlerBuilder );
+        JettyServerImpl s = new JettyServerImpl( m_serverModel, m_sessionHandlerBuilder, m_kernelProps );
         return s;
     }
 
