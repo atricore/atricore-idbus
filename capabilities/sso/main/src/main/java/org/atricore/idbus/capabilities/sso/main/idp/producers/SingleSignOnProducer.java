@@ -2647,17 +2647,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
         for (Claim c : claims.getClaims()) {
 
-            // check if authn-source is specified
-            if (c instanceof  UserClaim) {
-                UserClaim userClaim = (UserClaim) c;
-                if (userClaim.getName().equals(WSTConstants.WST_AUTHN_SOURCE)) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Using authn-source claim " + c);
-                    rstRequest.getOtherAttributes().put(new QName(WSTConstants.WST_AUTHN_SOURCE), (String) userClaim.getValue());
-                    continue;
-                }
-            }
-
             // ignore other non-credential claims
             if (!(c instanceof CredentialClaim)) {
                 if (logger.isTraceEnabled())

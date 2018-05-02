@@ -165,6 +165,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
         String username = null;
         String userid = null;
         boolean rememberMe = false;
+        String authnSvc = null;
 
         // Adapt received simple claims to SAMLR Required token
         for (Claim c : receivedClaims.getClaims()) {
@@ -180,6 +181,10 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
                 if (credentialClaim.getQualifier().equalsIgnoreCase("password"))
                     password = (String) c.getValue();
+
+                if (credentialClaim.getQualifier().equalsIgnoreCase("authnSvc"))
+                    authnSvc = (String) c.getValue();
+
             } else if (c instanceof UserClaim) {
                 UserClaim userClaim = (UserClaim) c;
                 if (userClaim.getName().equalsIgnoreCase("rememberMe"))
@@ -208,6 +213,7 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );
         usernameToken.getOtherAttributes().put(new QName(authnCtxClass.getValue()), "TRUE");
         usernameToken.getOtherAttributes().put(new QName(Constants.REMEMBERME_NS), rememberMe ? "TRUE" : "FALSE");
+        usernameToken.getOtherAttributes().put(new QName(Constants.AUTHN_SOURCE), authnSvc != null ? authnSvc : null);
 
         CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtxClass.getValue(), usernameToken);
         ClaimSet claims = new ClaimSetImpl();
