@@ -168,16 +168,5 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
         return null;
     }
 
-    protected CircleOfTrustMemberDescriptor lookupAliasInChannel(String idpAlias, FederationChannel channel) {
-        for (FederatedProvider trusted : channel.getTrustedProviders()) {
-            for (CircleOfTrustMemberDescriptor member : trusted.getMembers()) {
-                if (member.getAlias().equals(idpAlias)) {
-                    return member;
-                }
-            }
-        }
-
-        return null;
-    }
 
 }

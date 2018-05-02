@@ -74,6 +74,7 @@
                         <!-- Ordered list of selectors -->
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
+                            <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreviouslyUsedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreferredIdPEntitySelector"/>
                         </list>
                     </property>
@@ -86,6 +87,7 @@
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreviouslySelectedIdPEntitySelector"/>
+                            <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreviouslyUsedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreferredIdPEntitySelector"/>
                         </list>
                     </property>

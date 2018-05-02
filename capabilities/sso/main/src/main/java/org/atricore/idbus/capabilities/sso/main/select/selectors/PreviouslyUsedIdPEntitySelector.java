@@ -1,6 +1,5 @@
 package org.atricore.idbus.capabilities.sso.main.select.selectors;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -13,12 +12,8 @@ import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 
 import java.util.Deque;
-import java.util.Iterator;
 
-/**
- * Created by sgonzalez on 12/23/14.
- */
-public class PreviouslySelectedIdPEntitySelector extends AbstractEntitySelector {
+public class PreviouslyUsedIdPEntitySelector extends AbstractEntitySelector {
 
     private static final Log logger = LogFactory.getLog(RequestedIdPEntitySelector.class);
 
@@ -29,14 +24,10 @@ public class PreviouslySelectedIdPEntitySelector extends AbstractEntitySelector 
 
     @Override
     public CircleOfTrustMemberDescriptor selectCotMember(EntitySelectionContext ctx, SelectorChannel channel) throws SSOException {
+        CircleOfTrustMemberDescriptor idp = null;
 
-        java.util.Deque<String> previousSelections =
-                (Deque<String>) ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMembers");
 
-        if (previousSelections == null) {
-            return null;
-        }
-
+        // Try previous COT member
         // TODO : Consider that the previous selection may not be trusted/available for the current SP!
         String spName = ctx.getRequest().getIssuer();
 
@@ -57,7 +48,7 @@ public class PreviouslySelectedIdPEntitySelector extends AbstractEntitySelector 
         for (String idpAlias : idps) {
             // Check default channel
             FederationChannel defaultChannel = sp.getDefaultFederationService().getChannel();
-            CircleOfTrustMemberDescriptor idp = lookupAliasInChannel(idpAlias, defaultChannel);
+            idp = lookupAliasInChannel(idpAlias, defaultChannel);
             if (idp != null) {
                 logger.trace("Found previously selected IdP in default channel [" + defaultChannel.getName() + "] " + idp.getAlias());
                 return idp;
@@ -73,9 +64,8 @@ public class PreviouslySelectedIdPEntitySelector extends AbstractEntitySelector 
             }
         }
 
+        logger.trace("No previously used IdP for " + sp);
+
         return null;
-
     }
-
-
 }
