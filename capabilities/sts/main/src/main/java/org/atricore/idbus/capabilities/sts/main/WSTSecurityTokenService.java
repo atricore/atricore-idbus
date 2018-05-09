@@ -367,9 +367,31 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         long startMilis = 0;
         long endMilis = 0;
 
+        String authnSrc = null;
+
+        if (requestToken instanceof UsernameTokenType) {
+            UsernameTokenType t = (UsernameTokenType) requestToken;
+            authnSrc = t.getOtherAttributes().get(new QName(Constants.AUTHN_SOURCE));
+
+
+        } else if (requestToken instanceof BinarySecurityTokenType) {
+            BinarySecurityTokenType t = (BinarySecurityTokenType) requestToken;
+            authnSrc = t.getOtherAttributes().get(new QName(Constants.AUTHN_SOURCE));
+
+        }
+
+        if (logger.isDebugEnabled() && authnSrc != null)
+            logger.debug("Requested authenticator " + authnSrc);
+
         for (SecurityTokenAuthenticator authenticator : authenticators) {
 
             logger.debug("Checking if authenticator " + authenticator.getId() + " can handle token of type " + tokenType + "[" + (requestToken != null ? requestToken.getClass().getName() : "") + "]");
+
+            if (authnSrc != null && !authnSrc.equals(authenticator.getId())) {
+                logger.debug("Ignoring authenticator: " + authenticator.getId());
+                continue;
+            }
+
 
             if (authenticator.canAuthenticate(requestToken)) {
 

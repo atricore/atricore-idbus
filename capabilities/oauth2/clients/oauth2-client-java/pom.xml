@@ -50,8 +50,7 @@
             <version>1.4.4-SNAPSHOT</version>
         </dependency>
 
-
-        <dependency>
+	<dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-bindings-soap</artifactId>
             <version>${cxf.version}</version>
@@ -105,7 +104,7 @@
                     <artifactId>jsr181</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+	</dependency>
     </dependencies>
 
     <build>
