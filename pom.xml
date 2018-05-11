@@ -64,6 +64,7 @@
         <module>bundles/jasypt-v1_9_2</module>
         <module>bundles/jasypt-spring31-v1_9_2</module>
         <module>capabilities/spmlr2</module>
+        <module>capabilities/oath</module>
         <module>capabilities/sso</module>
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>

@@ -125,6 +125,7 @@
         <idbus.cap.sts.version>1.4.4-SNAPSHOT</idbus.cap.sts.version>
         <idbus.cap.spnego.version>1.4.4-SNAPSHOT</idbus.cap.spnego.version>
         <idbus.cap.csca.version>1.4.4-SNAPSHOT</idbus.cap.csca.version>
+        <idbus.cap.oath.version>1.4.4-SNAPSHOT</idbus.cap.oath.version>
         <idbus.cap.oauth2.version>1.4.4-SNAPSHOT</idbus.cap.oauth2.version>
         <idbus.cap.openid.version>1.4.4-SNAPSHOT</idbus.cap.openid.version>
         <idbus.cap.openidconnect.version>1.4.4-SNAPSHOT</idbus.cap.openidconnect.version>
