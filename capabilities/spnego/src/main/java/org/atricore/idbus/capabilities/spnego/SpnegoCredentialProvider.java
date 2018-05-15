@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 /**
  * @author <a href=mailto:gbrigandi@atricore.org>Gianluca Brigandi</a>
@@ -28,5 +29,10 @@ public class SpnegoCredentialProvider implements CredentialProvider {
 
     public Credential newEncodedCredential(String name, Object value) {
         return newCredential(name, value);
+    }
+
+    @Override
+    public Credential[] newCredentials(User user) {
+        return new Credential[0];
     }
 }

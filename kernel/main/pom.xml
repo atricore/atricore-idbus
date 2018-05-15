@@ -312,6 +312,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Test Dependencies -->
 
         <!-- JAXB -->

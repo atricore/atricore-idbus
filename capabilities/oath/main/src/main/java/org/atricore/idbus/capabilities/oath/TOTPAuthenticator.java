@@ -9,10 +9,10 @@ import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialKey;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
 import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
-import org.atricore.idbus.kernel.main.authn.scheme.PasswordCredential;
-import org.atricore.idbus.kernel.main.authn.scheme.SaltCredential;
 import org.atricore.idbus.kernel.main.authn.scheme.UserIdCredential;
 import org.atricore.idbus.kernel.main.authn.scheme.UserNameCredential;
+import org.atricore.idbus.kernel.main.authn.util.UserUtil;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
@@ -22,6 +22,8 @@ import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.atricore.idbus.capabilities.sts.main.authenticators.TwoFactorSecurityTokenAuthenticator.PASSCODE_NS;
@@ -69,6 +71,8 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
 
     private CredentialStore credentialStore;
 
+    private String secretCredentialName = SECRET_CREDENTIAL_NAME;
+
     private TOTP totp;
 
     public void init() {
@@ -108,6 +112,14 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
         this.credentialStore = credentialStore;
     }
 
+    public String getSecretCredentialName() {
+        return secretCredentialName;
+    }
+
+    public void setSecretCredentialName(String secretCredentialName) {
+        this.secretCredentialName = secretCredentialName;
+    }
+
     @Override
     public boolean canAuthenticate(Object requestToken) {
         if (requestToken instanceof UsernameTokenType){
@@ -125,6 +137,9 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
             UsernameTokenType token = (UsernameTokenType) requestToken;
             String code = token.getOtherAttributes().get(new QName(PASSCODE_NS));
 
+            if (code == null || "".equals(code))
+                throw new SecurityTokenEmissionException("Code not received!");
+
             // Get current time
             long time = (System.currentTimeMillis() / 1000) / 30;
             String hexTime = Long.toHexString(time);
@@ -132,6 +147,9 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
             if (logger.isDebugEnabled())
                 logger.debug("Authenticating user " + token.getUsername().getValue() + ". Time: " + hexTime);
 
+            if (credentialStore == null) {
+                throw new SecurityTokenEmissionException("This authenticator requires a credential store!");
+            }
 
             // Load credentials (username/secret)
             CredentialKey uk = new SimpleUserKey(token.getUsername().getValue());
@@ -161,7 +179,8 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
 
                     // This is the OTP secret or key for the user (TODO : encryption ?!)
                     OTPSecret secret = (OTPSecret) cred;
-                    String validCode = TOTP.generateTOTP(secret.getValue(), hexTime, returnDigits, crypto);
+
+                    String validCode = TOTP.generate(secret.getValue(), hexTime, returnDigits, crypto);
 
                     if (!code.equals(validCode)) {
 
@@ -199,7 +218,7 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
             if (!isValid) {
 
                 if (logger.isTraceEnabled())
-                    logger.trace("Unauthenticated code " + code + " for " + token.getUsername().getValue());
+                    logger.trace("Unauthenticated code " + code + " for " + token.getUsername().getValue() + ". OTPSecret not available");
 
                 throw new SecurityTokenAuthenticationFailure(getId(), "Code not received!");
             }
@@ -235,7 +254,7 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
             return new UserNameCredential(value);
         }
 
-        if (name.equalsIgnoreCase(SECRET_CREDENTIAL_NAME)) {
+        if (name.equalsIgnoreCase(getSecretCredentialName())) {
             return new OTPSecret((String) value);
         }
 
@@ -249,5 +268,19 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
     @Override
     public Credential newEncodedCredential(String name, Object value) {
         return newCredential(name, value);
+    }
+
+    @Override
+    public Credential[] newCredentials(User user) {
+
+        List<Credential> creds = new ArrayList<Credential>();
+
+        String value = UserUtil.getProperty(user, getSecretCredentialName());
+        if (value != null)
+            creds.add(new OTPSecret(value));
+
+        creds.add(new UserNameCredential(user.getUserName()));
+
+        return creds.toArray(new Credential[0]);
     }
 }

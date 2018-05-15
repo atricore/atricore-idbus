@@ -57,6 +57,7 @@
         <commons-codec.version>1.3</commons-codec.version>
         <commons-dbcp.version>1.3</commons-dbcp.version>
         <commons-logging.version>1.1.1</commons-logging.version>
+        <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <!--cglib.nodep.version>2.1_3</cglib.nodep.version-->
         <cxf.version>2.2.2</cxf.version>
 
@@ -509,6 +510,12 @@
                         <artifactId>camel-core</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
             </dependency>
 
             <!-- Test Dependencies -->

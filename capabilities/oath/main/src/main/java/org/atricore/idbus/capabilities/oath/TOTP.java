@@ -19,6 +19,8 @@ import java.util.TimeZone;
  * TOTP algorithm.
  * Visit www.openauthentication.org for more information.
  *
+ * Key must be base 32 encoded, may be grouped (space separated: xxxx xxxx xxxx xxxx xxx)
+ *
  * @author Johan Rydell, PortWise, Inc.
  */
 
@@ -83,17 +85,17 @@ public class TOTP {
      * This method generates a TOTP value for the given
      * set of parameters.
      *
-     * @param key:          the shared secret, HEX encoded
+     * @param key:          the shared secret, Base32 encoded
      * @param time:         a value that reflects a time
      * @param returnDigits: number of digits to return
      * @return: a numeric String in base 10 that includes
      * 
      */
 
-    public static String generateTOTP(String key,
-                                      String time,
-                                      int returnDigits) {
-        return generateTOTP(key, time, returnDigits, "HmacSHA1");
+    public static String generate(String key,
+                                  String time,
+                                  int returnDigits) {
+        return generate(key, time, returnDigits, "HmacSHA1");
     }
 
 
@@ -101,17 +103,17 @@ public class TOTP {
      * This method generates a TOTP value for the given
      * set of parameters.
      *
-     * @param key:          the shared secret, HEX encoded
+     * @param key:          the shared secret, Base32 encoded
      * @param time:         a value that reflects a time
      * @param returnDigits: number of digits to return
      * @return: a numeric String in base 10 that includes
      * 
      */
 
-    public static String generateTOTP256(String key,
-                                         String time,
-                                         int returnDigits) {
-        return generateTOTP(key, time, returnDigits, "HmacSHA256");
+    public static String generate256(String key,
+                                     String time,
+                                     int returnDigits) {
+        return generate(key, time, returnDigits, "HmacSHA256");
     }
 
 
@@ -119,17 +121,17 @@ public class TOTP {
      * This method generates a TOTP value for the given
      * set of parameters.
      *
-     * @param key:          the shared secret, HEX encoded
+     * @param key:          the shared secret, Base32 encoded
      * @param time:         a value that reflects a time
      * @param returnDigits: number of digits to return
      * @return: a numeric String in base 10 that includes
      * 
      */
 
-    public static String generateTOTP512(String key,
-                                         String time,
-                                         int returnDigits) {
-        return generateTOTP(key, time, returnDigits, "HmacSHA512");
+    public static String generate512(String key,
+                                     String time,
+                                     int returnDigits) {
+        return generate(key, time, returnDigits, "HmacSHA512");
     }
 
 
@@ -137,7 +139,7 @@ public class TOTP {
      * This method generates a TOTP value for the given
      * set of parameters.
      *
-     * @param key:          the shared secret, HEX encoded
+     * @param key:          the shared secret, Base32 encoded
      * @param time:         a value that reflects a time
      * @param returnDigits: number of digits to return
      * @param crypto:       the crypto function to use
@@ -145,10 +147,16 @@ public class TOTP {
      * 
      */
 
-    public static String generateTOTP(String key,
-                                      String time,
-                                      int returnDigits,
-                                      String crypto) {
+    public static String generate(String key,
+                                  String time,
+                                  int returnDigits,
+                                  String crypto) {
+
+        // Transfor key from base32 to hex
+        String normalizedBase32Key = key.replace(" ", "").toUpperCase();
+        Base32 base32 = new Base32();
+        byte[] bytes = base32.decode(normalizedBase32Key);
+        String hexKey = Hex.encodeHexString(bytes);
         
         String result = null;
 
@@ -160,7 +168,7 @@ public class TOTP {
 
         // Get the HEX in a Byte[]
         byte[] msg = hexStr2Bytes(time);
-        byte[] k = hexStr2Bytes(key);
+        byte[] k = hexStr2Bytes(hexKey);
 
 
         byte[] hash = hmac_sha(crypto, k, msg);
@@ -183,22 +191,60 @@ public class TOTP {
         return result;
     }
 
-    public static String getTOTPCode(String secretKey) {
+    /**
+     * Get 6 digits TOTP Code for base32 key, key may contain spaces that will be removed.
+     * The CRYPTO to be used is HmacSHA1
+     * @param secretKey base32 key
+     * @return
+     */
+    public static String generateCurrent(String secretKey) {
+        return generateCurrent(secretKey, 6);
+    }
+
+
+    /**
+     * Get TOTP Code for base32 key, key may contain spaces that will be removed.
+     * The CRYPTO to be used is HmacSHA1
+     *
+     * @param secretKey base32 key
+     * @param returnDigits number of digits to return
+     *
+     * @return
+     */
+    public static String generateCurrent(String secretKey, int returnDigits) {
+        return generateCurrent(secretKey, returnDigits, "HmacSHA1");
+    }
+
+
+
+    /**
+     * Get TOTP Code for base32 key, key may contain spaces that will be removed.
+     *
+     * @param secretKey base32 key
+     * @param returnDigits number of digits to return
+     * @param crypto HmacSHA1, HmacSHA256, HmacSHA512
+     *
+     *
+     * @return
+     */
+    public static String generateCurrent(String secretKey, int returnDigits, String crypto) {
+
+        // Transfor key from base32 to hex
         String normalizedBase32Key = secretKey.replace(" ", "").toUpperCase();
         Base32 base32 = new Base32();
         byte[] bytes = base32.decode(normalizedBase32Key);
         String hexKey = Hex.encodeHexString(bytes);
+
+        // Get current time
         long time = (System.currentTimeMillis() / 1000) / 30;
         String hexTime = Long.toHexString(time);
-        return TOTP.generateTOTP(hexKey, hexTime, 6);
+
+        // Generate
+        return TOTP.generate(hexKey, hexTime, returnDigits, crypto);
     }
 
+
     public static void main(String[] args) {
-
-        System.out.println(getTOTPCode("rseo rbms yuwp spio 46vs doba fqjm 3con"));
-
-        //
-
 
         // Seed for HMAC-SHA1 - 20 bytes
         String seed = "3132333435363738393031323334353637383930";
@@ -239,15 +285,15 @@ public class TOTP {
                 String utcTime = df.format(new Date(testTime[i] * 1000));
                 System.out.print("|  " + fmtTime + "  |  " + utcTime +
                         "  | " + steps + " |");
-                System.out.println(generateTOTP(seed, steps, 8,
+                System.out.println(generate(seed, steps, 8,
                         "HmacSHA1") + "| SHA1   |");
                 System.out.print("|  " + fmtTime + "  |  " + utcTime +
                         "  | " + steps + " |");
-                System.out.println(generateTOTP(seed32, steps, 8,
+                System.out.println(generate(seed32, steps, 8,
                         "HmacSHA256") + "| SHA256 |");
                 System.out.print("|  " + fmtTime + "  |  " + utcTime +
                         "  | " + steps + " |");
-                System.out.println(generateTOTP(seed64, steps, 8,
+                System.out.println(generate(seed64, steps, 8,
                         "HmacSHA512") + "| SHA512 |");
 
                 System.out.println(

@@ -1,5 +1,8 @@
 package org.atricore.idbus.kernel.main.store;
 
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordCredentialProvider;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
@@ -11,12 +14,18 @@ import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Default Identity Store
  */
 public class DefaultStore extends AbstractStore {
+
+    private static Log logger = LogFactory.getLog(DefaultStore.class);
 
     private IdentityPartition partition;
 
@@ -24,34 +33,49 @@ public class DefaultStore extends AbstractStore {
         return partition;
     }
 
+    private List<String> credentialNames = new ArrayList();
+
+    public DefaultStore() {
+
+    }
+
+    public List<String> getCredentialNames() {
+        return credentialNames;
+    }
+
+    public void setCredentialNames(List<String> credentialNames) {
+        this.credentialNames = credentialNames;
+    }
+
     public void setPartition(IdentityPartition partition) {
         this.partition = partition;
     }
 
+    /**
+     * Credentials vary upon authentication mechanism.
+     *
+     * A set of properties can be configured to be loaded as credentials.
+     *
+     * @param key the key used to retrieve credentials from store.
+     * @param cp
+     * @return
+     * @throws SSOIdentityException
+     */
     public Credential[] loadCredentials(CredentialKey key, CredentialProvider cp) throws SSOIdentityException {
 
         try {
-
             User user = partition.findUserByUserName(key.toString());
-
-            if (user.getUserPassword() == null)
-                return new Credential[0];
-
-            Credential usrCred = cp.newCredential(UsernamePasswordCredentialProvider.USERNAME_CREDENTIAL_NAME, user.getUserName());
-            Credential pwdCred = cp.newCredential(UsernamePasswordCredentialProvider.PASSWORD_CREDENTIAL_NAME, user.getUserPassword());
-            Credential idCred = cp.newCredential(UsernamePasswordCredentialProvider.USERID_CREDENTIAL_NAME, key.toString());
-            Credential saltCred = null;
-            if (user.getSalt() != null)
-                saltCred = cp.newCredential(UsernamePasswordCredentialProvider.SALT_CREDENTIAL_NAME, user.getSalt());
-
-            return saltCred == null ? new Credential[]{usrCred, idCred, pwdCred} : new Credential[]{usrCred, idCred, pwdCred, saltCred};
-
+            return cp.newCredentials(user);
         } catch (UserNotFoundException e) {
-            return new Credential[0];
+            throw new NoSuchUserException(key.toString());
         } catch (ProvisioningException e) {
             throw new SSOIdentityException(e);
         }
+
+
     }
+
+
 
     public BaseUser loadUser(UserKey key) throws NoSuchUserException, SSOIdentityException {
 

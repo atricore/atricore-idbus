@@ -20,7 +20,9 @@ public class OTPKeyGenerator {
     public static void main(String[] args) throws Exception {
         OTPKeyGenerator g = new OTPKeyGenerator();
 
-        String key = g.getRandomBase32Key(true);
+        //String key = g.getRandomBase32Key(true);
+
+        String key = "rseo rbms yuwp spio 46vs doba fqjm 3con";
 
         String url = g.getOTPURL(key, "Atricore, Inc.", "sgonzalez");
 
