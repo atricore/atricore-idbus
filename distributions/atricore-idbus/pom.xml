@@ -1950,6 +1950,11 @@
             <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
             <version>${idbus.cap.spnego.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.oath</groupId>
+            <artifactId>org.atricore.idbus.capabilities.oath.main</artifactId>
+            <version>${idbus.cap.oath.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.openid</groupId>

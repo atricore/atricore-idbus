@@ -82,9 +82,7 @@ public class X509CertificateCredentialProvider implements CredentialProvider {
             return null;
         X509Certificate cert = buildX509Certificate(binCert);
 
-        X509CertificateCredential cred = new X509CertificateCredential(cert);
-
-        return new Credential[] {cred};
+        return new Credential[] {newCredential(X509_CERTIFICATE_CREDENTIAL_NAME, cert)};
     }
 
     private X509Certificate buildX509Certificate(byte[] binaryCert) {

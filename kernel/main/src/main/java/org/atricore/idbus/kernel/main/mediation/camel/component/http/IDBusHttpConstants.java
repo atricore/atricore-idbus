@@ -17,4 +17,6 @@ public interface IDBusHttpConstants {
 
     public static final String HTTP_HEADER_FOLLOW_REDIRECT = "FollowRedirect";
 
+    public static final String HTTP_HEADER_FOLLOW_REDIRECT = "FollowRedirect";
+
 }

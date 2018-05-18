@@ -124,6 +124,7 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
         List<Credential> creds = new ArrayList<Credential>();
 
         creds.add(newCredential(USERNAME_CREDENTIAL_NAME, user.getUserName()));
+        creds.add(newCredential(USERID_CREDENTIAL_NAME, user.getUserName()));
         creds.add(newCredential(PASSWORD_CREDENTIAL_NAME, user.getUserPassword()));
         if (user.getSalt() != null && !"".equals(user.getSalt()))
         creds.add(newCredential(SALT_CREDENTIAL_NAME, user.getSalt()));

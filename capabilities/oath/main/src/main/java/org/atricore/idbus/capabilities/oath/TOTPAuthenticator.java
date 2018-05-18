@@ -277,9 +277,10 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
 
         String value = UserUtil.getProperty(user, getSecretCredentialName());
         if (value != null)
-            creds.add(new OTPSecret(value));
+            creds.add(newCredential(getSecretCredentialName(), value));
 
-        creds.add(new UserNameCredential(user.getUserName()));
+        creds.add(newCredential(USERNAME_CREDENTIAL_NAME, user.getUserName()));
+        creds.add(newCredential(USERID_CREDENTIAL_NAME, user.getUserName()));
 
         return creds.toArray(new Credential[0]);
     }

@@ -38,5 +38,8 @@ public class IdBusRequestCycle extends RequestCycle {
     protected void onEndRequest() {
         super.onEndRequest();
         ((WebResponse) getResponse()).setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "FALSE" );
+
+        ((WebResponse) getResponse()).setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "FALSE" );
+
     }
 }
