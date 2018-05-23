@@ -14,4 +14,8 @@
                interface="org.atricore.idbus.kernel.main.mail.MailService"
                availability="mandatory"/>
 
+    <reference id="kernelConfig" timeout="60"
+               interface="org.atricore.idbus.kernel.main.util.ConfigurationContext"
+               availability="mandatory"/>
+
 </blueprint>
