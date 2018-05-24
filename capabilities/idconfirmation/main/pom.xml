@@ -233,6 +233,11 @@
         </dependency>
         <dependency>
             <groupId>org.scalatra.scalate</groupId>
+            <artifactId>scalate-core_2.11</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scalatra.scalate</groupId>
             <artifactId>scalate-core_${scala.major.version}</artifactId>
             <version>${scalate.version}</version>
         </dependency>

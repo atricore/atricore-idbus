@@ -85,7 +85,6 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
     private int connectionTimeoutMillis = 5000; // Five seconds
     private int socketTimeoutMillis = 300000; // Five minutes
 
-
     public OsgiIDBusServlet2() {
         super();
     }
@@ -134,12 +133,54 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
             started = System.currentTimeMillis();
 
-            // Add node ID to response headers
             String nodeId = null;
             if (kernelConfig != null) {
+
+                // Add node ID to response headers
                 nodeId = kernelConfig.getProperty("idbus.node");
                 if(nodeId != null)
                     res.addHeader("X-IdBus-Node", nodeId);
+
+                // Add additional headers
+
+                String xFrameOptions = kernelConfig.getProperty("binding.http.xFrameOptionsMode");
+                if (xFrameOptions != null) {
+
+                    XFrameOptions mode = XFrameOptions.fromValue(xFrameOptions);
+
+                    String xFrameOptoinsURLs = "";
+                    if (kernelConfig.getProperty("binding.http.xFrameOptionsURLs") != null) {
+                        StringTokenizer st = new StringTokenizer(kernelConfig.getProperty("binding.http.xFrameOptionsURLs"), ",");
+                        while (st.hasMoreTokens()) {
+                            String s = st.nextToken();
+                            xFrameOptoinsURLs = xFrameOptoinsURLs + " '" + s + "'";
+                        }
+                    }
+
+
+                    switch(mode) {
+                        case DISABLED:
+                            // Nothing to do
+                            break;
+                        case SAME_ORIGIN:
+                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue());
+                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors 'self'" + xFrameOptoinsURLs);
+                            break;
+                        case ALLOW_FROM:
+                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue() + xFrameOptoinsURLs);
+                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors" + xFrameOptoinsURLs);
+                            break;
+                        case DENY:
+                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue());
+                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors 'none'");
+                            break;
+                        default:
+                            logger.error("Unknown X-Frame-Options mode " + mode.getValue());
+                           break;
+
+                    }
+                }
+
             }
 
             if (internalProcessingPolicy == null) {

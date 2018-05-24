@@ -2,7 +2,7 @@ package org.atricore.idbus.capabilities.sso.ui;
 
 import org.apache.wicket.util.io.IClusterable;
 
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -26,6 +26,8 @@ public class WebAppConfig implements IClusterable {
     private String unitName;
 
     private String selfServicesSharedSecret;
+
+    // HTTP Headers to be added to responses
 
     public String getAppName() {
         return appName;

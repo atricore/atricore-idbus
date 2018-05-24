@@ -646,6 +646,45 @@
                 <version>3.7</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-parser-combinators_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-xml_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-reflect</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.specs2</groupId>
+                <artifactId>specs2-core_${scala.major.version}</artifactId>
+                <version>3.7</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
