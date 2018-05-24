@@ -79,8 +79,8 @@
 
         <dependency>
             <groupId>org.scalatra.scalate</groupId>
-            <artifactId>scalate-core_2.11</artifactId>
-            <version>1.7.1</version>
+            <artifactId>scalate-core_${scala.major.version}</artifactId>
+            <version>${scalate.version}</version>
         </dependency>
 
         <dependency>
@@ -113,7 +113,7 @@
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2-core_2.11</artifactId>
+            <artifactId>specs2-core_${scala.major.version}</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -151,13 +151,14 @@
                         <Export-Package>${project.artifactId};version=${project.version}</Export-Package>
                         <Require-Bundle>
                             org.atricore.idbus.capabilities.sso.dsl,
-                            org.atricore.idbus.bundles.scala-library-v2_9_1
+                            org.scala-lang.scala-library; bundle-version=${scala.version},
                         </Require-Bundle>
                         <Import-Package>
                             !${project.artifactId},
                             org.apache.aries.blueprint,
                             org.osgi.service.blueprint.container,
                             org.osgi.service.blueprint.reflect,
+                            scala.*;version=${scala.version},
                             *
                         </Import-Package>
                         <Private-Package>

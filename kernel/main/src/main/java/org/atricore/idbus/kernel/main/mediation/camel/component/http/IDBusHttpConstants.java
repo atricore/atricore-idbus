@@ -17,4 +17,8 @@ public interface IDBusHttpConstants {
 
     public static final String HTTP_HEADER_FOLLOW_REDIRECT = "FollowRedirect";
 
+    public static final String HTTP_HEADER_FRAME_OPTIONS = "X-Frame-Options";
+
+    public static final String HTTP_HEADER_CONTENT_SECURITY_POLICY = "Content-Security-Policy";
+
 }

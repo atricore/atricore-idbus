@@ -58,9 +58,9 @@
         <module>bundles/pax-web-jetty-v0_7_3</module>
         <module>bundles/wadi-v2_1_2</module>
         <module>bundles/ini4j-v0_5_1</module>
-        <module>bundles/scala-library-v2_9_1</module>
-        <module>bundles/scala-compiler-v2_9_1</module>
-        <module>bundles/scala-library-v2_11_8</module>
+        <!--<module>bundles/scala-library-v2_9_1</module>-->
+        <!--<module>bundles/scala-compiler-v2_9_1</module>-->
+        <!--<module>bundles/scala-library-v2_11_8</module>-->
         <module>bundles/jasypt-v1_9_2</module>
         <module>bundles/jasypt-spring31-v1_9_2</module>
         <module>capabilities/spmlr2</module>
@@ -117,6 +117,11 @@
     <properties>
         <compiler.fork>true</compiler.fork>
         <felix.plugin.version>2.1.0</felix.plugin.version>
+        <scala.major.version>2.11</scala.major.version>
+        <scala.version>${scala.major.version}.8</scala.version>
+        <scala.modules.version>1.0.5</scala.modules.version>
+        <!--<scala.osgi.version>${scala.version}.v20160304-115712-1706a37eb8</scala.osgi.version>-->
+        <scalate.version>1.7.1</scalate.version>
     </properties>
 
 
@@ -584,22 +589,39 @@
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
-                <version>2.11.8</version>
+                <version>${scala.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
-                <version>2.11.8</version>
+                <version>${scala.version}</version>
                 <classifier>sources</classifier>
             </dependency>
             <dependency>
                 <groupId>org.scala-lang.modules</groupId>
-                <artifactId>scala-parser-combinators_2.11</artifactId>
-                <version>1.0.5</version>
+                <artifactId>scala-parser-combinators_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-xml_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-reflect</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>org.specs2</groupId>
-                <artifactId>specs2-core_2.11</artifactId>
+                <artifactId>specs2-core_${scala.major.version}</artifactId>
                 <version>3.7</version>
                 <scope>test</scope>
             </dependency>
@@ -631,6 +653,7 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
+                        <compilerArgument>-XDignore.symbol.file</compilerArgument>
                     </configuration>
                 </plugin>
                 <plugin>
