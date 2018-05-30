@@ -30,6 +30,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.springframework.util.StringUtils;
@@ -78,6 +79,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
     protected Map<String, PageMountPoint> mountsByPath;
 
+    protected ConfigurationContext kernelConfig;
+
 
     static {
 
@@ -99,6 +102,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         imageExtensions.add("yuv"); // YUV Encoded Image File
         imageExtensions.add("ico"); // Icon file
     }
+
+
 
     public BaseWebApplication() {
         super();
@@ -238,7 +243,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         {
             public RequestCycle get(RequestCycleContext context)
             {
-                return new IdBusRequestCycle(context);
+                return new IdBusRequestCycle(context, BaseWebApplication.this);
             }
         });
 
@@ -327,11 +332,15 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         return cfg;
     }
 
+    public ConfigurationContext getKernelConfig() {
+        return kernelConfig;
+    }
+
     public List<AppResource> getAppResources() {
         return appResources;
     }
 
-    public final synchronized void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService, IdentityMediationUnitRegistry idsuRegistry, MailService mailService) {
+    public final synchronized void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService, IdentityMediationUnitRegistry idsuRegistry, ConfigurationContext kernelConfig, MailService mailService) {
 
         // We're ready
         this.ready = true;
@@ -340,6 +349,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         this.appConfigRegistry = appConfigRegistry;
         this.brandingService = brandingService;
         this.idsuRegistry = idsuRegistry;
+        this.kernelConfig = kernelConfig;
         this.mailService = mailService;
 
         // Register the application to the branding service
