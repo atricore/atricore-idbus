@@ -133,12 +133,7 @@ public enum AuthnCtxClass {
     WINDOWS("urn:federation:authentication:windows", true),
 
     /** URI for HOTP authentication context. */
-    HOTP_CTX("urn:org:atricore:idbus:ac:classes:oath:HOTP", false),
-
-    /** URI for TOTP authentication context. */
-    TOTP_CTX("urn:org:atricore:idbus:ac:classes:oath:TOTP", false)
-
-    ;
+    HOTP_CTX("urn:org:atricore:idbus:ac:classes:oath:HOTP", false);
 
 
 
