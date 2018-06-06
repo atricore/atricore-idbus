@@ -581,12 +581,21 @@ public class SingleLogoutProducer extends SSOProducer {
     }
 
     protected StatusResponseType buildSamlSloResponse(CamelMediationExchange exchange,
+                                                      SPChannel spChannel,
                                                       LogoutRequestType sloRequest,
                                                       CircleOfTrustMemberDescriptor sp,
                                                       EndpointDescriptor spEndpoint) throws Exception {
+
+
         // Build sloresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SloRequestToSamlR2RespPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
+
+        idPlanExchange.setProperty(VAR_COT, this.getCot());
+        idPlanExchange.setProperty(VAR_COT_MEMBER, spChannel.getMember());
+        idPlanExchange.setProperty(VAR_CHANNEL, spChannel);
+        //idPlanExchange.setProperty(VAR_ENDPOINT, this.endpoint);
+
 
         // Publish SP springmetadata
         idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
@@ -1092,7 +1101,7 @@ public class SingleLogoutProducer extends SSOProducer {
                     true);
 
             // TODO : Send partialLogout status code if required
-            ssoResponse = buildSamlSloResponse(exchange, sloRequest, sp, destination);
+            ssoResponse = buildSamlSloResponse(exchange, requiredSpChannel, sloRequest, sp, destination);
         }
 
         // Check if we have to notify the idp selector
@@ -1133,6 +1142,7 @@ public class SingleLogoutProducer extends SSOProducer {
             out.setMessage(new MediationMessageImpl(entityRequest.getID(),
                     entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
 
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP, state.getAttribute("SAMLR2Signer"));
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse != null ? ssoResponse : null);
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP, ssoResponse != null ? "LogoutResponse" : "LogoutLocation");

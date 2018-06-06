@@ -17,5 +17,7 @@ public interface SSOConstants {
     static final String SSO_RESPONSE_RELAYSTATE_VAR_TMP = "urn:org:atricore:idbus:sso:protocol:Response:relayState:tmp";
 
     static final String SSO_RESPONSE_TYPE_VAR_TMP = "urn:org:atricore:idbus:sso:protocol:Response:type:tmp";
+
+    static final String SSO_RESPONSE_SIGNER_VAR_TMP = "urn:org:atricore:idbus:sso:protocol:Response:signer:tmp";
 }
 

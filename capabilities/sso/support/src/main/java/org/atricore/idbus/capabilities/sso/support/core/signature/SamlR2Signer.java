@@ -27,6 +27,8 @@ import oasis.names.tc.saml._2_0.protocol.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import java.io.Serializable;
+
 /**
  * <p>
  * This can digitally sign and verify SAMLR Assertions, Requests and Reponses signatures.
@@ -38,7 +40,7 @@ import org.w3c.dom.Node;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public interface SamlR2Signer {
+public interface SamlR2Signer extends Serializable {
 
     /**
      * Signs a SAMLR2 Assertion
