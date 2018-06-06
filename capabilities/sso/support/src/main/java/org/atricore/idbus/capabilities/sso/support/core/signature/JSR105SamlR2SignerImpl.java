@@ -497,11 +497,19 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     public void validateQueryString(RoleDescriptorType md, String msg, String relayState, String sigAlg, String signature, boolean isResponse) throws SamlR2SignatureException, SamlR2SignatureValidationException {
         try {
+
+            if (sigAlg == null)
+                throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature: No signature algorithm");
+
+            if (signature == null)
+                throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature: No signature value");
+
             String queryStr = ( isResponse ? "SAMLResponse=" : "SAMLRequest=" ) +
                 URLEncoder.encode(msg, "UTF-8") + "&" +
                 (relayState != null && !"".equals(relayState) ? "RelayState=" + relayState + "&" : "") +
                 "SigAlg="  + URLEncoder.encode(sigAlg, "UTF-8") + "&" +
                 "Signature=" + URLEncoder.encode(signature, "UTF-8");
+
         } catch (UnsupportedEncodingException e) {
             logger.error("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
             throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
