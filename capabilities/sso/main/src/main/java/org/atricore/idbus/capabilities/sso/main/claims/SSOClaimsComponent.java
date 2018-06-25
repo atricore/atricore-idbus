@@ -62,6 +62,11 @@ public class SSOClaimsComponent extends DefaultComponent {
                 break;
 
             case TIME_SYNC_TOKEN_AUTHN_CTX:
+            case TELEPHONY_AUTHN_CTX:
+            case PERSONAL_TELEPHONY_AUTHN_CTX:
+            case HOTP_CTX:
+            case MTFU_AUTHN_CTX:
+            case MTFC_AUTHN_CTX:
                 endpoint = new UsernamePasscodeClaimsEndpoint(uri, this, parameters);
                 break;
 

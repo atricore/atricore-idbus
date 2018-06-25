@@ -389,9 +389,7 @@ public class UsernamePasscodeSignInPanel extends BaseSignInPanel {
                 claims,
                 credentialClaimsRequest.getRelayState());
 
-        EndpointDescriptor claimsEndpoint = resolveClaimsEndpoint(credentialClaimsRequest, AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX);
-        if (claimsEndpoint == null)
-            claimsEndpoint = resolveClaimsEndpoint(credentialClaimsRequest, AuthnCtxClass.MTFC_AUTHN_CTX);
+        EndpointDescriptor claimsEndpoint = resolve2FAClaimsEndpoint(credentialClaimsRequest);
 
         if (claimsEndpoint == null) {
             logger.error("No claims endpoint found!");

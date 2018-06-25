@@ -34,6 +34,8 @@ public interface Constants  {
 
     String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";
 
+    String TOKEN_NS = "urn:org:atricore:idbus:kernel:main:authn:token";
+
     String SPNEGO_NS = "urn:org:atricore:idbus:kernel:main:authn:spnego";
 
     String TICKET_NS = "urn:org:atricore:idbus:kernel:main:authn:ticket";
