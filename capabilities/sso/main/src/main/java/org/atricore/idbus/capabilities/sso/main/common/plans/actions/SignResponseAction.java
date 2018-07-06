@@ -30,6 +30,7 @@ import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -54,8 +55,12 @@ public class SignResponseAction extends AbstractSSOAction {
         StatusResponseType response = (StatusResponseType) out.getContent();
 
         FederationChannel channel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
+        FederationChannel responseChannel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_RESPONSE_CHANNEL);
+
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
+
+        ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
 
         CircleOfTrustMemberDescriptor dest =
                 (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);

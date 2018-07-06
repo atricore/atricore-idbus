@@ -105,11 +105,11 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
     // Validate certificate expiration, CA, etc.
     private boolean validateCertificate = true;
 
-    private String signMethodSpec;
-
     public Provider getProvider() {
         return provider;
     }
+
+    private String signMethodSpec;
 
     public void setProvider(Provider provider) {
         this.provider = provider;
@@ -1007,7 +1007,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", provider);
 
             if (logger.isDebugEnabled())
-                logger.debug("Creating XML DOM Digital Siganture (not signing yet!)");
+                logger.debug("Creating XML DOM Digital Signature (not signing yet!)");
 
             // Create a Reference to the enveloped document and
             // also specify the SHA1 digest algorithm and the ENVELOPED Transform.
@@ -1024,7 +1024,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                             transforms,
                             null, null);
 
-            // Use signature method based on key algorithm.
+            // Use signature method based on key algorithm, only RSA and DSA supported for now.
             Key pk = keyResolver.getPrivateKey();
 
             String signatureMethod = null;
@@ -1038,7 +1038,9 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             } else if (pk.getAlgorithm().equals("DSA")) {
                 signatureMethod = SignMethod.SHA1_WITH_DSA.getSpec();
+                logger.warn("Using DSA/SHA 1 when signing! ");
             } else {
+                // TODO : ECDSA ?
                 logger.error("Unsupported Key algorithm : " + pk.getAlgorithm());
                 throw new SamlR2SignatureException("Unsupported Key algorithm : " + pk.getAlgorithm());
             }

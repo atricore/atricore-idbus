@@ -90,7 +90,7 @@ public class EncryptResponseContentAction extends AbstractSSOAction {
                                 logger.debug("Encrypting SAMLR2 Assertion : " + assertion.getID() + " for SP " + dest.getAlias());
 
                             // Add encrypted assertion as nested element
-                            EncryptedElementType encryptedAssertion = encrypter.encrypt(assertion, encKey);
+                            EncryptedElementType encryptedAssertion = encrypter.encrypt(assertion, encKey, channelCfg.getEncryptAssertionAlgorithm());
                             assertions.add(encryptedAssertion);
                         } else {
                             assertions.add(o);

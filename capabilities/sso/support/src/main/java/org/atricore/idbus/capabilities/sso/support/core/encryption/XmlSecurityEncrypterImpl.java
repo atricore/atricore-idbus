@@ -40,7 +40,6 @@ import org.apache.xml.security.utils.Base64;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
-import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.X509DataType;
@@ -57,14 +56,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.security.Key;
-import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.Iterator;
 import java.util.List;
 
@@ -119,15 +114,38 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
     static {
         org.apache.xml.security.Init.init();
     }
-
-    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key) throws SamlR2EncrypterException {
+    /**
+     * Encrypt an Assertion, the encryption will verify if the target SP has specified an algorithm.  Otherwise
+     * it will use the provided (dataEncryptionAlgorithm)
+     *
+     * @param assertion to be encrypted
+     * @param key target SP key descriptor, if available.
+     * @param defaultDataEncryptionAlgorithm default encryption algorithm
+     *
+     * @return a SAML encrypted element.
+     *
+     * @throws SamlR2EncrypterException     */
+    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key, String defaultDataEncryptionAlgorithm ) throws SamlR2EncrypterException {
         if (keyResolver != null)
-            return encrypt(assertion, key, keyResolver);
+            return encrypt(assertion, key, defaultDataEncryptionAlgorithm, keyResolver);
 
         throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
     }
 
-    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+    /**
+     * Encrypt an Assertion, the encryption will verify if the target SP has specified an algorithm.  Otherwise
+     * it will use the provided (dataEncryptionAlgorithm)
+     *
+     * @param assertion to be encrypted
+     * @param key target SP key descriptor, if available.
+     * @param defaultDataEncryptionAlgorithm default encryption algorithm
+     * @param keyResolver IDP key resolver
+     *
+     * @return a SAML encrypted element.
+     *
+     * @throws SamlR2EncrypterException
+     */
+    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key, String defaultDataEncryptionAlgorithm, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
 
         try {
             // Marshall the Assertion object as a DOM tree:
@@ -143,36 +161,67 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
                 logger.debug("Obtaining encryption Key for assertion " + assertion.getID());
 
             // Generate a symmetric encryption key to encrypt DATA (assertion) using algorithm/key-size from other provider's MD descriptor
-            String keyEncAlgorithmURI = null;
+
+            // Verify if any of the SPs encription methods is supported
+            String dataEncryptionAlgorithm = null;
+
+            int expectedKeySize = 0;
             int keySize = 0;
             if (key.getEncryptionMethod() != null) {
                 List<EncryptionMethodType> encMethods = key.getEncryptionMethod();
                 for(EncryptionMethodType encMethod : encMethods) {
                     if (isSupported(encMethod.getAlgorithm())) {
-                        keyEncAlgorithmURI = encMethod.getAlgorithm();
-                        keySize = getKeySize(encMethod);
+                        dataEncryptionAlgorithm = encMethod.getAlgorithm();
+
+                        for (Object o : encMethod.getContent()) {
+                            if (o instanceof JAXBElement) {
+                                JAXBElement e = (JAXBElement) o;
+                                if (e.getValue() instanceof BigInteger) {
+                                    keySize = ((BigInteger)e.getValue()).intValue();
+                                }
+                            }
+                        }
+
+                        if (keySize <= 0)
+                            keySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Using target SP supported encryption algorithm ["+dataEncryptionAlgorithm+"] size ["+ keySize + "]");
                         break;
+                    } else {
+                        logger.debug("Ignoring target SP encryption algorithm ["+dataEncryptionAlgorithm+"], not supported");
                     }
                 }
             }
 
-            // If no algorithm is found, use default (could cause problems)
-            if (keyEncAlgorithmURI == null) {
-                logger.debug("Using default key-enc-algorithm, none provided/supported in key " + key);
-                keyEncAlgorithmURI = getSymmetricKeyAlgorithmURI();
-                keySize = JCEMapper.getKeyLengthFromURI(keyEncAlgorithmURI);
+            // If no algorithm is found/supported, use default (could cause problems)
+            if (dataEncryptionAlgorithm == null && defaultDataEncryptionAlgorithm != null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using configured enc-algorithm [" + defaultDataEncryptionAlgorithm + "], none provided/supported in key " + key);
+                dataEncryptionAlgorithm = defaultDataEncryptionAlgorithm;
+                keySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
             }
 
+            if (dataEncryptionAlgorithm == null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using default enc-algorithm [" + defaultDataEncryptionAlgorithm + "], none provided/supported in key " + key);
+                dataEncryptionAlgorithm = getSymmetricKeyAlgorithmURI();
+                keySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
+            }
+
+
+            expectedKeySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
+
             if (logger.isDebugEnabled())
-                logger.debug("Requested key-enc-algorithm [key-size]" + keyEncAlgorithmURI + " ["+keySize+"]");
+                logger.debug("Creating data-enc-key [key-size]" + dataEncryptionAlgorithm + " [" + keySize + "]");
 
             // TODO : CACHE Keys for SPs for some time to improve performance.
-            Key encryptionKey = generateDataEncryptionKey(keyEncAlgorithmURI, keySize);
+            Key encryptionKey = generateDataEncryptionKey(dataEncryptionAlgorithm, keySize);
 
             if (logger.isDebugEnabled())
                 logger.debug("Encrypt assertion " + assertion.getID());
 
-            EncryptedDataType encData = encryptElement(doc, encryptionKey, false);
+            EncryptedDataType encData = encryptElement(doc, encryptionKey, dataEncryptionAlgorithm, false);
 
             if (logger.isDebugEnabled())
                 logger.debug("Encrypt Key " + assertion.getID());
@@ -299,7 +348,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         throw new UnsupportedOperationException("Not implemented!");
     }
 
-    protected EncryptedDataType encryptElement(Document ownerDocument, Key encryptionKey,
+    protected EncryptedDataType encryptElement(Document ownerDocument, Key encryptionKey, String encAlgorithm,
                                                boolean encryptContentMode) throws SamlR2EncrypterException {
         if (ownerDocument == null) {
             logger.error("Document for encryption is null");
@@ -313,9 +362,9 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         XMLCipher xmlCipher;
         try {
             if (jceProviderName != null) {
-                xmlCipher = XMLCipher.getProviderInstance(getSymmetricKeyAlgorithmURI(), jceProviderName);
+                xmlCipher = XMLCipher.getProviderInstance(encAlgorithm, jceProviderName);
             } else {
-                xmlCipher = XMLCipher.getInstance(getSymmetricKeyAlgorithmURI());
+                xmlCipher = XMLCipher.getInstance(encAlgorithm);
             }
             xmlCipher.init(XMLCipher.ENCRYPT_MODE, encryptionKey);
         } catch (XMLEncryptionException e) {
@@ -431,14 +480,12 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
         }
     }
 
-    protected SecretKey generateDataEncryptionKey(String keyEncAlgorithmURI, int keySize) {
+    protected SecretKey generateDataEncryptionKey(String dataEncAlgorithmURI, int keySize) {
         try {
             if (logger.isTraceEnabled())
-                logger.trace("Using algorithm [" + getSymmetricKeyAlgorithmURI() + "]");
+                logger.trace("Using algorithm [" + dataEncAlgorithmURI + "]");
 
-            String jceAlgorithmName = JCEMapper.getJCEKeyAlgorithmFromURI(keyEncAlgorithmURI);
-            if (keySize < 1)
-                keySize = JCEMapper.getKeyLengthFromURI(getSymmetricKeyAlgorithmURI());
+            String jceAlgorithmName = JCEMapper.getJCEKeyAlgorithmFromURI(dataEncAlgorithmURI);
 
             if (logger.isTraceEnabled())
                 logger.trace("Generating key [" + jceAlgorithmName + "] length:" + keySize);
