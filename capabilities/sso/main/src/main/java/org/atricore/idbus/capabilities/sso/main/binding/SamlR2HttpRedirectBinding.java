@@ -28,14 +28,15 @@ import org.apache.camel.Message;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.sp.IDPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.MediationMessage;
-import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
+import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.w3._1999.xhtml.Html;
@@ -243,10 +244,22 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             MediationState state = samlOut.getMessage().getState();
             SamlR2Signer signer = (SamlR2Signer) state.getAttribute("SAMLR2Signer");
             if (signer != null) {
-                qryString = "?" + signer.signQueryString(qryString);
+                AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+                ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
+                String digest = null;
+                if (cfg instanceof SPChannelConfiguration) {
+                    digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+                } else if (cfg instanceof IDPChannelConfiguration) {
+                    digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+                } else {
+                    digest = "SHA256";
+                }
+
+                qryString = "?" + signer.signQueryString(qryString, digest);
             } else {
                 qryString = "?" + qryString;
             }
+
 
             Message httpOut = exchange.getOut();
             Message httpIn = exchange.getIn();

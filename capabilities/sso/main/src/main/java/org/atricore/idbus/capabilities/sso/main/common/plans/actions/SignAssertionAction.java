@@ -57,7 +57,7 @@ public class SignAssertionAction extends AbstractSSOAssertionAction {
         if (logger.isDebugEnabled())
             logger.debug("Signing assertion " + assertion.getID() + " with signer " + signer);
         
-        assertion = signer.sign(assertion);
+        assertion = signer.sign(assertion, "SHA256");
         out.replaceContent(assertion);
 
     }

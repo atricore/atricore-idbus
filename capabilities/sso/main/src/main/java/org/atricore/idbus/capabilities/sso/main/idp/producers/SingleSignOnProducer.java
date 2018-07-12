@@ -42,6 +42,7 @@ import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
@@ -52,6 +53,7 @@ import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
+import org.atricore.idbus.capabilities.sso.main.sp.IDPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
@@ -1042,7 +1044,19 @@ public class SingleSignOnProducer extends SSOProducer {
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
-                saml11Response = signer.sign(saml11Response);
+
+                ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
+
+                String digest = null;
+                if (cfg instanceof SPChannelConfiguration) {
+                    digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+                } else if (cfg instanceof IDPChannelConfiguration) {
+                    digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+                } else {
+                    digest = "SHA256";
+                }
+
+                saml11Response = signer.sign(saml11Response, digest);
             }
 
             // Clear the current authentication state
@@ -1525,9 +1539,22 @@ public class SingleSignOnProducer extends SSOProducer {
             // --------------------------------------------------------------------
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
+
+                ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
+
+                String digest = null;
+                if (cfg instanceof SPChannelConfiguration) {
+                    digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+                } else if (cfg instanceof IDPChannelConfiguration) {
+                    digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+                } else {
+                    digest = "SHA256";
+                }
+
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) requiredSpChannel.getIdentityMediator()).getSigner();
-                saml11Response = signer.sign(saml11Response);
+
+                saml11Response = signer.sign(saml11Response, digest);
             }
 
             clearAuthnState(exchange);

@@ -45,7 +45,7 @@ public interface SamlR2Signer extends Serializable {
     /**
      * Signs a SAMLR2 Assertion
      */
-    AssertionType sign(AssertionType assertion) throws SamlR2SignatureException;
+    AssertionType sign(AssertionType assertion, String digest) throws SamlR2SignatureException;
 
     /**
      * @param md        The signer SAML 2.0 Metadata
@@ -60,21 +60,21 @@ public interface SamlR2Signer extends Serializable {
      * @return the signed request
      * @throws SamlR2SignatureException if an error occurs when signing.
      */
-    RequestAbstractType sign(RequestAbstractType request) throws SamlR2SignatureException;
+    RequestAbstractType sign(RequestAbstractType request, String digest) throws SamlR2SignatureException;
 
     /**
      * @param response the SAML 2.0 Response
      * @return the signed response
      * @throws SamlR2SignatureException if an error occurs when signing.
      */
-    StatusResponseType sign(StatusResponseType response, String element) throws SamlR2SignatureException;
+    StatusResponseType sign(StatusResponseType response, String element, String digest) throws SamlR2SignatureException;
 
     /**
      * @param queryString  the SAML 2.0 Query string (HTTP-Redirect binding)
      * @return
      * @throws SamlR2SignatureException
      */
-    String signQueryString(String queryString) throws SamlR2SignatureException;
+    String signQueryString(String queryString, String digest) throws SamlR2SignatureException;
 
     /**
      * @param md       The signer SAML 2.0 Metadata
@@ -176,7 +176,7 @@ public interface SamlR2Signer extends Serializable {
      * @return the signed request
      * @throws SamlR2SignatureException if an error occurs when signing.
      */
-    ManageNameIDRequestType sign(ManageNameIDRequestType manageNameIDRequest) throws SamlR2SignatureException;
+    ManageNameIDRequestType sign(ManageNameIDRequestType manageNameIDRequest, String digest) throws SamlR2SignatureException;
 
     // --------------------------------------------------------< SAML 1.1 >
 
@@ -189,7 +189,7 @@ public interface SamlR2Signer extends Serializable {
      * @return the signed response
      * @throws SamlR2SignatureException if an error occurs when signing.
      */
-    oasis.names.tc.saml._1_0.protocol.ResponseType sign(oasis.names.tc.saml._1_0.protocol.ResponseType response)
+    oasis.names.tc.saml._1_0.protocol.ResponseType sign(oasis.names.tc.saml._1_0.protocol.ResponseType response, String digest)
             throws SamlR2SignatureException;
 
 

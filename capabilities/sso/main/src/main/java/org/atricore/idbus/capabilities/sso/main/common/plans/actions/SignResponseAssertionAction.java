@@ -40,6 +40,16 @@ public class SignResponseAssertionAction extends AbstractSSOAction {
 
         ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
 
+        String digest = null;
+        if (cfg instanceof SPChannelConfiguration) {
+            digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+        } else if (cfg instanceof IDPChannelConfiguration) {
+            digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+        } else {
+            digest = "SHA256";
+        }
+
+
         String signatureHash = cfg instanceof IDPChannelConfiguration ?
                 ((IDPChannelConfiguration) cfg).getSignatureHash() : ((SPChannelConfiguration) cfg).getSignatureHash();
 
@@ -85,7 +95,7 @@ public class SignResponseAssertionAction extends AbstractSSOAction {
 
                         // If the response has an assertion, remove the signature and re-sign it ... (we're discarding STS signature!)
                         if (signAssertion) {
-                            AssertionType signedAssertion =  signer.sign(assertion);
+                            AssertionType signedAssertion =  signer.sign(assertion, digest);
                             assertions.add(signedAssertion);
                         } else {
                             assertions.add(assertion);

@@ -173,7 +173,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
-    public AssertionType sign(AssertionType assertion) throws SamlR2SignatureException {
+    public AssertionType sign(AssertionType assertion, String digest) throws SamlR2SignatureException {
 
         try {
 
@@ -186,7 +186,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                     "Assertion",
                     new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
 
-            doc = sign(doc, assertion.getID());
+            doc = sign(doc, assertion.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Assertion from DOM Tree [" + assertion.getID() + "]");
@@ -219,7 +219,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
-    public RequestAbstractType sign(RequestAbstractType request) throws SamlR2SignatureException {
+    public RequestAbstractType sign(RequestAbstractType request, String digest) throws SamlR2SignatureException {
         try {
 
             // Marshall the Assertion object as a DOM tree:
@@ -228,7 +228,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             org.w3c.dom.Document doc = XmlUtils.marshalSamlR2RequestAsDom(request);
 
-            doc = sign(doc, request.getID());
+            doc = sign(doc, request.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Status Response from DOM Tree [" + request.getID() + "]");
@@ -246,7 +246,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public StatusResponseType sign(StatusResponseType response, String element) throws SamlR2SignatureException {
+    public StatusResponseType sign(StatusResponseType response, String element, String digest) throws SamlR2SignatureException {
         try {
 
             // Marshall the Assertion object as a DOM tree:
@@ -260,7 +260,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                             SAMLR2Constants.SAML_PROTOCOL_PKG,
                             SAMLR2Constants.SAML_ASSERTION_PKG});
 
-            doc = sign(doc, response.getID());
+            doc = sign(doc, response.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Response from DOM Tree [" + response.getID() + "]");
@@ -273,7 +273,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public String signQueryString(String queryString) throws SamlR2SignatureException {
+    public String signQueryString(String queryString, String digest) throws SamlR2SignatureException {
 
         try {
 
@@ -288,7 +288,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             PrivateKey privateKey = (PrivateKey) this.getKeyResolver().getPrivateKey();
 
             String keyAlgorithm = privateKey.getAlgorithm();
-            String digest = "SHA256"; // TODO : Make dynamic!!!
+
             Signature signature = null;
             String algURI = null;
 
@@ -548,7 +548,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public ManageNameIDRequestType sign(ManageNameIDRequestType manageNameIDRequest) throws SamlR2SignatureException {
+    public ManageNameIDRequestType sign(ManageNameIDRequestType manageNameIDRequest, String digest) throws SamlR2SignatureException {
 
         try {
             // Marshall the Assertion object as a DOM tree:
@@ -557,7 +557,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             org.w3c.dom.Document doc = XmlUtils.marshalSamlR2RequestAsDom(manageNameIDRequest);
 
-            doc = sign(doc, manageNameIDRequest.getID());
+            doc = sign(doc, manageNameIDRequest.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Assertion from DOM Tree [" + manageNameIDRequest.getID() + "]");
@@ -572,7 +572,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     // SAML 1.1
 
-    public oasis.names.tc.saml._1_0.protocol.ResponseType sign(oasis.names.tc.saml._1_0.protocol.ResponseType response) throws SamlR2SignatureException {
+    public oasis.names.tc.saml._1_0.protocol.ResponseType sign(oasis.names.tc.saml._1_0.protocol.ResponseType response, String digest) throws SamlR2SignatureException {
         try {
 
             // Marshall the Assertion object as a DOM tree:
@@ -617,7 +617,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             Document doc =
                     dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swrsp.toString().getBytes()));
 
-            doc = sign(doc, response.getResponseID());
+            doc = sign(doc, response.getResponseID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR11 Response from DOM Tree [" + response.getResponseID() + "]");
@@ -997,7 +997,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      * @param id
      * @return
      */
-    protected Document sign(Document doc, String id) throws SamlR2SignatureException {
+    protected Document sign(Document doc, String id, String digest) throws SamlR2SignatureException {
         try {
 
             Certificate cert = keyResolver.getCertificate();
@@ -1030,10 +1030,18 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             String signatureMethod = null;
             if (pk.getAlgorithm().equals("RSA")) {
 
-                if (signMethodSpec != null) {
+                if (digest != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using requested method " + digest + "withRSA");
+                    signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                } else if (signMethodSpec != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using configured method " + digest + "withRSA");
                     signatureMethod = SignMethod.fromSpec(signMethodSpec).getSpec();
                 } else {
-                    signatureMethod = SignMethod.SHA1_WITH_RSA.getSpec();
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using default " + "SHA256withRSA");
+                    signatureMethod = SignMethod.SHA256_WITH_RSA.getSpec();
                 }
 
             } else if (pk.getAlgorithm().equals("DSA")) {
