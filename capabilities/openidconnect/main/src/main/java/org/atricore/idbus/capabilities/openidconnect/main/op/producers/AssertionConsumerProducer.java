@@ -70,7 +70,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         // Resolve OpenID client
 
         // Build an OpenIDConnect authentication response based on the original request
-        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, samlAuthnRequest, response);
+        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, samlAuthnRequest);
 
         // Resolve response ED
         EndpointDescriptor ed = resolveRedirectUri(samlAuthnRequest, (AuthorizationResponse) authnResponse);
@@ -124,7 +124,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
      * @param exchange
      * @param authnCtx
      * @param authnRequest
-     * @param response
+     *
      * @return
      */
     protected AuthenticationResponse buildAuthenticationResponse(CamelMediationExchange exchange,
