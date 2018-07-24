@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
@@ -17,6 +18,8 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
     private static final Log logger = LogFactory.getLog(UnspecifiedNameIDBuiler.class);
 
     private String[] emailPropNames = {"email", "mail", "mailAddress", "emailAddress"};
+
+    private String ssoUserProperty = null;
 
     public boolean supportsPolicy(NameIDPolicyType nameIDPolicy) {
         return nameIDPolicy.getFormat().equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
@@ -47,8 +50,22 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
             String email = getPropertyValue(ssoUser, emailPropName);
             if (email != null)
                 return email;
+
+            if (StringUtils.isNotBlank(ssoUserProperty))
+                email = getPropertyValue(ssoUser, ssoUserProperty);
+
+            return email;
+
         }
 
         return null;
+    }
+
+    public String getSsoUserProperty() {
+        return ssoUserProperty;
+    }
+
+    public void setSsoUserProperty(String ssoUserProperty) {
+        this.ssoUserProperty = ssoUserProperty;
     }
 }

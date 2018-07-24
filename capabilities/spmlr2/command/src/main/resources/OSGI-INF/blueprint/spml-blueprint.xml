@@ -63,6 +63,12 @@
             </action>
         </command>
 
+        <command name="spml/usrimport">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserImportCommand">
+                <property name="cmdPrinter" ref="userPrinter"/>
+            </action>
+        </command>
+
         <command name="spml/setpassword">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.SetPasswordCommand">
                 <property name="cmdPrinter" ref="userPrinter"/>
