@@ -20,13 +20,35 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class ExcelUserParser implements UserImporter {
+public class ExcelUserParser implements UserParser {
 
     private static final Log logger = LogFactory.getLog(ExcelUserParser.class);
 
     private static final UUIDGenerator passwordGenerator = new UUIDGenerator(4);
 
     private String sheetName;
+
+
+    @Override
+    public String getName() {
+        return "excel-user-parser";
+    }
+
+    @Override
+    public String getSchema() {
+        PropertyDescriptor[] properties = BeanUtilsBean.getInstance().getPropertyUtils().getPropertyDescriptors(UserType.class);
+
+        StringBuffer schema = new StringBuffer();
+
+        for (int i = 0; i < properties.length; i++) {
+            PropertyDescriptor property = properties[i];
+
+            schema.append("column: ").append(property.getName()).
+                    append("\ttype: ").append(property.getPropertyType().getSimpleName()).append("\n");
+        }
+
+        return schema.toString();
+    }
 
     @Override
     public Set<UserType> fromStream(InputStream is) throws UserParseException {

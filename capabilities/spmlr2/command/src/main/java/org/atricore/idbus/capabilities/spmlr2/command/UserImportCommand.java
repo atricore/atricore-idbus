@@ -6,9 +6,8 @@ import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.batch.BatchRequestType;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
-import org.apache.poi.util.IOUtils;
 import org.atricore.idbus.capabilities.spmlr2.command.util.ExcelUserParser;
-import org.atricore.idbus.capabilities.spmlr2.command.util.UserImporter;
+import org.atricore.idbus.capabilities.spmlr2.command.util.UserParser;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
@@ -25,9 +24,25 @@ public class UserImportCommand extends SpmlCommandSupport {
     @Option(name = "-i", aliases = "--input", description = "Input File ", required = true, multiValued = false)
     String input;
 
+    @Option(name = "-s", aliases = "--schema", description = "Print schema ", required = true, multiValued = false)
+    boolean printSchema;
+
     // TODO : Format CSV, EXCEL, etc
 
     // TODO : ON error ?
+
+
+    @Override
+    protected Object doExecute(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
+        if (!printSchema)
+            return super.doExecute(psp, pspChannel);
+
+        String schema = buildImporter().getName();
+
+        getCmdPrinter().printMsg(schema);
+
+        return null;
+    }
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
@@ -68,7 +83,7 @@ public class UserImportCommand extends SpmlCommandSupport {
 
     }
 
-    protected UserImporter buildImporter() {
+    protected UserParser buildImporter() {
         return new ExcelUserParser();
 
     }
