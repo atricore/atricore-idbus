@@ -377,6 +377,11 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
             recordInfoAuditTrail(Action.SPML_ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
+        } else {
+            logger.error("Request attribute for entity type unknown or missing");
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            spmlResponse.setError(ErrorCode.MALFORMED_REQUEST);
+            spmlResponse.getErrorMessage().add("Request attribute for entity type unknown or missing");
         }
 
         return spmlResponse;
@@ -409,8 +414,7 @@ public class PSPProducer extends SpmlR2Producer {
             // DOM Element
             Element e = (Element) o;
             spmlSelect = (SelectionType) XmlUtils.unmarshal(e, new String[] {SPMLR2Constants.SPML_PKG});
-        }
-        else {
+        } else {
             // JAXB Element
             JAXBElement e = (JAXBElement) o;
             logger.debug("SMPL JAXBElement " + e.getName() + "[" + e.getValue() + "]");

@@ -382,7 +382,22 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             User user = new User();
 
-            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "securityQuestions", "acls", "userPassword"});
+            BeanUtils.copyProperties(userRequest, user, new String[] { "groups",
+                    "securityQuestions",
+                    "acls",
+                    "userPassword",
+            "accountExpirationDate",
+            "lastAuthentication",
+            "passwordExpirationDate"});
+
+            if (userRequest.getAccountExpirationDate() != null)
+                user.setAccountExpirationDate(userRequest.getAccountExpirationDate().getTime());
+
+            if (userRequest.getLastAuthentication() != null)
+                user.setLastAuthentication(userRequest.getLastAuthentication().getTime());
+
+            if (userRequest.getPasswordExpirationDate() != null)
+                user.setPasswordExpirationDate(userRequest.getPasswordExpirationDate().getTime());
 
             String salt = generateSalt();
 

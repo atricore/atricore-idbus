@@ -4,28 +4,31 @@ import oasis.names.tc.spml._2._0.AddRequestType;
 import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.batch.BatchRequestType;
+import org.apache.commons.io.IOUtils;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.atricore.idbus.capabilities.spmlr2.command.util.ExcelUserParser;
 import org.atricore.idbus.capabilities.spmlr2.command.util.UserParser;
+import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Set;
 
 @Command(scope = "spml", name = "usrimport", description = "SPML ADD operation")
 public class UserImportCommand extends SpmlCommandSupport {
 
 
-    @Option(name = "-i", aliases = "--input", description = "Input File ", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--input", description = "Input File ", required = false, multiValued = false)
     String input;
 
-    @Option(name = "-s", aliases = "--schema", description = "Print schema ", required = true, multiValued = false)
+    @Option(name = "-s", aliases = "--schema", description = "Print schema ", required = false, multiValued = false)
     boolean printSchema;
+
+    @Option(name = "--schema-out",  description = "Save schema to output ", required = false, multiValued = false)
+    String schemaOut;
+
 
     // TODO : Format CSV, EXCEL, etc
 
@@ -34,12 +37,20 @@ public class UserImportCommand extends SpmlCommandSupport {
 
     @Override
     protected Object doExecute(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
-        if (!printSchema)
+
+        if (verbose)
+            getCmdPrinter().printMsg("User parser: " + buildUserParser().getName());
+
+        if (printSchema) {
+            String schema = buildUserParser().getSchema();
+            getCmdPrinter().printMsg(schema);
+            if (schemaOut != null) {
+                IOUtils.write(schema, new FileOutputStream(schemaOut));
+            }
+        }
+
+        if (input != null)
             return super.doExecute(psp, pspChannel);
-
-        String schema = buildImporter().getName();
-
-        getCmdPrinter().printMsg(schema);
 
         return null;
     }
@@ -60,7 +71,7 @@ public class UserImportCommand extends SpmlCommandSupport {
         InputStream fis = new FileInputStream(fileIn);
         Set<UserType> newUsers = null;
         try {
-            newUsers = buildImporter().fromStream(fis);
+            newUsers = buildUserParser().fromStream(fis);
         } finally {
             fis.close();
         }
@@ -72,6 +83,7 @@ public class UserImportCommand extends SpmlCommandSupport {
             AddRequestType req = new AddRequestType();
             req.setRequestID(uuidGenerator.generateId());
             req.setTargetID(targetId);
+            req.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
             req.setData(newUser);
 
@@ -83,7 +95,7 @@ public class UserImportCommand extends SpmlCommandSupport {
 
     }
 
-    protected UserParser buildImporter() {
+    protected UserParser buildUserParser() {
         return new ExcelUserParser();
 
     }
