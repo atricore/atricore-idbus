@@ -23,11 +23,15 @@ public class UserImportCommand extends SpmlCommandSupport {
     @Option(name = "-i", aliases = "--input", description = "Input File ", required = false, multiValued = false)
     String input;
 
+    @Option(name = "-e", aliases = "--extended-attributes", description = "Import unknown properties as extended attributes ", required = false, multiValued = false)
+    boolean importUnknownColumnsAsAttributes = false;
+
     @Option(name = "-s", aliases = "--schema", description = "Print schema ", required = false, multiValued = false)
     boolean printSchema;
 
     @Option(name = "--schema-out",  description = "Save schema to output ", required = false, multiValued = false)
     String schemaOut;
+
 
 
     // TODO : Format CSV, EXCEL, etc
@@ -71,7 +75,7 @@ public class UserImportCommand extends SpmlCommandSupport {
         InputStream fis = new FileInputStream(fileIn);
         Set<UserType> newUsers = null;
         try {
-            newUsers = buildUserParser().fromStream(fis);
+            newUsers = buildUserParser().fromStream(fis, importUnknownColumnsAsAttributes);
         } finally {
             fis.close();
         }

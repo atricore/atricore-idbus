@@ -12,25 +12,20 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ExcelUserParser implements UserParser {
 
     private static final Log logger = LogFactory.getLog(ExcelUserParser.class);
-
-    private static final UUIDGenerator passwordGenerator = new UUIDGenerator(4);
 
     private String sheetName;
 
@@ -66,7 +61,7 @@ public class ExcelUserParser implements UserParser {
     }
 
     @Override
-    public Set<UserType> fromStream(InputStream is, boolean importUnknownColumnsAsAttributes) throws UserParseException {
+    public Set<UserType> fromStream(InputStream is, boolean unknownPropertiesAsExtendedAttributes) throws UserParseException {
 
         try {
 
@@ -133,6 +128,7 @@ public class ExcelUserParser implements UserParser {
                 if (!found) {
                     // Add custom attribute using current column ?! (optional ?!)
                     UserProperty userProperty = new UserProperty(colIdx, headerColName, null);
+                    userProperties.add(userProperty);
 
                 }
 
@@ -174,26 +170,33 @@ public class ExcelUserParser implements UserParser {
 
                             Class type = pd.getPropertyType();
                             Object value = null;
+                            boolean mapped = false;
 
                             if (type.getSimpleName().equals("String")) {
                                 // Force cell to be a string
                                 row.getCell(userProperty.getColumnIdx()).setCellType(Cell.CELL_TYPE_STRING);
                                 value = row.getCell(userProperty.getColumnIdx()).getStringCellValue().trim();
+                                mapped = true;
                             } else if (type.getSimpleName().equals("Boolean")) {
                                 row.getCell(userProperty.getColumnIdx()).setCellType(Cell.CELL_TYPE_STRING);
                                 value = Boolean.parseBoolean(row.getCell(userProperty.getColumnIdx()).getStringCellValue().trim());
+                                mapped = true;
                             } else if (type.getSimpleName().equals("Integer")) {
                                 row.getCell(userProperty.getColumnIdx()).setCellType(Cell.CELL_TYPE_STRING);
                                 value = Integer.parseInt(row.getCell(userProperty.getColumnIdx()).getStringCellValue().trim());
+                                mapped = true;
                             } else if (type.getSimpleName().equals("Long")) {
                                 row.getCell(userProperty.getColumnIdx()).setCellType(Cell.CELL_TYPE_STRING);
                                 value = Long.parseLong(row.getCell(userProperty.getColumnIdx()).getStringCellValue().trim());
+                                mapped = true;
                             } else if (type.getSimpleName().equals("Float")) {
                                 row.getCell(userProperty.getColumnIdx()).setCellType(Cell.CELL_TYPE_STRING);
                                 value = Float.parseFloat(row.getCell(userProperty.getColumnIdx()).getStringCellValue().trim());
+                                mapped = true;
                             } else if (type.getSimpleName().equals("Double")) {
                                 row.getCell(userProperty.getColumnIdx()).setCellType(Cell.CELL_TYPE_STRING);
                                 value = Double.parseDouble(row.getCell(userProperty.getColumnIdx()).getStringCellValue().trim());
+                                mapped = true;
                             } else if (type.getSimpleName().equals("XMLGregorianCalendar")) {
 
                                 try {
@@ -206,19 +209,25 @@ public class ExcelUserParser implements UserParser {
                                 } catch (DatatypeConfigurationException e) {
                                     throw new UserParseException(e);
                                 }
+                                mapped = true;
                             }
 
+                            if (mapped) {
                                 if (logger.isDebugEnabled())
-                                logger.debug("Value for cell [" + rowIdx + "," + colIdx + "] " +
-                                        userProperty.getColumnName() + " [" + value + "]");
+                                    logger.debug("Value for cell [" + rowIdx + "," + colIdx + "] " +
+                                            userProperty.getColumnName() + " [" + value + "]");
 
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Setting property [" + userProperty.getDescriptor().getName() + "] to [" + value + "]");
+                                // This is a built-in property
+                                BeanUtils.setProperty(user, userProperty.getDescriptor().getName(), value);
+                            } else {
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Value for cell [" + rowIdx + "," + colIdx + "] " +
+                                            userProperty.getColumnName() + " NOT mapped!");
+                            }
 
-                            if (logger.isDebugEnabled())
-                                logger.debug("Setting property [" + userProperty.getDescriptor().getName() + "] to [" + value + "]");
-                            // This is a built-in property
-                            BeanUtils.setProperty(user, userProperty.getDescriptor().getName(), value);
-
-                        } else if (importUnknownColumnsAsAttributes) {
+                        } else if (unknownPropertiesAsExtendedAttributes) {
 
                             // Force cell to be a string
                             row.getCell(userProperty.getColumnIdx()).setCellType(Cell.CELL_TYPE_STRING);
@@ -229,7 +238,7 @@ public class ExcelUserParser implements UserParser {
                                         userProperty.getColumnName() + " [" + value + "]");
 
                             if (logger.isDebugEnabled())
-                                logger.debug("Setting attribute [" + userProperty.getDescriptor().getName() + "] to [" + value + "]");
+                                logger.debug("Setting attribute [" + userProperty.getColumnName() + "] to [" + value + "]");
 
                             // This is a user attribute
                             AttributeValueType attr = new AttributeValueType();

@@ -13,7 +13,7 @@ public interface UserParser {
 
     Set<UserType> fromStream(InputStream in) throws UserParseException;
 
-    Set<UserType> fromStream(InputStream is, boolean importUnknownColumnsAsAttributes) throws UserParseException;
+    Set<UserType> fromStream(InputStream is, boolean unknownPropertiesAsExtendedAttributes) throws UserParseException;
 
 
 

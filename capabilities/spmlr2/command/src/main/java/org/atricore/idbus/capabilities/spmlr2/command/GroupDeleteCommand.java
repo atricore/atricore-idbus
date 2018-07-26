@@ -2,10 +2,7 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 
 import oasis.names.tc.spml._2._0.DeleteRequestType;
 import oasis.names.tc.spml._2._0.PSOIdentifierType;
-import oasis.names.tc.spml._2._0.PSOType;
 import oasis.names.tc.spml._2._0.RequestType;
-import oasis.names.tc.spml._2._0.atricore.GroupType;
-import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;

@@ -2,14 +2,13 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 
 import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.SelectionType;
-import oasis.names.tc.spml._2._0.search.*;
-import org.apache.felix.gogo.commands.Argument;
+import oasis.names.tc.spml._2._0.search.LogicalOperatorType;
+import oasis.names.tc.spml._2._0.search.ScopeType;
+import oasis.names.tc.spml._2._0.search.SearchQueryType;
+import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
-import org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2Binding;
-import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
