@@ -1111,7 +1111,7 @@ public class SingleLogoutProducer extends SSOProducer {
                 throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                         null,
                         StatusDetails.NO_DESTINATION.getValue(),
-                        "No SLO endpoint foun for SP " + sp, null);
+                        "No SLO endpoint foun for SP " + sps, null);
             }
 
             // TODO : Send partialLogout status code if required
