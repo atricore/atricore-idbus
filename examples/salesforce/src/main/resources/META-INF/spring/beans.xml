@@ -128,7 +128,7 @@
          class="org.atricore.idbus.kernel.main.mediation.MessageQueueManager"
                        destroy-method="shutDown" >
 
-                       <property name="jmsProviderDestinationName" value="Queue/IDBUS/Artifact"/>
+                       <property name="cacheName" value="Queue/IDBUS/Artifact"/>
 
                        <property name="artifactGenerator">
                            <bean class="org.atricore.idbus.kernel.main.mediation.ArtifactGeneratorImpl"/>

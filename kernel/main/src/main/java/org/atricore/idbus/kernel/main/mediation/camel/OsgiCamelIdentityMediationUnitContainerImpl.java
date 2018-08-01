@@ -23,7 +23,7 @@ package org.atricore.idbus.kernel.main.mediation.camel;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.osgi.CamelContextFactory;
+import org.apache.camel.core.osgi.OsgiDefaultCamelContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
@@ -65,10 +65,9 @@ public class OsgiCamelIdentityMediationUnitContainerImpl extends CamelIdentityMe
             logger.debug("Creating new Camel Context for " + getName());
 
         OsgiIdentityMediationUnit unit = (OsgiIdentityMediationUnit) getUnit();
-        CamelContextFactory ccFac = new org.apache.camel.osgi.CamelContextFactory();
-        ccFac.setBundleContext(getBundleContext());
-        CamelContext ctx = ccFac.createContext();
-        ((DefaultCamelContext)ctx).setRegistry(createRegistry());
+
+        DefaultCamelContext ctx = new OsgiDefaultCamelContext(unit.getBundleContext());
+        ctx.setRegistry(createRegistry());
         return ctx;
     }
 

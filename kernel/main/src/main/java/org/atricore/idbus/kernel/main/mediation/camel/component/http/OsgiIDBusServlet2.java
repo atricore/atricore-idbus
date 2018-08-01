@@ -1,9 +1,10 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.component.http.HttpConsumer;
-import org.apache.camel.component.http.HttpExchange;
+import org.apache.camel.Exchange;
 import org.apache.camel.component.jetty.CamelContinuationServlet;
+import org.apache.camel.http.common.HttpConsumer;
+import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.spi.Registry;
 import org.apache.commons.io.IOUtils;
@@ -122,8 +123,11 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         }
     }
 
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse res)
+
+
+
+
+    protected void serviceTODO(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
         long started = 0;
@@ -641,7 +645,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
     /**
      * Actually process this request
-     */
+        */
+    @Override
     protected void doService(HttpServletRequest req, HttpServletResponse r)
             throws ServletException, IOException {
 
@@ -680,9 +685,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         }
 
         IDBusHttpEndpoint endpoint = (IDBusHttpEndpoint) consumer.getEndpoint();
-        /** Synchrony version : TODO: use this instead of the old one with continuations! */
+        /// Synchrony version : TODO: use this instead of the old one with continuations!
         try {
-            final HttpExchange exchange = new HttpExchange(endpoint, req, res);
+            final Exchange exchange = null; // TODO UPD_15 new DefaultExchange(endpoint, req, res);
 
             if (logger.isTraceEnabled())
                 logger.trace("Triggering camel processors for consumer " + consumer.getPath());
@@ -704,6 +709,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
 
     }
+
 
     protected HttpConsumer resolveConsumer(HttpServletRequest req) {
         HttpConsumer targetConsumer = null;
@@ -760,6 +766,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
         return targetConsumer;
     }
+
+
 
     protected ConfigurationContext lookupKernelConfig() throws ServletException {
 

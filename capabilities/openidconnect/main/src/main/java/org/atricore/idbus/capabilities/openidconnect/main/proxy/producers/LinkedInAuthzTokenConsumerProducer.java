@@ -37,7 +37,7 @@ public class LinkedInAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
 
     private static final String LINKEDIN_API_ROOT_URL = "https://api.linkedin.com/";
 
-    private static final int MAX_NUM_OF_USER_INFO_RETRIES = 1;
+    private static final int MAX_NUM_OF_USER_INFO_RETRIES = 3;
 
     public LinkedInAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);

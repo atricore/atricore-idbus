@@ -47,10 +47,10 @@
         <datanucleus.version>2.0.3</datanucleus.version>
         <datanucleus.osgi.version>2.0.3</datanucleus.osgi.version>
 
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
         <jdo.version>2.3.0</jdo.version>
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
-        <!--<spring.version>3.2.18.RELEASE</spring.version>-->
+        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
 
     </properties>
 
@@ -110,8 +110,8 @@
 
             <dependency>
                 <groupId>org.apache.felix</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>${spring.osgi.version}</version>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${felix.framework.version}</version>
             </dependency>
         </dependencies>
 

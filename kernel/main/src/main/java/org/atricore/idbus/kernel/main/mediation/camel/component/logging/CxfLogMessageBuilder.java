@@ -22,7 +22,6 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.logging;
 
 import org.apache.camel.Message;
-import org.apache.camel.component.cxf.CxfMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.LogMessageBuilder;
@@ -38,7 +37,7 @@ public class CxfLogMessageBuilder implements LogMessageBuilder {
     private static final Log logger = LogFactory.getLog(CxfLogMessageBuilder.class);
 
     public boolean canHandle(Message message) {
-        return message instanceof CxfMessage;
+        return false;
     }
 
     public String getType() {
@@ -46,7 +45,6 @@ public class CxfLogMessageBuilder implements LogMessageBuilder {
     }
 
     public String buildLogMessage(Message message) {
-        CxfMessage cxfMsg = (CxfMessage) message;
 
         // TODO !
 

@@ -177,7 +177,7 @@
             <value>http://wsdev1.w2k3dev.atricore.com:8081/idbus-ui/error.do</value>
         </property>
         <property name="logger">
-            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger" name="tc1-mediation-logger">
+            <bean class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger" name="tc1-mediation-logger">
                 <property name="category">
                     <value>org.atricore.idbus.examples.simple-iwa.wire.tc1</value>
                 </property>

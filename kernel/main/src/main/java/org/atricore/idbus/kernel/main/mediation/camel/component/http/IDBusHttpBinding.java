@@ -23,8 +23,8 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.camel.component.http.DefaultHttpBinding;
-import org.apache.camel.component.http.HttpMessage;
+import org.apache.camel.http.common.DefaultHttpBinding;
+import org.apache.camel.http.common.HttpMessage;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,19 +123,21 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
     }
 
     @Override
-    public void doWriteResponse(Message message, HttpServletResponse httpServletResponse) throws IOException {
+    public void writeResponse(Exchange exchange, HttpServletResponse httpServletResponse) throws IOException {
 
         if (logger.isDebugEnabled())
             logger.debug("Writing HTTP Servlet Response");
 
-        handleCrossOriginResourceSharing(message.getExchange());
+        handleCrossOriginResourceSharing(exchange);
+
+        Message message = exchange.hasOut() ? exchange.getOut() : exchange.getIn();
 
         // append headers
         for (String key : message.getHeaders().keySet()) {
 
             String value = message.getHeader(key, String.class);
 
-            if (getHeaderFilterStrategy() != null && getHeaderFilterStrategy().applyFilterToCamelHeaders(key, value)) {
+            if (getHeaderFilterStrategy() != null && getHeaderFilterStrategy().applyFilterToCamelHeaders(key, value, exchange)) {
 
                 // This is a filtered header ... check if is a josso 'set cookie'
                 if (key.startsWith("org.atricore.idbus.http.Set-Cookie.")) {
@@ -157,7 +159,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         if (logger.isTraceEnabled())
             logger.trace("Writing HTTP Servlet Response");
 
-        super.doWriteResponse(message, httpServletResponse);
+        super.doWriteResponse(message, httpServletResponse, exchange);
     }
 
     /**

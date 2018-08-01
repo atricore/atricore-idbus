@@ -111,7 +111,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
     private SSOKeyResolver keyResolver;
 
     // Validate certificate expiration, CA, etc.
-    private boolean validateCertificate = false;
+    private boolean validateCertificate = true;
 
     public Provider getProvider() {
         return provider;
@@ -913,7 +913,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     protected boolean validateCertificate(RoleDescriptorType md, Key publicKey) {
 
-        /*
         X509Certificate x509Cert = getX509Certificate(md);
 
         if (x509Cert == null) {
@@ -942,17 +941,22 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             }
         }
 
+        // TODO : Make this verification configurable
+
+        String verifyDatesStr = System.getProperty("org.atricore.idbus.capabiligies.sso.verifyCertificateDate", "true");
+        boolean verifyDates = Boolean.parseBoolean(verifyDatesStr);
+
         Date now = new Date();
-        if (x509Cert.getNotBefore() != null && x509Cert.getNotBefore().before(now)) {
-            if (validateCertificate) {
+        if (x509Cert.getNotBefore() != null && x509Cert.getNotBefore().after(now)) {
+            if (validateCertificate && verifyDates) {
                 logger.error("Certificate should not be used before " + x509Cert.getNotBefore());
                 return false;
             }
             logger.warn("Certificate should not be used before " + x509Cert.getNotBefore());
         }
 
-        if (x509Cert.getNotAfter() != null && x509Cert.getNotAfter().after(now)) {
-            if (validateCertificate) {
+        if (x509Cert.getNotAfter() != null && x509Cert.getNotAfter().before(now)) {
+            if (validateCertificate && verifyDates) {
                 logger.error("X509 Certificate has expired " + x509Cert.getNotAfter());
                 return false;
             }
@@ -963,12 +967,8 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         aMonthFromNow.add(Calendar.DAY_OF_MONTH, 30);
 
         // Just print-out that the certificate will expire soon.
-        if (x509Cert.getNotAfter().after(aMonthFromNow.getTime()))
+        if (x509Cert.getNotAfter() != null && x509Cert.getNotAfter().before(aMonthFromNow.getTime()))
             logger.warn("X509 Certificate wil expired in less that 30 days for SAML 2.0 Metadata Role " + md.getID());
-
-
-        // TODO : Validate CRLs , etc !!!!
-        */
 
         return true;
 

@@ -43,8 +43,8 @@
 
     <properties>
         <josso.version>1.8.12-SNAPSHOT</josso.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
     </properties>
 
     <dependencies>

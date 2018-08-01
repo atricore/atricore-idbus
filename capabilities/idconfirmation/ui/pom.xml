@@ -58,7 +58,7 @@
 
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.apache.felix.framework</artifactId>
             <version>4.2.0</version>
         </dependency>
 
@@ -178,8 +178,8 @@
 
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>${felix.osgi.version}</version>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>${felix.framework.version}</version>
             <scope>provided</scope>
         </dependency>
 

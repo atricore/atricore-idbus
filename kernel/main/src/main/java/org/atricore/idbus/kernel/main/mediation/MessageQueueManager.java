@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation;
 
-import javax.jms.ConnectionFactory;
+
 
 /**
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
@@ -29,10 +29,7 @@ import javax.jms.ConnectionFactory;
  */
 public interface MessageQueueManager  {
 
-
-    public ConnectionFactory getConnectionFactory() ;
-
-    public String getJmsProviderDestinationName() ;
+    public String getName();
 
     public void init() throws Exception ;
 

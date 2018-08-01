@@ -23,8 +23,7 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.component.http.HttpComponent;
-import org.apache.camel.component.http.HttpConsumer;
-import org.apache.camel.component.http.HttpExchange;
+import org.apache.camel.http.common.HttpConsumer;
 import org.apache.camel.impl.JndiRegistry;
 import org.apache.camel.util.IntrospectionSupport;
 import org.apache.camel.util.URISupport;
@@ -33,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 
-import javax.naming.NamingException;
 import java.net.URI;
 import java.util.Map;
 
@@ -51,13 +49,13 @@ public class IDBusHttpComponent extends HttpComponent {
     }
 
     @Override
-    protected Endpoint<HttpExchange> createEndpoint(String uri, String remaining, Map parameters) throws Exception {
+    protected Endpoint createEndpoint(String uri, String remaining, Map parameters) throws Exception {
         uri = uri.startsWith("idbus-http:") ? remaining : uri;
 
         HttpClientParams params = new HttpClientParams();
         IntrospectionSupport.setProperties(params, parameters, "httpClient.");
 
-        configureParameters(parameters);
+        // TODO : 25_UPD configureParameters(parameters);
 
         // restructure uri to be based on the parameters left as we dont want to include the Camel internal options
         URI httpUri = URISupport.createRemainingURI(new URI(uri), parameters);

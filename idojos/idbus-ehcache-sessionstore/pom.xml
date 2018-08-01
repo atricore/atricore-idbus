@@ -41,12 +41,12 @@
 
     <properties>
         <commons-logging.version>1.1.1</commons-logging.version>
-        <!--<spring.version>3.2.18.RELEASE</spring.version>-->
+        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
         <ehcache-core.version>2.6.8</ehcache-core.version>
         <xbean.version>3.7</xbean.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
         <idbus-kernel.version>1.5.0-SNAPSHOT</idbus-kernel.version>
         <ehcache-bundle.version>1.5.0-SNAPSHOT</ehcache-bundle.version>
     </properties>

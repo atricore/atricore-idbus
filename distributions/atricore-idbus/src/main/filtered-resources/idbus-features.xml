@@ -240,9 +240,9 @@
         <bundle start-level="40">mvn:org.apache.camel/camel-spring/${camel.version}</bundle>
     </feature>
 
-    <feature name="camel-osgi" version="${camel.version}">
+    <!--feature name="camel-osgi" version="${camel.version}">
         <bundle start-level="40">mvn:org.apache.camel/camel-osgi/${camel.version}</bundle>
-    </feature>
+    </feature-->
 
     <feature name="camel-cxf" version="${camel.version}">
         <feature version="${cxf.version}">cxf</feature>

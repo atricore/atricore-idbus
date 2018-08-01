@@ -629,7 +629,7 @@
                         depends-on="bindingBroker"
                         singleton="true"
                         destroy-method="shutDown"
-                        jmsProviderDestinationName="Queue/JOSSO/Artifact">
+                        cacheName="Queue/JOSSO/Artifact">
 
         <artifact-generator>
             <artifact-generator/>

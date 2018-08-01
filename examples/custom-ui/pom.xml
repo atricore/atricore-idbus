@@ -38,7 +38,7 @@
     <packaging>bundle</packaging>
 
     <properties>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
         <apache-wicket.version>6.7.0</apache-wicket.version>
         <ops4j.paxwicket.version>2.1.1</ops4j.paxwicket.version>
         <atricore.idbus.vesion>1.5.0-SNAPSHOT</atricore.idbus.vesion>

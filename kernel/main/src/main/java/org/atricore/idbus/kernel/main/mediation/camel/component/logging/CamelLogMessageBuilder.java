@@ -50,28 +50,24 @@ public class CamelLogMessageBuilder implements LogMessageBuilder {
 
         StringBuffer logMsg = new StringBuffer(1024);
 
-
         // CAREFUL! Camel will eagerly create message parts if you try to access them and are not yet initialized!
 
-        logMsg.append("\n<camel-message " + "id=\"").append(message.getMessageId()).append("\" ").
-                append("class=\"").append(message.getClass().getName()).append("\" ").
+        logMsg.append(" camel-message-id=\"").append(message.getMessageId()).append("\" ").
+                append("class=\"").append(message.getClass().getSimpleName()).append("\" ").
                 append("exchange-id=\"").append(message.getExchange().getExchangeId()).append("\" ").
-                append("exchange-class=\"").append(message.getExchange().getClass().getName()).append("\" ").
-                append(" >");
+                append("exchange-class=\"").append(message.getExchange().getClass().getSimpleName()).append("\" ");
 
         Map<String, Object> headers  =message.getHeaders();
         for (String header : headers.keySet()) {
-            logMsg.append("\n\t<header name=\"").append(header).append("\">");
-            logMsg.append("\n\t\t<header-value>").append(headers.get(header)).append("</header-value>");
-            logMsg.append("\n\t</header>");
+            logMsg.append(" header-name=\"").append(header).append("\"");
+            logMsg.append(" header-value=\"").append(headers.get(header)).append("\"");
         }
 
         if (message.hasAttachments()) {
             for (String attachment : message.getAttachmentNames()) {
-                logMsg.append("\n\t<attachment name=\"").append(attachment).append("\"/>");
+                logMsg.append(" attachment-name=\"").append(attachment).append("\"");
             }
         }
-        logMsg.append("\n</camel-message>");
 
         return logMsg.toString();
     }

@@ -23,8 +23,7 @@ package org.atricore.idbus.kernel.main.mediation.camel;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
-import org.apache.camel.component.http.HttpExchange;
-import org.apache.camel.converter.jaxp.StringSource;
+import org.apache.camel.StringSource;
 import org.apache.camel.impl.DefaultProducer;
 import org.apache.camel.spi.Registry;
 import org.apache.commons.io.IOUtils;
@@ -34,7 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
+
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.MediationLogger;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
@@ -43,6 +42,7 @@ import org.springframework.context.ApplicationContext;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -58,7 +58,7 @@ import java.util.HashMap;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: SAMLR2WebSSOProducer.java 1170 2009-04-29 15:03:21Z ajadzinsky $
  */
-public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange> extends DefaultProducer<E> {
+public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange> extends DefaultProducer {
 
     private static final Log logger = LogFactory.getLog( AbstractCamelProducer.class );
 
@@ -77,9 +77,7 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
         assert endpoint != null : "Endpoint MUST be spedified when creating producers!";
     }
 
-    public void process ( final Exchange e) throws Exception {
-
-        CamelMediationExchange exchange = (CamelMediationExchange) e;
+    public void process ( final Exchange exchange) throws Exception {
 
         channelRef = ( (AbstractCamelEndpoint) getEndpoint() ).getChannelRef();
         endpointRef = ( (AbstractCamelEndpoint) getEndpoint() ).getEndpointRef();
@@ -136,8 +134,10 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
             // TODO : This could be in a better place
             MediationLogger logger = channel.getIdentityMediator().getLogger();
             if (logger != null && channel.getIdentityMediator().isLogMessages()) {
-                if (exchange.getFault(false) != null)
-                    logger.logFault(exchange.getFault(false));
+
+                if (exchange.getOut().isFault())
+                    logger.logFault(exchange.getOut());
+
                 logger.logOutgoing(exchange.getOut());
             }
 
@@ -151,7 +151,7 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
             if (logger.isDebugEnabled())
                 logger.debug("Generating Fault message for " + errorMsg, err);
 
-            CamelMediationMessage fault = (CamelMediationMessage) exchange.getFault();
+            CamelMediationMessage fault = exchange.getOut().isFault() ? (CamelMediationMessage) exchange.getOut() : null;
             fault.setBody(new MediationMessageImpl(fault.getMessageId(), errorMsg, err));
 
         } catch (Exception err) {
@@ -175,7 +175,7 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
             if (logger.isDebugEnabled())
                 logger.debug("Generating Fault message for " + f.getMessage(), f);
 
-            CamelMediationMessage fault = (CamelMediationMessage) exchange.getFault();
+            CamelMediationMessage fault = exchange.getOut().isFault() ? (CamelMediationMessage) exchange.getOut() : null;
             fault.setBody(new MediationMessageImpl(fault.getMessageId(), f.getMessage(), f));
             
         }
@@ -194,8 +194,11 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
      */
     protected abstract void doProcess ( E exchange ) throws Exception;
 
-    protected Cookie getCookie ( HttpExchange he, String cookieName ) {
-        Cookie[] cookies = he.getRequest().getCookies();
+    protected Cookie getCookie ( Exchange he, String cookieName ) {
+
+        HttpServletRequest hreq = he.getIn().getHeader(Exchange.HTTP_SERVLET_REQUEST, HttpServletRequest.class);
+
+        Cookie[] cookies = hreq.getCookies();
         if ( cookies == null )
             return null;
 
@@ -306,14 +309,16 @@ public abstract class AbstractCamelProducer<E extends org.apache.camel.Exchange>
         return parameters;
     }
 
-    protected HashMap<String, String> getParameters ( HttpExchange he ) throws Exception {
+    protected HashMap<String, String> getParameters ( Exchange he ) throws Exception {
         HashMap<String, String> parameters = new HashMap<String, String>();
 
-        if ( he.getRequest().getMethod().equalsIgnoreCase( "post" ) )
+        HttpServletRequest hreq = he.getIn().getHeader(Exchange.HTTP_SERVLET_REQUEST, HttpServletRequest.class);
+
+        if ( hreq.getMethod().equalsIgnoreCase( "post" ) )
             parameters = parseHttpPost( (InputStream) he.getIn().getBody() );
 
-        if ( he.getRequest().getQueryString() != null ) {
-            String[] params = he.getRequest().getQueryString().split( "\\&" );
+        if ( hreq.getQueryString() != null ) {
+            String[] params = hreq.getQueryString().split( "\\&" );
             for ( String param : params ) {
                 String[] nameValue = param.split( "=" );
                 String name = URLDecoder.decode( nameValue[ 0 ], "UTF-8" );

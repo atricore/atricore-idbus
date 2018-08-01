@@ -23,6 +23,7 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
+import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +34,7 @@ import java.util.Map;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class MediationBindingComponent extends DefaultComponent<CamelMediationExchange> {
+public class MediationBindingComponent extends DefaultComponent {
 
     private static Log logger = LogFactory.getLog(MediationBindingComponent.class);
 
@@ -45,13 +46,13 @@ public class MediationBindingComponent extends DefaultComponent<CamelMediationEx
         super(camelContext);
     }
 
-    protected Endpoint<CamelMediationExchange> createEndpoint(String uri, String remaining, Map parameters) throws Exception {
+    protected Endpoint createEndpoint(String uri, String remaining, Map parameters) throws Exception {
         String binding = (String) parameters.get("binding");
         logger.debug("Creating endpoint for Binding " + binding);
         return createEndpoint(binding, remaining, uri);
     }
 
-    protected Endpoint<CamelMediationExchange> createEndpoint(String binding,
+    protected Endpoint createEndpoint(String binding,
                                                       String directEndpointUri,
                                                       String uri) throws Exception {
 

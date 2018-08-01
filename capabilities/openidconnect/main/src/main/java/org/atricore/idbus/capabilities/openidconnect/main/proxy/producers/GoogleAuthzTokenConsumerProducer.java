@@ -38,7 +38,7 @@ public class GoogleAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer
 
     private static final Log logger = LogFactory.getLog(GoogleAuthzTokenConsumerProducer.class);
 
-    private static final int MAX_NUM_OF_USER_INFO_RETRIES = 1;
+    private static final int MAX_NUM_OF_USER_INFO_RETRIES = 3;
 
     public GoogleAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);

@@ -163,7 +163,7 @@
             <s:bean class="org.atricore.josso2.mediation.ArtifactGeneratorImpl"/>
         </s:property>
         <s:property name="connectionFactory" ref="bindingConnectionFactory"/>
-        <s:property name="jmsProviderDestinationName" value="Queue/JOSSO/Artifact"/>
+        <s:property name="cacheName" value="Queue/JOSSO/Artifact"/>
     </s:bean>
 
     <s:bean id="bindingConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">

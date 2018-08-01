@@ -51,14 +51,14 @@
 
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
-        <camel.version>1.6.1</camel.version>
+        <camel.version>2.20.2</camel.version>
         <commons-el.version>1.0</commons-el.version>
         <commons-lang.version>2.0</commons-lang.version>
         <commons-logging.version>1.1.1</commons-logging.version>
         <commons-codec.version>1.3</commons-codec.version>
-        <cxf.version>2.2.2</cxf.version>
-        <felix.osgi.version>1.4.0</felix.osgi.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <cxf.version>3.2.1</cxf.version>
+        <felix.framework.version>5.6.10</felix.framework.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
         <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
         <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
         <jetty.version>6.1.22</jetty.version>
@@ -71,7 +71,7 @@
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
         <servlet.version>2.5</servlet.version>
-        <!--<spring.version>3.2.18.RELEASE</spring.version>-->
+        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <xalan.version>2.7.1</xalan.version>
         <xbean.version>3.7</xbean.version>

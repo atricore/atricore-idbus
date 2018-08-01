@@ -26,6 +26,8 @@ import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.component.http.*;
+import org.apache.camel.http.common.HttpBinding;
+import org.apache.camel.http.common.HttpConsumer;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpClientParams;
 
@@ -51,17 +53,17 @@ public class IDBusHttpEndpoint extends HttpEndpoint {
     }
 
     @Override
-    public Producer<HttpExchange> createProducer() throws Exception {
+    public Producer createProducer() throws Exception {
         return super.createProducer();
     }
 
     @Override
-    public Consumer<HttpExchange> createConsumer(Processor processor) throws Exception {
+    public Consumer createConsumer(Processor processor) throws Exception {
         return new HttpConsumer(this, processor);
     }
 
     @Override
-    public PollingConsumer<HttpExchange> createPollingConsumer() throws Exception {
+    public PollingConsumer createPollingConsumer() throws Exception {
         return new HttpPollingConsumer(this);
     }
 

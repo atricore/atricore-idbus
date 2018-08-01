@@ -41,7 +41,7 @@
     <name>Atricore IDBus :: Bundle : Ini4J 0.5.1 OSGi</name>
 
     <properties>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
         <ini4j.version>0.5.1</ini4j.version>
         <commons-logging.version>1.1.1</commons-logging.version>
     </properties>
@@ -77,7 +77,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>

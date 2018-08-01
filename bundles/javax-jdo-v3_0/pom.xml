@@ -44,7 +44,7 @@
     <properties>
         <jdo.osgi.version>3.0</jdo.osgi.version>
         <jdo.version>3.0</jdo.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
     </properties>
 
     <dependencies>

@@ -42,8 +42,8 @@
         <!-- Atricore Bundles -->
         <idbus.bundle.josso-ws-v1_2.version>1.5.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
 
-        <felix.plugin.version>2.1.0</felix.plugin.version>
-        <spring.version>3.2.18.RELEASE</spring.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <spring.version>4.3.12.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
     </properties>
 

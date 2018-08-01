@@ -46,7 +46,8 @@
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Export-Package>org.atricore.idbus.kernel.monitoring.builtin.*;version=${project.version}</Export-Package>
+                        <Export-Package>org.atricore.idbus.kernel.monitoring.builtin*;version=${project.version}</Export-Package>
+                        <Private-Package>org.atricore.idbus.kernel.monitoring.builtin*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

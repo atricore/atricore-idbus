@@ -287,12 +287,32 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
         // Emit account link information
-       String errorDetails = null;
+        String errorDetails = null;
         try {
             acctLink = accountLinkEmitter.emit(idpSubject, ctx);
         } catch (AccountLinkageException e) {
-            logger.debug(e.getMessage(), e);
             errorDetails = e.getErrorDetails();
+
+            logger.debug("Error: " + e.getError() + " : " + e.getErrorDetails(), e);
+
+            // TODO : Handle the error locally, or forward it to the application (add option in cosole, for now based on error type)
+
+            if (e.getError() == AccountLinkageException.DUPLICATE_ID) {
+
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        StatusCode.AUTHN_FAILED.getValue(),
+                        StatusDetails.DUPLICATED_USER_ID.getValue(),
+                        errorDetails, e);
+
+            } else if (e.getError() == AccountLinkageException.USED_ID) {
+
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        StatusCode.AUTHN_FAILED.getValue(),
+                        StatusDetails.USED_USER_ID.getValue(),
+                        errorDetails, e);
+
+            }
+
         }
 
         if (logger.isDebugEnabled())

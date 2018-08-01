@@ -105,7 +105,7 @@
 
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.apache.felix.framework</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -152,8 +152,8 @@
                             javax.sql,
                             org.atricore.idbus.kernel.common.support.osgi,
                             org.springframework.osgi.context,
-                            org.springframework.orm.jdo; version="[${spring.version},3.2.18.RELEASE]",
-                            org.springframework.beans.factory; version="[${spring.version},3.2.18.RELEASE]",
+                            org.springframework.orm.jdo; version="[${spring.version},4.3.12.RELEASE]",
+                            org.springframework.beans.factory; version="[${spring.version},4.3.12.RELEASE]",
                             org.xml.sax,
                             org.xml.sax.helpers,
                             org.eclipse.core.runtime;resolution:=optional,

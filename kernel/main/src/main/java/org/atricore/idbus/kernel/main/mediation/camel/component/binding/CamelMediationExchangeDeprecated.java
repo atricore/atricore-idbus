@@ -33,61 +33,61 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class CamelMediationExchange extends DefaultExchange {
+public class CamelMediationExchangeDeprecated /* extends DefaultExchange */ {
 
-    private static final Log logger = LogFactory.getLog(CamelMediationExchange.class);
+    private static final Log logger = LogFactory.getLog(CamelMediationExchangeDeprecated.class);
 
     // Original exchange (soap, http, etc)
     private Exchange exchange;
 
     private CamelMediationEndpoint endpoint;
 
-    public CamelMediationExchange(CamelContext camelContext) {
-        super(camelContext);
+    public CamelMediationExchangeDeprecated(CamelContext camelContext) {
+        //super(camelContext);
     }
 
-    public CamelMediationExchange(CamelContext camelContext,
+    public CamelMediationExchangeDeprecated(CamelContext camelContext,
                           CamelMediationEndpoint endpoint,
                           ExchangePattern exchangePattern,
                           Exchange exchange) {
 
-        super(camelContext, exchangePattern);
+        //super(camelContext, exchangePattern);
 
         this.exchange = exchange;
         this.endpoint = endpoint;
 
     }
 
-    public CamelMediationExchange(CamelMediationExchange exchange) {
-        super(exchange);
+    public CamelMediationExchangeDeprecated(CamelMediationExchangeDeprecated exchange) {
+        //super(exchange);
         this.exchange = exchange.getExchange();
         this.endpoint = exchange.getEndpoint();
 
     }
 
-    @Override
+    //@Override
     public Exchange newInstance() {
-        return new CamelMediationExchange(this);
+        return null; // return new CamelMediationExchangeDeprecated(this);
     }
 
-    @Override
+    //@Override
     protected org.apache.camel.Message createFaultMessage() {
         return new CamelMediationMessage();
     }
 
-    @Override
+    //@Override
     protected Message createInMessage() {
         return new CamelMediationMessage();
     }
 
-    @Override
+    //@Override
     protected Message createOutMessage() {
         return new CamelMediationMessage();
     }
 
-    @Override
+    //@Override
     public void copyFrom(Exchange exchange) {
-        super.copyFrom(exchange);
+        //super.copyFrom(exchange);
     }
 
     public Exchange getExchange() {

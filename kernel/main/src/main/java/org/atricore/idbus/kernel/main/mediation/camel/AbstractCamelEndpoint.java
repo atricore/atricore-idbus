@@ -33,7 +33,7 @@ import java.util.Map;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: AbstractCamelEndpoint.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public abstract class AbstractCamelEndpoint<E extends Exchange> extends DefaultEndpoint<E> {
+public abstract class AbstractCamelEndpoint extends DefaultEndpoint {
     private static final Log logger = LogFactory.getLog(AbstractCamelEndpoint.class);
 
     protected String endpointRef;

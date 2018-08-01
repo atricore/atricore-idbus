@@ -351,7 +351,7 @@
 
         <property name="logger" >
             <bean name="idp1-mediation-logger"
-                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger">
+                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger">
                 <property name="messageBuilders">
                     <list>
                         <bean class="org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder"/>
@@ -471,7 +471,7 @@
 
         <property name="logger" >
             <bean name="idp1-cc-1-mediation-logger"
-                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger">
+                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger">
                 <property name="messageBuilders">
                     <list>
                         <bean class="org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder"/>

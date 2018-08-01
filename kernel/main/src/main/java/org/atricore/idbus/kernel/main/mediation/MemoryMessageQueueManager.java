@@ -7,7 +7,6 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import javax.jms.ConnectionFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,12 +31,15 @@ public class MemoryMessageQueueManager implements MessageQueueManager, Disposabl
 
     private Map<String, Message> msgs = new HashMap<String, Message>();
 
-    public ConnectionFactory getConnectionFactory() {
-        return null;
+    public String name;
+
+    @Override
+    public String getName() {
+        return name;
     }
 
-    public String getJmsProviderDestinationName() {
-        return null;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

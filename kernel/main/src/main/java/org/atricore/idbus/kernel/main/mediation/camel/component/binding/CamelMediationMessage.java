@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.apache.commons.logging.Log;
@@ -86,8 +87,8 @@ public class CamelMediationMessage extends DefaultMessage {
 
         try {
             logger.debug("Create Mediation Message body " + getMessageId());
-            CamelMediationExchange ex = getExchange();
-            CamelMediationEndpoint en = ex.getEndpoint();
+            Exchange ex = getExchange();
+            CamelMediationEndpoint en = (CamelMediationEndpoint) ex.getFromEndpoint(); // TODO UPD_15
             return en.createBody(this);
         } catch (Exception e) {
             logger.error("Cannot create mediation message body : " + e.getMessage(), e);
@@ -106,11 +107,6 @@ public class CamelMediationMessage extends DefaultMessage {
             logger.debug("Setting message " + body.getClass().getName());
             this.message = (MediationMessage) body;
         }    
-    }
-
-    @Override
-    public CamelMediationExchange getExchange() {
-        return (CamelMediationExchange)super.getExchange();
     }
 
     public MediationMessage getMessage() {

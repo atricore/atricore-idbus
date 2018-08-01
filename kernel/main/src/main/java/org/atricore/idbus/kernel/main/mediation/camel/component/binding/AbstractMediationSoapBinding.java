@@ -22,6 +22,7 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.message.MessageContentsList;
@@ -48,8 +49,11 @@ public abstract class AbstractMediationSoapBinding extends AbstractMediationBind
                     faultMessage.getFaultDetails(), faultMessage.getFault()
         );
 
-        // TODO: This is probably wrong, we need a SOAP fault   
-        exchange.getFault().setBody(faultMessage.getFault());
+        // TODO: This is probably wrong, we need a SOAP fault
+
+
+        fault.setFault(true);
+        exchange.getOut().setBody(fault);
 
     }
 

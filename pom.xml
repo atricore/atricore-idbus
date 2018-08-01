@@ -117,9 +117,10 @@
 
     <properties>
         <compiler.fork>true</compiler.fork>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
-        <spring.version>3.2.18.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.framework.version>5.6.10</felix.framework.version>
+        <spring.version>4.3.12.RELEASE</spring.version>
+        <spring.osgi.version>1.2.1</spring.osgi.version>
         <scala.major.version>2.11</scala.major.version>
         <scala.version>${scala.major.version}.8</scala.version>
         <scala.modules.version>1.0.5</scala.modules.version>
@@ -670,7 +671,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
+                    <version>3.7.0</version>
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>

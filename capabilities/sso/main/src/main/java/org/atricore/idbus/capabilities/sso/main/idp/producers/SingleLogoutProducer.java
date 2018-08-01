@@ -500,10 +500,15 @@ public class SingleLogoutProducer extends SSOProducer {
         state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest");
         state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORelayState");
 
+
+        // TODO : sloRequest is instanceof IDPProxyInitiatedLogoutRequestType
+
         if (sloRequest instanceof LogoutRequestType ) {
             doProcessSLORequest(exchange, (LogoutRequestType) sloRequest, relayState);
         } else if (sloRequest instanceof IDPInitiatedLogoutRequestType) {
             doProcessIdPInitiatedSLORequest(exchange, (IDPInitiatedLogoutRequestType) sloRequest);
+        } else if (sloRequest instanceof IDPProxyInitiatedLogoutRequestType) {
+            // TODO: Implement!
         } else if ((sloRequest == null)) {
             // IDP Initiated SLO ?
             throw new SSOException("Unknown SLO Request type " + sloRequest);
@@ -1180,6 +1185,10 @@ public class SingleLogoutProducer extends SSOProducer {
                 Properties auditProps = new Properties();
                 auditProps.put("spId", pSecCtx.getProviderId().getValue());
 
+                if (logger.isDebugEnabled())
+                    logger.debug("Verify if SP requires SLO : " + pSecCtx.getProviderId().getValue());
+
+
                 // Skip from the list the SP that requested SLO, if any
                 if (sloRequest != null &&
                         pSecCtx.getProviderId().getValue().equals(sloRequest.getIssuer().getValue())) {
@@ -1205,7 +1214,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
                 if (localEd != null) {
                     if (logger.isDebugEnabled())
-                        logger.debug("Adding SLO endpoint " + localEd.getName() + " for " + pSecCtx.getProviderId());
+                        logger.debug("Adding SLO endpoint " + localEd.getName() + " for " + pSecCtx.getProviderId().getValue());
 
                     eds.add(localEd);
                 } else {
@@ -1215,14 +1224,14 @@ public class SingleLogoutProducer extends SSOProducer {
 
                     if (soapEd != null) {
                         if (logger.isDebugEnabled())
-                            logger.debug("Adding SLO endpoint " + soapEd.getName() + " for " + pSecCtx.getProviderId());
+                            logger.debug("Adding SLO endpoint " + soapEd.getName() + " for " + pSecCtx.getProviderId().getValue());
                         eds.add(soapEd);
                     }
                 }
 
                 if (eds.size() == 0) {
                     if (logger.isTraceEnabled())
-                        logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId());
+                        logger.trace("Ignoring SP : No SLO endpoint found : " + pSecCtx.getProviderId().getValue());
                     continue;
                 }
 

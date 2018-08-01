@@ -103,10 +103,10 @@
         <slf4j.version>1.6.1</slf4j.version>
         <spring.osgi.version>1.2.1</spring.osgi.version>
         <spring2.version>2.5.6.SEC02</spring2.version>
-        <spring.version>3.2.18.RELEASE</spring.version>
+        <spring.version>4.3.12.RELEASE</spring.version>
         <sshd.version>0.5.0</sshd.version>
         <xbean.version>3.7</xbean.version>
-        <javax.mail.version>1.4.4</javax.mail.version>
+        <javax.mail.version>1.4.5</javax.mail.version>
         <karaf.version>2.2.3</karaf.version>
         <karaf.deployer.war.version>2.1.5</karaf.deployer.war.version>
 
@@ -186,7 +186,7 @@
         <apache.directory.version>1.5.7</apache.directory.version>
         <bcel.version>5.2_2</bcel.version>
         <bouncycastle.version>1.39.0</bouncycastle.version>
-        <camel.version>1.6.1</camel.version>
+        <camel.version>2.20.2</camel.version>
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-compress.version>1.1</commons-compress.version>
@@ -202,7 +202,7 @@
         <commons-pool.version>1.5.4</commons-pool.version>
         <commons-vfs.version>1.0_1</commons-vfs.version>
         <bcprov.version>1.52</bcprov.version>
-        <cxf.version>2.2.2</cxf.version>
+        <cxf.version>3.2.1</cxf.version>
         <dom4j.version>1.6.1_3</dom4j.version>
         <ehcache.version>2.8.1</ehcache.version>
         <ehcache-core.version>2.6.8</ehcache-core.version>
@@ -537,7 +537,7 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.apache.felix.framework</artifactId>
             <version>${osgi.version}</version>
         </dependency>
         <dependency>
@@ -2163,7 +2163,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-osgi</artifactId>
+            <artifactId>camel-core-osgi</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>
@@ -2425,8 +2425,8 @@
             <version>${servicemix.specs.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
             <version>${javax.mail.version}</version>
         </dependency>
         <dependency>

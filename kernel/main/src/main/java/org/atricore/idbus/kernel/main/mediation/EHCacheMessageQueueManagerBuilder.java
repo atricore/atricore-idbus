@@ -3,8 +3,6 @@ package org.atricore.idbus.kernel.main.mediation;
 import net.sf.ehcache.CacheManager;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 
-import java.util.Properties;
-
 /**
  * Created by sgonzalez.
  */
@@ -12,7 +10,7 @@ public class EHCacheMessageQueueManagerBuilder extends MessageQueueManagerBuilde
 
     private ArtifactGenerator artifactGenerator;
 
-    private String jmsProviderDestinationName;
+    private String name;
 
     private CacheManager cacheManager;
 
@@ -26,7 +24,7 @@ public class EHCacheMessageQueueManagerBuilder extends MessageQueueManagerBuilde
 
         mqm.setArtifactGenerator(artifactGenerator);
         mqm.setCacheManager(cacheManager);
-        mqm.setJmsProviderDestinationName(jmsProviderDestinationName);
+        mqm.setName(name);
 
         String sRetryCount = getConfig().getProperty("binding.artifact.loadStateRetryCount");
         if (sRetryCount != null)
@@ -48,12 +46,12 @@ public class EHCacheMessageQueueManagerBuilder extends MessageQueueManagerBuilde
         this.artifactGenerator = artifactGenerator;
     }
 
-    public String getJmsProviderDestinationName() {
-        return jmsProviderDestinationName;
+    public String getName() {
+        return name;
     }
 
-    public void setJmsProviderDestinationName(String jmsProviderDestinationName) {
-        this.jmsProviderDestinationName = jmsProviderDestinationName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public CacheManager getCacheManager() {

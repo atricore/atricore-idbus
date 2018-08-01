@@ -56,7 +56,7 @@
 
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.apache.felix.framework</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -87,7 +87,7 @@
 
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-osgi</artifactId>
+            <artifactId>camel-core-osgi</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -98,11 +98,11 @@
         </dependency>
 
 
-        <dependency>
+        <!--dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency-->
 
         <!--
         <dependency>
@@ -111,7 +111,7 @@
         </dependency>
         -->
 
-        <dependency>
+        <!--dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <scope>provided</scope>
@@ -143,7 +143,7 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.8</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency-->
 
         <!-- Fore artifacts/versions to avoid conflicts with CXF dependencies! -->
         <dependency>
@@ -268,33 +268,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-spring</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.camel</groupId>
-                    <artifactId>camel-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        </dependency-->
 
         <!-- Test Dependencies -->
 

@@ -23,10 +23,12 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.spi.Registry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
@@ -36,7 +38,7 @@ import java.util.Map;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchange> {
+public class CamelMediationEndpoint extends DefaultEndpoint {
 
     private static final transient Log logger = LogFactory.getLog(CamelMediationEndpoint.class);
 
@@ -56,7 +58,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
     // TODO : Improve
     private Map<String, CamelMediationBinding> bindingRegistry = new HashMap<String, CamelMediationBinding>();
 
-    private CamelMediationConsumer<CamelMediationExchange> idBusBindingConsumer;
+    private CamelMediationConsumer idBusBindingConsumer;
 
     public CamelMediationEndpoint(String uri, String consumingAddress, MediationBindingComponent component) {
         super(uri, component);
@@ -69,7 +71,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
     }
 
     @Override
-    public CamelMediationExchange createExchange() {
+    public Exchange createExchange() {
         logger.debug("Creating Camel Mediation Exchange for Exchange");
 
         // TODO : Not supported !?
@@ -77,7 +79,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
     }
 
     @Override
-    public CamelMediationExchange createExchange(ExchangePattern exchangePattern) {
+    public Exchange createExchange(ExchangePattern exchangePattern) {
         logger.debug("Creating Camel Mediation Exchange for Exchange Pattern : " + exchangePattern);
 
         // TODO : Not supported !?
@@ -90,15 +92,15 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
      * @return
      */
     @Override
-    public CamelMediationExchange createExchange(Exchange exchange) {
+    public Exchange createExchange(Exchange exchange) {
 
         logger.debug("Creating new Camel Mediation Exchange from Binding Endpoint, nested exchange is : " +
                 (exchange != null ? exchange.getClass().getName() : "null"));
 
-        CamelMediationExchange camelMediationExchange = new CamelMediationExchange(getCamelContext(),
+        // TODO : Verify !?
+        Exchange camelMediationExchange = new DefaultExchange(
                 this,
-                exchange.getPattern(),
-                exchange);
+                exchange.getPattern());
 
         // TODO : PASS HEADERS ?!
         CamelMediationMessage in = new CamelMediationMessage();
@@ -108,6 +110,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
         return camelMediationExchange;
     }
 
+    @Override
     public boolean isSingleton() {
         return true;
     }
@@ -117,7 +120,8 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
      * @return
      * @throws Exception
      */
-    public Producer<CamelMediationExchange> createProducer() throws Exception {
+    @Override
+    public Producer createProducer() throws Exception {
         throw new UnsupportedOperationException("Producing to this endpoint is unsupported");
     }
 
@@ -125,7 +129,8 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
      * Create consumer to receive exchanges from Camel direct component (direct:) processor.
      * Create consumer for Camel Mediation binding component.
      */
-    public Consumer<CamelMediationExchange> createConsumer(Processor processor) throws Exception {
+    @Override
+    public Consumer createConsumer(Processor processor) throws Exception {
         
         registry = super.getCamelContext().getRegistry();
         applicationContext = registry.lookup("applicationContext", ApplicationContext.class );
@@ -145,7 +150,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
         directEndpointConsumer.start();
 
         // This consumer will be triggered from the processor invoked from camel direct producer!
-        this.idBusBindingConsumer = new CamelMediationConsumer<CamelMediationExchange>(this, processor);
+        this.idBusBindingConsumer = new CamelMediationConsumer(this, processor);
 
         return this.idBusBindingConsumer;
     }
@@ -158,10 +163,10 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
         return b.createMessage(message);
     }
 
-    protected void copyBackExchange(CamelMediationExchange camelMediationExchange, Exchange exchange) {
+    protected void copyBackExchange(Exchange camelMediationExchange, Exchange exchange) {
 
         CamelMediationMessage out = (CamelMediationMessage) camelMediationExchange.getOut();
-        Message fault = camelMediationExchange.getFault(false);
+        Message fault = exchange.getOut().isFault() ? exchange.getOut() : null;
 
         if (fault != null) {
 
@@ -302,7 +307,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
                     exchange.getClass().getName()
                     + " for IDBus Binding " + binding);
 
-            CamelMediationExchange camelMediationExchange = createExchange(exchange);
+            Exchange camelMediationExchange = createExchange(exchange);
 
             try {
                 // Setup a IDBus Mediaiton Exchange!
@@ -326,7 +331,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
 
                 String errorMsg = "[" + channel.getName() + "@" + channel.getLocation() + "]" + e.getMessage() + "'";
 
-                CamelMediationMessage fault = (CamelMediationMessage) camelMediationExchange.getFault();
+                CamelMediationMessage fault = (CamelMediationMessage) (exchange.getOut().isFault() ? exchange.getOut() : null);
                 fault.setBody(new MediationMessageImpl(fault.getMessageId(),
                         errorMsg,
                         e));
@@ -352,7 +357,7 @@ public class CamelMediationEndpoint extends DefaultEndpoint<CamelMediationExchan
 
                 logger.error("Generating Fault message for " + f.getMessage());
 
-                Message fault = exchange.getFault();
+                Message fault = exchange.getOut().isFault() ? exchange.getOut() : null;
 
                 if (fault != null) {
                     if (fault instanceof CamelMediationMessage) {

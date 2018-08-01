@@ -58,7 +58,7 @@
 
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.apache.felix.framework</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -134,10 +134,13 @@
                         <Bundle-Description>Identity Planning Engine</Bundle-Description>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            org.atricore.idbus.kernel.planning.*,
-                            org.jbpm.*
+                            org.atricore.idbus.kernel.planning*,
+                            org.jbpm*
                         </Export-Package>
-                        <Private-Package>!*</Private-Package>
+                        <Private-Package>
+                            org.atricore.idbus.kernel.planning*,
+                            org.jbpm*
+                        </Private-Package>
                         <Require-Bundle>com.springsource.org.hsqldb</Require-Bundle>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

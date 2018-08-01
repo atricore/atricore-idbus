@@ -87,18 +87,24 @@ public class CscaNegotiationProducer extends AbstractCamelProducer<CamelMediatio
 
         Object x509Certificate = in.getHeader("org.atricore.idbus.http.X509Certificate");
         X509Certificate certChain[] = (X509Certificate[]) x509Certificate;
-        StringWriter sw = new StringWriter();
-        sw.write(DatatypeConverter.printBase64Binary(certChain[0].getEncoded()).replaceAll("(.{64})", "$1\n"));
 
-        logger.debug("PEM client certificate is " + sw.toString());
-
-        // Build a SAMLR2 Compatible Security token
-        BinarySecurityTokenType binarySecurityToken = new BinarySecurityTokenType ();
-        binarySecurityToken.getOtherAttributes().put(new QName(Constants.CSCA_NS), sw.toString());
-
-        Claim claim = new CredentialClaimImpl(AuthnCtxClass.TLS_CLIENT_AUTHN_CTX.getValue(), binarySecurityToken);
         ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(claim);
+
+        if (certChain != null) {
+            StringWriter sw = new StringWriter();
+            sw.write(DatatypeConverter.printBase64Binary(certChain[0].getEncoded()).replaceAll("(.{64})", "$1\n"));
+
+            logger.debug("PEM client certificate is " + sw.toString());
+
+            // Build a SAMLR2 Compatible Security token
+            BinarySecurityTokenType binarySecurityToken = new BinarySecurityTokenType ();
+            binarySecurityToken.getOtherAttributes().put(new QName(Constants.CSCA_NS), sw.toString());
+            Claim claim = new CredentialClaimImpl(AuthnCtxClass.TLS_CLIENT_AUTHN_CTX.getValue(), binarySecurityToken);
+            claims.addClaim(claim);
+        } else {
+            logger.debug("No certificate received !");
+        }
+
 
         SSOCredentialClaimsResponse claimsResponse = new SSOCredentialClaimsResponse(uuidGenerator.generateId(),
                 channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());

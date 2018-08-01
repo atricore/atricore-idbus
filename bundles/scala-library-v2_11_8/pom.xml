@@ -36,7 +36,7 @@
 
     <properties>
         <scala.library.version>2.11.8</scala.library.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
     </properties>
 
     <dependencies>

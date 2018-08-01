@@ -36,9 +36,9 @@
 
     <properties>
         <apache.directory.version>1.5.7</apache.directory.version>
-        <felix.osgi.version>1.4.0</felix.osgi.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
-        <!--<spring.version>3.2.18.RELEASE</spring.version>-->
+        <felix.framework.version>5.6.10</felix.framework.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <xbean.version>3.7</xbean.version>
 
@@ -79,8 +79,8 @@
         
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>${felix.osgi.version}</version>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>${felix.framework.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

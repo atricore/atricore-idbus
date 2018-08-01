@@ -22,6 +22,7 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.apache.camel.Endpoint;
+import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
 
@@ -29,9 +30,9 @@ import org.apache.camel.impl.DefaultConsumer;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class CamelMediationConsumer<E extends CamelMediationExchange> extends DefaultConsumer<E> {
+public class CamelMediationConsumer extends DefaultConsumer {
 
-    public CamelMediationConsumer(Endpoint<E> camelMediationExchangeEndpoint, Processor processor) {
+    public CamelMediationConsumer(Endpoint camelMediationExchangeEndpoint, Processor processor) {
         super(camelMediationExchangeEndpoint, processor);
     }
 

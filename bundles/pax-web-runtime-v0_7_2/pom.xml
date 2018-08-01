@@ -21,7 +21,7 @@
         <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
 
         <ehcache.version>2.1.0</ehcache.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.plugin.version>3.3.0</felix.plugin.version>
         <jetty.version>6.1.22</jetty.version>
         <osgi.version>4.0.1</osgi.version>
         <pax.base.version>1.2.1</pax.base.version>
@@ -48,7 +48,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -167,7 +167,7 @@
         <!-- Provided dependencies (not transitive) -->
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
+            <artifactId>org.apache.felix.framework</artifactId>
             <version>${osgi.version}</version>
             <scope>provided</scope>
         </dependency>

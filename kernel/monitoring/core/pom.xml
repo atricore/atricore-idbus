@@ -40,9 +40,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.atricore.idbus.kernel.monitoring.core.*;version=${project.version}</Export-Package>
-                        <Import-Package>
-                            *
-                        </Import-Package>
+                        <Import-Package>*</Import-Package>
+                        <Private-Package>org.atricore.idbus.kernel.monitoring.core*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -8,8 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import javax.jms.ConnectionFactory;
-
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
@@ -20,7 +18,7 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
 
     private ArtifactGenerator artifactGenerator;
 
-    private String jmsProviderDestinationName;
+    private String cacheName;
 
     private Cache cache;
 
@@ -40,18 +38,14 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
         init();
     }
 
-    @Override
-    public ConnectionFactory getConnectionFactory() {
-        throw new UnsupportedOperationException("Not implemented!");
-    }
 
     @Override
-    public String getJmsProviderDestinationName() {
-        return jmsProviderDestinationName;
+    public String getName() {
+        return cacheName;
     }
 
-    public void setJmsProviderDestinationName(String jmsProviderDestinationName) {
-        this.jmsProviderDestinationName = jmsProviderDestinationName;
+    public void setName(String cacheName) {
+        this.cacheName = cacheName;
     }
 
     @Override
@@ -59,11 +53,11 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
 
         if (cache == null) {
 
-            if (!cacheManager.cacheExists(jmsProviderDestinationName)) {
-                cacheManager.addCache(jmsProviderDestinationName);
+            if (!cacheManager.cacheExists(cacheName)) {
+                cacheManager.addCache(cacheName);
             }
             
-            cache = cacheManager.getCache(jmsProviderDestinationName);
+            cache = cacheManager.getCache(cacheName);
         }
     }
 
@@ -134,8 +128,8 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
 
     @Override
     public void shutDown() throws Exception {
-        if (cacheManager.cacheExists(jmsProviderDestinationName)) {
-            cacheManager.removeCache(jmsProviderDestinationName);
+        if (cacheManager.cacheExists(cacheName)) {
+            cacheManager.removeCache(cacheName);
             cache = null;
         }
     }

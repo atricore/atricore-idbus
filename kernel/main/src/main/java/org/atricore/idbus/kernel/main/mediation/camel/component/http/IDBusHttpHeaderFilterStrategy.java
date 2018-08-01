@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
-import org.apache.camel.component.http.HttpHeaderFilterStrategy;
+import org.apache.camel.http.common.HttpHeaderFilterStrategy;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
