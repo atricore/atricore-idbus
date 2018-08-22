@@ -292,17 +292,23 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             throw new RuntimeException(e);
         }
 
-        byte[] deflated = new byte[n];
+        ByteArrayOutputStream deflated = new ByteArrayOutputStream(n);
 
         Deflater deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
         deflater.setInput(redirIs);
         deflater.finish();
-        int len = deflater.deflate(deflated);
+
+        byte[] buff = new byte[1024];
+        int len = deflater.deflate(buff);
+
+        while (len > 0) {
+            deflated.write(buff, 0, len);
+            len = deflater.deflate(buff);
+        }
+
         deflater.end();
 
-        byte[] exact = new byte[len];
-
-        System.arraycopy(deflated, 0, exact, 0, len);
+        byte[] exact = deflated.toByteArray();
 
         if (encode) {
             byte[] base64Str = new Base64().encode(exact);
@@ -324,6 +330,9 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
         else
             redirBin = redirStr.getBytes();
 
+        if (redirBin == null || redirBin.length == 0)
+            throw new RuntimeException("Redirect string cannot be null or empty");
+
         // Decompress the bytes
         Inflater inflater = new Inflater(true);
         inflater.setInput(redirBin);
@@ -332,12 +341,16 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
         try {
             int resultLength = 0;
-            int buffSize= 1024;
-            byte[] buff = new byte[buffSize];
-            while (!inflater.finished()) {
-                resultLength = inflater.inflate(buff);
+            byte[] buff = new byte[1024];
+
+            resultLength = inflater.inflate(buff);
+
+            while (resultLength > 0) {
                 baos.write(buff, 0, resultLength);
+                resultLength = inflater.inflate(buff);
             }
+
+            inflater.end();
 
         } catch (DataFormatException e) {
             throw new RuntimeException("Cannot inflate SAML message : " + e.getMessage(), e);
