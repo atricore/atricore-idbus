@@ -30,6 +30,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.sp.IDPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -51,10 +54,24 @@ public class SignRequestAction extends AbstractSSOAction {
         RequestAbstractType request = (RequestAbstractType) out.getContent();
 
         Channel channel = (Channel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
+
+        // Requets are normally issued from a binding channel, so we use the response channel to get the configuration
+        Channel responseChannel = (Channel) executionContext.getContextInstance().getVariable(VAR_RESPONSE_CHANNEL);
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+        ChannelConfiguration cfg = responseChannel != null ?
+                mediator.getChannelConfig(responseChannel.getName()) :
+                mediator.getChannelConfig(channel.getName());
+
+        String digest = null;
+        if (cfg instanceof SPChannelConfiguration) {
+            digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+        } else if (cfg instanceof IDPChannelConfiguration) {
+            digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+        } else {
+            digest = "SHA256";
+        }
 
         // TODO : Support signing some requests: i.e. when IdP requires authn. requests to be signed
-
         boolean signRequest = mediator.isSignRequests();
 
         // SAML MD overrides default
@@ -63,6 +80,7 @@ public class SignRequestAction extends AbstractSSOAction {
             if (idp != null) {
                 signRequest = wantAuthnRequestsSigned(idp);
             }
+
         }
 
         if (!signRequest) {
@@ -79,7 +97,7 @@ public class SignRequestAction extends AbstractSSOAction {
             throw new IllegalStateException("No Signer found in mediatior " + mediator);
         }
 
-        out.replaceContent(signer.sign(request));
+        out.replaceContent(signer.sign(request, digest));
     }
 
 

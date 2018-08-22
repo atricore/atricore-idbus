@@ -36,15 +36,10 @@
     <description>Common</description>
     <packaging>pom</packaging>
 
-    <properties>
-        <karaf.version>2.2.3</karaf.version>
-    </properties>
-
-
     <modules>
        <module>idbus-support</module>
-       <module>idbus-boot</module>
-       <module>idbus-webconsole-branding</module>
+       <!-- module>idbus-boot</module -->
+       <!-- module>idbus-webconsole-branding</module-->
        <module>idbus-html</module>
        <module>idbus-xmldsig</module>
        <module>idbus-wst-protocol</module>
@@ -53,7 +48,7 @@
        <module>idbus-samlr11-protocol</module>
        <module>idbus-sso-protocol</module>
        <module>idbus-oauth2-protocol</module>
-       <module>idbus-springdm</module>
+       <!--module>idbus-springdm</module-->
        <module>wagon-osgi</module>
 
     </modules>

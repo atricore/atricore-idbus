@@ -25,6 +25,7 @@ import oasis.names.tc.saml._2_0.metadata.EndpointType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.component.container.IdentityFlowContainer;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
@@ -32,10 +33,12 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
-import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.IdRegistry;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -70,6 +73,8 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     private IdentityFlowContainer identityFlowContainer;
 
     private IdRegistry idRegistry;
+
+    private Map<String, ChannelConfiguration> channelConfigs = new HashMap<String, ChannelConfiguration>();
 
     protected AbstractSSOMediator() {
 
@@ -317,4 +322,16 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
     public void setVerifyUniqueIDs(boolean verifyUniqueIDs) {
         this.verifyUniqueIDs = verifyUniqueIDs;
     }
+
+    public Map<String, ChannelConfiguration> getChannelConfigs() {
+        return channelConfigs;
+    }
+
+    public void setChannelConfigs(Map<String, ChannelConfiguration> channelConfigs) {
+        this.channelConfigs = channelConfigs;
+    }
+    public ChannelConfiguration getChannelConfig(String name) {
+        return this.channelConfigs.get(name);
+    }
+
 }

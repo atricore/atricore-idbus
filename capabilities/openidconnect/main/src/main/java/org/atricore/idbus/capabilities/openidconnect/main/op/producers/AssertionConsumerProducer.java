@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.*;
+import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
@@ -14,7 +15,6 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectTokenType;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -70,7 +70,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         // Resolve OpenID client
 
         // Build an OpenIDConnect authentication response based on the original request
-        AuthenticationResponse authnResponse = buildAuthorizationResponse(exchange, authnCtx, samlAuthnRequest);
+        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, samlAuthnRequest);
 
         // Resolve response ED
         EndpointDescriptor ed = resolveRedirectUri(samlAuthnRequest, (AuthorizationResponse) authnResponse);
@@ -124,11 +124,12 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
      * @param exchange
      * @param authnCtx
      * @param authnRequest
+     *
      * @return
      */
-    protected AuthenticationResponse buildAuthorizationResponse(CamelMediationExchange exchange,
-                                                                   OpenIDConnectAuthnContext authnCtx,
-                                                                   AuthenticationRequest authnRequest) throws OpenIDConnectException {
+    protected AuthenticationResponse buildAuthenticationResponse(CamelMediationExchange exchange,
+                                                                 OpenIDConnectAuthnContext authnCtx,
+                                                                 AuthenticationRequest authnRequest) throws OpenIDConnectException {
 
         // TODO : ERROR handling
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -167,12 +168,15 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         }
 
+        // TODO : Calculate session state according to
+        // http://openid.net/specs/openid-connect-session-1_0.html#CreatingUpdatingSessions
+
         AuthenticationResponse authnResponse = new AuthenticationSuccessResponse(authnRequest.getRedirectionURI(),
                 code, 
                 idToken, 
                 accessToken, 
-                authnRequest.getState(), 
-                null, 
+                authnRequest.getState(),
+                null,
                 authnRequest.getResponseMode());
 
         return authnResponse;

@@ -2,6 +2,9 @@ package org.atricore.idbus.capabilities.spmlr2.main.psp.producers;
 
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.*;
+import oasis.names.tc.spml._2._0.batch.BatchRequestType;
+import oasis.names.tc.spml._2._0.batch.BatchResponseType;
+import oasis.names.tc.spml._2._0.batch.OnErrorType;
 import oasis.names.tc.spml._2._0.password.*;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
@@ -33,7 +36,6 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.w3c.dom.Element;
 
-import javax.transaction.InvalidTransactionException;
 import javax.xml.bind.JAXBElement;
 import java.util.Iterator;
 import java.util.List;
@@ -54,11 +56,29 @@ public class PSPProducer extends SpmlR2Producer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         Object content = in.getMessage().getContent();
+
+        ResponseType spmlResponse = doProcessRequest(exchange, (RequestType) content);
+
+        // Send response back.
+        EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
+                endpoint.getType(), endpoint.getBinding(), null, null);
+
+        out.setMessage(new MediationMessageImpl(idGen.generateId(),
+                spmlResponse,
+                spmlResponse.getClass().getSimpleName(),
+                null,
+                ed,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+    }
+
+    protected ResponseType doProcessRequest(CamelMediationExchange exchange, RequestType content) throws Exception {
 
         ResponseType spmlResponse = null;
 
@@ -85,6 +105,8 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse = doProcessResetPasswordRequest(exchange, (ResetPasswordRequestType) content);
         } else if (content instanceof VerifyResetPasswordRequestType) {
             spmlResponse = doProcessVerifyResetPasswordRequest(exchange, (VerifyResetPasswordRequestType) content);
+        } else if (content instanceof BatchRequestType) {
+            spmlResponse = doProcessBatchRequest(exchange, (BatchRequestType) content);
         } else {
 
             // TODO : Send status=failure error= in response ! (use super producer or binding to build error
@@ -95,19 +117,80 @@ public class PSPProducer extends SpmlR2Producer {
 
         }
 
-        // Send response back.
-        EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
-                endpoint.getType(), endpoint.getBinding(), null, null);
+        return spmlResponse;
 
-        out.setMessage(new MediationMessageImpl(idGen.generateId(),
-                spmlResponse,
-                spmlResponse.getClass().getSimpleName(),
-                null,
-                ed,
-                in.getMessage().getState()));
+    }
 
-        exchange.setOut(out);
+    protected BatchResponseType doProcessBatchRequest(CamelMediationExchange exchange, BatchRequestType spmlBatchRequest) throws Exception {
 
+
+        BatchResponseType batchResponse = new BatchResponseType();
+        batchResponse.setRequestID(spmlBatchRequest.getRequestID());
+
+        for (Object spmlMsg : spmlBatchRequest.getAny()) {
+            if (spmlMsg instanceof RequestType) {
+                try {
+
+                    // Process batch request
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Processing batch request " +
+                                spmlMsg.getClass().getSimpleName() + ":" + ((RequestType) spmlMsg).getRequestID());
+
+                    ResponseType response = doProcessRequest(exchange, (RequestType) spmlMsg);
+
+                    if (response.getStatus() == StatusCodeType.FAILURE) {
+
+                        batchResponse.setStatus(StatusCodeType.FAILURE);
+                        batchResponse.setError(ErrorCode.CUSTOM_ERROR);
+
+                        if (logger.isDebugEnabled()) {
+
+                            String errr = response.getError().value() + ":";
+
+                            if (response.getErrorMessage() != null) {
+                                for (String errMsg : response.getErrorMessage()) {
+                                    errr += ". " + errMsg;
+                                }
+                            }
+                            logger.debug("Error executing batch request " +
+                                    spmlMsg.getClass().getSimpleName() + ":" + ((RequestType) spmlMsg).getRequestID() + " " + errr);
+
+                        }
+
+                        if (spmlBatchRequest.getOnError() != null &&
+                            spmlBatchRequest.getOnError() == OnErrorType.EXIT) {
+
+                            batchResponse.setError(response.getError());
+                            batchResponse.getErrorMessage().addAll(response.getErrorMessage());
+
+                            return batchResponse;
+                        } else {
+                            batchResponse.getErrorMessage().addAll(response.getErrorMessage());
+                        }
+
+                    }
+                } catch (Exception e) {
+
+                    logger.error(e.getMessage(), e);
+                    if (spmlBatchRequest.getOnError() != null &&
+                            spmlBatchRequest.getOnError() == OnErrorType.EXIT) {
+
+                        batchResponse.setStatus(StatusCodeType.FAILURE);
+                        batchResponse.setError(ErrorCode.CUSTOM_ERROR);
+                        batchResponse.getErrorMessage().add(e.getMessage());
+
+                        return batchResponse;
+                    }
+
+                }
+            }
+        }
+
+
+        batchResponse.setStatus(StatusCodeType.SUCCESS);
+
+        return batchResponse;
     }
 
     protected ListTargetsResponseType doProcessListTargetsRequest(CamelMediationExchange exchange, ListTargetsRequestType spmlRequest) {
@@ -294,6 +377,11 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
             recordInfoAuditTrail(Action.SPML_ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
+        } else {
+            logger.error("Request attribute for entity type unknown or missing");
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            spmlResponse.setError(ErrorCode.MALFORMED_REQUEST);
+            spmlResponse.getErrorMessage().add("Request attribute for entity type unknown or missing");
         }
 
         return spmlResponse;
@@ -326,8 +414,7 @@ public class PSPProducer extends SpmlR2Producer {
             // DOM Element
             Element e = (Element) o;
             spmlSelect = (SelectionType) XmlUtils.unmarshal(e, new String[] {SPMLR2Constants.SPML_PKG});
-        }
-        else {
+        } else {
             // JAXB Element
             JAXBElement e = (JAXBElement) o;
             logger.debug("SMPL JAXBElement " + e.getName() + "[" + e.getValue() + "]");

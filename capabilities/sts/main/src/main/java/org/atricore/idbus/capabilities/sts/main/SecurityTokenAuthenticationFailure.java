@@ -67,6 +67,11 @@ public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionExc
         super(message);
     }
 
+    public SecurityTokenAuthenticationFailure(String scheme, String message) {
+        super("Cannot authenticate token using scheme " + scheme + ". " + message);
+    }
+
+
     public Set<PolicyEnforcementStatement> getSsoPolicyEnforcements() {
         return ssoPolicyEnforcements;
     }

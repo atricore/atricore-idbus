@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.capabilities.sts.main;
 
+import javax.xml.namespace.QName;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: WSTConstants.java 1220 2009-05-28 03:57:34Z sgonzalez $
@@ -30,50 +32,51 @@ public interface WSTConstants {
     /**
      * This is not actually an oasis profile
      */
-    static final String WST_OAUTH2_TOKEN_TYPE =
+    String WST_OAUTH2_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#OAUTH2.0";
 
-    static final String WST_OAUTH2_RM_TOKEN_TYPE =
+    String WST_OAUTH2_RM_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_oauth2_token_profile_1_1#RM_OAUTH2.0";
 
-    static final String WST_OIDC_AUTHZ_CODE_TYPE =
+    String WST_OIDC_AUTHZ_CODE_TYPE =
             "urn:atricore:org:wss:atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0";
 
-    static final String WST_OIDC_ID_TOKEN_TYPE =
+    String WST_OIDC_ID_TOKEN_TYPE =
             "urn:atricore:org:wss:atricore_wss_oidc_id_token_profile_1_1#JWT1.0";
 
-    static final String WST_OIDC_ACCESS_TOKEN_TYPE =
+    String WST_OIDC_ACCESS_TOKEN_TYPE =
             "urn:atricore:org:wss:atricore_wss_oidc_access_token_profile_1_1#JWT1.0";
 
-    static final String WST_OIDC_REFRESH_TOKEN_TYPE =
+    String WST_OIDC_REFRESH_TOKEN_TYPE =
             "urn:atricore:org:wss:atricore_wss_oidc_refresh_token_profile_1_1#JWT1.0";
 
-    static final String WST_SAMLR2_TOKEN_TYPE =
+    String WST_SAMLR2_TOKEN_TYPE =
             "urn:docs:oasis:open:org:wss:oasis_wss_saml_token_profile_1_1#SAMLV2.0";
 
-    static final String WST_ISSUE_REQUEST =
+    String WST_ISSUE_REQUEST =
             "http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue";
 
     /**
      * RST Context namespace (internal)
      */
-    static final String RST_CTX ="urn:org:atricore:idbus:kernel:main:sts::RSTContext";
+    String RST_CTX ="urn:org:atricore:idbus:kernel:main:sts::RSTContext";
 
     /**
      *
      */
-    static final String VAR_EMISSION_CTX ="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext";
+    String VAR_EMISSION_CTX ="urn:org:atricore:idbus:kernel:main:sts::SecurityTokenEmissionContext";
 
     /**
      * Request Token namespace (internal) 
      */
-    static final String REQUEST_TOKEN = "urn:org:atricore:idbus:kernel:main:sts:RequestToken";
+    String REQUEST_TOKEN = "urn:org:atricore:idbus:kernel:main:sts:RequestToken";
 
     /**
      * Subject property name
      */
-    static final String SUBJECT_PROP = "urn:org:atricore:idbus:kernel:main:sts:Subject";
+    String SUBJECT_PROP = "urn:org:atricore:idbus:kernel:main:sts:Subject";
 
-    static final String IDENTITY_PLAN_PROP = "urn:org:atricore:idbus:kernel:main:sts:IdentityPlan";
+    String IDENTITY_PLAN_PROP = "urn:org:atricore:idbus:kernel:main:sts:IdentityPlan";
+
 
 }

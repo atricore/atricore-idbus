@@ -38,7 +38,9 @@
     <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
     <version>1.5.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Atricore IDBus :: Bundle : EHCache v2.8.1 OSGi</name>
+
+    <name>Atricore IDBus :: Bundle : EHCache v2.8.1 (Core 2.6.8)</name>
+    <description>This bundle wraps EHCache v2.8.1 JARs (Core 2.6.8) adding OSGi support</description>
 
     <properties>
         <activemq.version>5.3.2</activemq.version>
@@ -47,10 +49,6 @@
         <ehcache.jms.version>0.4</ehcache.jms.version>
         <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
         <idbus.bundle.javax-jdo-v3_0.version>1.5.0-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
-
-        <felix.plugin.version>3.3.0</felix.plugin.version>
-        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
-        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
 
     </properties>
 
@@ -132,29 +130,40 @@
     </dependencies>
     
     <build>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.info</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.8</target>
-                    <!--maxmem>256M</maxmem-->
-                    <fork>${compiler.fork}</fork>
-                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
             </plugin>
             
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Bundle : EHCache v2.8.1 (Core 2.6.8)</Bundle-Name>
-                        <Bundle-Description>This bundle simply wraps EHCache v2.8.1 JARs (Core 2.6.8)</Bundle-Description>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             net.sf.ehcache*;version=${ehcache.version},

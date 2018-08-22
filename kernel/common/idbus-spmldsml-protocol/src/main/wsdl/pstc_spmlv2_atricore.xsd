@@ -31,6 +31,17 @@
     <import namespace="urn:oasis:names:tc:SPML:2:0"
             schemaLocation="pstc_spmlv2_core.xsd"/>
 
+    <complexType name="ImportUsersRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <sequence>
+                    <element name="psoID" type="spml:PSOIdentifierType"/>
+                    <element name="newPassword" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
     <complexType name="ReplacePasswordRequestType">
         <complexContent>
             <extension base="spml:RequestType">

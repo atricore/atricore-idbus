@@ -44,7 +44,6 @@
     <properties>
         <jdo.osgi.version>3.0</jdo.osgi.version>
         <jdo.version>3.0</jdo.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
     </properties>
 
     <dependencies>
@@ -62,8 +61,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Bundle : Java JDO Api v3.0</Bundle-Name>

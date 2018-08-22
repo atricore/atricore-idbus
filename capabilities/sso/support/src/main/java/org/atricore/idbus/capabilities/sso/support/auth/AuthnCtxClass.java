@@ -39,16 +39,16 @@ public enum AuthnCtxClass {
     KERBEROS_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:Kerberos", true),
 
     /** URI for Mobile One Factor Unregistered authentication context. */
-    MOFU_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorUnregistered", true),
+    MOFU_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorUnregistered", false),
 
     /** URI for Mobile Two Factor Unregistered authentication context. */
-    MTFU_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorUnregistered", true),
+    MTFU_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorUnregistered", false),
 
     /** URI for Mobile One Factor Contract authentication context. */
-    MOFC_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorContract", true),
+    MOFC_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileOneFactorContract", false),
 
     /** URI for Mobile Two Factor Contract authentication context. */
-    MTFC_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract", true),
+    MTFC_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwoFactorContract", false),
 
     /** URI for Password authentication context. */
     PASSWORD_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:Password", false),
@@ -81,16 +81,16 @@ public enum AuthnCtxClass {
     SOFTWARE_PKI_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI", true),
 
     /** URI for Telephony authentication context. */
-    TELEPHONY_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:Telephony", true),
+    TELEPHONY_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:Telephony", false),
 
     /** URI for Nomadic Telephony authentication context. */
     NOMAD_TELEPHONY_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:NomadTelephony", true),
 
     /** URI for Personalized Telephony authentication context. */
-    PERSONAL_TELEPHONY_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PersonalTelephony", true),
+    PERSONAL_TELEPHONY_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:PersonalTelephony", false),
 
     /** URI for Authenticated Telephony authentication context. */
-    AUTHENTICATED_TELEPHONY_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:AuthenticatedTelephony", true),
+    AUTHENTICATED_TELEPHONY_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:AuthenticatedTelephony", false),
 
     /** URI for Secure Remote Password authentication context. */
     SRP_AUTHN_CTX("urn:oasis:names:tc:SAML:2.0:ac:classes:SecureRemotePassword", true),
@@ -133,12 +133,7 @@ public enum AuthnCtxClass {
     WINDOWS("urn:federation:authentication:windows", true),
 
     /** URI for HOTP authentication context. */
-    HOTP_CTX("urn:org:atricore:idbus:ac:classes:oath:HOTP", false),
-
-    /** URI for TOTP authentication context. */
-    TOTP_CTX("urn:org:atricore:idbus:ac:classes:oath:TOTP", false)
-
-    ;
+    HOTP_CTX("urn:org:atricore:idbus:ac:classes:oath:HOTP", false);
 
 
 

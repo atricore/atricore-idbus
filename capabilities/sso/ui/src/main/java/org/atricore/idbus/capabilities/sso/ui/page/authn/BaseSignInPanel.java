@@ -40,7 +40,9 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Convenience Panel to be implemented by concrete sign-in panels.
@@ -76,6 +78,47 @@ public class BaseSignInPanel extends Panel {
     protected void onSignInSucceeded(String claimsConsumerUrl) {
         getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
     }
+
+    protected EndpointDescriptor resolveClaimsEndpoint(SSOCredentialClaimsRequest requestCredential, Set<String> authnCtxs) throws IdentityMediationException {
+
+        for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
+            // Look for unspecified claim endpoint using Artifacc binding
+            if (authnCtxs.contains(endpoint.getType()) &&
+                    SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Resolved claims endpoint " + endpoint);
+
+                return new EndpointDescriptorImpl(endpoint.getName(),
+                        endpoint.getType(),
+                        endpoint.getBinding(),
+                        requestCredential.getClaimsChannel().getLocation() + endpoint.getLocation(),
+                        endpoint.getResponseLocation() != null ?
+                                requestCredential.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
+
+            }
+        }
+
+        return null;
+
+    }
+
+    protected EndpointDescriptor resolve2FAClaimsEndpoint(SSOCredentialClaimsRequest requestCredential) throws IdentityMediationException {
+
+        Set<String> authnCtxs = new HashSet<String>();
+        authnCtxs.add(AuthnCtxClass.TELEPHONY_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.PERSONAL_TELEPHONY_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.HOTP_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.MTFC_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.MTFU_AUTHN_CTX.getValue());
+
+        return resolveClaimsEndpoint(requestCredential, authnCtxs);
+
+
+    }
+
+
 
     protected EndpointDescriptor resolveClaimsEndpoint(SSOCredentialClaimsRequest requestCredential, AuthnCtxClass authnCtx) throws IdentityMediationException {
 

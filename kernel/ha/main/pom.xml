@@ -373,9 +373,6 @@
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
-                            org.apache.activemq.xbean,
-                            org.apache.activemq.broker,
-                            org.apache.activemq,
                             org.apache.camel.util.jndi,
                             META-INF.cxf,
                             org.apache.cxf,

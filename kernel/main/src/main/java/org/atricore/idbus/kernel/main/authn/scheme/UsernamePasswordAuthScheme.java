@@ -248,7 +248,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         try {
             String v = (String) value;
             if (name.equals(UsernamePasswordCredentialProvider.PASSWORD_CREDENTIAL_NAME))
-            v = createPasswordHash(v, getKnownCredentials());
+                v = createPasswordHash(v, getKnownCredentials());
 
             return super.newEncodedCredential(name, v);
 

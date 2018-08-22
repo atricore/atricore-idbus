@@ -30,6 +30,9 @@ import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.sp.IDPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -54,11 +57,24 @@ public class SignResponseAction extends AbstractSSOAction {
         StatusResponseType response = (StatusResponseType) out.getContent();
 
         FederationChannel channel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
+        //FederationChannel responseChannel = (FederationChannel) executionContext.getContextInstance().getVariable(VAR_RESPONSE_CHANNEL);
+
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
 
-        CircleOfTrustMemberDescriptor dest =
-                (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
+        ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
+
+        String digest = null;
+        if (cfg instanceof SPChannelConfiguration) {
+            digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+        } else if (cfg instanceof IDPChannelConfiguration) {
+            digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+        } else {
+            digest = "SHA256";
+        }
+
+        //CircleOfTrustMemberDescriptor dest =
+        //        (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
 
         // Let's check the type of response
         String element = "Response";
@@ -72,7 +88,7 @@ public class SignResponseAction extends AbstractSSOAction {
         if (logger.isDebugEnabled())
             logger.debug("Signing SAMLR2 Response: " + response.getID() + " in channel " + channel.getName());
 
-        StatusResponseType signedResponse = signer.sign(response, element);
+        StatusResponseType signedResponse = signer.sign(response, element, digest);
 
         out.replaceContent(signedResponse);
 

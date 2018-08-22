@@ -17,6 +17,7 @@
         <feature version="${version}">atricore-csca</feature>
         <feature version="${version}">atricore-openid</feature>
         <feature version="${version}">atricore-openidconnect</feature>
+        <feature version="${version}">atricore-oath</feature>
         <feature version="${version}">atricore-oauth2</feature>
         <feature version="${version}">atricore-idconfirmation</feature>
         <feature version="${version}">atricore-idbus-ui</feature>
@@ -164,6 +165,9 @@
         <bundle>mvn:org.atricore.idbus.capabilities.openidconnect/org.atricore.idbus.capabilities.openidconnect.main/${idbus.cap.openidconnect.version}</bundle>
     </feature>
 
+    <feature name="atricore-oath" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.oath/org.atricore.idbus.capabilities.oath.main/${idbus.cap.oath.version}</bundle>
+    </feature>
 
     <feature name="atricore-oauth2" version="${version}">
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v3_10/${idbus.bundle.nimbus-jose-jwt-v3_10.version}</bundle>

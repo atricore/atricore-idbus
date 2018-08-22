@@ -23,13 +23,11 @@ package org.atricore.idbus.capabilities.sts.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.sts.main.policies.SubjectAuthnPolicyRegistry;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.AddSecurityTokenRequest;
@@ -48,7 +46,7 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
-import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenServiceImpl;
+import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SoapImpl;
 
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
@@ -67,7 +65,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id: SSOGatewayImpl.java 1040 2009-03-05 00:56:52Z gbrigand $
  */
-public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements WSTConstants {
+public class WSTSecurityTokenService extends SoapImpl implements WSTConstants {
 
     private static final Log logger = LogFactory.getLog(WSTSecurityTokenService.class);
 
@@ -137,6 +135,10 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
         requestType = (JAXBElement<String>) rst.getAny().get(1);
         requestToken =  (JAXBElement) rst.getAny().get(2);
+
+        Map<QName, String> attrs = rst.getOtherAttributes();
+
+        // TODO : Get Authoritative source : rst.getOtherAttributes();
 
         SecurityToken securityToken = null;
         Subject subject = null;
@@ -363,9 +365,31 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         long startMilis = 0;
         long endMilis = 0;
 
+        String authnSrc = null;
+
+        if (requestToken instanceof UsernameTokenType) {
+            UsernameTokenType t = (UsernameTokenType) requestToken;
+            authnSrc = t.getOtherAttributes().get(new QName(Constants.AUTHN_SOURCE));
+
+
+        } else if (requestToken instanceof BinarySecurityTokenType) {
+            BinarySecurityTokenType t = (BinarySecurityTokenType) requestToken;
+            authnSrc = t.getOtherAttributes().get(new QName(Constants.AUTHN_SOURCE));
+
+        }
+
+        if (logger.isDebugEnabled() && authnSrc != null)
+            logger.debug("Requested authenticator " + authnSrc);
+
         for (SecurityTokenAuthenticator authenticator : authenticators) {
 
             logger.debug("Checking if authenticator " + authenticator.getId() + " can handle token of type " + tokenType + "[" + (requestToken != null ? requestToken.getClass().getName() : "") + "]");
+
+            if (authnSrc != null && !authnSrc.equals(authenticator.getId())) {
+                logger.debug("Ignoring authenticator: " + authenticator.getId());
+                continue;
+            }
+
 
             if (authenticator.canAuthenticate(requestToken)) {
 

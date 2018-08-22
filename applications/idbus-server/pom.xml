@@ -72,7 +72,7 @@
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <dozer.version>5.2.2</dozer.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.plugin.version>3.5.0</felix.plugin.version>
         <felix.framework.version>5.6.10</felix.framework.version>
         <flexlib.version>2.4.0</flexlib.version>
         <hsqldb.version>1.8.0.9</hsqldb.version>
@@ -81,7 +81,7 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <junit.version>4.4</junit.version>
-        <karaf.version>2.2.3</karaf.version>
+        <karaf.version>4.2.0</karaf.version>
         <log4j.version>1.2.16</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2</ravis.version>

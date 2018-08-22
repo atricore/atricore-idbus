@@ -30,26 +30,31 @@ package org.atricore.idbus.kernel.main.authn;
 
 public interface Constants  {
 
-    public static final String PASSWORD_NS = "urn:org:atricore:idbus:kernel:main:authn:pwd";
+    String PASSWORD_NS = "urn:org:atricore:idbus:kernel:main:authn:pwd";
 
-    public static final String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";
+    String PASSCODE_NS = "urn:org:atricore:idbus:kernel:main:authn:passcode";
 
-    public static final String SPNEGO_NS = "urn:org:atricore:idbus:kernel:main:authn:spnego";
+    String TOKEN_NS = "urn:org:atricore:idbus:kernel:main:authn:token";
 
-    public static final String TICKET_NS = "urn:org:atricore:idbus:kernel:main:authn:ticket";
+    String SPNEGO_NS = "urn:org:atricore:idbus:kernel:main:authn:spnego";
 
-    public static final String REMEMBERME_NS = "urn:org:atricore:idbus:kernel:main:authn:remember-me";
+    String TICKET_NS = "urn:org:atricore:idbus:kernel:main:authn:ticket";
 
-    public static final String IMPERSONATE_NS = "urn:org:atricore:idbus:kernel:main:authn:impersonate";
+    String REMEMBERME_NS = "urn:org:atricore:idbus:kernel:main:authn:remember-me";
 
-    public static final String PROXY_NS = "urn:org:atricore:idbus:kernel:main:authn:proxy";
+    String IMPERSONATE_NS = "urn:org:atricore:idbus:kernel:main:authn:impersonate";
 
-    public static final String PREVIOUS_SESSION_NS = "urn:org:atricore:idbus:kernel:main:authn:previous-session";
+    String PROXY_NS = "urn:org:atricore:idbus:kernel:main:authn:proxy";
 
-    public static final String CACHE_NS = "urn:org:atricore:idbus:kernel:main:authn:cache";
+    String PREVIOUS_SESSION_NS = "urn:org:atricore:idbus:kernel:main:authn:previous-session";
 
-    public static final String AUTHZ_CODE_NS = "urn:org:atricore:idbus:kernel:main:authn:authz-code";
+    String CACHE_NS = "urn:org:atricore:idbus:kernel:main:authn:cache";
 
-    public static final String CSCA_NS = "urn:org:atricore:idbus:kernel:main:authn:csca";
+    String AUTHZ_CODE_NS = "urn:org:atricore:idbus:kernel:main:authn:authz-code";
+
+    String CSCA_NS = "urn:org:atricore:idbus:kernel:main:authn:csca";
+
+    String AUTHN_SOURCE = "urn:org:atricore:idbus:kernel:main:sts:AuthnSource";
+
 
 }

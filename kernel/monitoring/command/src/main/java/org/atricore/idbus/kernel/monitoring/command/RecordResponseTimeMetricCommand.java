@@ -1,13 +1,19 @@
 package org.atricore.idbus.kernel.monitoring.command;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 
 @Command(scope = "monitoring", name = "record-response-time-metric", description = "Record Response Time Metric")
-public class RecordResponseTimeMetricCommand extends OsgiCommandSupport {
+@Service
+public class RecordResponseTimeMetricCommand implements Action {
 
+
+    @Reference
     private MonitoringServer monitoringServer;
 
     @Option(name = "-n", aliases = "--name", description = "Name", required = true, multiValued = false)
@@ -17,7 +23,7 @@ public class RecordResponseTimeMetricCommand extends OsgiCommandSupport {
     String millis;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         
         monitoringServer.recordResponseTimeMetric(name, Long.valueOf(millis));
 

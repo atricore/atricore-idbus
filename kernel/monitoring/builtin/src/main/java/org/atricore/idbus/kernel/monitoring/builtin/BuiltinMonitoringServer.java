@@ -3,9 +3,11 @@ package org.atricore.idbus.kernel.monitoring.builtin;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.monitoring.core.Request;
 import org.atricore.idbus.kernel.monitoring.core.Response;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import java.util.Map;
 
+@Service
 public class BuiltinMonitoringServer implements MonitoringServer {
 
     public void recordMetric(String name, float value) {

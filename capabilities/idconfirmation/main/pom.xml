@@ -38,7 +38,7 @@
     <name>Atricore IDBus :: Capability : Identity Confirmation Main</name>
 
     <properties>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.plugin.version>3.5.0</felix.plugin.version>
     </properties>
 
     <dependencies>

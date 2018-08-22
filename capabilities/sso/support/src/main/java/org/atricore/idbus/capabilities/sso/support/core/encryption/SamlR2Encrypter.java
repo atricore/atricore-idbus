@@ -60,9 +60,9 @@ public interface SamlR2Encrypter {
     /*
      * Encrypts a SAMLR2 Assertion
      */
-    public EncryptedElementType encrypt ( AssertionType assertion, KeyDescriptorType key) throws SamlR2EncrypterException;
+    public EncryptedElementType encrypt ( AssertionType assertion, KeyDescriptorType key, String dataEncryptionAlgorithm) throws SamlR2EncrypterException;
 
-    public EncryptedElementType encrypt ( AssertionType assertion, KeyDescriptorType key, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
+    public EncryptedElementType encrypt ( AssertionType assertion, KeyDescriptorType key, String dataEncryptionAlgorithm, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
 
     public EncryptedElementType encrypt ( RequestAbstractType request, KeyDescriptorType key ) throws SamlR2EncrypterException;
 

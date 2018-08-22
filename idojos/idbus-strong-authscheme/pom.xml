@@ -45,7 +45,7 @@
         <xbean.version>3.7</xbean.version>
         <juni.version>4.4</juni.version>
         <log4j.version>1.2.16</log4j.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.plugin.version>3.5.0</felix.plugin.version>
     </properties>
 
     <build>

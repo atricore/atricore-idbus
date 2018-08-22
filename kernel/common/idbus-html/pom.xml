@@ -33,22 +33,23 @@
     </parent>
 
     <groupId>org.atricore.idbus.kernel.common</groupId>
+
     <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
-    <name>Atricore IDBus :: Kernel : Html Binding</name>
-    <description>Html Binding</description>
+    <name>Atricore IDBus :: Kernel : XHTML Binding</name>
+    <description>XHTML Binding</description>
     <packaging>bundle</packaging>
 
     <dependencies>
 
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+            <artifactId>org.apache.servicemix.specs.jaxb-api-2.2</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
+            <artifactId>org.apache.servicemix.specs.jaxws-api-2.2</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -62,17 +63,17 @@
 
 
     <build>
+
         <plugins>
 
             <plugin>
                 <groupId>com.sun.tools.xjc.maven2</groupId>
                 <artifactId>maven-jaxb-plugin</artifactId>
-                <version>1.1</version>
+
                 <configuration>
                     <extension>true</extension>
                     <catalog>${basedir}/src/main/resources/catalog.xml</catalog>
                     <verbose>true</verbose>
-                    <debug>true</debug>
                 </configuration>
                 <executions>
                     <execution>
@@ -85,13 +86,15 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Kernel : Html Binding</Bundle-Name>
-                        <Bundle-Description>Html Binding</Bundle-Description>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>org.w3._1999.xhtml.*;version=${project.version}</Export-Package>
                         <!--
@@ -100,30 +103,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <!--
-            <plugin>
-              <artifactId>maven-antrun-plugin</artifactId>
-              <version>1.1</version>  
-              <executions>
-                <execution>
-                  <phase>generate-sources</phase>
-                  <goals>
-                    <goal>run</goal>
-                  </goals>
-                  <configuration>
-                    <tasks>
-                      <taskdef classname="com.sun.tools.xjc.XJCTask" classpathref="maven.compile.classpath" name="xjc" />
-                      <mkdir dir="${project.build.directory}/jaxws" />
-                      <xjc target="${project.build.directory}/jaxws" extension="true">
-                        <schema includes="xhtml1-strict.xsd" dir="${basedir}/src/main/resources/com/atricore/html/binding" />
-                      </xjc>
-                    </tasks>
-                    <testSourceRoot>${project.build.directory}/jaxws</testSourceRoot>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-            -->
         </plugins>
         <sourceDirectory>target/jaxws</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -136,20 +115,17 @@
                     <include>**/*.properties</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.info</include>
+                </includes>
+            </resource>
         </resources>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
-                <!--
-                <includes>
-                    <include>**/*.properties</include>
-                    <include>**/*.drl</include>
-                    <include>**/*.x*</include>
-                    <include>**/*.wsdl</include>
-                    <include>**/*.jks</include>
-                    <include>**/*.zip</include>
-                </includes>
-                -->
             </testResource>
         </testResources>
     </build>

@@ -24,11 +24,9 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.Credential;
-import org.atricore.idbus.kernel.main.authn.CredentialKey;
-import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStoreKeyAdapter;
@@ -73,6 +71,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
      *
      * @param userCredentials
      */
+    @Override
     public void initialize(Credential[] userCredentials, Subject s) {
         _inputCredentials = userCredentials;
         _subject = s;
@@ -83,6 +82,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Confirms the authentication process, populates the Subject with Principal and Credentials information.
      */
+    @Override
     public void confirm() {
 
         // Only add security information if authentication was successful.
@@ -125,18 +125,36 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Cancels the authentication process.
      */
+    @Override
     public void cancel() {
         if (logger.isDebugEnabled())
             logger.debug("[cancel()], ok");
         setAuthenticated(false);
     }
 
+    @Override
     public Credential newCredential(String name, Object value) {
+        if (_credentialProvider == null)
+            return null;
+
         return _credentialProvider.newCredential(name, value);
     }
 
+    @Override
     public Credential newEncodedCredential(String name, Object value) {
+        if (_credentialProvider == null)
+            return null;
+
         return _credentialProvider.newEncodedCredential(name, value);
+    }
+
+    @Override
+    public Credential[] newCredentials(User user) {
+        if (_credentialProvider == null)
+            return null;
+
+        return _credentialProvider.newCredentials(user);
+
     }
 
     // ------------------------------------------------------------------------------
@@ -182,14 +200,17 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
         return _credentialStoreKeyAdapter;
     }
 
+    @Override
     public void setCredentialStore(CredentialStore c) {
         _credentialStore = c;
     }
 
+    @Override
     public void setCredentialStoreKeyAdapter(CredentialStoreKeyAdapter a) {
         _credentialStoreKeyAdapter = a;
     }
 
+    @Override
     public Set<PolicyEnforcementStatement> getSSOPolicies() {
         return _subject.getPrincipals(PolicyEnforcementStatement.class);
     }
@@ -197,6 +218,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Clones this authentication scheme.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -225,11 +247,13 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Obtains the Authentication Scheme name
      */
+    @Override
     public String getName() {
         return _name;
     }
 
 
+    @Override
     public int getPriority() {
         return priority;
     }

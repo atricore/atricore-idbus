@@ -264,7 +264,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             if (password == null)
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "no password");
 
-            if (claims.getExpirationTime() != null && claims.getExpirationTime().getTime() > now + getTimeToleranceInMillis())
+            if (claims.getExpirationTime() != null && claims.getExpirationTime().getTime() < now - getTimeToleranceInMillis())
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "exp: error");
 
             if (claims.getNotBeforeTime() != null && claims.getNotBeforeTime().getTime() > now + getTimeToleranceInMillis())

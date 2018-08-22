@@ -42,13 +42,13 @@
 
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+            <artifactId>org.apache.servicemix.specs.jaxb-api-2.2</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
+            <artifactId>org.apache.servicemix.specs.jaxws-api-2.2</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -62,7 +62,28 @@
 
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.info</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
 
             <plugin>
                 <groupId>com.sun.tools.xjc.maven2</groupId>
@@ -100,6 +121,10 @@
                         <!--
                         <Import-Package>!*</Import-Package>
                         -->
+                        <Private-Package>
+                            org.w3._2000._09.xmldsig_*,
+                            org.w3._2001._04.xmlenc_*
+                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

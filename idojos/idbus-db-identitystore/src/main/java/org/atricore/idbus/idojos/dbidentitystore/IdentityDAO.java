@@ -375,9 +375,13 @@ public class IdentityDAO {
 
         while (rs.next()) {
             for (int i = 1; i <= cols; i++) {
+
+                // SELECT CNAME AS CLABEL ...
                 String cName = rsmd.getColumnName(i);
+                String cLabel = rsmd.getColumnLabel(i);
+
                 String cValue = rs.getString(i);
-                SSONameValuePair prop = new SSONameValuePair(cName, cValue);
+                SSONameValuePair prop = new SSONameValuePair(cLabel != null && !"".equals(cLabel) ? cLabel : cName, cValue);
                 props.add(prop);
             }
         }

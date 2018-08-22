@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+    <bean id="baseAuditingServer" class="org.atricore.idbus.kernel.auditing.core.BaseAuditingServer" />
+
+    <bean id="osgiAuditHandlerRegistry" class="org.atricore.idbus.kernel.auditing.core.OsgiAuditHandlerRegistry">
+        <argument ref="baseAuditingServer" />
+    </bean>
+
+    <service id="baseAuditingServerExporter"
+             interface="org.atricore.idbus.kernel.auditing.core.AuditingServer" ref="baseAuditingServer"/>
+
+    <reference-list id="auditHandlers"
+                    interface="org.atricore.idbus.kernel.auditing.core.AuditHandler" availability="optional">
+        <reference-listener
+                ref="osgiAuditHandlerRegistry"
+                bind-method="register"
+                unbind-method="unregister" />
+    </reference-list>
+
+</blueprint>

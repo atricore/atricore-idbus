@@ -286,7 +286,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
     protected ResponseType buildSamlSloResponse(CamelMediationExchange exchange,
                                              LogoutRequestType sloRequest,
-                                             CircleOfTrustMemberDescriptor sp, EndpointDescriptor spEndpoint) throws Exception {
+                                             CircleOfTrustMemberDescriptor sp,
+                                             EndpointDescriptor spEndpoint) throws Exception {
         // Build sloresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SloRequestToSamlR2RespPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();

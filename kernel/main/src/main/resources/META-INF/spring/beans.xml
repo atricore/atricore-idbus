@@ -38,15 +38,17 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- =================================================================== -->
     <!-- CXF Engine setup                                                    -->
     <!-- =================================================================== -->
-    <import resource="classpath:META-INF/cxf/cxf.xml" />
+
+
+    <!--import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
-    <import resource="classpath:META-INF/cxf/cxf-extension-http.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-http.xml" /-->
     <!--import resource="classpath:META-INF/cxf/osgi/cxf-extension-osgi.xml" /-->
 
     <!-- Export CXF Engine as OSGi service -->
-    <osgi:service id="cxfExporter"
+    <!--osgi:service id="cxfExporter"
                   interface="org.apache.cxf.Bus"
-                  ref="cxf" />
+                  ref="cxf" /-->
 
     <!-- =================================================================== -->
     <!-- EHCache setup                                                       -->
@@ -134,27 +136,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- Atricore IDBus JMS Broker definition -->
     <!-- =================================================================== -->
 
-    <!--
-    <bean name="aqmBroker" class="org.apache.activemq.xbean.XBeanBrokerService">
-        <property name="brokerName" value="${aqm.brokerName}"/>
-        <property name="dataDirectory" value="data/activemq-idbus"/>
-        <property name="deleteAllMessagesOnStartup" value="true"/>
-        <property name="useJmx" value="false"/>
-
-        <property name="transportConnectors">
-            <list>
-
-                <bean class="org.apache.activemq.broker.TransportComail.smtp.hostnnector">
-                    <property name="uri" value="${aqm.transportUri}"/>
-                </bean>
-
-            </list>
-        </property>
-
-    </bean>
-    -->
-
-
     <!-- =================================================================== -->
     <!-- Mediation Engine setup                                              -->
     <!-- =================================================================== -->
@@ -198,28 +179,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- =================================================================== -->
 
     <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
+
+        <prop key="idbus.node">idm1</prop>
         <!-- AQM Properties -->
         <prop key="aqm.builder">aqm-memory</prop>
         <!--prop key="aqm.builder">aqm-ehcache</prop-->
 
-        <!-- For ActiveMQ MQM (deprecated) -->
-        <prop key="aqm.brokerName">aq1</prop>
-        <prop key="aqm.host">localhost</prop>
-        <prop key="aqm.bind">127.0.0.1</prop>
-        <prop key="aqm.port">61217</prop>
-        <prop key="aqm.transportUri">vm://${aqm.host}/${aqm.brokerName}</prop>
-        <prop key="aqm.brokerUrl">vm://${aqm.host}/${aqm.brokerName}</prop>
-        <prop key="aqm.discoveryUri"></prop>
-        <prop key="aqm.networkUri"></prop>
-        <prop key="aqm.sendTimeout">30000</prop>
-        <prop key="aqm.receiveTimeout">30000</prop>
-        <prop key="aqm.useCompression">false</prop>
-
         <!-- For Memory MQM -->
         <prop key="aqm.monitorInterval">30</prop>
         <prop key="aqm.artifactTTL">30</prop>
-
-        <!-- For EHCache MQM -->
 
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache.xml</prop>
@@ -238,6 +206,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="mail.username">admin</prop>
         <prop key="mail.password">admin</prop>
         <prop key="mail.smtp.starttls.enable">false</prop>
+
+        <prop key="binding.http.loadStateRetryCount">1</prop>
+        <prop key="binding.http.loadStateRetryDelay">100</prop>
+
+        <prop key="binding.soap.loadStateRetryCount">1</prop>
+        <prop key="binding.soap.loadStateRetryDelay">100</prop>
+
+        <prop key="binding.artifact.loadStateRetryCount">1</prop>
+        <prop key="binding.artifact.loadStateRetryDelay">100</prop>
 
         <prop key="binding.josso.maxUnresolvedAssertions">100</prop>
 

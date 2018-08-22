@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- TEMP FILE FOR NOW! -->
+
+<features  name="atricore-idbus"
+           xmlns="http://karaf.apache.org/xmlns/features/v1.3.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+
+
+    <feature name="scala" version="2.11.8">
+        <bundle start-level="60">mvn:org.scala-lang/scala-library/2.11.8</bundle>
+        <bundle start-level="60">mvn:org.scala-lang/scala-reflect/2.11.8</bundle>
+        <bundle start-level="60">mvn:org.scala-lang/scala-compiler/2.11.8</bundle>
+        <bundle start-level="60">mvn:org.scala-lang.modules/scala-parser-combinators_2.11/1.0.5</bundle>
+        <bundle start-level="60">mvn:org.scala-lang.modules/scala-xml_2.11/1.0.5</bundle>
+    </feature>
+
+
+    <feature name="atricore-support" version="1.5.0-SNAPSHOT" description="Provides infrastructure to support Atricore IDBus">
+
+        <!-- Apache CXF -->
+        <feature version="3.2.5">cxf</feature>
+
+        <!-- Apache Camel -->
+        <feature version="2.22.0">camel</feature>
+        <bundle start-level="50">mvn:org.apache.camel/camel-core-osgi/2.22.0</bundle>
+        <feature version="2.22.0">camel-cxf</feature>
+        <feature version="2.22.0">camel-http</feature>
+        <feature version="2.22.0">camel-jetty</feature>
+
+        <!-- Spring -->
+        <feature version="3.2.18.RELEASE_1">spring</feature>
+        <feature version="1.2.1">spring-dm</feature>
+        <feature version="1.2.1">spring-dm-web</feature>
+
+        <!-- Apache Commons and other utilities -->
+        <bundle start-level="60">mvn:commons-codec/commons-codec/1.10</bundle>
+        <bundle start-level="60">mvn:commons-lang/commons-lang/2.6</bundle>
+        <bundle start-level="60">mvn:commons-io/commons-io/2.6</bundle>
+        <bundle start-level="60">mvn:commons-collections/commons-collections/3.2.2</bundle>
+        <bundle start-level="60">mvn:commons-beanutils/commons-beanutils/1.9.3</bundle>
+        <bundle start-level="60">mvn:org.apache.httpcomponents/httpcore-osgi/4.4.8</bundle>
+        <bundle start-level="60">mvn:org.apache.httpcomponents/httpclient-osgi/4.5.3</bundle>
+        <bundle start-level="60">mvn:org.hsqldb/com.springsource.org.hsqldb/1.8.0.10</bundle>
+        <bundle start-level="60">mvn:org.apache.geronimo.specs/geronimo-servlet_3.0_spec/1.0</bundle>
+        <bundle start-level="60">mvn:net.minidev/json-smart/1.3.1</bundle>
+        <bundle start-level="60">mvn:org.bouncycastle/bcprov-jdk15on/1.52</bundle>
+
+        <!-- Atricore bundles -->
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ehcache-v2_8_1/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ini4j-v0_5_1/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-maven-v3_0/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.josso-ws-v1_2/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ini4j-v0_5_1/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-v1_9_2/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-spring31-v1_9_2/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v3_10/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1/1.5.0-SNAPSHOT</bundle>
+
+        <!-- Scala -->
+        <feature version="2.11.8">scala</feature>
+
+    </feature>
+
+    <feature name="atricore-auditing-builtin" version="1.5.0-SNAPSHOT" description="Provides Atricore IDBus default auditing support">
+        <feature version="1.5.0-SNAPSHOT">atricore-kernel</feature>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.5.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="atricore-monitoring-builtin" version="1.5.0-SNAPSHOT" description="Provides Atricore IDBus default monitoring support">
+        <feature version="1.5.0-SNAPSHOT">atricore-kernel</feature>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.builtin/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.command/1.5.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="atricore-kernel" version="1.5.0-SNAPSHOT" description="Provides Atricore IDBus kernel">
+        <feature version="1.5.0-SNAPSHOT">atricore-support</feature>
+
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.support/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.monitoring/org.atricore.idbus.kernel.monitoring.core/1.5.0-SNAPSHOT</bundle>
+
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.xmldsig/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.spml/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr2/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr11/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.sso/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.oauth2/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.wst/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="65">mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.html/1.5.0-SNAPSHOT</bundle>
+
+        <bundle start-level="70">mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.planning/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="70">mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.web/1.5.0-SNAPSHOT/war</bundle>
+        <bundle start-level="70">mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.main/1.5.0-SNAPSHOT</bundle>
+
+    </feature>
+
+    <feature name="atricore-capabilities" version="1.5.0-SNAPSHOT" description="Provides Atricore IDBus Identity Capabilities">
+        <feature version="1.5.0-SNAPSHOT">atricore-kernel</feature>
+        <bundle start-level="70">mvn:org.atricore.idbus.capabilities.sts/org.atricore.idbus.capabilities.sts.main/1.5.0-SNAPSHOT</bundle>
+    </feature>
+
+    <feature name="atricore-idbus" version="1.5.0-SNAPSHOT">
+        <feature version="1.5.0-SNAPSHOT">atricore-support</feature>
+        <feature version="1.5.0-SNAPSHOT">atricore-kernel</feature>
+        <feature version="1.5.0-SNAPSHOT">atricore-monitoring-builtin</feature>
+        <feature version="1.5.0-SNAPSHOT">atricore-auditing-builtin</feature>
+        <feature version="1.5.0-SNAPSHOT">atricore-capabilities</feature>
+
+        <!-- TODO UPGRADE CUSTOM FEATURES DESCRIPTOR -->
+    </feature>
+
+
+
+</features>

@@ -17,17 +17,12 @@ public class OsgiAuditHandlerRegistry {
 
     public void register(final AuditHandler handler, final Map<String, ?> properties) {
         auditingServer.registerHandler(handler);
+        logger.info("Audit Handler registered " + handler);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Audit Handler registered " + handler);
-        }
     }
 
     public void unregister(final AuditHandler handler, final Map<String, ?> properties) {
         auditingServer.unregisterHandler(handler);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Audit Handler unregistered " + handler);
-        }
+        logger.info("Audit Handler unregistered " + handler);
     }
 }

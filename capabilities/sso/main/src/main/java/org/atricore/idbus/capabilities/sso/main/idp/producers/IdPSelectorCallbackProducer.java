@@ -49,6 +49,9 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         EndpointDescriptor destination = (EndpointDescriptor) state.getLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
         String relayState = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP);
         String type = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP);
+        SamlR2Signer signer = (SamlR2Signer) state.getLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP);
+
+        state.setAttribute("SAMLR2Signer", signer);
 
         if (logger.isDebugEnabled()) {
             if (ssoResponse instanceof ResponseType) {
@@ -66,6 +69,7 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP);
         state.removeLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP);
+        state.removeLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP);
 
 
         // ---------------------------------------------------

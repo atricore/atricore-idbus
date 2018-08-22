@@ -42,13 +42,13 @@
 
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+            <artifactId>org.apache.servicemix.specs.jaxb-api-2.2</artifactId>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
+            <artifactId>org.apache.servicemix.specs.jaxws-api-2.2</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -69,7 +69,29 @@
 
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.info</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.cxf</groupId>
@@ -125,6 +147,11 @@
                               oasis.names.tc.saml._1_0.wsdl;version=${project.version},
                         </Export-Package>
                         <Import-Package>
+                            javax.jws;version="[0,3)",
+                            javax.jws.soap;version="[0,3)",
+                            *
+                        </Import-Package>
+                        <!--Import-Package>
                             javax.xml.bind,
                             javax.jws,
                             javax.jws.soap,
@@ -133,7 +160,10 @@
                             javax.xml.ws,
                             !javax.xml.bind.annotation.adapters,
                             *
-                        </Import-Package>
+                        </Import-Package-->
+                        <Private-Package>
+                            oasis.names.tc.saml._1_0*
+                        </Private-Package>
                         
                     </instructions>
                 </configuration>

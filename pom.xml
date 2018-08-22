@@ -53,17 +53,18 @@
         <module>bundles/ehcache-v2_8_1</module>
         <module>bundles/nimbus-jose-jwt-v3_10</module>
         <module>bundles/oauth2-oidc-sdk-v4_14_1</module>
-        <module>bundles/pax-web-runtime-v0_7_2</module>
-        <module>bundles/pax-web-jetty-v0_7_2</module>
-        <module>bundles/pax-web-jetty-v0_7_3</module>
-        <module>bundles/wadi-v2_1_2</module>
+        <!--module>bundles/pax-web-runtime-v0_7_2</module-->
+        <!--module>bundles/pax-web-jetty-v0_7_2</module-->
+        <!--module>bundles/pax-web-jetty-v0_7_3</module-->
+        <!--module>bundles/wadi-v2_1_2</module-->
         <module>bundles/ini4j-v0_5_1</module>
         <!--<module>bundles/scala-library-v2_9_1</module>-->
         <!--<module>bundles/scala-compiler-v2_9_1</module>-->
-        <!--<module>bundles/scala-library-v2_11_8</module>-->
+        <module>bundles/scala-library-v2_11_8</module>
         <module>bundles/jasypt-v1_9_2</module>
         <module>bundles/jasypt-spring31-v1_9_2</module>
         <module>capabilities/spmlr2</module>
+        <module>capabilities/oath</module>
         <module>capabilities/sso</module>
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>
@@ -117,17 +118,29 @@
 
     <properties>
         <compiler.fork>true</compiler.fork>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.plugin.version>3.5.0</felix.plugin.version>
         <felix.framework.version>5.6.10</felix.framework.version>
-        <spring.version>4.3.12.RELEASE</spring.version>
+
+        <karaf.version>4.2.0</karaf.version>
+
+        <!--spring.version>4.3.12.RELEASE</spring.version-->
+        <!--spring.version>5.0.4.RELEASE</spring.version-->
+        <spring.version>3.2.18.RELEASE</spring.version>
         <spring.osgi.version>1.2.1</spring.osgi.version>
         <scala.major.version>2.11</scala.major.version>
         <scala.version>${scala.major.version}.8</scala.version>
         <scala.modules.version>1.0.5</scala.modules.version>
         <!--<scala.osgi.version>${scala.version}.v20160304-115712-1706a37eb8</scala.osgi.version>-->
         <scalate.version>1.7.1</scalate.version>
-    </properties>
 
+        <!-- General Settings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <appendedResourcesDirectory>${basedir}/etc/appended-resources</appendedResourcesDirectory>
+        <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
+        <!-- Disable OBR repository update by default -->
+        <obrRepository>NONE</obrRepository>
+
+    </properties>
 
     <scm>
         <connection>scm:git://atricore.git.sourceforge.net/gitroot/atricore/atricore</connection>
@@ -606,7 +619,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.4</version>
+                <version>${felix.plugin.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.scala-lang</groupId>
@@ -668,16 +681,19 @@
 
         <pluginManagement>
             <plugins>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.7.0</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>1.7</source>
+                        <target>1.8</target>
                         <compilerArgument>-XDignore.symbol.file</compilerArgument>
+                        <fork>${compiler.fork}</fork>
                     </configuration>
                 </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -687,6 +703,58 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.15</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${karaf.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-services-maven-plugin</artifactId>
+                    <version>${karaf.version}</version>
+                    <executions>
+                        <execution>
+                            <id>service-metadata-generate</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>service-metadata-generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${felix.plugin.version}</version>
+                    <inherited>true</inherited>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <obrRepository>NONE</obrRepository>
+                        <instructions>
+                            <nsh_interface>org.apache.aries.blueprint.NamespaceHandler</nsh_interface>
+                            <nsh_namespace>osgi.service.blueprint.namespace</nsh_namespace>
+                            <_removeheaders>Private-Package,Include-Resource,Embed-Dependency,Created-By,Bnd-LastModified,Built-By,Tool</_removeheaders>
+                            <_versionpolicy>${bnd.version.policy}</_versionpolicy>
+                            <Bundle-DocURL>http://karaf.apache.org/</Bundle-DocURL>
+                        </instructions>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>cleanVersions</id>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>cleanVersions</goal>
+                            </goals>
+                            <configuration>
+                                <versions>
+                                    <karaf.osgi.version>${project.version}</karaf.osgi.version>
+                                </versions>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>scala-maven-plugin</artifactId>

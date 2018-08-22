@@ -53,7 +53,7 @@
         <commons-lang.version>2.0</commons-lang.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <felix.framework.version>5.6.10</felix.framework.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
+        <felix.plugin.version>3.5.0</felix.plugin.version>
         <javax.jdo.version>2.3-ec</javax.jdo.version>
         <javax.jdo.osgi.version>2.3.0</javax.jdo.osgi.version>
         <junit.version>4.4</junit.version>

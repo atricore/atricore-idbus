@@ -5,7 +5,6 @@ import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.ResponseType;
 import oasis.names.tc.spml._2._0.StatusCodeType;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 /**

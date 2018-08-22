@@ -46,7 +46,6 @@
         <datanucleus.version>2.1.2</datanucleus.version>
         <datanucleus.osgi.version>2.1.2</datanucleus.osgi.version>
 
-        <felix.plugin.version>3.3.0</felix.plugin.version>
         <javax.jdo.osgi.version>2.3.0</javax.jdo.osgi.version>
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <!--<spring.version>4.3.12.RELEASE</spring.version>-->

@@ -118,6 +118,7 @@ public class RememberMeAuthScheme extends AbstractAuthenticationScheme {
 
     }
 
+
     public boolean authenticate() throws SSOAuthenticationException {
         setAuthenticated(false);
 

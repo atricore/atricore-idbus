@@ -44,8 +44,6 @@
         <apache.tiles.version>2.2.2</apache.tiles.version>
         <commons-digester.version>1.8.1</commons-digester.version>
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
-        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
     </properties>
 
     <dependencies>
@@ -89,8 +87,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-Name>Atricore IDBus :: Bundle : Apache Tiles JSP v2_2_2</Bundle-Name>

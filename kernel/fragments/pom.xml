@@ -36,11 +36,7 @@
     <description>Common</description>
     <packaging>pom</packaging>
 
-    <properties>
-        <karaf.version>2.2.3</karaf.version>
-    </properties>
-
-    <profiles>
+   <profiles>
         <profile>
             <id>mysql</id>
             <modules>

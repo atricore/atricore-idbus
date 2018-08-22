@@ -41,6 +41,8 @@ import java.util.*;
 
 /**
  * This selector works ONLY for locally defined IDPs
+ *
+ * This will select the IDP that can authenticate the received user certificate.
  */
 public class CscaIdPSelector extends AbstractEntitySelector implements ApplicationContextAware {
 

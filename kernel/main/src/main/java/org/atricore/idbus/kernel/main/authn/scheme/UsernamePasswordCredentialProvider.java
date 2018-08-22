@@ -25,6 +25,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
+import org.atricore.idbus.kernel.main.authn.SSOUser;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @org.apache.xbean.XBean element="basic-auth-credential-provider" 
@@ -78,6 +83,7 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
      * @param value the credential value
      * @return the Credential instance representing the supplied name-value pair.
      */
+    @Override
     public Credential newCredential(String name, Object value) {
         if (name.equalsIgnoreCase(USERID_CREDENTIAL_NAME)) {
             return new UserIdCredential(value);
@@ -108,7 +114,21 @@ public class UsernamePasswordCredentialProvider implements CredentialProvider {
      * @param value
      * @return
      */
+    @Override
     public Credential newEncodedCredential(String name, Object value) {
         return newCredential(name, value);
+    }
+
+    @Override
+    public Credential[] newCredentials(User user) {
+        List<Credential> creds = new ArrayList<Credential>();
+
+        creds.add(newCredential(USERNAME_CREDENTIAL_NAME, user.getUserName()));
+        creds.add(newCredential(USERID_CREDENTIAL_NAME, user.getUserName()));
+        creds.add(newCredential(PASSWORD_CREDENTIAL_NAME, user.getUserPassword()));
+        if (user.getSalt() != null && !"".equals(user.getSalt()))
+        creds.add(newCredential(SALT_CREDENTIAL_NAME, user.getSalt()));
+
+        return creds.toArray(new Credential[0]);
     }
 }

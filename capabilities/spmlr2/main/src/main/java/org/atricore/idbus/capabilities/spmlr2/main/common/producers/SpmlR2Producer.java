@@ -375,7 +375,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         try {
 
             UserType spmlUser = new UserType();
-            BeanUtils.copyProperties(user, spmlUser, new String[] {"groups", "attrs", "accountExpirationDate"});
+            BeanUtils.copyProperties(user, spmlUser, new String[] {"groups", "attrs", "accountExpirationDate", "passwordExpirationDate"});
 
             if (user.getAccountExpirationDate() != null) {
 

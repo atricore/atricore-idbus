@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
-import org.atricore.idbus.capabilities.sso.main.idp.ChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -65,7 +65,7 @@ public class EncryptResponseContentAction extends AbstractSSOAction {
         if (response instanceof ResponseType) {
 
             SSOIDPMediator idpMediator = (SSOIDPMediator) mediator;
-            ChannelConfiguration channelCfg = idpMediator.getChannelConfig(channel.getName());
+            SPChannelConfiguration channelCfg = (SPChannelConfiguration) idpMediator.getChannelConfig(channel.getName());
 
             if (channelCfg.isEncryptAssertion()) {
 
@@ -90,7 +90,7 @@ public class EncryptResponseContentAction extends AbstractSSOAction {
                                 logger.debug("Encrypting SAMLR2 Assertion : " + assertion.getID() + " for SP " + dest.getAlias());
 
                             // Add encrypted assertion as nested element
-                            EncryptedElementType encryptedAssertion = encrypter.encrypt(assertion, encKey);
+                            EncryptedElementType encryptedAssertion = encrypter.encrypt(assertion, encKey, channelCfg.getEncryptAssertionAlgorithm());
                             assertions.add(encryptedAssertion);
                         } else {
                             assertions.add(o);

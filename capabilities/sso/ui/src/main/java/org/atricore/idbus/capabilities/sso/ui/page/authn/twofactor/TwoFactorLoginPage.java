@@ -50,6 +50,9 @@ public class TwoFactorLoginPage extends LoginPage {
                                        IdentityMediationUnitRegistry idsuRegistry) {
         
 
-        return new UsernamePasscodeSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
+        UsernamePasscodeSignInPanel p = new UsernamePasscodeSignInPanel(id, credentialClaimsRequest, artifactQueueManager, idsuRegistry);
+        p.setOutputMarkupId(true);
+        return p;
+
     }
 }

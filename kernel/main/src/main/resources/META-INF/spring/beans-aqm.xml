@@ -70,7 +70,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                 <property name="node" value="${idbus.node}"/>
             </bean>
         </property>
-        <property name="cacheName" value="idbus-aqm"/>
+        <property name="name" value="idbus-aqm"/>
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
 

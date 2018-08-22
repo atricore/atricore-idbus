@@ -21,32 +21,16 @@
 
 package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 
-import oasis.names.tc.saml._2_0.assertion.AssertionType;
-import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
-import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
-import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sso.main.emitter.plans.Samlr2AssertionEmissionException;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
-import org.atricore.idbus.capabilities.sso.main.idp.ChannelConfiguration;
-import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
-import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
-import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
-import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
-import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
-import org.atricore.idbus.kernel.planning.IdentityArtifactImpl;
-import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 
-import javax.xml.namespace.QName;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

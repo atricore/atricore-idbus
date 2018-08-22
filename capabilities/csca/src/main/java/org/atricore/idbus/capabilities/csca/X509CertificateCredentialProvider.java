@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
+import org.atricore.idbus.kernel.main.authn.scheme.UserNameCredential;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateException;
@@ -69,6 +71,18 @@ public class X509CertificateCredentialProvider implements CredentialProvider {
 
     public Credential newEncodedCredential(String name, Object value) {
         return newCredential(name, value);
+    }
+
+    @Override
+    public Credential[] newCredentials(User user) {
+
+        byte[] binCert = user.getUserCertificate();
+
+        if (binCert == null)
+            return null;
+        X509Certificate cert = buildX509Certificate(binCert);
+
+        return new Credential[] {newCredential(X509_CERTIFICATE_CREDENTIAL_NAME, cert)};
     }
 
     private X509Certificate buildX509Certificate(byte[] binaryCert) {

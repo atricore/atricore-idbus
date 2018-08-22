@@ -42,18 +42,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <!-- AQM properties -->
         <prop key="aqm.builder">aqm-ehcache</prop>
-        <prop key="aqm.brokerName">idbusAqmBrokerHA</prop>
-        <prop key="aqm.host">localhost</prop>
-        <prop key="aqm.bind">0.0.0.0</prop>
-        <prop key="aqm.port">61217</prop>
-        <prop key="aqm.transportUri">tcp://${aqm.bind}:${aqm.port}?wireFormat.maxInactivityDuration=0</prop>
-        <prop key="aqm.brokerUrl">tcp://${aqm.host}:${aqm.port}?wireFormat.maxInactivityDuration=0</prop>
-        <prop key="aqm.discoveryUri">multicast://224.1.2.6:6123</prop>
-        <prop key="aqm.networkUri">multicast://224.1.2.6:6123</prop>
-        <prop key="aqm.sendTimeout">30000</prop>
-        <prop key="aqm.receiveTimeout">30000</prop>
-        <prop key="aqm.artifactTTL">6000</prop>
-        <prop key="aqm.useCompression">false</prop>
 
         <!-- For memory AQM -->
         <prop key="aqm.monitorInterval">30</prop>
@@ -73,6 +61,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <prop key="binding.soap.loadStateRetryCount">5</prop>
         <prop key="binding.soap.loadStateRetryDelay">100</prop>
+
+        <prop key="binding.artifact.loadStateRetryCount">5</prop>
+        <prop key="binding.artifact.loadStateRetryDelay">100</prop>
+
+        <prop key="binding.josso.maxUnresolvedAssertions">100</prop>
 
         <!-- Default Mail properties -->
         <prop key="mail.smtp.host">localhost</prop>

@@ -43,6 +43,7 @@ import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.ops4j.pax.wicket.api.PaxWicketBean;
 import org.osgi.framework.BundleContext;
 import org.springframework.util.StringUtils;
@@ -74,6 +75,10 @@ public class BasePage extends WebPage implements IHeaderContributor {
     @PaxWicketBean(name = "mailService", injectionSource = "spring")
     protected MailService mailService;
 
+    @PaxWicketBean(name = "kernelConfig", injectionSource = "spring")
+    protected ConfigurationContext kernelConfig;
+
+
     private IPageHeaderContributor headerContributors;
 
     private String variant;
@@ -97,6 +102,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
                       appConfigRegistry,
                       brandingService,
                       idsuRegistry,
+                    kernelConfig,
                     mailService);
 
             // Set default locale if configured.

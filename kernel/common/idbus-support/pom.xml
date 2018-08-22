@@ -33,8 +33,10 @@
 
     <groupId>org.atricore.idbus.kernel.common</groupId>
     <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
+
     <name>Atricore IDBus :: Kernel : Support</name>
-    <description>Html Binding</description>
+    <description>Atricore IDBus Kernel Support</description>
+
     <packaging>bundle</packaging>
 
     <dependencies>
@@ -102,17 +104,38 @@
 
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.info</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Kernel : Support</Bundle-Name>
-                        <Bundle-Description>Atricore IDBus Kernel Support</Bundle-Description>
+
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+
                         <Export-Package>org.atricore.idbus.kernel.common.support.*;version=${project.version}</Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -161,10 +184,10 @@
                         </property>
 
                     </systemProperties>
-                    
+
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 </project>

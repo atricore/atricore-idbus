@@ -7,14 +7,12 @@ import java.net.InetAddress;
 import java.io.PrintWriter;
 
 import org.apache.commons.logging.*;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.DisposableBean;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class OsgiNetworkServerControl implements InitializingBean, DisposableBean {
+public class OsgiNetworkServerControl {
 
     private static Log logger = LogFactory.getLog(OsgiNetworkServerControl.class);
 
@@ -38,7 +36,7 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
         this.serverDescriptors = serverDescriptors;
     }
 
-    public synchronized void afterPropertiesSet() throws Exception {
+    public synchronized void init() throws Exception {
         logger.info("Starting Apache Derby OSGi Network server control ... ");
         running = true;
 
@@ -77,8 +75,7 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
 
     public void register(final NetworkServerDescriptor serverDescriptor, Map<String, ?> properties) throws Exception {
 
-        if (logger.isDebugEnabled())
-            logger.debug("Registering Network Server Descriptor " + serverDescriptor);
+        logger.info("Registering Network Server Descriptor " + serverDescriptor);
 
         serverDescriptors.add(serverDescriptor);
 
@@ -92,9 +89,10 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
     }
 
     public void unregister(final NetworkServerDescriptor serverDescriptor, Map<String, ?> properties) throws Exception {
+        if (serverDescriptor == null)
+            return;
 
-        if (logger.isDebugEnabled())
-            logger.debug("Unregistering Network Server Descriptor " + serverDescriptor);
+        logger.info("Unregistering Network Server Descriptor " + serverDescriptor);
 
         NetworkServerDescriptor toRemove = null;
         for (NetworkServerDescriptor sd : serverDescriptors) {

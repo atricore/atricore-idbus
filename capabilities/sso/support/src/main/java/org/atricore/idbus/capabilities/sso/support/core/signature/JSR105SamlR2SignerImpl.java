@@ -35,6 +35,7 @@ import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sso.support.core.util.NamespaceFilterXMLStreamWriter;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
+import org.jcp.xml.dsig.internal.dom.DOMSignatureMethod;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -92,15 +93,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      */
     public static final String DEFAULT_JSR105_PROVIDER_FQCN = "org.jcp.xml.dsig.internal.dom.XMLDSigRI";
 
-    // TODO : Support SHA-256, make dynamic !
-    private static final String SHA1_WITH_DSA = "SHA1withDSA";
-
-    // TODO : Support SHA-256, make dynamic !
-    private static final String SHA1_WITH_RSA = "SHA1withRSA";
-
-    // TODO : Support SHA-256, make dynamic !
-    private static final String SHA256_WITH_RSA = "SHA256withRSA";
-
     private static final Log logger = LogFactory.getLog(JSR105SamlR2SignerImpl.class);
 
     /**
@@ -117,6 +109,8 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         return provider;
     }
 
+    private String signMethodSpec;
+
     public void setProvider(Provider provider) {
         this.provider = provider;
     }
@@ -131,6 +125,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     public void setValidateCertificate(boolean validateCertificate) {
         this.validateCertificate = validateCertificate;
+    }
+
+    public String getSignMethodSpec() {
+        return signMethodSpec;
+    }
+
+    public void setSignMethodSpec(String signMethodSpec) {
+        this.signMethodSpec = signMethodSpec;
     }
 
     /**
@@ -171,7 +173,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
-    public AssertionType sign(AssertionType assertion) throws SamlR2SignatureException {
+    public AssertionType sign(AssertionType assertion, String digest) throws SamlR2SignatureException {
 
         try {
 
@@ -184,7 +186,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                     "Assertion",
                     new String[]{SAMLR2Constants.SAML_ASSERTION_PKG});
 
-            doc = sign(doc, assertion.getID());
+            doc = sign(doc, assertion.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Assertion from DOM Tree [" + assertion.getID() + "]");
@@ -217,7 +219,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
-    public RequestAbstractType sign(RequestAbstractType request) throws SamlR2SignatureException {
+    public RequestAbstractType sign(RequestAbstractType request, String digest) throws SamlR2SignatureException {
         try {
 
             // Marshall the Assertion object as a DOM tree:
@@ -226,7 +228,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             org.w3c.dom.Document doc = XmlUtils.marshalSamlR2RequestAsDom(request);
 
-            doc = sign(doc, request.getID());
+            doc = sign(doc, request.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Status Response from DOM Tree [" + request.getID() + "]");
@@ -244,7 +246,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public StatusResponseType sign(StatusResponseType response, String element) throws SamlR2SignatureException {
+    public StatusResponseType sign(StatusResponseType response, String element, String digest) throws SamlR2SignatureException {
         try {
 
             // Marshall the Assertion object as a DOM tree:
@@ -258,7 +260,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                             SAMLR2Constants.SAML_PROTOCOL_PKG,
                             SAMLR2Constants.SAML_ASSERTION_PKG});
 
-            doc = sign(doc, response.getID());
+            doc = sign(doc, response.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Response from DOM Tree [" + response.getID() + "]");
@@ -271,7 +273,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public String signQueryString(String queryString) throws SamlR2SignatureException {
+    public String signQueryString(String queryString, String digest) throws SamlR2SignatureException {
 
         try {
 
@@ -286,16 +288,18 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             PrivateKey privateKey = (PrivateKey) this.getKeyResolver().getPrivateKey();
 
             String keyAlgorithm = privateKey.getAlgorithm();
+
             Signature signature = null;
             String algURI = null;
-            if (keyAlgorithm.equals("RSA")) {
-                signature = Signature.getInstance(SHA1_WITH_RSA);
+
+            try {
+                SignMethod sm = SignMethod.fromValues(digest, keyAlgorithm);
+                signature = Signature.getInstance(sm.getName());
                 algURI = SignatureMethod.RSA_SHA1;
-            } else if (keyAlgorithm.equals("DSA")) {
-                signature = Signature.getInstance(SHA1_WITH_DSA);
-                algURI = SignatureMethod.DSA_SHA1;
-            } else {
-                throw new SamlR2SignatureException("SAML 2.0 Signature does not support provided key's algorithm " + keyAlgorithm);
+
+            } catch (IllegalArgumentException e) {
+                logger.error(e.getMessage(), e);
+                throw new SamlR2SignatureException("SAML 2.0 Signature does not support provided key's algorithm " + keyAlgorithm, e);
             }
 
             if (queryString.charAt(queryString.length() - 1) != '&') {
@@ -463,11 +467,13 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             // get Signature instance based on algorithm
             // TODO : Support SHA-256
             Signature signature = null;
-            if (sigAlgValue.equals(SignatureMethod.DSA_SHA1)) {
-                signature = Signature.getInstance(SHA1_WITH_DSA);
-            } else if (sigAlgValue.equals(SignatureMethod.RSA_SHA1)) {
-                signature = Signature.getInstance(SHA1_WITH_RSA);
-            } else {
+
+
+            try {
+                SignMethod sm = SignMethod.fromSpec(sigAlgValue);
+                signature = Signature.getInstance(sm.getName());
+            } catch (IllegalArgumentException e) {
+                logger.error (e.getMessage(), e);
                 throw new SamlR2SignatureException("SAML 2.0 Siganture does not support algorithm " + sigAlgValue);
             }
 
@@ -491,11 +497,19 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     public void validateQueryString(RoleDescriptorType md, String msg, String relayState, String sigAlg, String signature, boolean isResponse) throws SamlR2SignatureException, SamlR2SignatureValidationException {
         try {
+
+            if (sigAlg == null)
+                throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature: No signature algorithm");
+
+            if (signature == null)
+                throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature: No signature value");
+
             String queryStr = ( isResponse ? "SAMLResponse=" : "SAMLRequest=" ) +
                 URLEncoder.encode(msg, "UTF-8") + "&" +
                 (relayState != null && !"".equals(relayState) ? "RelayState=" + relayState + "&" : "") +
                 "SigAlg="  + URLEncoder.encode(sigAlg, "UTF-8") + "&" +
                 "Signature=" + URLEncoder.encode(signature, "UTF-8");
+
         } catch (UnsupportedEncodingException e) {
             logger.error("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
             throw new SamlR2SignatureException("Cannot verify digital SAML 2.0 Query string signature " + e.getMessage(), e);
@@ -534,7 +548,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
-    public ManageNameIDRequestType sign(ManageNameIDRequestType manageNameIDRequest) throws SamlR2SignatureException {
+    public ManageNameIDRequestType sign(ManageNameIDRequestType manageNameIDRequest, String digest) throws SamlR2SignatureException {
 
         try {
             // Marshall the Assertion object as a DOM tree:
@@ -543,7 +557,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             org.w3c.dom.Document doc = XmlUtils.marshalSamlR2RequestAsDom(manageNameIDRequest);
 
-            doc = sign(doc, manageNameIDRequest.getID());
+            doc = sign(doc, manageNameIDRequest.getID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR2 Assertion from DOM Tree [" + manageNameIDRequest.getID() + "]");
@@ -558,7 +572,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     // SAML 1.1
 
-    public oasis.names.tc.saml._1_0.protocol.ResponseType sign(oasis.names.tc.saml._1_0.protocol.ResponseType response) throws SamlR2SignatureException {
+    public oasis.names.tc.saml._1_0.protocol.ResponseType sign(oasis.names.tc.saml._1_0.protocol.ResponseType response, String digest) throws SamlR2SignatureException {
         try {
 
             // Marshall the Assertion object as a DOM tree:
@@ -603,7 +617,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             Document doc =
                     dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swrsp.toString().getBytes()));
 
-            doc = sign(doc, response.getResponseID());
+            doc = sign(doc, response.getResponseID(), digest);
 
             if (logger.isDebugEnabled())
                 logger.debug("Unmarshalling SAMLR11 Response from DOM Tree [" + response.getResponseID() + "]");
@@ -731,7 +745,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             for (int k = 0; k < signatureNodes.getLength(); k++) {
 
                 DOMValidateContext valContext = new DOMValidateContext
-                        (new RawX509KeySelector(), signatureNodes.item(k));
+                        (new RawX509KeySelector(getX509Certificate(md)), signatureNodes.item(k));
 
                 // unmarshal the XMLSignature
                 XMLSignature signature = fac.unmarshalXMLSignature(valContext);
@@ -983,7 +997,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      * @param id
      * @return
      */
-    protected Document sign(Document doc, String id) throws SamlR2SignatureException {
+    protected Document sign(Document doc, String id, String digest) throws SamlR2SignatureException {
         try {
 
             Certificate cert = keyResolver.getCertificate();
@@ -993,7 +1007,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", provider);
 
             if (logger.isDebugEnabled())
-                logger.debug("Creating XML DOM Digital Siganture (not signing yet!)");
+                logger.debug("Creating XML DOM Digital Signature (not signing yet!)");
 
             // Create a Reference to the enveloped document and
             // also specify the SHA1 digest algorithm and the ENVELOPED Transform.
@@ -1010,10 +1024,34 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                             transforms,
                             null, null);
 
-            // Use signature method based on key algorithm.
-            String signatureMethod = SignatureMethod.DSA_SHA1;
-            if (keyResolver.getPrivateKey().getAlgorithm().equals("RSA"))
-                signatureMethod = SignatureMethod.RSA_SHA1;
+            // Use signature method based on key algorithm, only RSA and DSA supported for now.
+            Key pk = keyResolver.getPrivateKey();
+
+            String signatureMethod = null;
+            if (pk.getAlgorithm().equals("RSA")) {
+
+                if (digest != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using requested method " + digest + "withRSA");
+                    signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                } else if (signMethodSpec != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using configured method " + digest + "withRSA");
+                    signatureMethod = SignMethod.fromSpec(signMethodSpec).getSpec();
+                } else {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using default " + "SHA256withRSA");
+                    signatureMethod = SignMethod.SHA256_WITH_RSA.getSpec();
+                }
+
+            } else if (pk.getAlgorithm().equals("DSA")) {
+                signatureMethod = SignMethod.SHA1_WITH_DSA.getSpec();
+                logger.warn("Using DSA/SHA 1 when signing! ");
+            } else {
+                // TODO : ECDSA ?
+                logger.error("Unsupported Key algorithm : " + pk.getAlgorithm());
+                throw new SamlR2SignatureException("Unsupported Key algorithm : " + pk.getAlgorithm());
+            }
 
             logger.debug("Using signature method " + signatureMethod);
 
@@ -1040,7 +1078,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             //KeyValue kv = kif.newKeyValue(keyResolver.getCertificate().getPublicKey());
 
             KeyInfo ki = kif.newKeyInfo(Collections.singletonList(kv));
-            javax.xml.crypto.dsig.XMLSignature signature = fac.newXMLSignature(si, ki);
+            javax.xml.crypto.dsig.XMLSignature signature = fac.newXMLSignature(si, ki); // set ki to null to avoid KeyInfo tag
 
             if (logger.isDebugEnabled())
                 logger.debug("Signing SAMLR2 Identity Artifact ...");
@@ -1184,13 +1222,25 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
      */
     public static class RawX509KeySelector extends KeySelector {
 
+        private X509Certificate defaultCert;
+
+
+        public RawX509KeySelector(X509Certificate cert) {
+            this.defaultCert = cert;
+        }
+
+
         public KeySelectorResult select(KeyInfo keyInfo,
                                         KeySelector.Purpose purpose,
                                         AlgorithmMethod method,
                                         XMLCryptoContext context)
                 throws KeySelectorException {
             if (keyInfo == null) {
-                throw new KeySelectorException("Null KeyInfo object!");
+                logger.debug("No key info, returning default");
+
+                return new SimpleKeySelectorResult
+                        (defaultCert.getPublicKey());
+
             }
             // search for X509Data in keyinfo
             Iterator iter = keyInfo.getContent().iterator();

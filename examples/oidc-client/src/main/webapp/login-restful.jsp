@@ -6,14 +6,11 @@
 <%@ page import="com.nimbusds.oauth2.sdk.auth.ClientSecretJWT" %>
 <%@ page import="com.nimbusds.oauth2.sdk.*" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.ClientAuthentication" %>
-<%@ page import="com.nimbusds.jose.crypto.MACSigner" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="javax.crypto.spec.SecretKeySpec" %>
 <%@ page import="java.security.MessageDigest" %>
-<%@ page import="com.nimbusds.jose.crypto.DirectEncrypter" %>
 <%@ page import="com.nimbusds.jose.*" %>
-<%@ page import="com.nimbusds.jose.crypto.AESEncrypter" %>
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
 <%@ page import="java.security.SecureRandom" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.AccessToken" %>
@@ -24,6 +21,9 @@
 <%@ page import="com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse" %>
 <%@ page import="com.nimbusds.jwt.*" %>
 <%@ page import="com.nimbusds.oauth2.sdk.http.HTTPResponse" %>
+<%@ page import="com.nimbusds.jose.jwk.JWK" %>
+<%@ page import="com.nimbusds.jose.jwk.RSAKey" %>
+<%@ page import="com.nimbusds.jose.crypto.*" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -41,6 +41,9 @@
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
 
+
+        // AES Key based on shared secret:
+
         // use SHA-1 to generate a hash from your key and trim the result to 256 bit (32 bytes)
         byte[] key = props.getProperty("oidc.client.secret").getBytes("UTF-8");
 
@@ -51,6 +54,21 @@
             key = Arrays.copyOf(key, 32);
         }
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+
+        // RSA Key based on IDP settings
+
+        String rsaJwkStr = "{\n" +
+                "  \"kty\": \"RSA\",\n" +
+                "  \"e\": \"AQAB\",\n" +
+                "  \"use\": \"enc\",\n" +
+                "  \"kid\": \"mykey\",\n" +
+                "  \"alg\": \"RS256\",\n" +
+                "  \"n\": \"MIIDojCCAooCCQCVTd3p5WnWmjANBgkqhkiG9w0BAQsFADCBkjELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAkNBMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMREwDwYDVQQKDAhhdHJpY29yZTENMAsGA1UECwwEZGVtbzEXMBUGA1UEAwwOam9zc28tcHJvdmlkZXIxIzAhBgkqhkiG9w0BCQEWFHN1cHBvcnRAYXRyaWNvcmUuY29tMB4XDTE2MDIwMjE3MDIwM1oXDTI2MDEzMDE3MDIwM1owgZIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJDQTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzERMA8GA1UECgwIYXRyaWNvcmUxDTALBgNVBAsMBGRlbW8xFzAVBgNVBAMMDmpvc3NvLXByb3ZpZGVyMSMwIQYJKoZIhvcNAQkBFhRzdXBwb3J0QGF0cmljb3JlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKCBJiMEjYh2Id50qMGGuZzivqFy7t3IwsJgjbS+xV3Jf5MmPyXh1AsYpk8eKSYDb+H8+hROeqxbSneXjAi5msrD+oCJnMwz0/uMUPsmntjlrbWSe2P2vGfLWLp708YLh2RyAA3Iz2Vx5fdbN+14zPfdMF/uNuD4e8XTU7PJcX4cIPna58P1ko3mCMVoPFI2KLess/EafBvc5OBBmTo3KeQ59hGRdNtCe5oeuLHapfLWnl36MHHkV/sdV+xVV/NsO5lVJ4al/n7snOsqBvUm++Zbey1OI3CWp9+q1CnnqFxzRiJySahYF5FoSiWJKpw7tXHkyU93FCVeBV5c5zxqVykCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAU27Ag+jrg+xVbRZc3Dqk40PitlvLiT619U8eyt0LHAhX+ZGy/Ao+pJAxSWHLP6YofG+EO3Fl4sgJ5S9py+PZwDgRQR1xfUsZ5a8tk6c0NPHpcHBU2pMuYQA+OoE7g5EIeAhPsmMeM2IH4Yz6qmzhvYBAvbDvGJYHi+Udxp8JHlKYjkieVw+9kI580YKeUIKXng4XXSuFHspYRLS2iDRfmeJsveOUYr9y7L4XrbLJIG/kVcpFiLkzsWJp1j6hwqPe748wekASae/+96l3NjT1AyNnD7rzyskUiNI6wb28OZeJoPczgzIedKXYdmFqLRuLeSLDJK2EiUATRUqE3ys7Fw==\"" +
+                "}";
+
+        // l_Ezq-2OcJavHWAEFkS33qtuFM_9lbCfhODE5h_nLQ0WvifiKR_2a6V-N1xT53T2hb8_u4xkkzQdpL4REYfSwGh9WA7WXpVE4HgcaTnGd9sBij7x6zWpavXX1hRR2sg_XvbmtOb_abLC9NWEcg0mNs9_FyHcTv3slwUhZSvBwZJfkART7fCy4Rq_OcxSoHL9xobOvQ-F9YntjBR1OpbzTZjeQJUyfM_j4WbP-z9fNJgWWH9ON0eG8iKoPUOy9XjO6j5vQlkHo78Ytma8txJ9_-ADm9T47pYv_UFiAMqKH_iWqbPD1BbkTLi_G2hBxNY2u68NlG_k708HntLGDEpsGQ
+
+        RSAKey rsaJwk = RSAKey.parse(rsaJwkStr);
 
         URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));
 
@@ -96,8 +114,12 @@
             JWTClaimsSet claimsSet = new JWTClaimsSet();
 
             // TODO : Take from a login form
-            claimsSet.setSubject("admin");
-            claimsSet.setClaim("cred", "atricore");
+//            claimsSet.setSubject("admin");
+//            claimsSet.setClaim("cred", "atricore");
+
+            claimsSet.setSubject("TennisAustralia@vernal.is");
+            claimsSet.setClaim("cred", "MyTennis12!@");
+
 
             claimsSet.setIssuer(props.getProperty("oidc.client.id"));
             claimsSet.setAudience(Arrays.asList(props.getProperty("oidc.client.audience")));
@@ -112,14 +134,34 @@
             signedJWT.sign(signer);
 
             // Create JWE object with signed JWT as payload
+            // Using DIR
+            /*
             JWEObject jweObject = new JWEObject(
                     new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A256GCM)
                             .contentType("JWT") // required to signal nested JWT
                             .build(),
                     new Payload(signedJWT));
+                    */
 
-            // Perform encryption
+            // Perform encryption (DIR)
+            /*
+            JWEHeader jweHeader = new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256)
+                    .contentType("JWT") // required to signal nested JWT
+                    .build();
+            JWEObject jweObject = new JWEObject(jweHeader, new Payload(signedJWT));
             jweObject.encrypt(new DirectEncrypter(secretKey.getEncoded()));
+            */
+
+
+            // Using RSA
+
+            JWEHeader jweHeader = new JWEHeader.Builder(JWEAlgorithm.RSA1_5, EncryptionMethod.A128CBC_HS256)
+                    .contentType("JWT") // required to signal nested JWT
+                    .build();
+            JWEObject jweObject = new JWEObject(jweHeader, new Payload(signedJWT));
+            // Perform encryption (RSA)
+            jweObject.encrypt(new RSAEncrypter(rsaJwk.toRSAPublicKey()));
+
 
             // Serialise to JWE compact form
             String jweString = jweObject.serialize();
@@ -161,8 +203,8 @@
             idToken = successResponse.getIDToken();
 
             SignedJWT signedIdToken = (SignedJWT) idToken;
-            // TODO : JWSVerifier verifier = new RSASSAVerifier(publicKey);
-            // TODO : signedIdToken.verify(verifier);
+            JWSVerifier verifier = new RSASSAVerifier(rsaJwk.toRSAPublicKey());
+            signedIdToken.verify(verifier);
             claims = signedIdToken.getJWTClaimsSet();
 
         }

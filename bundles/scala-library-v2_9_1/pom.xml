@@ -36,7 +36,6 @@
 
     <properties>
         <scala.library.version>2.9.1</scala.library.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
     </properties>
 
     <dependencies>
@@ -65,8 +64,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>org.atricore.idbus.bundles.scala-library-v2_9_1</Bundle-SymbolicName>

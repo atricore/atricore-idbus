@@ -44,7 +44,6 @@
         <commons-logging.version>1.1.1</commons-logging.version>
         <derby-version>10.5.3.0_1</derby-version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
-        <felix.plugin.version>3.3.0</felix.plugin.version>
     </properties>
 
     <dependencies>
@@ -137,14 +136,7 @@
 
         <!-- provided -->
 
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-core</artifactId>
-            <version>${spring.osgi.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
+       <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
             <version>${spring.osgi.version}</version>
@@ -161,23 +153,39 @@
 
     </dependencies>
     <build>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.info</include>
+                </includes>
+            </resource>
+
+        </resources>
+
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <!--maxmem>256M</maxmem-->
-                    <fork>${compiler.fork}</fork>
-                </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
@@ -214,8 +222,6 @@
                             org.apache.xpath,
                             org.apache.xpath.objects,
                             org.osgi.framework,
-                            org.springframework.context,
-                            org.springframework.beans.factory,
                             org.w3c.dom,
                             org.xml.sax
                         </Import-Package>

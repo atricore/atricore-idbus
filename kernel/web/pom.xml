@@ -105,11 +105,34 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+
+        </resources>
+
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.0</version>
+
                 <configuration>
                     <warSourceDirectory>src/main/webapp/</warSourceDirectory>
                     <archive>
@@ -124,7 +147,7 @@
 
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
+
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -160,9 +183,9 @@
                             org.apache.karaf.jaas.config,
                             org.apache.aries.blueprint.ext,
                             org.apache.karaf.jaas.boot,
-                            javax.servlet;version="[2.5.0, 3.0.0)",
-                            javax.servlet.http;version="[2.5.0, 3.0.0)",
-                            javax.servlet.resources;version="[2.5.0, 3.0.0)",
+                            javax.servlet;version="[3.0.0, 4.0.0)",
+                            javax.servlet.http;version="[3.0.0, 4.0.0)",
+                            javax.servlet.resources;version="[3.0.0, 4.0.0)",
                             javax.net.ssl,
                             org.springframework.osgi; version="${spring.osgi.version}",
                             org.springframework.osgi.web.context.support; version="${spring.osgi.version}",
