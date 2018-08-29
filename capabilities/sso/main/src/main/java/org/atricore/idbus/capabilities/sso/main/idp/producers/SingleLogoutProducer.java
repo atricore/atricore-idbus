@@ -972,6 +972,13 @@ public class SingleLogoutProducer extends SSOProducer {
                             SSOBinding.SAMLR2_POST,
                             SSOBinding.SAMLR2_ARTIFACT}, true);
 
+            if (sloEd == null) {
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.NO_DESTINATION.getValue(),
+                        "No SLO endpoint foun for SP " + pSecCtx.getProviderId(), null);
+            }
+
             //
             // Build SLO Request
             LogoutRequestType spSloRequest = buildSamlSloRequest(exchange, secCtx, sloRequest, sp, sloEd);
@@ -1099,6 +1106,13 @@ public class SingleLogoutProducer extends SSOProducer {
             destination = resolveSpSloEndpoint(sloRequest.getIssuer(),
                     sloSpBindings,
                     true);
+
+            if (destination == null) {
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        null,
+                        StatusDetails.NO_DESTINATION.getValue(),
+                        "No SLO endpoint foun for SP " + sp, null);
+            }
 
             // TODO : Send partialLogout status code if required
             ssoResponse = buildSamlSloResponse(exchange, requiredSpChannel, sloRequest, sp, destination);
