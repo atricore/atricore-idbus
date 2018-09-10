@@ -219,14 +219,21 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
         try {
 
-            // first try to retrieve the user using an known user
+            // Try to resolve a user DN using the username
             dn = selectUserDN(username);
             if (dn == null || "".equals(dn)) {
                 if (logger.isDebugEnabled())
                     logger.debug("No DN found for user : " + username);
-                return false;
+
+                if (validateBindWithSearch)
+                    return false;
+
+                // Infer a DN, this only works if all users are stored under the configured context DN for users (ONELEVEL)
+                dn = getPrincipalUidAttributeID() +  "=" + username + "," + getUsersCtxDN();
             }
-            logger.debug("user dn = " + dn);
+
+            if (logger.isDebugEnabled())
+                logger.debug("user dn = [" + dn + "]");
 
             // Create context without binding!
             InitialLdapContext ctx = this.createLdapInitialContext(null, null);
