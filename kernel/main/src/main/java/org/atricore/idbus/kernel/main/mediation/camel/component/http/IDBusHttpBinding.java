@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
 
@@ -77,6 +78,15 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
             }
         }
+
+        Enumeration h = httpServletRequest.getHeaderNames();
+        while (h.hasMoreElements()) {
+            String header = (String) h.nextElement();
+
+            String value = httpServletRequest.getHeader(header);
+            httpMessage.getHeaders().put("org.atricore.idbus.http.Header." + header, value);
+        }
+
 
         // Export additional information in CAMEL headers
         httpMessage.getHeaders().put("org.atricore.idbus.http.UserAgent", httpServletRequest.getHeader("User-Agent"));

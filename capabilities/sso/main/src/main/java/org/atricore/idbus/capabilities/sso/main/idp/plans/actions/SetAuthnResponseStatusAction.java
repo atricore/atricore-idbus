@@ -72,7 +72,7 @@ public class SetAuthnResponseStatusAction extends AbstractSSOAction {
             // Authentication failed, send propper status code!
             statusCode.setValue(StatusCode.TOP_RESPONDER.getValue());
 
-            if (request != null && request.getIsPassive()) {
+            if (request != null && request.getIsPassive() != null && request.getIsPassive()) {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Setting secondary status code to NO PASSIVE");

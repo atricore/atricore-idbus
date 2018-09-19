@@ -19,6 +19,7 @@
         <feature version="${version}">atricore-openidconnect</feature>
         <feature version="${version}">atricore-oath</feature>
         <feature version="${version}">atricore-oauth2</feature>
+        <feature version="${version}">atricore-preauthn</feature>
         <feature version="${version}">atricore-idconfirmation</feature>
         <feature version="${version}">atricore-idbus-ui</feature>
         <feature version="${version}">atricore-monitoring</feature>
@@ -176,6 +177,10 @@
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.rserver/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.main/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.component.builtin/${idbus.cap.oauth2.version}</bundle>
+    </feature>
+
+    <feature name="atricore-preauthn" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.preauthn/org.atricore.idbus.capabilities.preauthn/${idbus.cap.preauthn.version}</bundle>
     </feature>
 
     <feature name="atricore-idbus-ui" version="${version}">

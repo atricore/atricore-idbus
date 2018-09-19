@@ -69,6 +69,7 @@
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>
         <module>capabilities/spnego</module>
+        <module>capabilities/preauthn</module>
         <module>capabilities/openid</module>
         <module>capabilities/openidconnect</module>
         <module>capabilities/oauth2</module>
