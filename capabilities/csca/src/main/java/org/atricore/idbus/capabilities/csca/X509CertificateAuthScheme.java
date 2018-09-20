@@ -92,6 +92,7 @@ public class X509CertificateAuthScheme extends AbstractAuthenticationScheme {
                 try {
                     validator.validate(x509Certificate);
                 } catch (X509CertificateValidationException e) {
+                    _policies.add(new X509CertificateNotValidAuthnStatement(x509Certificate));
                     logger.error("Certificate is not valid!", e);
                     return false;
                 }

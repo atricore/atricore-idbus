@@ -30,9 +30,11 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStoreKeyAdapter;
+import org.xmlsoap.schemas.ws._2004._09.policy.Policy;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -60,7 +62,10 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
 
     // The credentials provided by the user as input.
     protected Credential[] _inputCredentials;
+    protected Credential[] _knownCredentials;
     protected String _name;
+
+    protected Set<PolicyEnforcementStatement> _policies = new HashSet<PolicyEnforcementStatement>();
 
     public AbstractAuthenticationScheme() {
         _credentialProvider = doMakeCredentialProvider();
@@ -77,6 +82,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
         _subject = s;
         _authenticated = false;
         _credentialProvider = doMakeCredentialProvider();
+        _policies.clear();
     }
 
     /**
@@ -186,7 +192,12 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     protected Credential[] getKnownCredentials() throws SSOAuthenticationException {
         try {
             CredentialKey key = getCredentialStoreKeyAdapter().getKeyForPrincipal(getInputPrincipal());
-            return _credentialStore.loadCredentials(key, this);
+            _knownCredentials =  _credentialStore.loadCredentials(key, this);
+            if (_knownCredentials == null || _knownCredentials.length == 0) {
+                _policies.add(new AccountNotFoundAuthnPolicy(_inputCredentials));
+            }
+
+            return _knownCredentials;
         } catch (SSOIdentityException e) {
             throw new SSOAuthenticationException(e.getMessage(), e);
         }
@@ -212,7 +223,12 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
 
     @Override
     public Set<PolicyEnforcementStatement> getSSOPolicies() {
-        return _subject.getPrincipals(PolicyEnforcementStatement.class);
+        Set<PolicyEnforcementStatement> policies = new HashSet<PolicyEnforcementStatement>();
+
+        policies.addAll(_policies);
+        policies.addAll(_subject.getPrincipals(PolicyEnforcementStatement.class));
+
+        return policies;
     }
 
     /**

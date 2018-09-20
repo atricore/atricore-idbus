@@ -102,7 +102,7 @@ public class JITScimProvisioning extends AbstractAuthenticationPolicy {
         }
 
         if (scimUser == null) {
-            throw new SecurityTokenAuthenticationFailure(getName(), null, null);
+            throw new SecurityTokenAuthenticationFailure(getName(), "No SCIM User");
         }
 
         return null;

@@ -225,8 +225,10 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 if (logger.isDebugEnabled())
                     logger.debug("No DN found for user : " + username);
 
-                if (validateBindWithSearch)
+                if (validateBindWithSearch) {
+                    bindCtx.addPolicyEnforcementStatement(new AccountNotFoundAuthnPolicy(null));
                     return false;
+                }
 
                 // Infer a DN, this only works if all users are stored under the configured context DN for users (ONELEVEL)
                 dn = getPrincipalUidAttributeID() +  "=" + username + "," + getUsersCtxDN();
@@ -270,6 +272,11 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
                 if (logger.isDebugEnabled())
                     logger.debug("LDAP Bind Authentication error : " + e.getMessage(), e);
+
+                if (dn == null)
+                    bindCtx.addPolicyEnforcementStatement(new AccountNotFoundAuthnPolicy(null));
+                else
+                    bindCtx.addPolicyEnforcementStatement(new InvalidPasswordAuthnPolicy(null));
 
                 return false;
 

@@ -24,6 +24,7 @@ package org.atricore.idbus.capabilities.sts.main;
 import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.exceptions.AuthenticationFailureException;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,6 +54,14 @@ public class SecurityTokenAuthenticationFailure extends SecurityTokenEmissionExc
             this.principalName = ((AuthenticationFailureException)cause).getPrincipalName();
         }
         this.ssoPolicyEnforcements = ssoPolicyEnforcements;
+    }
+
+    public SecurityTokenAuthenticationFailure(String scheme, PolicyEnforcementStatement[] ssoPolicyEnforcements, Throwable cause) {
+        super("Cannot authenticate token using scheme " + scheme, cause);
+        if (cause instanceof AuthenticationFailureException) {
+            this.principalName = ((AuthenticationFailureException)cause).getPrincipalName();
+        }
+        this.ssoPolicyEnforcements.addAll(Arrays.asList(ssoPolicyEnforcements));
     }
 
     public SecurityTokenAuthenticationFailure(String scheme, Throwable cause) {
