@@ -196,18 +196,25 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
         // Validate user identity ...
         if (userid != null) {
-            if (!validateUser(userid, knownUserId) || !validatePassword(password, expectedPassword)) {
-                _policies.add(new InvalidPasswordAuthnPolicy(_knowCredentials));
+            if (!validateUser(userid, knownUserId)) {
+                _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
                 return false;
             }
-            
+
         } else {
-            if (!validateUser(username, knownUserName) || !validatePassword(password, expectedPassword)) {
+            if (!validateUser(username, knownUserName)) {
                 _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
                 return false;
             }
 
         }
+
+        // Do not validate password if username does not match
+        if (!validatePassword(password, expectedPassword)) {
+            _policies.add(new InvalidPasswordAuthnPolicy(_knowCredentials));
+            return false;
+        }
+
 
         if (logger.isDebugEnabled())
             logger.debug("[authenticate()], Principal authenticated [" + userid + "/" + knownUserName + "]");

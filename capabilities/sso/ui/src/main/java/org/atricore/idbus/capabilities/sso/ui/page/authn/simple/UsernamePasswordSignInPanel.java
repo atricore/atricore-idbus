@@ -289,15 +289,11 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                     }
                 }
 
-                String msg = getString("claims.text." + stmt.getName(), null , "_UNDEFINED_");
-                if ("_UNDEFINED_".equals(msg))
-                    displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
-                else
-                    displayFeedbackMessage(msg);
             }
-        } else {
-            displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
         }
+        
+        displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
+
     }
 
     /**
