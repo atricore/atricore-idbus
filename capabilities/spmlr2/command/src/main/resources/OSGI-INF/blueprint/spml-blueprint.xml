@@ -24,7 +24,7 @@
         <!-- TODO : Implement completers :) -->
 
         <!-- Target commands -->
-        
+
         <command name="spml/targetsls">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.ListTargetsCommand">
                 <property name="cmdPrinter" ref="targetPrinter"/>

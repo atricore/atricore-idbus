@@ -1146,7 +1146,7 @@
 
         <dependency>
             <groupId>org.atricore.idbus</groupId>
-            <artifactId>all</artifactId>
+            <artifactId>idbus-all</artifactId>
             <version>${idbus.version}</version>
             <type>pom</type>
         </dependency>

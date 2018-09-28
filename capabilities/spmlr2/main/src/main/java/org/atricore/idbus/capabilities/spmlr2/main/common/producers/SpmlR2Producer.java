@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.spmlr2.main.common.producers;
 
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.*;
+import org.apache.camel.Exchange;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
@@ -13,7 +14,6 @@ import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
 import org.atricore.idbus.kernel.main.provisioning.domain.*;
@@ -36,19 +36,19 @@ import java.util.*;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediationExchange>
+public abstract class SpmlR2Producer extends AbstractCamelProducer
         implements SPMLR2Constants, SPMLR2MessagingConstants, SPMLR2PlanningConstants {
 
     private static final Log logger = LogFactory.getLog(SpmlR2Producer.class);
 
     protected UUIDGenerator idGen = new UUIDGenerator();
 
-    protected SpmlR2Producer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
+    protected SpmlR2Producer(AbstractCamelEndpoint endpoint) {
         super(endpoint);
     }
 
     @Override
-    protected void doProcess(CamelMediationExchange e) throws Exception {
+    protected void doProcess(Exchange exchange) throws Exception {
         // DO Nothing!
     }
 
@@ -573,7 +573,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     }
 
-    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal, CamelMediationExchange exchange, Properties otherProps) {
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal, Exchange exchange, Properties otherProps) {
 
         AbstractSpmlR2Mediator mediator = (AbstractSpmlR2Mediator) channel.getIdentityMediator();
         AuditingServer aServer = mediator.getAuditingServer();

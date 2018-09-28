@@ -6,8 +6,8 @@ import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "usradd", description = "SPML ADD operation")
+@Command(scope = "spml", name = "usr-add", description = "SPML user ADD operation")
 public class UserAddCommand extends SpmlCommandSupport {
 
     //<--- General Information ---->

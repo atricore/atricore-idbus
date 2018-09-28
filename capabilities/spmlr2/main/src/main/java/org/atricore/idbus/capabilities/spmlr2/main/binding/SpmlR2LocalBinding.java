@@ -10,14 +10,8 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -32,8 +26,11 @@ public class SpmlR2LocalBinding extends AbstractMediationBinding {
 
 
     public MediationMessage createMessage(CamelMediationMessage message) {
-        CamelMediationExchange spmlR2exchange = message.getExchange();
-        Exchange exchange = spmlR2exchange.getExchange();
+        // Exchange spmlR2exchange = message.getExchange();
+        // Exchange exchange = spmlR2exchange.getExchange();
+
+        // TODO UPGRADE VERIFY
+        Exchange exchange = message.getExchange();
 
         logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 
@@ -48,47 +45,6 @@ public class SpmlR2LocalBinding extends AbstractMediationBinding {
             // TODO : Support state based on protocol features.
             LocalState lState = null;
             MediationMessage body;
-
-/*
-            RequestType spmlReq = (RequestType) in.getBody();
-
-            try {
-
-                Method getSessionIndex = spmlReq.getClass().getMethod("getSessionIndex");
-                List<String> sessionIndexes = (List<String>) getSessionIndex.invoke(spmlReq);
-
-                if (sessionIndexes != null) {
-                    if (sessionIndexes.size() > 0) {
-                        String sessionIndex = sessionIndexes.get(0);
-
-                        ProviderStateContext ctx = createProviderStateContext();
-                        lState = ctx.retrieve("idpSsoSessionId", sessionIndex);
-
-                        if (logger.isDebugEnabled())
-                            logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for ssoSessionId " + sessionIndex);
-                    }
-                }
-
-            } catch (NoSuchMethodException e) {
-                // Ignore this ...
-                if (logger.isTraceEnabled())
-                    logger.trace("SSO Request does not have session index : " + e.getMessage(), e);
-
-            } catch (InvocationTargetException e) {
-                logger.error("Cannot recover local state : " + e.getMessage(), e);
-            } catch (IllegalAccessException e) {
-                logger.error("Cannot recover local state : " + e.getMessage(), e);
-            }
-
-            if (lState == null) {
-                // Create a new local state instance ?
-                state = createMediationState(exchange);
-            } else {
-                state = new MediationStateImpl(lState);
-
-            }
-
-            */
 
             // Process Saml Response in SOAP Channel
             body = new MediationMessageImpl(
@@ -138,13 +94,19 @@ public class SpmlR2LocalBinding extends AbstractMediationBinding {
 
             if (logger.isTraceEnabled())
                 logger.trace("Sending message content to [" + camelEndpoint+"]");
+            Object content = (Object) message.getContent();
 
-            Object o = t.sendBody(camelEndpoint, message.getContent());
+
+            // TODO UPGRADE : sendBody returns null Object response = t.sendBody(camelEndpoint, content);
+
+            Object response = null;
+
+
 
             if (logger.isTraceEnabled())
-                logger.trace("Received from ["+camelEndpoint+"] " + o);
+                logger.trace("Received from ["+camelEndpoint+"] " + response);
 
-            return o;
+            return response;
 
         } else {
             throw new UnsupportedOperationException("Unint container type unknown " + uc);

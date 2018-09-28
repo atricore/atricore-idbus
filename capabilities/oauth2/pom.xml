@@ -22,7 +22,7 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>all</artifactId>
+        <artifactId>idbus-all</artifactId>
         <version>1.5.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -46,10 +46,8 @@
         <cxf.version>3.2.5</cxf.version>
         <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
         <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
-        <felix.framework.version>5.6.10</felix.framework.version>
-        <felix.plugin.version>3.5.0</felix.plugin.version>
         <jackson.version>1.9.1</jackson.version>
-        <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
+
         <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
         <jaxrs.api.version>2.0</jaxrs.api.version>
 
@@ -59,12 +57,7 @@
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
         <servlet.version>2.5</servlet.version>
-        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
-        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
-        <xalan.version>2.7.1</xalan.version>
-        <xbean.version>3.7</xbean.version>
-        <xercesImpl.version>2.9.1</xercesImpl.version>
-        <karaf.version>4.2.0</karaf.version>
+
 
         <idbus.cap.sso.version>1.5.0-SNAPSHOT</idbus.cap.sso.version>
     </properties>

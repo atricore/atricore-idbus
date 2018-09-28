@@ -1,13 +1,14 @@
 package org.atricore.idbus.capabilities.spmlr2.command;
 
+import jdk.nashorn.internal.ir.annotations.Reference;
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Option;
 import org.atricore.idbus.capabilities.spmlr2.command.printer.CmdPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Service;
@@ -24,6 +25,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import javax.xml.bind.JAXBElement;
@@ -33,9 +35,12 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public abstract class SpmlCommandSupport extends OsgiCommandSupport {
+public abstract class SpmlCommandSupport implements Action {
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
+    
+    @Reference
+    BundleContext bundleContext;
 
     @Argument(index = 0, name = "idauId", description = "The id if the identity appliance", required = true)
     String idauId;
@@ -49,29 +54,21 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
     @Option(name = "-v", aliases = "--verbose", description = "Verbose command", required = false, multiValued = false)
     boolean verbose = false;
 
-    protected CmdPrinter cmdPrinter;
-
-    public CmdPrinter getCmdPrinter() {
-        return cmdPrinter;
-    }
-
-    public void setCmdPrinter(CmdPrinter cmdPrinter) {
-        this.cmdPrinter = cmdPrinter;
-    }
+    protected abstract CmdPrinter getPrinter();
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
 
         // Get repository admin service.
         ServiceReference ref = getBundleContext().getServiceReference(IdentityMediationUnitRegistry.class.getName());
         if (ref == null) {
-            cmdPrinter.printMsg("Identity Mediation Unit Registry Service is unavailable. (no service reference)");
+            getPrinter().printMsg("Identity Mediation Unit Registry Service is unavailable. (no service reference)");
             return null;
         }
         try {
             IdentityMediationUnitRegistry svc = (IdentityMediationUnitRegistry) getBundleContext().getService(ref);
             if (svc == null) {
-                cmdPrinter.printMsg("Identity Mediation Unit Registry  Service service is unavailable. (no service)");
+                getPrinter().printMsg("Identity Mediation Unit Registry  Service service is unavailable. (no service)");
                 return null;
             }
 
@@ -82,7 +79,7 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
             }
 
             if (verbose)
-                cmdPrinter.printMsg("IdAU " + idau.getName());
+                getPrinter().printMsg("IdAU " + idau.getName());
 
             PsPChannel pspChannel = null;
             ProvisioningServiceProvider psp = null;
@@ -106,10 +103,10 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
                 throw new Exception("PSP not found " + pspId);
             }
             if (verbose)
-                cmdPrinter.printMsg("PSP " + psp.getName());
+                getPrinter().printMsg("PSP " + psp.getName());
 
             if (verbose)
-                cmdPrinter.printMsg("PSP Channel " + pspChannel.getName());
+                getPrinter().printMsg("PSP Channel " + pspChannel.getName());
 
             doExecute(psp, pspChannel);
 
@@ -140,7 +137,7 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
             }
         }
 
-        cmdPrinter.printErrMsg("No SPML PSP Endpoint found in channel " + pspChannel.getName());
+        getPrinter().printErrMsg("No SPML PSP Endpoint found in channel " + pspChannel.getName());
 
         return null;
     }
@@ -154,7 +151,7 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
         RequestType spmlRequest = buildSpmlRequest(psp, pspChannel);
 
         if (verbose)
-            cmdPrinter.printMsg("SPML Endpoint " + ed.getLocation());
+            getPrinter().printMsg("SPML Endpoint " + ed.getLocation());
 
         Object o = mediator.sendMessage(spmlRequest, ed, pspChannel);
 
@@ -162,15 +159,15 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
             ResponseType spmlResponse = (ResponseType) o;
 
             if (verbose)
-                cmdPrinter.printRequest(spmlRequest);
+                getPrinter().printRequest(spmlRequest);
 
             if (verbose)
-                cmdPrinter.printResponse(spmlResponse);
+                getPrinter().printResponse(spmlResponse);
 
-            cmdPrinter.printOutcome(spmlResponse);
+            getPrinter().printOutcome(spmlResponse);
 
         } else {
-            cmdPrinter.printErrMsg("Unexpected message received, command execution error. Type 'log:display-exception' for details");
+            getPrinter().printErrMsg("Unexpected message received, command execution error. Type 'log:display-exception' for details");
         }
 
 
@@ -267,5 +264,8 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
     }
     
 
+    protected BundleContext getBundleContext() {
+        return bundleContext;
+    }
 
 }

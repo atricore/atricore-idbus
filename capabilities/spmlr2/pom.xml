@@ -25,7 +25,7 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>all</artifactId>
+        <artifactId>idbus-all</artifactId>
         <version>1.5.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -44,19 +44,27 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
 
-        <apache.jasper.version>5.5.9</apache.jasper.version>
-        <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
-        <camel.version>2.20.2</camel.version>
+        <commons-jxpath.version>1.3</commons-jxpath.version>
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <commons-el.version>1.0</commons-el.version>
         <commons-lang.version>2.0</commons-lang.version>
-        <commons-logging.version>1.1.1</commons-logging.version>
         <commons-codec.version>1.3</commons-codec.version>
-        <commons-jxpath.version>1.3</commons-jxpath.version>
+
+        <!--
+        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
+        <camel.version>2.20.2</camel.version>
         <cxf.version>3.2.5</cxf.version>
+
+        <apache.jasper.version>5.5.9</apache.jasper.version>
+        <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
+
+        <commons-logging.version>1.1.1</commons-logging.version>
+
+
+
+
         <dozer.version>5.2.2</dozer.version>
         <felix.framework.version>5.6.10</felix.framework.version>
         <felix.plugin.version>3.5.0</felix.plugin.version>
@@ -68,12 +76,11 @@
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
         <servlet.version>2.5</servlet.version>
-        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
-        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <xalan.version>2.7.1</xalan.version>
         <xbean.version>3.7</xbean.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>
         <karaf.version>4.2.0</karaf.version>
+        -->
 
         <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
     </properties>
@@ -125,79 +132,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.osgi</groupId>
-                <artifactId>spring-osgi-core</artifactId>
-                <version>${spring.osgi.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.aop</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.beans</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.context</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.core</artifactId>
-                    </exclusion>
-                </exclusions>
-                
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.servicemix.specs</groupId>
-                <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
-                <version>${servicemix.specs.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
-                <version>${servicemix.jaxb-impl.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.apache.felix.framework</artifactId>
-                <version>${felix.framework.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.karaf.shell</groupId>
-                <artifactId>org.apache.karaf.shell.console</artifactId>
-                <version>${karaf.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>${commons-logging.version}</version>
@@ -224,6 +158,12 @@
             </dependency>
 
             <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
@@ -234,52 +174,6 @@
 
     </dependencyManagement>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${felix.plugin.version}</version>
-                    <extensions>true</extensions>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4.2</version>
-                    <configuration>
-                        <useFile>true</useFile>
-                        <forkMode>once</forkMode>
-                        <childDelegation>false</childDelegation>
-                        <argLine>-Xmx512M</argLine>
-                        <!--<redirectTestOutputToFile>true</redirectTestOutputToFile>-->
-                        <workingDirectory>${basedir}</workingDirectory>
-                        <systemProperties>
-                            <property>
-                                <name>log4j.configuration</name>
-                                <value>log4j-tests.properties</value>
-                            </property>
-                        </systemProperties>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                        <maxmem>256M</maxmem>
-                        <fork>${compiler.fork}</fork>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-        </plugins>
-    </build>
 
     <modules>
         <module>main</module>

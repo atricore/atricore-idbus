@@ -6,7 +6,10 @@ import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.ResponseType;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
-import org.apache.felix.gogo.commands.Option;
+
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2Binding;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
@@ -20,6 +23,8 @@ import java.util.List;
 /**
  * Created by sgonzalez on 4/24/14.
  */
+@Command(scope = "spml", name = "usr-add-batch", description = "Creates a set of users (only for testing purposes!)")
+@Service
 public class UserAddBatchCommand extends SpmlCommandSupport {
 
     //<--- General Information ---->

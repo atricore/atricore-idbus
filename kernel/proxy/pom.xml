@@ -152,10 +152,10 @@
                 <version>3.2.0</version>
             </plugin>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.0.v20120127</version>
-        </plugin>
+                <version>${jetty.version}</version>
+            </plugin>
         </plugins>
     </build>
     <repositories>

@@ -3,8 +3,9 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 import oasis.names.tc.spml._2._0.DeleteRequestType;
 import oasis.names.tc.spml._2._0.PSOIdentifierType;
 import oasis.names.tc.spml._2._0.RequestType;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
@@ -12,7 +13,8 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "usrdelete", description = "SPML User DELETE operation")
+@Command(scope = "spml", name = "user-delete", description = "SPML user DELETE operation")
+@Service
 public class UserDeleteCommand extends SpmlCommandSupport {
 
     @Option(name = "-i", aliases = "--id", description = "User ID", required = true, multiValued = false)

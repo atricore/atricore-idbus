@@ -10,7 +10,6 @@ import org.apache.cxf.message.MessageContentsList;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationSoapBinding;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 
@@ -27,12 +26,14 @@ public class SpmlR2SoapBinding extends AbstractMediationSoapBinding {
     public SpmlR2SoapBinding(Channel channel) {
         super(SpmlR2Binding.SPMLR2_SOAP.getValue(), channel);
     }
-    
-   public MediationMessage createMessage(CamelMediationMessage message) {
+
+    public MediationMessage createMessage(CamelMediationMessage message) {
 
         // Get HTTP Exchange from SPML Exchange
-        CamelMediationExchange spmlR2exchange = message.getExchange();
-        Exchange exchange = spmlR2exchange.getExchange();
+        // CamelMediationExchange spmlR2exchange = message.getExchange();
+        // Exchange exchange = spmlR2exchange.getExchange();
+        // TODO UPGRADE VERIFY
+        Exchange exchange = message.getExchange();
 
         logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 
@@ -43,56 +44,12 @@ public class SpmlR2SoapBinding extends AbstractMediationSoapBinding {
 
         if (in.getBody() instanceof MessageContentsList) {
 
-            MessageContentsList mclIn = (MessageContentsList) in.getBody() ;
+            MessageContentsList mclIn = (MessageContentsList) in.getBody();
             logger.debug("Using CXF Message Content : " + mclIn.get(0));
 
             MediationMessage body;
             LocalState lState = null;
             MediationState state = null;
-
-            /*
-            if (mclIn.get(0) instanceof RequestType) {
-                // Process Saml Request in SOAP Channel
-                // Try to restore provider state based on sessionIndex
-                RequestType samlReq = (RequestType) mclIn.get(0);
-                try {
-
-                    Method getSessionIndex = samlReq.getClass().getMethod("getSessionIndex");
-                    List<String> sessionIndexes = (List<String>) getSessionIndex.invoke(samlReq);
-
-                    if (sessionIndexes != null) {
-                        if (sessionIndexes.size() > 0) {
-                            // TODO : Right now we support only one session index!
-                            String sessionIndex = sessionIndexes.get(0);
-
-                            ProviderStateContext ctx = createProviderStateContext();
-                            lState = ctx.retrieve("idpSsoSessionId", sessionIndex);
-
-                            if (logger.isDebugEnabled())
-                                logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for ssoSessionId " + sessionIndex);
-                        }
-                    }
-
-                } catch (NoSuchMethodException e) {
-                    // Ignore this ...
-                    if (logger.isTraceEnabled())
-                        logger.trace("SAML Request does not have session index : " + e.getMessage());
-
-                } catch (InvocationTargetException e) {
-                    logger.error("Cannot recover local state : " + e.getMessage(), e);
-                } catch (IllegalAccessException e) {
-                    logger.error("Cannot recover local state : " + e.getMessage(), e);
-                }
-
-            }
-
-            if (lState == null) {
-                // Create a new local state instance ?
-                state = createMediationState(exchange);
-            } else {
-                state = new MediationStateImpl(lState);
-
-            } */
 
             // Process Saml Response in SOAP Channel
             body = new MediationMessageImpl(
@@ -127,13 +84,12 @@ public class SpmlR2SoapBinding extends AbstractMediationSoapBinding {
         // ---------------------------------------------------------
         Service service = Service.create(SPMLR2MessagingConstants.SERVICE_NAME);
         service.addPort(SPMLR2MessagingConstants.PORT_NAME, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
-                            endpoint.getLocation());
-
+                endpoint.getLocation());
 
 
         Object content = message.getContent();
 
-        if (!(content instanceof RequestType )) {
+        if (!(content instanceof RequestType)) {
             throw new IdentityMediationException("Unsupported content " + content);
         }
 
@@ -142,7 +98,7 @@ public class SpmlR2SoapBinding extends AbstractMediationSoapBinding {
         soapMethodName = "spml" + soapMethodName.substring(0, soapMethodName.length() - 4); // Remove Type
 
         if (logger.isTraceEnabled())
-            logger.trace("Using soap method ["+soapMethodName+"]");
+            logger.trace("Using soap method [" + soapMethodName + "]");
 
         SPMLRequestPortType port = service.getPort(SPMLR2MessagingConstants.PORT_NAME, SPMLRequestPortType.class);
 

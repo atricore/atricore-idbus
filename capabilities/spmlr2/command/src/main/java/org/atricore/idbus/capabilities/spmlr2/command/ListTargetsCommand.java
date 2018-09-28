@@ -2,8 +2,11 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 
 import oasis.names.tc.spml._2._0.ListTargetsRequestType;
 import oasis.names.tc.spml._2._0.RequestType;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.CmdPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
@@ -11,8 +14,12 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "targetsls", description = "SPML List Provisioning Service Targets operation")
+@Command(scope = "spml", name = "tgts-ls", description = "SPML List Provisioning Service Targets operation")
+@Service
 public class ListTargetsCommand extends SpmlCommandSupport {
+
+    @Reference
+    protected CmdPrinter cmdPrinter;
 
     @Option(name = "-p", aliases = "--profile", description = "SPML Profile (dsml/xsd) ", required = false, multiValued = false)
     String profile;

@@ -91,7 +91,6 @@
                 <artifactId>karaf-services-maven-plugin</artifactId>
             </plugin>
 
-
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
@@ -130,10 +129,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.karaf.tooling</groupId>
-                <artifactId>karaf-services-maven-plugin</artifactId>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.felix</groupId>

@@ -9,6 +9,7 @@ import oasis.names.tc.spml._2._0.password.*;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import org.apache.camel.Exchange;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.logging.Log;
@@ -24,7 +25,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
@@ -50,12 +50,12 @@ public class PSPProducer extends SpmlR2Producer {
 
     private static final Log logger = LogFactory.getLog(PSPProducer.class);
 
-    public PSPProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
+    public PSPProducer(AbstractCamelEndpoint endpoint) {
         super(endpoint);
     }
 
     @Override
-    protected void doProcess(CamelMediationExchange exchange) throws Exception {
+    protected void doProcess(Exchange exchange) throws Exception {
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
@@ -78,7 +78,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
-    protected ResponseType doProcessRequest(CamelMediationExchange exchange, RequestType content) throws Exception {
+    protected ResponseType doProcessRequest(Exchange exchange, RequestType content) throws Exception {
 
         ResponseType spmlResponse = null;
 
@@ -121,7 +121,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
-    protected BatchResponseType doProcessBatchRequest(CamelMediationExchange exchange, BatchRequestType spmlBatchRequest) throws Exception {
+    protected BatchResponseType doProcessBatchRequest(Exchange exchange, BatchRequestType spmlBatchRequest) throws Exception {
 
 
         BatchResponseType batchResponse = new BatchResponseType();
@@ -193,7 +193,7 @@ public class PSPProducer extends SpmlR2Producer {
         return batchResponse;
     }
 
-    protected ListTargetsResponseType doProcessListTargetsRequest(CamelMediationExchange exchange, ListTargetsRequestType spmlRequest) {
+    protected ListTargetsResponseType doProcessListTargetsRequest(Exchange exchange, ListTargetsRequestType spmlRequest) {
         // TODO : Use planning to convert SPML Request into kernel request
         ProvisioningServiceProvider provider = ((ProvisioningChannel)channel).getProvider();
         
@@ -220,7 +220,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
-    protected AddResponseType doProcessAddRequest(CamelMediationExchange exchange, AddRequestType spmlRequest) throws Exception {
+    protected AddResponseType doProcessAddRequest(Exchange exchange, AddRequestType spmlRequest) throws Exception {
 
         SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) channel.getIdentityMediator();
 
@@ -387,7 +387,7 @@ public class PSPProducer extends SpmlR2Producer {
         return spmlResponse;
     }
 
-    protected SearchResponseType doProcessSearchRequest(CamelMediationExchange exchane, SearchRequestType spmlRequest) throws Exception {
+    protected SearchResponseType doProcessSearchRequest(Exchange exchange, SearchRequestType spmlRequest) throws Exception {
 
         SearchResponseType spmlResponse = new SearchResponseType ();
         spmlResponse.setRequestID(spmlRequest.getRequestID());
@@ -471,7 +471,7 @@ public class PSPProducer extends SpmlR2Producer {
                 userSearchCriteria.setFirstName(userSearchRequest.getUserSearchCriteria().getFirstName());
                 userSearchCriteria.setLastName(userSearchRequest.getUserSearchCriteria().getLastName());
                 userSearchCriteria.setEmail(userSearchRequest.getUserSearchCriteria().getEmail());
-                userSearchCriteria.setExactMatch(userSearchRequest.getUserSearchCriteria().getExactMatch());
+                userSearchCriteria.setExactMatch(userSearchRequest.getUserSearchCriteria().isExactMatch());
                 for (SearchAttributeType searchAttributeType : userSearchRequest.getUserSearchCriteria().getSearchAttribute()) {
                     SearchAttribute searchAttribute = new SearchAttribute();
                     searchAttribute.setName(searchAttributeType.getName());
@@ -559,7 +559,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
-    protected LookupResponseType doProcessLookupRequest(CamelMediationExchange exchane, LookupRequestType spmlRequest) throws Exception {
+    protected LookupResponseType doProcessLookupRequest(Exchange exchange, LookupRequestType spmlRequest) throws Exception {
 
         PSOIdentifierType psoId = spmlRequest.getPsoID();
         ProvisioningTarget target = lookupTarget(psoId.getTargetID());
@@ -662,7 +662,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
-    protected ModifyResponseType doProcessModifyRequest(CamelMediationExchange exchange, ModifyRequestType spmlRequest) {
+    protected ModifyResponseType doProcessModifyRequest(Exchange exchange, ModifyRequestType spmlRequest) {
 
         if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
@@ -809,7 +809,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
-    protected ResponseType doProcessDeleteRequest(CamelMediationExchange exchange, DeleteRequestType spmlRequest) {
+    protected ResponseType doProcessDeleteRequest(Exchange exchange, DeleteRequestType spmlRequest) {
         if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
             ResponseType spmlResponse = new ResponseType();
@@ -954,7 +954,7 @@ public class PSPProducer extends SpmlR2Producer {
         }
     }
 
-    public ResponseType doProcessSetPassword(CamelMediationExchange exchange, SetPasswordRequestType spmlRequest) {
+    public ResponseType doProcessSetPassword(Exchange exchange, SetPasswordRequestType spmlRequest) {
 
         ResponseType spmlResponse = new ResponseType();
         try {
@@ -981,7 +981,7 @@ public class PSPProducer extends SpmlR2Producer {
         return spmlResponse;
     }
 
-    public ResponseType doProcessReplacePassword(CamelMediationExchange exchange, ReplacePasswordRequestType spmlRequest) {
+    public ResponseType doProcessReplacePassword(Exchange exchange, ReplacePasswordRequestType spmlRequest) {
 
         ResponseType spmlResponse = new ResponseType();
         User user = null;
@@ -1011,7 +1011,7 @@ public class PSPProducer extends SpmlR2Producer {
         return spmlResponse;
     }
 
-    public ResponseType doProcessVerifyResetPasswordRequest(CamelMediationExchange exchange, VerifyResetPasswordRequestType spmlRequest) {
+    public ResponseType doProcessVerifyResetPasswordRequest(Exchange exchange, VerifyResetPasswordRequestType spmlRequest) {
         VerifyResetPasswordResponseType spmlResponse = new VerifyResetPasswordResponseType();
         Properties auditProps = new Properties();
         //auditProps.setProperty("transactionId", spmlRequest.getTransaction());
@@ -1083,7 +1083,7 @@ public class PSPProducer extends SpmlR2Producer {
         return spmlResponse;
     }
 
-    public ResponseType doProcessResetPasswordRequest(CamelMediationExchange exchange, ResetPasswordRequestType spmlRequest) {
+    public ResponseType doProcessResetPasswordRequest(Exchange exchange, ResetPasswordRequestType spmlRequest) {
         ResetPasswordResponseType spmlResponse = new ResetPasswordResponseType();
         User user = null;
         Properties auditProps = new Properties();

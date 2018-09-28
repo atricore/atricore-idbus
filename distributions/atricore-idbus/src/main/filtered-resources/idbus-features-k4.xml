@@ -47,6 +47,9 @@
         <bundle start-level="60">mvn:net.minidev/json-smart/1.3.1</bundle>
         <bundle start-level="60">mvn:org.bouncycastle/bcprov-jdk15on/1.52</bundle>
 
+        <!-- Scala -->
+        <feature version="2.11.8">scala</feature>
+
         <!-- Atricore bundles -->
         <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ehcache-v2_8_1/1.5.0-SNAPSHOT</bundle>
         <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ini4j-v0_5_1/1.5.0-SNAPSHOT</bundle>
@@ -59,8 +62,6 @@
         <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v3_10/1.5.0-SNAPSHOT</bundle>
         <bundle start-level="60">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1/1.5.0-SNAPSHOT</bundle>
 
-        <!-- Scala -->
-        <feature version="2.11.8">scala</feature>
 
     </feature>
 
@@ -111,6 +112,8 @@
 
         <!-- TODO UPGRADE CUSTOM FEATURES DESCRIPTOR -->
     </feature>
+
+    <!-- TODO UPGRADE NEWRELIC FEATURES DESCRIPTOR -->
 
 
 

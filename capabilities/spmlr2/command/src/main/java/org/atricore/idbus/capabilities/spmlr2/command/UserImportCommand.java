@@ -5,8 +5,9 @@ import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.batch.BatchRequestType;
 import org.apache.commons.io.IOUtils;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.atricore.idbus.capabilities.spmlr2.command.util.ExcelUserParser;
 import org.atricore.idbus.capabilities.spmlr2.command.util.UserParser;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
@@ -16,9 +17,9 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 import java.io.*;
 import java.util.Set;
 
-@Command(scope = "spml", name = "usrimport", description = "SPML ADD operation")
+@Command(scope = "spml", name = "usr-import", description = "SPML user IMPORT operation. (Supported import format depends on SPML Service support)")
+@Service
 public class UserImportCommand extends SpmlCommandSupport {
-
 
     @Option(name = "-i", aliases = "--input", description = "Input File ", required = false, multiValued = false)
     String input;
