@@ -58,6 +58,7 @@ public class JDOUser implements Serializable {
     private Date lastAuthentication;
     private Date accountCreationDate;
     private Date accountModificationDate;
+    private Integer failedLogins;
 
 //<--- Security Password---->
     private Boolean allowUserToChangePassword;
@@ -351,6 +352,14 @@ public class JDOUser implements Serializable {
 
     public void setAccountModificationDate(Date accountModificationDate) {
         this.accountModificationDate = accountModificationDate;
+    }
+
+    public Integer getFailedLogins() {
+        return failedLogins;
+    }
+
+    public void setFailedLogins(Integer failedLogins) {
+        this.failedLogins = failedLogins;
     }
 
     public Boolean isLimitSimultaneousLogin() {

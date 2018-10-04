@@ -1326,6 +1326,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         if (jdoUser.getLastAuthentication() != null)
             user.setLastAuthentication(jdoUser.getLastAuthentication().getTime());
 
+        user.setFailedLogins(jdoUser.getFailedLogins());
+
         if (jdoUser.getGroups() != null) {
             Group[] groups = new Group[jdoUser.getGroups().length];
 
