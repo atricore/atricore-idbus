@@ -19,6 +19,11 @@ public class BindContextImpl implements BindContext, Serializable {
         ppolicies.add(msg);
     }
 
+    public void addPolicyEnforcementStatement(PolicyEnforcementStatement msg) {
+        ppolicies.add(msg);
+    }
+
+
     public List<PolicyEnforcementStatement> getSSOPolicies() {
         return ppolicies;
     }

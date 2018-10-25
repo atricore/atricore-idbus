@@ -1,9 +1,10 @@
 package org.atricore.idbus.capabilities.sso.dsl.core
 
+import org.apache.camel.Exchange
 import org.atricore.idbus.capabilities.sso.dsl._
-import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptorImpl, EndpointDescriptor}
+import org.atricore.idbus.kernel.main.federation.metadata.{EndpointDescriptor, EndpointDescriptorImpl}
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, CamelMediationExchange}
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
 import org.atricore.idbus.kernel.main.util.UUIDGenerator
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
 import org.atricore.idbus.capabilities.sso.dsl.IdentityFlowResponse
@@ -12,9 +13,9 @@ import org.atricore.idbus.capabilities.sso.dsl.RedirectToLocation
 import org.atricore.idbus.capabilities.sso.dsl.RedirectToLocationWithArtifact
 
 trait IdentityBusConnector {
-  this: org.apache.camel.Producer[_] =>
+  this: org.apache.camel.Producer =>
 
-  def respond(ex: CamelMediationExchange, response: IdentityFlowResponse) {
+  def respond(ex: Exchange, response: IdentityFlowResponse) {
     val in = ex.getIn.asInstanceOf[CamelMediationMessage]
     val out = ex.getOut.asInstanceOf[CamelMediationMessage]
     val ids = new UUIDGenerator

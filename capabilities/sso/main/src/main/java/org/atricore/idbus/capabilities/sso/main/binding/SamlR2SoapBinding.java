@@ -33,7 +33,6 @@ import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationSoapBinding;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
@@ -60,8 +59,7 @@ public class SamlR2SoapBinding extends AbstractMediationSoapBinding {
     public MediationMessage createMessage(CamelMediationMessage message) {
 
         // Get HTTP Exchange from SAML Exchange
-        CamelMediationExchange samlR2exchange = message.getExchange();
-        Exchange exchange = samlR2exchange.getExchange();
+        Exchange exchange = message.getExchange();
 
         logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 

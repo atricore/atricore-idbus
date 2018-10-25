@@ -124,7 +124,7 @@ trait ClaimDirectives extends Logging {
                             val authnCtxClass = AuthnCtxClass.asEnum(ep.getType)
 
                             // only consider passive endpoints for passive authentication requests
-                            Option(authnRequest.getIsPassive) match {
+                            Option(authnRequest.isIsPassive) match {
                               case Some(isPassive) if (isPassive && !authnCtxClass.isPassive) =>
                                 false
                               case _ =>

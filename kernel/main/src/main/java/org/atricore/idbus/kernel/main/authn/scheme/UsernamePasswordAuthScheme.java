@@ -24,9 +24,7 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.Credential;
-import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.authn.util.Crypt;
@@ -198,16 +196,25 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
         // Validate user identity ...
         if (userid != null) {
-            if (!validateUser(userid, knownUserId) || !validatePassword(password, expectedPassword)) {
+            if (!validateUser(userid, knownUserId)) {
+                _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
                 return false;
             }
-            
+
         } else {
-            if (!validateUser(username, knownUserName) || !validatePassword(password, expectedPassword)) {
+            if (!validateUser(username, knownUserName)) {
+                _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
                 return false;
             }
 
         }
+
+        // Do not validate password if username does not match
+        if (!validatePassword(password, expectedPassword)) {
+            _policies.add(new InvalidPasswordAuthnPolicy(_knowCredentials));
+            return false;
+        }
+
 
         if (logger.isDebugEnabled())
             logger.debug("[authenticate()], Principal authenticated [" + userid + "/" + knownUserName + "]");

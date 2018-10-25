@@ -23,7 +23,6 @@ package org.atricore.idbus.capabilities.sso.component.builtin.test
 import org.specs2.mutable._
 import org.atricore.idbus.capabilities.sso.dsl.core.directives.IdentityFlowDirectives
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange
 import org.atricore.idbus.capabilities.sso.dsl.core.{NoMoreIdentityConfirmationEndpoints, NoMoreClaimEndpoints, IdentityFlowRequestContext}
 import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowRequest}
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding
@@ -74,7 +73,7 @@ class IdentityConfirmationDirectivesSpec extends Specification
         val spc1 = newSpChannel("spc-1")
         spc1.getIdentityConfirmationProviders.add(idConfCh1)
 
-        val req = IdentityFlowRequest(exchange.asInstanceOf[CamelMediationExchange], sp1, spc1)
+        val req = IdentityFlowRequest(exchange, sp1, spc1)
         IdentityFlowRequestContext(req)
       }
 

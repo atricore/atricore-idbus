@@ -276,19 +276,24 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                 getCredentialClaimsRequest().getSsoPolicyEnforcements();
         if (policyStatements != null && policyStatements.size() > 0) {
             for (PolicyEnforcementStatement stmt : policyStatements) {
+
                 if (stmt instanceof PasswordPolicyEnforcementError &&
                         PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED.equals(((PasswordPolicyEnforcementError) stmt).getType())) {
+
                     BaseWebApplication app = (BaseWebApplication) getApplication();
+
+                    // TODO : Improve
                     IdentityStore identityStore = ((SPChannel) app.getIdentityProvider().getDefaultFederationService().getChannel()).getIdentityManager().getIdentityStore();
                     if (identityStore.isUpdatePasswordEnabled()) {
                         throw new RestartResponseAtInterceptPageException(app.resolvePage("POLICY/PWDRESET"));
                     }
                 }
-                displayFeedbackMessage(getString("claims.text." + stmt.getName(), null, "Unknown Policy Enforcement error"));
+
             }
-        } else {
-            displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
         }
+        
+        displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
+
     }
 
     /**

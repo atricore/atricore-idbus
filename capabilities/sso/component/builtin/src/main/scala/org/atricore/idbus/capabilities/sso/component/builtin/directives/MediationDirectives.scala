@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.sso.component.builtin.directives
 
 import org.atricore.idbus.capabilities.sso.dsl.core._
 import directives.BasicIdentityFlowDirectives
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{CamelMediationMessage, CamelMediationExchange}
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException

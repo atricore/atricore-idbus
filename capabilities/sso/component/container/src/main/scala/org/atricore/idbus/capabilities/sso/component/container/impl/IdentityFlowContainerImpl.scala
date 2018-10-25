@@ -1,15 +1,17 @@
 package org.atricore.idbus.capabilities.sso.component.container.impl
 
+import org.apache.camel.Exchange
+
 import collection.mutable.ListBuffer
-import org.apache.commons.logging.{LogFactory, Log}
-import org.atricore.idbus.capabilities.sso.component.container.{NoRouteResponseException, RouteRejectionException, IdentityFlowContainer, IdentityFlowComponent}
+import org.apache.commons.logging.{Log, LogFactory}
+import org.atricore.idbus.capabilities.sso.component.container.{IdentityFlowComponent, IdentityFlowContainer, NoRouteResponseException, RouteRejectionException}
 import org.atricore.idbus.capabilities.sso.dsl.core.{IdentityFlowRequestContext, Rejection}
 import org.atricore.idbus.capabilities.sso.dsl.{IdentityFlowRequest, IdentityFlowResponse}
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange
 import org.atricore.idbus.kernel.main.mediation.provider.Provider
 import org.atricore.idbus.kernel.main.mediation.Channel
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet
+
 import scala.collection.JavaConversions._
 
 class IdentityFlowContainerImpl extends IdentityFlowContainer {
@@ -36,7 +38,7 @@ class IdentityFlowContainerImpl extends IdentityFlowContainer {
     }
   }
 
-  def dispatch( componentId : String, exchange : CamelMediationExchange, provider : Provider, channel : Channel,
+  def dispatch( componentId : String, exchange : Exchange, provider : Provider, channel : Channel,
                 endpoint : IdentityMediationEndpoint, claims : ClaimSet) = {
     var rejections : Option[Set[Rejection]] = None
     var response : Option[IdentityFlowResponse] = None

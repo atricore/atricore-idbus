@@ -16,7 +16,6 @@ import org.atricore.idbus.kernel.main.provisioning.exception.GroupAttributeNotFo
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserAttributeNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractSchemaManager;
-import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.orm.jdo.JdoObjectRetrievalFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -93,9 +92,6 @@ public class JDOSchemaManager extends AbstractSchemaManager {
         } catch (JDOObjectNotFoundException e) {
             transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(attrDef.getId());
-        } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
-            throw new UserAttributeNotFoundException(attrDef.getId());
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -121,9 +117,6 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
-            throw new UserAttributeNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
             transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (Exception e) {
@@ -154,9 +147,6 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
-            throw new UserAttributeNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
             transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (Exception e) {
@@ -244,9 +234,6 @@ public class JDOSchemaManager extends AbstractSchemaManager {
         } catch (JDOObjectNotFoundException e) {
             transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(attrDef.getId());
-        } catch (NucleusObjectNotFoundException e) {
-            transactionManager.rollback(status);
-            throw new GroupAttributeNotFoundException(attrDef.getId());
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -272,9 +259,6 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
-            throw new GroupAttributeNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
             transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (Exception e) {
@@ -305,9 +289,6 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            transactionManager.rollback(status);
-            throw new GroupAttributeNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
             transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (Exception e) {

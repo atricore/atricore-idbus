@@ -68,14 +68,14 @@
             <field name="firstName">
                 <column name="FIRSTNAME" length="255" jdbc-type="VARCHAR"/>
             </field>
-            <field name="surename">
-                <column name="SURENAME" length="255" jdbc-type="VARCHAR"/>
+            <field name="lastName">
+                <column name="LASTNAME" length="255" jdbc-type="VARCHAR"/>
             </field>
             <field name="commonName">
                 <column name="COMMONNAME" length="255" jdbc-type="VARCHAR"/>
             </field>
-            <field name="givenName">
-                <column name="GIVENNAME" length="255" jdbc-type="VARCHAR"/>
+            <field name="fullName">
+                <column name="FULLNAME" length="255" jdbc-type="VARCHAR"/>
             </field>
             <field name="initials">
                 <column name="INITIALS" length="255" jdbc-type="VARCHAR"/>
@@ -91,9 +91,6 @@
             </field>
             <field name="telephoneNumber">
                 <column name="TELEPHONENUMBER"  length="255" jdbc-type="VARCHAR"/>
-            </field>
-            <field name="facsimilTelephoneNumber">
-                <column name="FACSIMILTELEPHONENUMBER" length="255" jdbc-type="VARCHAR"/>
             </field>
             <field name="countryName">
                 <column name="COUNTRYNAME" length="255" jdbc-type="VARCHAR"/>

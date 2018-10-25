@@ -4,6 +4,7 @@ import oasis.names.tc.saml._1_0.protocol.RequestType;
 import oasis.names.tc.saml._1_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.ArtifactResolveType;
 import oasis.names.tc.saml._2_0.protocol.ArtifactResponseType;
+import org.apache.camel.Exchange;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
@@ -23,7 +24,6 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -44,12 +44,12 @@ public class ArtifactResolutionProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public ArtifactResolutionProducer( AbstractCamelEndpoint<CamelMediationExchange> endpoint ) throws Exception {
+    public ArtifactResolutionProducer( AbstractCamelEndpoint endpoint ) throws Exception {
         super( endpoint );
     }
 
     @Override
-    protected void doProcess(CamelMediationExchange exchange) throws Exception {
+    protected void doProcess(Exchange exchange) throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         Object content = in.getMessage().getContent();
@@ -72,7 +72,7 @@ public class ArtifactResolutionProducer extends SSOProducer {
 
     }
 
-    protected void doProcessSaml2ArtifactResolve(CamelMediationExchange exchange,
+    protected void doProcessSaml2ArtifactResolve(Exchange exchange,
                                                   ArtifactResolveType request ) throws Exception {
         if (logger.isTraceEnabled())
             logger.trace("Received ArtifactResolve request " + request.getID());
@@ -117,7 +117,7 @@ public class ArtifactResolutionProducer extends SSOProducer {
     }
 
 
-    protected void doProcessSaml11ArtifactResolve(CamelMediationExchange exchange,
+    protected void doProcessSaml11ArtifactResolve(Exchange exchange,
                                                   RequestType request ) throws Exception {
 
 
@@ -164,7 +164,7 @@ public class ArtifactResolutionProducer extends SSOProducer {
     }
 
     protected ResponseType buildSaml11ArtifactResponse(
-            CamelMediationExchange exchange,
+            Exchange exchange,
             EndpointDescriptor ed,
             java.lang.Object samlMsg) throws IdentityPlanningException, SSOException {
 

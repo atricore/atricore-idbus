@@ -15,15 +15,14 @@ public class JDOUser implements Serializable {
 //<--- General Information ---->
     private String userName;
     private String firstName;
-    private String surename;
+    private String lastName;
     private String commonName;
-    private String givenName;
+    private String fullName;
     private String initials;
     private String generationQualifier;
     private String distinguishedName;
     private String email;
     private String telephoneNumber;
-    private String facsimilTelephoneNumber;
     private String countryName;
     private String localityName;
     private String stateOrProvinceName;
@@ -105,12 +104,12 @@ public class JDOUser implements Serializable {
         this.firstName = firstName;
     }
 
-    public String getSurename() {
-        return surename;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSurename(String surename) {
-        this.surename = surename;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getCommonName() {
@@ -121,12 +120,12 @@ public class JDOUser implements Serializable {
         this.commonName = commonName;
     }
 
-    public String getGivenName() {
-        return givenName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setGivenName(String givenName) {
-        this.givenName = givenName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getInitials() {
@@ -167,14 +166,6 @@ public class JDOUser implements Serializable {
 
     public void setTelephoneNumber(String telephoneNumber) {
         this.telephoneNumber = telephoneNumber;
-    }
-
-    public String getFacsimilTelephoneNumber() {
-        return facsimilTelephoneNumber;
-    }
-
-    public void setFacsimilTelephoneNumber(String facsimilTelephoneNumber) {
-        this.facsimilTelephoneNumber = facsimilTelephoneNumber;
     }
 
     public String getCountryName() {

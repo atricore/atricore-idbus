@@ -12,7 +12,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
@@ -34,8 +33,7 @@ public class SsoLocalBinding extends AbstractMediationBinding {
 
     public MediationMessage createMessage(CamelMediationMessage message) {
 
-        CamelMediationExchange samlR2exchange = message.getExchange();
-        Exchange exchange = samlR2exchange.getExchange();
+        Exchange exchange = message.getExchange();
 
         logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 

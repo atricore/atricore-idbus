@@ -44,7 +44,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
@@ -70,12 +69,12 @@ public class PreAuthenticationClaimsProducer extends SSOProducer
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public PreAuthenticationClaimsProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
+    public PreAuthenticationClaimsProducer(AbstractCamelEndpoint endpoint) throws Exception {
         super( endpoint );
     }
 
     @Override
-    protected void doProcess ( CamelMediationExchange exchange) throws Exception {
+    protected void doProcess (Exchange exchange) throws Exception {
 
         if (logger.isDebugEnabled())
             logger.debug("Collecting security token claim");

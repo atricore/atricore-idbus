@@ -13,7 +13,6 @@ import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.MediationPartition;
 import org.atricore.idbus.kernel.main.store.DefaultPartitionStore;
-import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -186,9 +185,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JDOObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new GroupNotFoundException(id);
         } catch (Exception e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -302,9 +298,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JDOObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(group.getId());
-        } catch (NucleusObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new GroupNotFoundException(group.getId());
         } catch (Exception e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -357,9 +350,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JDOObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new GroupNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new GroupNotFoundException(id);
         } catch (Exception e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -397,9 +387,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new UserNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
         } catch (Exception e) {
@@ -550,9 +537,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JDOObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(user.getId());
-        } catch (NucleusObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new UserNotFoundException(user.getId());
         } catch (Exception e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -602,9 +586,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 if (!status.isCompleted()) transactionManager.rollback(status);
                 throw new UserNotFoundException(user.getId());
             } catch (JDOObjectNotFoundException e) {
-                if (!status.isCompleted()) transactionManager.rollback(status);
-                throw new UserNotFoundException(user.getId());
-            } catch (NucleusObjectNotFoundException e) {
                 if (!status.isCompleted()) transactionManager.rollback(status);
                 throw new UserNotFoundException(user.getId());
             } catch (Exception e) {
@@ -659,9 +640,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JDOObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new UserNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new UserNotFoundException(id);
         } catch (Exception e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -708,9 +686,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 if (!status.isCompleted()) transactionManager.rollback(status);
                 throw new UserNotFoundException(id);
             } catch (JDOObjectNotFoundException e) {
-                if (!status.isCompleted()) transactionManager.rollback(status);
-                throw new UserNotFoundException(id);
-            } catch (NucleusObjectNotFoundException e) {
                 if (!status.isCompleted()) transactionManager.rollback(status);
                 throw new UserNotFoundException(id);
             } catch (Exception e) {
@@ -855,9 +830,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JDOObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(aclEntry.getId());
-        } catch (NucleusObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new AclEntryNotFoundException(aclEntry.getId());
         } catch (Exception e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -883,9 +855,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new AclEntryNotFoundException(id);
-        } catch (NucleusObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(id);
         } catch (Exception e) {
@@ -936,9 +905,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         } catch (JDOObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new SecurityTokenNotFoundException(securityToken.getId());
-        } catch (NucleusObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new SecurityTokenNotFoundException(securityToken.getId());
         } catch (Exception e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new ProvisioningException(e);
@@ -962,9 +928,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (JDOObjectNotFoundException e) {
-            if (!status.isCompleted()) transactionManager.rollback(status);
-            throw new AclEntryNotFoundException(tokenId);
-        } catch (NucleusObjectNotFoundException e) {
             if (!status.isCompleted()) transactionManager.rollback(status);
             throw new AclEntryNotFoundException(tokenId);
         } catch (Exception e) {

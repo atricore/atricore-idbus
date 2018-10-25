@@ -85,9 +85,9 @@
                 <attribute name="userName" type="xsd:string" use="required"/>
                 
                 <attribute name="firstName" type="xsd:string" use="optional"/>
-                <attribute name="surename" type="xsd:string" use="optional"/>
+                <attribute name="lastName" type="xsd:string" use="optional"/>
                 <attribute name="commonName" type="xsd:string" use="optional"/>
-                <attribute name="givenName" type="xsd:string" use="optional"/>
+                <attribute name="fullName" type="xsd:string" use="optional"/>
                 <attribute name="initials" type="xsd:string" use="optional"/>
                 <attribute name="generationQualifier" type="xsd:string" use="optional"/>
                 <attribute name="distinguishedName" type="xsd:string" use="optional"/>

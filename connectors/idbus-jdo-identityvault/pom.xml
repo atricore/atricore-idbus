@@ -39,28 +39,16 @@
 
     <properties>
 
-        <idbus.bundle.datanucleus-v2_1_2.version>1.5.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.5.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.5.0-SNAPSHOT
-        </idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.5.0-SNAPSHOT
-        </idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.5.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.5.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
 
         <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
 
-        <commons-codec.version>1.3</commons-codec.version>
-        <commons-beautils.version>1.8.0</commons-beautils.version>
-        <commons-lang.version>2.0</commons-lang.version>
-        <datanucleus.version>2.1.2</datanucleus.version>
-        <felix.framework.version>5.6.10</felix.framework.version>
-        <felix.plugin.version>3.5.0</felix.plugin.version>
-        <javax.jdo.version>2.3-ec</javax.jdo.version>
-        <javax.jdo.osgi.version>2.3.0</javax.jdo.osgi.version>
-        <junit.version>4.4</junit.version>
-        <log4j.version>1.2.16</log4j.version>
-        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
-        <!--<spring.version>4.3.12.RELEASE</spring.version>-->
-        <xbean.version>3.7</xbean.version>
+        <dn.javax.jdo.version>3.2.0-m8</dn.javax.jdo.version>
+        <dn.core.version>5.1.9</dn.core.version>
+        <dn.rdbms.version>5.1.9</dn.rdbms.version>
+        <dn.jdo.version>5.1.9</dn.jdo.version>
+
     </properties>
 
     <dependencies>
@@ -71,7 +59,7 @@
             <version>${idbus.kernel.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
@@ -96,7 +84,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.8</version>
+            <version>${slf4j.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -122,7 +110,7 @@
                     <artifactId>org.springframework.core</artifactId>
                 </exclusion>
             </exclusions>
-            
+
             <scope>provided</scope>
         </dependency>
 
@@ -182,61 +170,36 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-spring</artifactId>
-            <version>${xbean.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- Persistence -->
-        <!--
+
         <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
-            <version>${idbus.bundle.datanucleus-core-v2_0_3.version}</version>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>javax.jdo</artifactId>
+            <version>${dn.javax.jdo.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
-            <version>${idbus.bundle.datanucleus-rdbms-v2_0_3.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
-            <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-core</artifactId>
+            <version>${dn.core.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
-            <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-rdbms</artifactId>
+            <version>${dn.rdbms.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!--dependency>
-            <groupId>javax.jdo</groupId>
-            <artifactId>jdo-api</artifactId>
-            <version>${javax.jdo.version}</version>
-            <scope>provided</scope>
-        </dependency-->
         <dependency>
-            <groupId>javax.jdo</groupId>
-            <artifactId>jdo2-api</artifactId>
-            <version>${javax.jdo.version}</version>
+            <groupId>org.datanucleus</groupId>
+            <artifactId>datanucleus-api-jdo</artifactId>
+            <version>${dn.jdo.version}</version>
             <scope>provided</scope>
         </dependency>
+
 
         <!-- Test Dependencies -->
 
@@ -268,11 +231,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <scope>test</scope>
-        </dependency-->
 
     </dependencies>
 
@@ -304,73 +262,45 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
+
             </plugin>
 
             <plugin>
+
+
                 <groupId>org.datanucleus</groupId>
-                <artifactId>maven-datanucleus-plugin</artifactId>
-                <version>2.2.1</version>
+                <artifactId>datanucleus-maven-plugin</artifactId>
+                <version>5.0.2</version>
+
                 <configuration>
+                    <api>JDO</api>
                     <fork>false</fork>
-                    <mappingIncludes>**/*.jdo</mappingIncludes>
-                    <log4jConfiguration>${basedir}/jdo/datanucleus-log4j.properties</log4jConfiguration>
-                    <verbose>true</verbose>
                     <props>${basedir}/jdo/datanucleus.properties</props>
-                    <outputFile>idbus-kernel-provisioning.ddl</outputFile>
+                    <log4jConfiguration>${project.basedir}/src/main/jdo/datanucleus-log4j.properties</log4jConfiguration>
+                    <verbose>true</verbose>
+                    <ddlFile>idbus-kernel-provisioning.ddl</ddlFile>
+                    <metadataIncludes>**/*.jdo</metadataIncludes>
                 </configuration>
+
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>enhance</goal>
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.datanucleus</groupId>
-                        <artifactId>datanucleus-core</artifactId>
-                        <version>${datanucleus.version}</version>
-                        <scope>runtime</scope>
-                    </dependency>
 
-                    <dependency>
-                        <groupId>org.datanucleus</groupId>
-                        <artifactId>datanucleus-rdbms</artifactId>
-                        <version>${datanucleus.version}</version>
-                        <scope>runtime</scope>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>org.datanucleus</groupId>
-                        <artifactId>datanucleus-enhancer</artifactId>
-                        <version>[2.1, 2.2)</version>
-                        <scope>runtime</scope>
-                    </dependency>
-
-                    <dependency>
-                        <groupId>javax.jdo</groupId>
-                        <artifactId>jdo-api</artifactId>
-                        <version>3.0.1</version>
-                        <scope>runtime</scope>
-                    </dependency>
-
-                </dependencies>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${felix.plugin.version}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.connectors.*;version=${project.version}</Export-Package>
+                        <Export-Package>org.atricore.idbus.connectors.jdoidentityvault*;version=${project.version}</Export-Package>
+                        <Private-Package>!org.atricore.idbus.connectors.jdoidentityvault</Private-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
@@ -393,15 +323,17 @@
                             org.apache.tools.ant.types;resolution:=optional,
                             org.apache.tools.ant.taskdefs;resolution:=optional,
                             oracle.*;resolution:=optional,
-                            javax.jdo.*; version="${javax.jdo.osgi.version}",
+                            javax.jdo.*; version="${dn.javax.jdo.version}",
                             org.atricore.idbus.common.oauth._2_0.protocol,
                             oasis.names.tc.saml._2_0.assertion,
                             oasis.names.tc.saml._2_0.protocol,
                             *
                         </Import-Package>
                         <Require-Bundle>
-                            org.atricore.idbus.bundles.javax-jdo2-v2_3-ec,
                             org.datanucleus,
+                            org.datanucleus.store.rdbms,
+                            org.datanucleus.api.jdo,
+                            javax.jdo
                         </Require-Bundle>
 
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false
@@ -410,22 +342,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>always</forkMode>
-                    <workingDirectory>${basedir}</workingDirectory>
-                    <includes>
-                        <include>**/*Test.*</include>
-                    </includes>
-                    <excludes>
-                        <!--  exclude abstract tests -->
-                        <exclude>**/Abstract*.*</exclude>
-                        <exclude>**/*$*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
 
         </plugins>
 

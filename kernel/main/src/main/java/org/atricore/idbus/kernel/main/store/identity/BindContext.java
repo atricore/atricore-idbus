@@ -12,5 +12,7 @@ public interface BindContext {
 
     void addPasswordPolicyMessages(SSOPasswordPolicyEnforcement msg);
 
+    void addPolicyEnforcementStatement(PolicyEnforcementStatement msg);
+
     List<PolicyEnforcementStatement> getSSOPolicies();
 }

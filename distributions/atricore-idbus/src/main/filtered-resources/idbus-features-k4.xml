@@ -31,8 +31,18 @@
 
         <!-- Spring -->
         <feature version="3.2.18.RELEASE_1">spring</feature>
+        <feature version="3.2.18.RELEASE_1">spring-aspects</feature>
+        <feature version="3.2.18.RELEASE_1">spring-tx</feature>
+        <feature version="3.2.18.RELEASE_1">spring-orm</feature>
         <feature version="1.2.1">spring-dm</feature>
         <feature version="1.2.1">spring-dm-web</feature>
+
+        <!-- Datanucleus -->
+
+        <bundle start-level="60">mvn:org.datanucleus/datanucleus-core/5.1.9</bundle>
+        <bundle start-level="60">mvn:org.datanucleus/datanucleus-rdbms/5.1.9</bundle>
+        <bundle start-level="60">mvn:org.datanucleus/datanucleus-api-jdo/5.1.9</bundle>
+        <bundle start-level="60">mvn:org.datanucleus/javax.jdo/3.2.0-m8</bundle>
 
         <!-- Apache Commons and other utilities -->
         <bundle start-level="60">mvn:commons-codec/commons-codec/1.10</bundle>
@@ -46,6 +56,7 @@
         <bundle start-level="60">mvn:org.apache.geronimo.specs/geronimo-servlet_3.0_spec/1.0</bundle>
         <bundle start-level="60">mvn:net.minidev/json-smart/1.3.1</bundle>
         <bundle start-level="60">mvn:org.bouncycastle/bcprov-jdk15on/1.52</bundle>
+        <bundle start-level="60">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlsec/1.4.3_2</bundle>
 
         <!-- Scala -->
         <feature version="2.11.8">scala</feature>
@@ -98,9 +109,15 @@
 
     </feature>
 
+    <feature name="atricore-connectors" version="1.5.0-SNAPSHOT" description="Provides Atricore IDBus Connectors">
+        <feature version="1.5.0-SNAPSHOT">atricore-kernel</feature>
+        <bundle start-level="70">mvn:org.atricore.idbus.connectors/org.atricore.idbus.connectors.jdoidentityvault/1.5.0-SNAPSHOT</bundle>
+    </feature>
+
     <feature name="atricore-capabilities" version="1.5.0-SNAPSHOT" description="Provides Atricore IDBus Identity Capabilities">
         <feature version="1.5.0-SNAPSHOT">atricore-kernel</feature>
         <bundle start-level="70">mvn:org.atricore.idbus.capabilities.sts/org.atricore.idbus.capabilities.sts.main/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="70">mvn:org.atricore.idbus.capabilities.sts/org.atricore.idbus.capabilities.sso.support/1.5.0-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-idbus" version="1.5.0-SNAPSHOT">
@@ -108,6 +125,7 @@
         <feature version="1.5.0-SNAPSHOT">atricore-kernel</feature>
         <feature version="1.5.0-SNAPSHOT">atricore-monitoring-builtin</feature>
         <feature version="1.5.0-SNAPSHOT">atricore-auditing-builtin</feature>
+        <feature version="1.5.0-SNAPSHOT">atricore-connectors</feature>
         <feature version="1.5.0-SNAPSHOT">atricore-capabilities</feature>
 
         <!-- TODO UPGRADE CUSTOM FEATURES DESCRIPTOR -->

@@ -5,10 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticator;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
-import org.atricore.idbus.kernel.main.authn.Credential;
-import org.atricore.idbus.kernel.main.authn.CredentialKey;
-import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.scheme.UserIdCredential;
 import org.atricore.idbus.kernel.main.authn.scheme.UserNameCredential;
 import org.atricore.idbus.kernel.main.authn.util.UserUtil;
@@ -187,7 +184,9 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
                         if (logger.isTraceEnabled())
                             logger.trace("Invalid code " + code + " for " + token.getUsername().getValue());
 
-                        throw new SecurityTokenAuthenticationFailure(getId(), "Invalid code!"); // TODO : Improve
+                        PolicyEnforcementStatement[] policies = new PolicyEnforcementStatement[] { new InvalidOTPCodeAuthnStatement(code)};
+
+                        throw new SecurityTokenAuthenticationFailure(getId(), policies , null); // TODO : Improve
                     }
 
                     isValid = true;

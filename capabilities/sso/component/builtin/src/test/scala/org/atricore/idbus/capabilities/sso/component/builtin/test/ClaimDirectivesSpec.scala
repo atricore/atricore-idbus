@@ -25,7 +25,7 @@ import org.atricore.idbus.capabilities.sso.dsl.core.directives.IdentityFlowDirec
 import org.atricore.idbus.capabilities.sso.dsl.util.Logging
 import org.apache.camel._
 import org.apache.camel.impl._
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{MediationBindingComponent, CamelMediationExchange}
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.{MediationBindingComponent, Exchange}
 import org.atricore.idbus.capabilities.sso.dsl.core.{NoMoreClaimEndpoints, IdentityFlowRequestContext}
 import org.atricore.idbus.capabilities.sso.dsl.{Redirect, IdentityFlowResponse, IdentityFlowRequest}
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext
@@ -73,7 +73,7 @@ class ClaimDirectivesSpec extends Specification
         val spChannel = newSpChannel("spc-1")
         spChannel.getClaimProviders.add(claimChannel1)
 
-        val req = IdentityFlowRequest(exchange.asInstanceOf[CamelMediationExchange], provider, spChannel)
+        val req = IdentityFlowRequest(exchange.asInstanceOf[Exchange], provider, spChannel)
         IdentityFlowRequestContext(req)
       }
 

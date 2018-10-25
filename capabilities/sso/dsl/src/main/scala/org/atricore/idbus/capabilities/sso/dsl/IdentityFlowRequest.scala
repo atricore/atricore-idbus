@@ -20,10 +20,9 @@
  */
 package org.atricore.idbus.capabilities.sso.dsl
 
+import org.apache.camel.Exchange
 import org.atricore.idbus.kernel.main.mediation.Channel
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange
 import org.atricore.idbus.kernel.main.mediation.provider.Provider
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet
 
@@ -32,7 +31,7 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet
  *
  * @author <a href="mailto:gbrigandi@atricore.org">Gianluca Brigandi</a>
  */
-case class IdentityFlowRequest(exchange : CamelMediationExchange, provider : Provider, channel : Channel,
+case class IdentityFlowRequest(exchange : Exchange, provider : Provider, channel : Channel,
                                endpoint : IdentityMediationEndpoint, userClaims : Option[ClaimSet] = None)
 
 

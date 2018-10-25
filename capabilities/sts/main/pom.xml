@@ -35,8 +35,6 @@
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : STS Main Component</name>
 
-
-
     <dependencies>
 
         <dependency>
