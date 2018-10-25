@@ -146,6 +146,10 @@
             <field name="maximunLogins">
                 <column name="MAXIMUNLOGINS" jdbc-type="INTEGER"/>
             </field>
+            <field name="failedLogins">
+                <column name="FAILEDLOGINS" jdbc-type="INTEGER"/>
+            </field>
+
             <field name="terminatePreviousSession">
                 <column name="TERMINATEPREVIOUSSESSION"/>
             </field>

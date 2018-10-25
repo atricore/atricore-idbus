@@ -171,13 +171,15 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         String username = getUserName(_inputCredentials);
         String password = getPassword(_inputCredentials);
 
-        // Check if all credentials are present.
-        if (userid == null || userid.length() == 0 ||
-                password == null || password.length() == 0) {
+        // Check if all credentials are present userid or username and password.
+        if (((userid == null || userid.length() == 0) && (username == null || username.length() == 0))
+                || password == null || password.length() == 0) {
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Username " + (userid == null || userid.length() == 0 ? " not" : "") + " provided. " +
-                        "Password " + (password == null || password.length() == 0 ? " not" : "") + " provided.");
+                logger.debug(
+                        "Userid" + (userid == null || userid.length() == 0 ? " not" : "") + " provided. " +
+                           "Username" + (username == null || username.length() == 0 ? " not" : "") + " provided. " +
+                           "Password " + (password == null || password.length() == 0 ? " not" : "") + " provided.");
             }
 
             // We don't support empty values !
@@ -188,8 +190,6 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         String knownUserId = getUserId(_knowCredentials);
         String knownUserName = getUserName(_knowCredentials);
         String expectedPassword = getPassword(_knowCredentials);
-
-
 
         // We might have to hash the password.
         password = createPasswordHash(password, _knowCredentials);

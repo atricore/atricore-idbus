@@ -102,17 +102,6 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         if (logger.isTraceEnabled())
             logger.trace("Matching URL [" + redirectUrl+ "]");
 
-        for (String includedUrl : includedUrls) {
-            if (redirectUrl.length() >= includedUrl.length()) {
-                String prefix = redirectUrl.substring(0, includedUrl.length());
-                if (prefix.equals(includedUrl)) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Following, Matching URL to [" + includedUrl + "]");
-                    return true;
-                }
-            }
-        }
-
         for (String excludedUrl : excludedUrls) {
             if (redirectUrl.length() >= excludedUrl.length()) {
                 String prefix = redirectUrl.substring(0, excludedUrl.length());
@@ -121,6 +110,17 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
                         logger.trace("Not Following, Matching URL to ["+excludedUrl+"]");
 
                     return false;
+                }
+            }
+        }
+
+        for (String includedUrl : includedUrls) {
+            if (redirectUrl.length() >= includedUrl.length()) {
+                String prefix = redirectUrl.substring(0, includedUrl.length());
+                if (prefix.equals(includedUrl)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Following, Matching URL to [" + includedUrl + "]");
+                    return true;
                 }
             }
         }

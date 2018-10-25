@@ -123,7 +123,7 @@ public enum AuthnCtxClass {
     OAUTH2_PREAUTHN_CTX("urn:org:atricore:idbus:ac:classes:OAuth2", false),
 
     /** URI for Preauthentication (OAuth2) authentication context. */
-    CUSTOM_PREAUTHN_CTX("urn:org:atricore:idbus:ac:classes:PreAuthnToken", false),
+    CUSTOM_PREAUTHN_CTX("urn:org:atricore:idbus:ac:classes:PreAuthnToken", true),
 
 
     /** URI for Preauthentication (OAuth2) authentication context. */

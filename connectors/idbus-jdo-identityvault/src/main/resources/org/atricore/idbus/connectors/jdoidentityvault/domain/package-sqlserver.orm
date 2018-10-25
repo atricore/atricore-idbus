@@ -143,6 +143,9 @@
             <field name="limitSimultaneousLogin">
                 <column name="LIMITSIMULTANEOUSLOGIN" />
             </field>
+            <field name="failedLogins">
+                <column name="FAILEDLOGINS" jdbc-type="INTEGER"/>
+            </field>
             <field name="maximunLogins">
                 <column name="MAXIMUNLOGINS" jdbc-type="INTEGER"/>
             </field>

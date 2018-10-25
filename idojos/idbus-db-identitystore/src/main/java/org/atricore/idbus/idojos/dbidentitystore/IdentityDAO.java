@@ -335,6 +335,42 @@ public class IdentityDAO {
         }
     }
 
+    public String resolveUsernameByCustomQueryString(String queryString, String[] args) throws SSOIdentityException {
+        PreparedStatement stmt = null;
+        ResultSet result = null;
+
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("[resolveUsernameByCustomQueryString(queryString)]]: queryString=" + queryString);
+
+            stmt = createPreparedStatement( queryString);
+            if (args != null)
+                for (int i = 0; i < args.length; i++) {
+                    stmt.setString( i + 1, args[i]);
+                }
+
+            result = stmt.executeQuery();
+
+            String username = result.next() ? result.getString( 1 ) : null;
+            if( result.next() ){
+                throw new SSOIdentityException( "Statement " + stmt + " returned more than one row" );
+            }
+            return username;
+
+        } catch (SQLException sqlE) {
+            logger.error("SQLException while loading user with custom query string", sqlE);
+            throw new SSOIdentityException("During load user with custom query string: " + sqlE.getMessage());
+
+        } catch (Exception e) {
+            logger.error("Exception while loading user with custom query string", e);
+            throw new SSOIdentityException("During load user with custom query string: " + e.getMessage());
+
+        } finally {
+            closeResultSet(result);
+            closeStatement(stmt);
+        }
+    }
+
     // ------------------------------------------------------------------------------------------
     // Protected DB utils.
     // ------------------------------------------------------------------------------------------
