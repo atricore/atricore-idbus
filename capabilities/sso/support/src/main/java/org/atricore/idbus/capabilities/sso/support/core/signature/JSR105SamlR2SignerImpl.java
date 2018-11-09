@@ -290,12 +290,42 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             String keyAlgorithm = privateKey.getAlgorithm();
 
             Signature signature = null;
-            String algURI = null;
+
+            // Use signature method based on key algorithm, only RSA and DSA supported for now.
+            Key pk = keyResolver.getPrivateKey();
+
+            String signatureMethod = null;
+
+            if (pk.getAlgorithm().equals("RSA")) {
+
+                if (digest != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using requested method " + digest + "withRSA");
+                    signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                } else if (signMethodSpec != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using configured method " + digest + "withRSA");
+                    signatureMethod = SignMethod.fromSpec(signMethodSpec).getSpec();
+                } else {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using default " + "SHA256withRSA");
+                    signatureMethod = SignMethod.SHA256_WITH_RSA.getSpec();
+                }
+
+            } else if (pk.getAlgorithm().equals("DSA")) {
+                signatureMethod = SignMethod.SHA1_WITH_DSA.getSpec();
+                logger.warn("Using DSA/SHA 1 when signing! ");
+            } else {
+                // TODO : ECDSA ?
+                logger.error("Unsupported Key algorithm : " + pk.getAlgorithm());
+                throw new SamlR2SignatureException("Unsupported Key algorithm : " + pk.getAlgorithm());
+            }
+
+            logger.debug("Using signature method/algorithm " + signatureMethod + "/" + keyAlgorithm);
 
             try {
                 SignMethod sm = SignMethod.fromValues(digest, keyAlgorithm);
                 signature = Signature.getInstance(sm.getName());
-                algURI = SignatureMethod.RSA_SHA1;
 
             } catch (IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
@@ -307,7 +337,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             }
 
             queryString += "SigAlg=" +
-                    URLEncoder.encode(algURI, "UTF-8");
+                    URLEncoder.encode(signatureMethod, "UTF-8");
 
             if (logger.isTraceEnabled())
                 logger.trace("Signing SAML 2.0 Query string [" + queryString + "]");
@@ -1274,7 +1304,11 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                     }
                 }
             }
-            throw new KeySelectorException("No X509Certificate found!");
+
+            logger.trace("No X509Certificate found!");
+
+            return new SimpleKeySelectorResult(defaultCert.getPublicKey());
+
         }
     }
 
