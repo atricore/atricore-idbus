@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
         <artifactId>spmlr2</artifactId>
-        <version>1.4.4-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
     <artifactId>org.atricore.idbus.capabilities.spmlr2.client</artifactId>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Atricore IDBus :: Capability : SPML R2 Java Client</name>
 
@@ -41,13 +41,13 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
-            <version>1.4.4-SNAPSHOT</version>
+            <version>1.5.0-SNAPSHOT</version>
         </dependency>
 
         <!--dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
-            <version>1.4.4-SNAPSHOT</version>
+            <version>1.5.0-SNAPSHOT</version>
         </dependency-->
 
         <dependency>

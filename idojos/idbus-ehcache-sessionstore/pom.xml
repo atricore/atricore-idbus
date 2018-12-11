@@ -29,13 +29,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.4-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.idojos</groupId>
     <artifactId>org.atricore.idbus.idojos.ehcachesessionstore</artifactId>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: IDOJO : RDBMS Session Store</name>
 
@@ -47,8 +47,8 @@
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <idbus-kernel.version>1.4.4-SNAPSHOT</idbus-kernel.version>
-        <ehcache-bundle.version>1.4.4-SNAPSHOT</ehcache-bundle.version>
+        <idbus-kernel.version>1.5.0-SNAPSHOT</idbus-kernel.version>
+        <ehcache-bundle.version>1.5.0-SNAPSHOT</ehcache-bundle.version>
     </properties>
 
     <build>

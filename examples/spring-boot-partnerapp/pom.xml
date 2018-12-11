@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.4-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     
@@ -20,7 +20,7 @@
         <spring.version>4.2.5.RELEASE</spring.version>
         <spring-boot.version>1.3.3.RELEASE</spring-boot.version>
         <spring-security.version>4.0.4.RELEASE</spring-security.version>
-        <josso1.version>1.8.13-SNAPSHOT</josso1.version>
+        <josso1.version>1.8.14-SNAPSHOT</josso1.version>
         <commons-discovery.version>0.2</commons-discovery.version>
     </properties>
 

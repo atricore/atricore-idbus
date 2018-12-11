@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.4.4-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.openidconnect</groupId>
     <artifactId>openidconnect</artifactId>
-    <version>1.4.4-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : OpenID Connect POM</name>
     <packaging>pom</packaging>
 
@@ -54,11 +54,11 @@
         <facebook.restfb.version>1.14.0</facebook.restfb.version>
         <twitter4j.version>4.0.4</twitter4j.version>
 
-        <idbus.kernel.version>1.4.4-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.4.4-SNAPSHOT</idbus.sts.version>
-        <idbus.oauth2.version>1.4.4-SNAPSHOT</idbus.oauth2.version>
-        <idbus.nimbus-jose-jwt.version>1.4.4-SNAPSHOT</idbus.nimbus-jose-jwt.version>
-        <idbus.oauth2-oidc-sdk.version>1.4.4-SNAPSHOT</idbus.oauth2-oidc-sdk.version>
+        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
+        <idbus.oauth2.version>1.5.0-SNAPSHOT</idbus.oauth2.version>
+        <idbus.nimbus-jose-jwt.version>1.5.0-SNAPSHOT</idbus.nimbus-jose-jwt.version>
+        <idbus.oauth2-oidc-sdk.version>1.5.0-SNAPSHOT</idbus.oauth2-oidc-sdk.version>
 
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
