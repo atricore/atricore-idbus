@@ -27,14 +27,14 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.common</groupId>
         <artifactId>common</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
     </parent>
 
     <!-- TODO : in the future , move to a better place, maybe with other console plugins to be developed! -->
     <groupId>org.atricore.idbus.kernel.common</groupId>
     <artifactId>org.atricore.idbus.kernel.common.springdm</artifactId>
     <packaging>bundle</packaging>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <name>Atricore IDBus :: Kernel : Spring DM Config</name>
 
     <description>Spring DM Configuration as described in http://static.springsource.org/osgi/docs/1.2.x/reference/html/app-deploy.html</description>

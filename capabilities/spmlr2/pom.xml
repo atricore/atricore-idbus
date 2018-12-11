@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>idbus-all</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
     <artifactId>spmlr2</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : SPML R2 POM</name>
     <packaging>pom</packaging>
 
@@ -52,8 +52,8 @@
         <commons-codec.version>1.3</commons-codec.version>
 
         <!--
-        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
+        <idbus.kernel.version>1.6.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.6.0-SNAPSHOT</idbus.sts.version>
         <camel.version>2.20.2</camel.version>
         <cxf.version>3.2.5</cxf.version>
 

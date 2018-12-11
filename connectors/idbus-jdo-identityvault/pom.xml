@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>idbus-all</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -39,10 +39,10 @@
 
     <properties>
 
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.5.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.5.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.6.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.6.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
 
-        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.kernel.version>1.6.0-SNAPSHOT</idbus.kernel.version>
 
         <dn.javax.jdo.version>3.2.0-m8</dn.javax.jdo.version>
         <dn.core.version>5.1.9</dn.core.version>
