@@ -4,12 +4,14 @@ import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 
 import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
+@Service
 public class UserPrinter extends AbstractCmdPrinter {
     
     public void printOutcome(Object response) {

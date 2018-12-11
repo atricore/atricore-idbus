@@ -7,7 +7,9 @@ import oasis.names.tc.spml._2._0.batch.BatchRequestType;
 import org.apache.commons.io.IOUtils;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.UserPrinter;
 import org.atricore.idbus.capabilities.spmlr2.command.util.ExcelUserParser;
 import org.atricore.idbus.capabilities.spmlr2.command.util.UserParser;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
@@ -38,17 +40,24 @@ public class UserImportCommand extends SpmlCommandSupport {
     // TODO : Format CSV, EXCEL, etc
 
     // TODO : ON error ?
+    @Reference
+    UserPrinter printer;
+
+    @Override
+    public UserPrinter getPrinter() {
+        return printer;
+    }
 
 
     @Override
     protected Object doExecute(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
 
         if (verbose)
-            getCmdPrinter().printMsg("User parser: " + buildUserParser().getName());
+            getPrinter().printMsg("User parser: " + buildUserParser().getName());
 
         if (printSchema) {
             String schema = buildUserParser().getSchema();
-            getCmdPrinter().printMsg(schema);
+            getPrinter().printMsg(schema);
             if (schemaOut != null) {
                 IOUtils.write(schema, new FileOutputStream(schemaOut));
             }

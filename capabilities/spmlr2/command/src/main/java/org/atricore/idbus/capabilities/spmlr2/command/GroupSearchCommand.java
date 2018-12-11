@@ -6,8 +6,10 @@ import oasis.names.tc.spml._2._0.search.LogicalOperatorType;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.GroupPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
@@ -26,6 +28,14 @@ public class GroupSearchCommand extends SpmlCommandSupport {
 
     @Option(name = "-n", aliases = "--name", description = "SPML Group name", required = false, multiValued = false)
     String name;
+
+    @Reference
+    GroupPrinter printer;
+
+    @Override
+    public GroupPrinter getPrinter() {
+        return printer;
+    }
 
 
     @Override

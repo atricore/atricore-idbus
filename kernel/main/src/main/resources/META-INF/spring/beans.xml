@@ -40,16 +40,20 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- =================================================================== -->
 
 
-    <!--import resource="classpath:META-INF/cxf/cxf.xml" />
-    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+    <!--import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
     <import resource="classpath:META-INF/cxf/cxf-extension-http.xml" /-->
     <!--import resource="classpath:META-INF/cxf/osgi/cxf-extension-osgi.xml" /-->
 
     <!-- Export CXF Engine as OSGi service -->
-    <!--osgi:service id="cxfExporter"
+    <!--
+    <osgi:service id="idbus-cxf-osgi"
                   interface="org.apache.cxf.Bus"
-                  ref="cxf" /-->
-
+                  ref="idbus-cxf" >
+        <service-properties>
+            <entry key="cxf-bus" value="idbus-kernel"/>
+        </service-properties>
+    </osgi:service>
+-->
     <!-- =================================================================== -->
     <!-- EHCache setup                                                       -->
     <!-- =================================================================== -->
@@ -67,12 +71,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             class="net.sf.ehcache.CacheManager"
             depends-on="aqmBroker"/>
     -->
-    <bean id="cacheManager" scope="singleton"
+    <bean id="cacheManager"
             factory-bean="cacheManagerFactory"
             factory-method="getCacheManager"
             class="net.sf.ehcache.CacheManager" />
 
-    <bean id="cacheManagerMBean" scope="singleton"
+    <bean id="cacheManagerMBean"
           class="org.atricore.idbus.bundles.ehcache.CacheManagerMBean">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>

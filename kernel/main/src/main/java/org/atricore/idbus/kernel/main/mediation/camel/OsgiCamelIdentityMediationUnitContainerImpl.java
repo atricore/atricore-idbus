@@ -66,7 +66,7 @@ public class OsgiCamelIdentityMediationUnitContainerImpl extends CamelIdentityMe
 
         OsgiIdentityMediationUnit unit = (OsgiIdentityMediationUnit) getUnit();
 
-        DefaultCamelContext ctx = new OsgiDefaultCamelContext(unit.getBundleContext());
+        DefaultCamelContext ctx = new OsgiDefaultCamelContext(getBundleContext());
         ctx.setRegistry(createRegistry());
         return ctx;
     }

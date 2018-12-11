@@ -19,19 +19,14 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
+    <!--
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-
-        <!-- TODO : Implement completers :) -->
-
-        <!-- Target commands -->
 
         <command name="spml/targetsls">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.ListTargetsCommand">
                 <property name="cmdPrinter" ref="targetPrinter"/>
             </action>
         </command>
-
-        <!-- User commands -->
 
         <command name="spml/usradd">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.UserAddCommand">
@@ -74,8 +69,6 @@
                 <property name="cmdPrinter" ref="userPrinter"/>
             </action>
         </command>
-
-        <!-- Group commands -->
 
         <command name="spml/grpadd">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupAddCommand">
@@ -121,6 +114,8 @@
     <bean id="groupPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.GroupPrinter"/>
 
     <bean id="userPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.UserPrinter"/>
+
+    -->
 
 </blueprint>
 

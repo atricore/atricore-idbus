@@ -2,8 +2,10 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.GroupPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
@@ -22,6 +24,14 @@ public class GroupModifyCommand extends SpmlCommandSupport {
 
     @Option(name = "-d", aliases = "--description", description = "Group description", required = false, multiValued = false)
     String description;
+
+    @Reference
+    GroupPrinter printer;
+
+    @Override
+    public GroupPrinter getPrinter() {
+        return printer;
+    }
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {

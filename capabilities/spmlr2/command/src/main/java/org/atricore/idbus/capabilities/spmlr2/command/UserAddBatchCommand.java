@@ -9,7 +9,9 @@ import oasis.names.tc.spml._2._0.atricore.UserType;
 
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.UserPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2Binding;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
@@ -34,8 +36,8 @@ public class UserAddBatchCommand extends SpmlCommandSupport {
     @Option(name = "-n", aliases = "--name", description = "User first name prefix ", required = false, multiValued = false)
     String firstName;
 
-    @Option(name = "-s", aliases = "--surename", description = "User last name prefix", required = false, multiValued = false)
-    String surename;
+    @Option(name = "-s", aliases = "--lastName", description = "User last name prefix", required = false, multiValued = false)
+    String lastName;
 
     @Option(name = "-e", aliases = "--email", description = "User e-mail suffix", required = false, multiValued = false)
     String email;
@@ -48,6 +50,15 @@ public class UserAddBatchCommand extends SpmlCommandSupport {
 
     @Option(name = "-g", aliases = "--group", description = "User group names", required = false, multiValued = true)
     List<String> groupName = new ArrayList<String>();
+
+    @Reference
+    UserPrinter printer;
+
+    @Override
+    public UserPrinter getPrinter() {
+        return printer;
+    }
+
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
@@ -66,7 +77,7 @@ public class UserAddBatchCommand extends SpmlCommandSupport {
             RequestType spmlRequest = buildSpmlRequest(psp, pspChannel, usrIndex);
 
             if (verbose)
-                cmdPrinter.printMsg("SPML Endpoint " + ed.getLocation());
+                getPrinter().printMsg("SPML Endpoint " + ed.getLocation());
 
             Object o = mediator.sendMessage(spmlRequest, ed, pspChannel);
 
@@ -74,15 +85,15 @@ public class UserAddBatchCommand extends SpmlCommandSupport {
                 ResponseType spmlResponse = (ResponseType) o;
 
                 if (verbose)
-                    cmdPrinter.printRequest(spmlRequest);
+                    getPrinter().printRequest(spmlRequest);
 
                 if (verbose)
-                    cmdPrinter.printResponse(spmlResponse);
+                    getPrinter().printResponse(spmlResponse);
 
-                cmdPrinter.printOutcome(spmlResponse);
+                getPrinter().printOutcome(spmlResponse);
 
             } else {
-                cmdPrinter.printErrMsg("Unexpected message received, command execution error. Type 'log:display-exception' for details");
+                getPrinter().printErrMsg("Unexpected message received, command execution error. Type 'log:display-exception' for details");
             }
         }
 
@@ -110,8 +121,8 @@ public class UserAddBatchCommand extends SpmlCommandSupport {
         if (firstName  != null)
             spmlUser.setFirstName(firstName + userIndex);
 
-        if (surename  != null)
-            spmlUser.setSurename(surename + userIndex);
+        if (lastName != null)
+            spmlUser.setLanguage(lastName + userIndex);
 
         // Recover list of Groups
 

@@ -1,6 +1,6 @@
 package org.atricore.idbus.capabilities.spmlr2.command;
 
-import jdk.nashorn.internal.ir.annotations.Reference;
+
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
@@ -9,6 +9,7 @@ import oasis.names.tc.spml._2._0.search.SearchResponseType;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.atricore.idbus.capabilities.spmlr2.command.printer.CmdPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Service;

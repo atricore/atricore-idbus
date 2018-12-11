@@ -1,6 +1,6 @@
 package org.atricore.idbus.kernel.common.support.osgi;
 
-import org.springframework.osgi.context.event.*;
+// TODO UPGRADE import org.springframework.osgi.context.event.*;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class IDBusBundleApplicationContextListener implements OsgiBundleApplicationContextListener {
+public class IDBusBundleApplicationContextListener { /*implements OsgiBundleApplicationContextListener {
 
     private static Log logger = LogFactory.getLog(IDBusBundleApplicationContextListener.class );
 
@@ -41,5 +41,5 @@ public class IDBusBundleApplicationContextListener implements OsgiBundleApplicat
 
         //event.
         
-    }
+    } */
 }

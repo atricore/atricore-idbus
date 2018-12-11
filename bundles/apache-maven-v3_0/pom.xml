@@ -289,10 +289,15 @@
                             org.sonatype.plexus.components.cipher.*; resolution:=optional,
                             junit.framework.*; resolution:=optional,
                             org.cyberneko.html.*; resolution:=optional,
+                            org.springframework.osgi.context.*; resolution:=optional,
+                            org.springframework.osgi.context.event.*; resolution:=optional,
                             *
                         </Import-Package>
                         
-                        <Private-Package>!*</Private-Package>
+                        <Private-Package>
+                            org.atricore.idbus.bundles.maven*,
+                            org.apache.maven*
+                        </Private-Package>
                         <Embed-Dependency>*;scope=compile</Embed-Dependency>
                         
                     </instructions>

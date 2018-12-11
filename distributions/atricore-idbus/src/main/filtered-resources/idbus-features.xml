@@ -318,7 +318,7 @@
         <bundle start-level="40">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.abdera/${abdera.version}</bundle>
         <bundle start-level="40">mvn:org.codehaus.jettison/jettison/${jettison.version}</bundle>
         <bundle start-level="40">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlbeans/${xmlbeans.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-api-${jaxrs.api.version}/${servicemix.specs.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-api-${javax.jaxrs-api.version}/${servicemix.specs.version}</bundle>
     </feature>
 
     <feature name="persistence" version="${version}">
@@ -378,7 +378,7 @@
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/${xerces.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/${bcel.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalan.version}</bundle>
-        <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-api-${jaxrs.api.version}/${servicemix.specs.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-api-${javax.jaxrs-api.version}/${servicemix.specs.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlsec/${xmlsec.version}</bundle>
         <bundle start-level="35">mvn:org.apache.ws.security/wss4j/${wss4j.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlbeans/${xmlbeans.version}</bundle>

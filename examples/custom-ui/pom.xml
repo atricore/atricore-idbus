@@ -113,7 +113,7 @@
                         <supportedProjectType>bundle</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Fragment-Host>org.atricore.idbus.capabilities.sso.ui</Fragment-Host>
                         <Private-Package>!*</Private-Package>
                         <Bundle-ClassPath>.</Bundle-ClassPath>

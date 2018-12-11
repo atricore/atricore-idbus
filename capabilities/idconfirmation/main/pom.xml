@@ -39,6 +39,7 @@
 
     <properties>
         <felix.plugin.version>3.5.0</felix.plugin.version>
+        <logback.version>1.0.0</logback.version>
     </properties>
 
     <dependencies>

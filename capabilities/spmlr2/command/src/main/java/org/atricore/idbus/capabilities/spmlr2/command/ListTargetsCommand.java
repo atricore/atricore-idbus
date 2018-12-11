@@ -7,6 +7,7 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.atricore.idbus.capabilities.spmlr2.command.printer.CmdPrinter;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.TargetPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
@@ -23,6 +24,14 @@ public class ListTargetsCommand extends SpmlCommandSupport {
 
     @Option(name = "-p", aliases = "--profile", description = "SPML Profile (dsml/xsd) ", required = false, multiValued = false)
     String profile;
+
+    @Reference
+    TargetPrinter printer;
+
+    @Override
+    public TargetPrinter getPrinter() {
+        return printer;
+    }
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) {

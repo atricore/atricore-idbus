@@ -1,0 +1,27 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+    <!--  For Testing using the Spring commons processor, uncomment one of:-->
+    <!--
+                <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
+                <context:annotation-config/>
+        -->
+    <bean id="idbus-cxf" class="org.apache.cxf.bus.spring.SpringBus" destroy-method="shutdown"/>
+
+    <bean id="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor" class="org.apache.cxf.bus.spring.BusWiringBeanFactoryPostProcessor"/>
+    <bean id="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor" class="org.apache.cxf.bus.spring.Jsr250BeanPostProcessor"/>
+    <bean id="org.apache.cxf.bus.spring.BusExtensionPostProcessor" class="org.apache.cxf.bus.spring.BusExtensionPostProcessor"/>
+
+    <!--osgi:service id="idbus-cxf-osgi"
+                  ref="idbus-cxf"
+                  interface="org.apache.cxf.Bus">
+
+        <service-properties>
+            <entry key="cxf-bus" value="idbus-cxf"/>
+        </service-properties>
+
+    </osgi:service-->
+
+</beans>

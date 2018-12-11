@@ -41,10 +41,9 @@
     <properties>
         <idbus.cap.idconf.version>1.5.0-SNAPSHOT</idbus.cap.idconf.version>
         <idbus.cap.sso.version>1.5.0-SNAPSHOT</idbus.cap.sso.version>
+        <logback.version>1.0.0</logback.version>
         <ops4j.paxwicket.version>2.1.1</ops4j.paxwicket.version>
-        <!--apache-wicket.version>1.4.19</apache-wicket.version-->
         <apache-wicket.version>6.7.0</apache-wicket.version>
-        <pax.web.version>0.7.2</pax.web.version>
     </properties>
 
     <dependencies>
@@ -306,13 +305,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-api</artifactId>
-            <version>${pax.web.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -364,47 +356,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- GWY TEST-ONLY Dependencies -->
-
-        <!--JETTY Test JSP support-->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jsp-api</artifactId>
-            <version>${javax.servlet.jsp.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>jasper-compiler</artifactId>
-            <version>${apache.jasper.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>jasper-runtime</artifactId>
-            <version>${apache.jasper.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>tomcat</groupId>
-            <artifactId>jasper-compiler-jdt</artifactId>
-            <version>${apache.jasper.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-el</groupId>
-            <artifactId>commons-el</artifactId>
-            <version>${commons-el.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons-lang.version}</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <build>

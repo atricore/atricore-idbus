@@ -1,0 +1,1 @@
+1. You can't have both spring and blueprint descriptors in a bundle. Blueprint takes precedence.

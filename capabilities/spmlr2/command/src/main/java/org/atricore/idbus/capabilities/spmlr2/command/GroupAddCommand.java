@@ -3,8 +3,10 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 import oasis.names.tc.spml._2._0.AddRequestType;
 import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.GroupPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
@@ -28,6 +30,14 @@ public class GroupAddCommand extends SpmlCommandSupport {
     protected List<GroupType> retrieveGroups(ProvisioningServiceProvider psp, PsPChannel pspChannel, SpmlR2PSPMediator mediator) {
         // TODO : Implement me!
         return new ArrayList<GroupType>();
+    }
+
+    @Reference
+    GroupPrinter printer;
+
+    @Override
+    public GroupPrinter getPrinter() {
+        return printer;
     }
 
     @Override

@@ -53,13 +53,13 @@
             <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
-                <version>${jaxrs.api.version}</version>
+                <version>${javax.jaxrs-api.version>}</version>
             </dependency>
 
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
-                <version>${servlet.version}</version>
+                <version>${javax.servlet.api.version}</version>
             </dependency>
 
             <dependency>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+~ Atricore IDBus
+~
+~ Copyright 2009, Atricore Inc.
+~
+~ This is free software; you can redistribute it and/or modify it
+~ under the terms of the GNU Lesser General Public License as
+~ published by the Free Software Foundation; either version 2.1 of
+~ the License, or (at your option) any later version.
+~
+~ This software is distributed in the hope that it will be useful,
+~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+~ Lesser General Public License for more details.
+~
+~ You should have received a copy of the GNU Lesser General Public
+~ License along with this software; if not, write to the Free
+~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.atricore.idbus</groupId>
+        <artifactId>idbus-all</artifactId>
+        <version>1.5.0-SNAPSHOT</version>
+
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.atricore.idbus.bundles</groupId>
+    <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_14_2_0</artifactId>
+    <version>1.5.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>Atricore IDBus :: Bundle : Apache Derby Server v${derby-version} OSGi</name>
+
+    <properties>
+        <commons-logging.version>1.1.1</commons-logging.version>
+        <derby-version>10.14.2.0</derby-version>
+        <spring.osgi.version>1.2.0</spring.osgi.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- OSGified -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbynet</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_cs</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_de_DE</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_es</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_fr</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_hu</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_it</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_ja_JP</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_ko_KR</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_pl</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_pt_BR</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_ru</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_zh_CN</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyLocale_zh_TW</artifactId>
+            <version>${derby-version}</version>
+        </dependency>
+
+
+        <!-- provided -->
+
+       <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>${spring.osgi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons-logging.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+    </dependencies>
+    <build>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.info</include>
+                </includes>
+            </resource>
+
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-services-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>
+                            org.apache.derby.*;version=${derby-version},
+                            org.atricore.idbus.bundles.apache.derby.*;version=${derby-version},
+                        </Export-Package>
+                        <Private-Package>
+                            org.apache.derby.loc,
+                            org/apache/derby/info
+                        </Private-Package>
+                        <Import-Package>
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            javax.crypto,
+                            javax.crypto.interfaces,
+                            javax.crypto.spec,
+                            javax.management,
+                            javax.naming,
+                            javax.naming.directory,
+                            javax.naming.spi,
+                            javax.net,
+                            javax.net.ssl,
+                            javax.security.auth,
+                            javax.servlet,
+                            javax.servlet.http,
+                            javax.sql,
+                            javax.transaction.xa,
+                            javax.xml.parsers,
+                            javax.xml.transform,
+                            org.apache.xalan.serialize,
+                            org.apache.xalan.templates,
+                            org.apache.xml.utils,
+                            org.apache.xpath,
+                            org.apache.xpath.objects,
+                            org.osgi.framework,
+                            org.w3c.dom,
+                            org.xml.sax
+                        </Import-Package>
+                        <Embed-Dependency>
+                            *;artifactId=derbyLocale*,
+                        </Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

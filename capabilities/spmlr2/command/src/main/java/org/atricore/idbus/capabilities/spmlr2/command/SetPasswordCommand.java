@@ -3,8 +3,10 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 import oasis.names.tc.spml._2._0.PSOIdentifierType;
 import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.atricore.idbus.capabilities.spmlr2.command.printer.UserPrinter;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
@@ -25,6 +27,14 @@ public class SetPasswordCommand extends SpmlCommandSupport {
 
     @Option(name = "-c", aliases = "--password-confirmation", description = "Password Confirmation ", required = true, multiValued = false)
     String passwordConfirmation;
+
+    @Reference
+    UserPrinter printer;
+
+    @Override
+    public UserPrinter getPrinter() {
+        return printer;
+    }
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
