@@ -1,6 +1,13 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
+import com.nimbusds.oauth2.sdk.OAuth2Error;
+import com.nimbusds.oauth2.sdk.ResponseMode;
+import com.nimbusds.oauth2.sdk.ResponseType;
+import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.OIDCError;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,6 +16,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMediator;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
@@ -28,6 +36,9 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+
+import java.net.URI;
+import java.util.Set;
 
 /**
  * Receives an Authentication Request (AuthorizationRequest for OAuth 2.0 standard) and issues an authorization token.
@@ -49,58 +60,56 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         MediationState state = in.getMessage().getState();
         BindingChannel bChannel = (BindingChannel) channel;
+        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) bChannel.getIdentityMediator();
 
         // Received OpenIDConnect authentication request (Nimbus)
         AuthenticationRequest authnReq = (AuthenticationRequest) in.getMessage().getContent();
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        try {
-            validateRequest(authnReq);
 
-            // Create a SAML Authentication request based on configuration and received request.
-            String idpAlias = null;
-            String idpAliasB64 = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_IDPALIAS_VAR);
+        validateRequest(authnReq, mediator);
 
-            if (idpAliasB64 == null) {
-                idpAlias = authnCtx != null ? authnCtx.getIdpAlias() : null;
+        // Create a SAML Authentication request based on configuration and received request.
+        String idpAlias = null;
+        String idpAliasB64 = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_IDPALIAS_VAR);
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Using previous idp alias " + idpAlias);
-            } else {
-                idpAlias = new String(Base64.decodeBase64(idpAliasB64.getBytes("UTF-8")));
-            }
+        if (idpAliasB64 == null) {
+            idpAlias = authnCtx != null ? authnCtx.getIdpAlias() : null;
 
-            // SSO endpoint
-            BindingChannel spChannel = resolveSpBindingChannel(bChannel);
-            EndpointDescriptor destination = resolveSPInitiatedSSOEndpointDescriptor(exchange, spChannel);
-
-            // Create SP AuthnRequest
-            SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias, authnReq);
-
-            // Create context information
-            authnCtx = new OpenIDConnectAuthnContext();
-            authnCtx.setIdpAlias(idpAlias);
-            authnCtx.setSsoAuthnRequest(request);
-            authnCtx.setAuthnRequest(authnReq);
-
-            // Store state
-            in.getMessage().getState().setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
-
-            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-            out.setMessage(new MediationMessageImpl(request.getID(),
-                    request,
-                    "SSOAuthnRequest",
-                    null,
-                    destination,
-                    in.getMessage().getState()));
-
-            exchange.setOut(out);
-
-        } catch (Exception e) {
-            // TODO : Return error
-            logger.error(e.getMessage(), e);
+            if (logger.isDebugEnabled())
+                logger.debug("Using previous idp alias " + idpAlias);
+        } else {
+            idpAlias = new String(Base64.decodeBase64(idpAliasB64.getBytes("UTF-8")));
         }
+
+        // SSO endpoint
+        BindingChannel spChannel = resolveSpBindingChannel(bChannel);
+        EndpointDescriptor destination = resolveSPInitiatedSSOEndpointDescriptor(exchange, spChannel);
+
+        // Create SP AuthnRequest
+        SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias, authnReq);
+
+        // Create context information
+        authnCtx = new OpenIDConnectAuthnContext();
+        authnCtx.setIdpAlias(idpAlias);
+        authnCtx.setSsoAuthnRequest(request);
+        authnCtx.setAuthnRequest(authnReq);
+
+        // Store state
+        in.getMessage().getState().setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
+
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(request.getID(),
+                request,
+                "SSOAuthnRequest",
+                null,
+                destination,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+
     }
 
     /**
@@ -168,46 +177,44 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         throw new OpenIDConnectException("No SP endpoint found for SP Initiated SSO using SSO Artifact binding");
     }
 
-    protected BindingChannel resolveSpBindingChannel(BindingChannel bChannel) throws OpenIDConnectException {
+    protected void validateRequest(AuthenticationRequest authnReq, OpenIDConnectBPMediator mediator) throws OpenIDConnectException {
+        OIDCClientInformation client = mediator.getClient();
+        OIDCClientMetadata metadata = client.getOIDCMetadata();
 
-        String spAlias = ((OpenIDConnectBPMediator)bChannel.getIdentityMediator()).getSpAlias();
+        // Verify redirect_uri
+        URI requestedRedirectURI = authnReq.getRedirectionURI();
+        Set<URI> redirectionURIs = metadata.getRedirectionURIs();
 
-        CircleOfTrust cot = getFederatedProvider().getCircleOfTrust();
+        if (!validateURI(redirectionURIs, requestedRedirectURI)) {
 
-        for (Provider p : cot.getProviders()) {
+            if (logger.isDebugEnabled())
+                logger.debug("Redirection_uri is invalid: " + requestedRedirectURI.toString());
 
-            if (p instanceof ServiceProvider) {
-
-                ServiceProvider sp = (ServiceProvider)p;
-                for (CircleOfTrustMemberDescriptor m : sp.getMembers()) {
-                    if (m.getAlias().equals(spAlias)) {
-                        if (logger.isDebugEnabled())
-                            logger.debug("Found Service Provider " + p.getName() + " for alias " + spAlias);
-
-                        return ((ServiceProvider) p).getBindingChannel();
-
-                    }
-                }
-
-            }
+            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "redirection_uri is invalid: " + requestedRedirectURI.toString());
         }
 
-        if (logger.isDebugEnabled())
-            logger.debug("No Service Provider found for alias " + spAlias);
+        // ClientID
+        ClientID receivedClientID = authnReq.getClientID();
+        if (!receivedClientID.equals(client.getID())) {
+            if (logger.isDebugEnabled())
+                logger.debug("client_id is not valid: " + receivedClientID);
 
-        return null;
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_CLIENT.setURI(authnReq.getRedirectionURI()), "client_id is not valid: " + receivedClientID);
+        }
 
-    }
+        if (authnReq.getRequestURI() != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("request resolution not supported: " + authnReq.getRequestURI().toString());
 
-    protected void validateRequest(AuthenticationRequest authnReq) throws OpenIDConnectException {
-        // TODO : Verify redirect_uri
+            throw new OpenIDConnectProviderException(OIDCError.REQUEST_URI_NOT_SUPPORTED.setURI(authnReq.getRedirectionURI()), "request resolution not supported");
+        }
 
-        // TODO : Verify client_id
 
         // TODO : Verify response_type / response_mode consistency
+        ResponseType responseType = authnReq.getResponseType();
+        ResponseMode responseMode = authnReq.getResponseMode();
 
         // TODO : Verify response_type with active flows
 
-        // TODO : Mark nonce as used ?!
     }
 }

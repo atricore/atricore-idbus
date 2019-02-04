@@ -313,8 +313,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Emit a new security token
         // -------------------------------------------------------
 
-        // TODO : Improve communication mechanism between STS and IDP!
-        // Queue this contenxt and send the artifact as RST context information
+        // Queue this context and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(ctx);
 
         SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();

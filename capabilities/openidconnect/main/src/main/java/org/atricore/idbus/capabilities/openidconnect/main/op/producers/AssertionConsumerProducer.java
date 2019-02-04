@@ -69,6 +69,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         // Resolve OpenID client
 
+
         // Build an OpenIDConnect authentication response based on the original request
         AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, samlAuthnRequest);
 

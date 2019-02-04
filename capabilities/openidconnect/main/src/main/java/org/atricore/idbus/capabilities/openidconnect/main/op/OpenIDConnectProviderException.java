@@ -25,7 +25,7 @@ public class OpenIDConnectProviderException extends OpenIDConnectException {
         this.description = description;
     }
 
-    public ErrorObject getOAuth2Error() {
+    public ErrorObject getProtocolError() {
         return error;
     }
 }

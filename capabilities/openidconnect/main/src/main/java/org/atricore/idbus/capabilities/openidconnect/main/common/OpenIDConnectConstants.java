@@ -23,6 +23,8 @@ public interface OpenIDConnectConstants {
     
     QName TokenService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "TokenService");
 
+    QName RPInitLogoutService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "LogoutService");
+
     QName SSOAssertionConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "AssertionConsumerService");
 
     QName SSOSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "SSOSingleSignOnService");

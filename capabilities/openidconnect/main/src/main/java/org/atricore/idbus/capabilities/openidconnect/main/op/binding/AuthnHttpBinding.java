@@ -1,23 +1,22 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.binding;
 
+import com.nimbusds.oauth2.sdk.ErrorObject;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.OIDCError;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.MediationMessage;
-import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
+import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
 
 /**
  * In-bound binding to receive authentication requests
@@ -81,4 +80,60 @@ public class AuthnHttpBinding extends AbstractOpenIDHttpBinding {
 
     }
 
+    @Override
+    public void copyFaultMessageToExchange(CamelMediationMessage message, Exchange exchange) {
+        IdentityMediationFault fault = message.getMessage().getFault();
+        Throwable mediationException = fault.getFault();
+
+        if (mediationException instanceof OpenIDConnectProviderException) {
+            OpenIDConnectProviderException oidcException = (OpenIDConnectProviderException) mediationException;
+
+            ErrorObject protocolError = oidcException.getProtocolError();
+            int httpStatus = protocolError.getHTTPStatusCode();
+            String code = protocolError.getCode();
+            String description = protocolError.getDescription();
+            URI uri = protocolError.getURI();
+
+            if (httpStatus == 302 && uri != null) {
+                // Create a redirection response
+
+                try {
+
+                    MediationMessage out = (MediationMessage) exchange.getOut();
+                    Message httpOut = exchange.getOut();
+                    Message httpIn = exchange.getIn();
+                    String redirLocation = uri.toString();
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Redirecting to " + redirLocation);
+
+
+                    // ------------------------------------------------------------
+                    // Prepare HTTP Resposne
+                    // ------------------------------------------------------------
+                    copyBackState(out.getState(), exchange);
+
+                    httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                    httpOut.getHeaders().put("Pragma", "no-cache");
+                    httpOut.getHeaders().put("http.responseCode", 302);
+                    httpOut.getHeaders().put("Content-Type", "text/html");
+                    httpOut.getHeaders().put("Location", redirLocation);
+                    handleCrossOriginResourceSharing(exchange);
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+
+                return;
+            }
+
+            if (httpStatus > 0) {
+                super.copyFaultMessageToExchange(message, exchange, httpStatus);
+                return;
+            }
+
+        }
+
+        super.copyFaultMessageToExchange(message, exchange);
+    }
 }

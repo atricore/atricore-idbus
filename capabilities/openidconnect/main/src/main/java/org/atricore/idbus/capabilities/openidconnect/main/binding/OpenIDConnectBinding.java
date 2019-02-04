@@ -15,6 +15,7 @@ public enum OpenIDConnectBinding {
 
     OPENID_PROVIDER_AUTHZ_HTTP("urn:net:openidconnect:1.0:op:bindings:authz:http", true),
     OPENID_PROVIDER_AUTHZ_RESTFUL("urn:net:openidconnect:1.0:op:bindings:authz:restful", false),
+    OPENID_PROVIDER_LOGOUT_HTTP("urn:net:openidconnect:1.0:op:bindings:logout:http", true),
     OPENID_PROVIDER_TOKEN_HTTP("urn:net:openidconnect:1.0:op:bindings:token:http", false),
     OPENID_PROVIDER_TOKEN_RESTFUL("urn:net:openidconnect:1.0:op:bindings:token:restful", false),
 
