@@ -56,6 +56,12 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
         validateRequest(logoutRequest, mediator, authnCtx);
 
         // Process request (trigger SLO)!
+        if (authnCtx == null) {
+            // We don't have a context ?!
+            authnCtx = new OpenIDConnectAuthnContext();
+
+        }
+
         authnCtx.setLogoutRequest(logoutRequest);
 
         // This producer just redirects the user to the configured target IDP.
@@ -65,9 +71,7 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
         // Create SP AuthnRequest
         // TODO : Support on_error ?
         SPInitiatedLogoutRequestType request = buildSLORequest(exchange);
-
-        state.setLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:SSOLogoutRequest", request);
-        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
+        authnCtx.setSloRequest(request);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(request.getID(),
@@ -78,6 +82,9 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
                 in.getMessage().getState()));
 
         exchange.setOut(out);
+
+        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
+
     }
 
     protected void validateRequest(LogoutRequest logoutRequest, OpenIDConnectBPMediator mediator, OpenIDConnectAuthnContext authnCtx) throws OpenIDConnectProviderException {
@@ -92,16 +99,16 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
         URI postLogoutURI = logoutRequest.getPostLogoutRedirectionURI();
 
         if (postLogoutURI == null)
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_url is invalid");
+            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
 
         // POST LOGOUT URI
         if (metadata.getPostLogoutRedirectionURIs() != null &&
                 metadata.getPostLogoutRedirectionURIs().size() > 0 &&
                 !validateURI(metadata.getPostLogoutRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI()))
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_url is invalid");
+            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
 
          if (!validateURI(metadata.getRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI())) {
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_url is invalid");
+            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
         }
     }
 

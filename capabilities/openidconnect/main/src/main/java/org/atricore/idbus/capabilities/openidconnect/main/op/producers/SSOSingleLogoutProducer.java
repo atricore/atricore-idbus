@@ -45,14 +45,12 @@ public class SSOSingleLogoutProducer extends AbstractOpenIDProducer {
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        SPInitiatedLogoutRequestType sloRequest = (SPInitiatedLogoutRequestType)
-                state.getLocalVariable("urn:org:atricore:idbus:capabilities:openidconnect:SSOLogoutRequest");
+        SPInitiatedLogoutRequestType sloRequest = authnCtx.getSloRequest();
+        LogoutRequest logoutRequest = authnCtx.getLogoutRequest();
 
         SSOResponseType sloResponse = (SSOResponseType) in.getMessage().getContent();
 
         verifyResponse(sloResponse, sloRequest);
-
-        LogoutRequest logoutRequest = authnCtx.getLogoutRequest();
 
         URI requestedURI = logoutRequest.getPostLogoutRedirectionURI();
 
