@@ -70,6 +70,8 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
 
     private String secretCredentialName = SECRET_CREDENTIAL_NAME;
 
+    private int priority;
+
     private TOTP totp;
 
     public void init() {
@@ -282,5 +284,14 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
         creds.add(newCredential(USERID_CREDENTIAL_NAME, user.getUserName()));
 
         return creds.toArray(new Credential[0]);
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }

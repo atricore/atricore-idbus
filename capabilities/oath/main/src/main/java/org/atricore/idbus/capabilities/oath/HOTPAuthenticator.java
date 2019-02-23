@@ -23,6 +23,8 @@ public class HOTPAuthenticator implements SecurityTokenAuthenticator, Credential
 
     private String id;
 
+    private int priority;
+
     @Override
     public String getId() {
         return id;
@@ -55,5 +57,14 @@ public class HOTPAuthenticator implements SecurityTokenAuthenticator, Credential
     @Override
     public Credential[] newCredentials(User user) {
         return new Credential[0];
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }
