@@ -128,6 +128,24 @@ public class DefaultStore extends AbstractStore {
             ssoUser.addProperty(language);
         }
 
+        // Telephone Number
+        if (jdoUser.getTelephoneNumber() != null) {
+            SSONameValuePair telephoneNumber = new SSONameValuePair("telephoneNumber", jdoUser.getTelephoneNumber());
+            ssoUser.addProperty(telephoneNumber);
+        }
+
+        // Street Address
+        if (jdoUser.getStreetAddress() != null) {
+            SSONameValuePair streetAddress = new SSONameValuePair("streetAddress", jdoUser.getStreetAddress());
+            ssoUser.addProperty(streetAddress);
+        }
+
+        // Postal Address
+        if (jdoUser.getPostalAddress() != null) {
+            SSONameValuePair postalAddress = new SSONameValuePair("postalAddress", jdoUser.getPostalAddress());
+            ssoUser.addProperty(postalAddress);
+        }
+
         // -----------------------------------------------------------
         // Security properties
         // -----------------------------------------------------------
