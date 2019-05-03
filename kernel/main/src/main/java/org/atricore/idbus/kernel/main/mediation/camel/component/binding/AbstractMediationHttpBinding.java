@@ -74,10 +74,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     }
 
     public void copyFaultMessageToExchange(CamelMediationMessage fault, Exchange exchange) {
-        // Store error and redirect to an error display page!
+        this.copyFaultMessageToExchange(fault, exchange, 200);
+    }
+
+    public void copyFaultMessageToExchange(CamelMediationMessage fault, Exchange exchange, int httpResponseCode) {
 
         String errorUrl = getChannel().getIdentityMediator().getErrorUrl();
 
+        // Store error and redirect to an error display page!
         errorUrl = buildHttpTargetLocation(exchange.getIn(),
                 new EndpointDescriptorImpl("idbus-error-page",
                         "ErrorUIService",
@@ -194,7 +198,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         if (logger.isDebugEnabled())
             logger.debug("No configured error URL. Generating error page.");
 
-        httpOut.getHeaders().put("http.responseCode", 200);
+        httpOut.getHeaders().put("http.responseCode", httpResponseCode);
         Html htmlErr = this.createHtmlErrorPage(fault.getMessage());
         try {
             String htmlStr = this.marshal(htmlErr, "http://www.w3.org/1999/xhtml", "html",
@@ -710,9 +714,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         Head head = new Head();
         html.setHead(head);
         {
-            Title t = new Title();
-            t.setContent("JOSSO 2 - Error"); // TODO : i18n
-            head.getContent().add(t);
+            Title title = new Title();
+            String customTitle = getConfigurationContext().getProperty("idbus.protocol.page.title");
+            if (customTitle != null) {
+                title.setContent(customTitle);
+            } else {
+                title.setContent("JOSSO 2 - ERROR"); // TODO : i18n
+            }
+            head.getContent().add(title);
 
         }
 

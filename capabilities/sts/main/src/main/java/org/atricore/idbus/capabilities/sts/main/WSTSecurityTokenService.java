@@ -770,7 +770,22 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
     }
 
     public void setAuthenticators(Collection<SecurityTokenAuthenticator> authenticators) {
-        this.authenticators = authenticators;
+
+        // Sort the collection:
+
+        List<SecurityTokenAuthenticator> ls = new ArrayList<SecurityTokenAuthenticator>(authenticators.size());
+        ls.addAll(authenticators);
+
+        Comparator<SecurityTokenAuthenticator> cmp = new Comparator<SecurityTokenAuthenticator>() {
+            @Override
+            public int compare(SecurityTokenAuthenticator o1, SecurityTokenAuthenticator o2) {
+                return o1.getPriority() - o2.getPriority();
+            }
+        };
+        Collections.sort(ls, cmp);
+
+        this.authenticators = ls;
+
     }
 
     public ProvisioningTarget getProvisioningTarget() {

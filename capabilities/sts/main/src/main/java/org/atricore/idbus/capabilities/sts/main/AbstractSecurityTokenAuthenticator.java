@@ -29,6 +29,8 @@ public abstract class AbstractSecurityTokenAuthenticator implements SecurityToke
     // This is actually the scheme type, like basic-authentication, etc.
     private String scheme;
 
+    private int priority;
+
     public String getId() {
         return id;
     }
@@ -84,6 +86,15 @@ public abstract class AbstractSecurityTokenAuthenticator implements SecurityToke
             throw new SecurityTokenEmissionException(e);
         }
 
+    }
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     protected abstract Credential[] getCredentials(Object requestToken) throws SSOAuthenticationException;

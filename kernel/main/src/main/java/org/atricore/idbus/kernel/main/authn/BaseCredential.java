@@ -78,7 +78,7 @@ public class BaseCredential implements Credential {
     }
 
     public String toString() {
-        return _credential.toString();
+        return _credential != null ? _credential.toString() : null;
     }
 
 

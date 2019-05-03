@@ -583,7 +583,11 @@ public class LDAPIdentityStore extends AbstractStore  {
 
                 for (int j = 0; j < credentialAttr.length; j++) {
 
-                    Object credentialObject = attrs.get(credentialAttr[j]).get();
+                    Attribute attr = attrs.get(credentialAttr[j]);
+                    if (attr == null)
+                        continue;
+
+                    Object credentialObject = attr.get();
                     String credentialName = (String) credentialQueryMap.get(credentialAttr[j]);
                     String credentialValue = null;
 

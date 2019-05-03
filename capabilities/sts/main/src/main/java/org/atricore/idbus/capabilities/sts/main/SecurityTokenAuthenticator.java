@@ -36,4 +36,6 @@ public interface SecurityTokenAuthenticator {
     boolean canAuthenticate(Object requestToken);
 
     Subject authenticate(Object requestToken) throws SecurityTokenEmissionException;
+
+    int getPriority();
 }

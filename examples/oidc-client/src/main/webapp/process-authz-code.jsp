@@ -25,6 +25,9 @@
 <%@ page import="com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse" %>
 <%@ page import="com.nimbusds.jose.crypto.RSASSAVerifier" %>
 <%@ page import="com.nimbusds.jwt.*" %>
+<%@ page import="com.nimbusds.oauth2.sdk.auth.ClientSecretBasic" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.ClientID" %>
+<%@ page import="com.nimbusds.oauth2.sdk.auth.Secret" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -55,7 +58,7 @@
 
         URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));
 
-        // Client Authentication
+        // Client Authentication (client_secret_jwt)
         ClientAuthentication clientAuth = null;
         {
 
@@ -78,8 +81,18 @@
             SignedJWT clientAssertion = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
             clientAssertion.sign(signer);
 
-            // TODO : Set encrypted token as client authentication
             clientAuth = new ClientSecretJWT(clientAssertion);
+        }
+
+        // Client Authentication (client_secret_basic)
+        {
+
+            byte[] n = new byte[64];
+
+            ClientID clientId = new ClientID(props.getProperty("oidc.client.id"));
+            Secret secret = new Secret(props.getProperty("oidc.client.secret"));
+
+            clientAuth = new ClientSecretBasic(clientId, secret);
         }
 
         AuthorizationCode code = new AuthorizationCode(request.getParameter("code"));

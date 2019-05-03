@@ -37,6 +37,10 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new TokenEndpoint(uri, this, parameters);
                 break;
 
+            case RPInitLogoutService:
+                endpoint = new RPInitLogoutEndpoint(uri, this, parameters);
+                break;
+
             case SSOAssertionConsumerService:
                 endpoint = new AssertionConsumerEndpoint(uri, this, parameters);
                 break;
@@ -48,6 +52,8 @@ public class OpenIDConnectComponent extends DefaultComponent {
             case SSOSingleSignOnService:
                 endpoint = new SSOSingleSignOnEndpoint(uri, this, parameters);
                 break;
+
+
 
 
             default:

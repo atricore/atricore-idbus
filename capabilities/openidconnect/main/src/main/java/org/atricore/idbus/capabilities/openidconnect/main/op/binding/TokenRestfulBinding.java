@@ -9,7 +9,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.oauth2.common.util.JasonUtils;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
@@ -19,12 +18,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 
-import javax.mail.internet.ContentType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -137,7 +134,7 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
                 IdentityMediationFault identityMediationFault = msg.getFault();
                 if (identityMediationFault  != null && identityMediationFault.getFault() != null && identityMediationFault.getFault() instanceof OpenIDConnectProviderException) {
                     OpenIDConnectProviderException ex = (OpenIDConnectProviderException) identityMediationFault.getFault();
-                    ErrorObject error = ex.getOAuth2Error();
+                    ErrorObject error = ex.getProtocolError();
 
                     httpStatus = error.getHTTPStatusCode() > 0 ? error.getHTTPStatusCode() : 400;
 

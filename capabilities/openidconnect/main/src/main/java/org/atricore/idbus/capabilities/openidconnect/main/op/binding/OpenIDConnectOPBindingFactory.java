@@ -3,7 +3,6 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.binding;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.proxy.binding.OpenIDConnectHttpAuthzBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;

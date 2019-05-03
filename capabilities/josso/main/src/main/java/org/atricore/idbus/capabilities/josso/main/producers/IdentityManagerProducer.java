@@ -149,9 +149,12 @@ public class IdentityManagerProducer extends AbstractJossoProducer {
             }
 
             Subject subject = aa.getSubject();
+            SSOUser user = toSSOUser(subject);
             Collection<SSORole> roles = toSSORoles(subject);
 
             FindRolesBySSOSessionIdResponseType response = new FindRolesBySSOSessionIdResponseType ();
+
+            response.setUsername(user.getName());
 
             for (SSORoleType role : adaptRoles(roles.toArray(new SSORole[roles.size()]))) {
                 response.getRoles().add(role);

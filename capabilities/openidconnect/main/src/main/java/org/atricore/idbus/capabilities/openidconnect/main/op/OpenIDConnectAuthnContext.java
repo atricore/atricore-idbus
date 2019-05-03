@@ -3,7 +3,10 @@ package org.atricore.idbus.capabilities.openidconnect.main.op;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 
@@ -23,8 +26,12 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     // Non-serializable version
     private transient AuthenticationRequest authnRequest;
-
     private Map<String, String> authnRequestAsParams;
+
+    // Non-serializable version
+    private transient LogoutRequest logoutRequest;
+    private Map<String, String> logoutRequestAsParams;
+
 
     // Current emitted Authorization code
     private AuthorizationCode authorizationCode;
@@ -100,4 +107,31 @@ public class OpenIDConnectAuthnContext implements Serializable {
             this.authnRequestAsParams = null;
         }
     }
+
+    public void setLogoutRequest(LogoutRequest logoutRequest) {
+        this.logoutRequest = logoutRequest;
+
+        if (logoutRequest != null) {
+            try {
+                this.logoutRequestAsParams = logoutRequest.toParameters();
+            } catch (SerializeException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            this.logoutRequestAsParams = null;
+        }
+    }
+
+    public LogoutRequest getLogoutRequest() {
+        if (logoutRequest == null && logoutRequestAsParams != null) {
+            try {
+                logoutRequest = LogoutRequest.parse(logoutRequestAsParams);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return logoutRequest;
+    }
+
 }

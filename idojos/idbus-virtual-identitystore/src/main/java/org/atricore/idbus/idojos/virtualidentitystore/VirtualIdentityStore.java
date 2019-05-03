@@ -183,11 +183,10 @@ public class VirtualIdentityStore extends AbstractStore {
 
         // Collect user information from the configured sources
 
-        for (Iterator<IdentitySource> identitySourceIterator = identitySources.iterator(); identitySourceIterator.hasNext();) {
-            IdentitySource identitySource = identitySourceIterator.next();
+        for (IdentitySource identitySource : identitySources) {
 
             Credential[] Credentials;
-            
+
             try {
                 Credentials = ((CredentialStore) identitySource.getBackingIdentityStore()).loadCredentials(key, cp);
 
