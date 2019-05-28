@@ -1,23 +1,28 @@
 package org.atricore.idbus.capabilities.oauth2.main.token.producers;
 
+import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.atricore.idbus.capabilities.oauth2.main.*;
 import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2SecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.oauth2.main.token.endpoints.TokenEndpoint;
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
+import org.atricore.idbus.capabilities.oauth2.main.sso.producers.SingleSignOnProducer;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.oauth._2_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.Constants;
-import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.AttributedString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
@@ -27,127 +32,124 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import java.io.ByteArrayInputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 
-/**
- * This emits an access, using a previously requested authorization token.
- * In this case, the authorization token can also be user credentials.
- *
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class TokenProducer extends AbstractOAuth2Producer {
+public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
-    private static final Log logger = LogFactory.getLog(TokenProducer.class);
 
-    public TokenProducer(TokenEndpoint endpoint) {
+    private static final Log logger = LogFactory.getLog(SingleSignOnProducer.class);
+
+    private UUIDGenerator uuidGenerator = new UUIDGenerator();
+
+    public PasswordlessLinkProducer(Endpoint endpoint) {
         super(endpoint);
     }
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        AccessTokenRequestType atReq = (AccessTokenRequestType) in.getMessage().getContent();
+
+        SendPasswordlessLinkRequestType atReq = (SendPasswordlessLinkRequestType) in.getMessage().getContent();
 
         // We are acting as OAUTH 2.0 Authorization server, we consider it an IDP role.
-        AccessTokenResponseType atRes = new AccessTokenResponseType();
+        SendPasswordlessLinkResponseType atRes = new SendPasswordlessLinkResponseType();
 
-        // ---------------------------------------------------------
-        // Validate Request
-        // ---------------------------------------------------------
-        try {
 
-            OAuth2Client client = null;
-            // This returns the SP associated with the OAuth request.
-            validateRequest(atReq, atRes);
+        OAuth2Client client = null;
+        // This returns the SP associated with the OAuth request.
+        validateRequest(atReq, atRes);
 
-            client = resolveOAuth2Client(atReq.getClientId(), atRes);
-            if (client == null) {
-                throw new OAuth2ServerException(ErrorCodeType.UNAUTHORIZED_CLIENT, "Invalid clientId/clientSecret");
-            }
-
-            // Authenticate the client, unless an error has occurred.
-            authenticateRequest(client, atReq, atRes);
-
-            OAuth2SecurityTokenEmissionContext securityTokenEmissionCtx = new OAuth2SecurityTokenEmissionContext();
-
-            // Send extra information to STS, using the emission context
-            //securityTokenEmissionCtx.setMember(sp);
-            //securityTokenEmissionCtx.setAuthnState(authnState);
-            securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
-
-            securityTokenEmissionCtx = emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername(), atReq.getPassword());
-
-            // Call STS and wait for OAuth AccessToken
-            OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
-
-            // send access token back to requester
-
-            // build response
-            atRes.setAccessToken(at.getAccessToken());
-            atRes.setExpiresIn(at.getExpiresIn());
-            atRes.setTokenType(at.getTokenType());
-
-        } catch (OAuth2ServerException e) {
-            // Send oauth error in response
-            atRes.setError(e.getErrorCode());
-            atRes.setErrorDescription(e.getErrorDescription());
-
-            // Dump stack trance if we have a cause:
-            if (e.getCause() != null)
-                logger.error(e.getErrorCode().value() + " ["+e.getErrorDescription()+"]", e);
-            else
-                logger.warn(e.getErrorCode().value() + " ["+e.getErrorDescription()+"]");
-
-        } catch (SecurityTokenAuthenticationFailure e) {
-            atRes.setError(ErrorCodeType.ACCESS_DENIED);
-            atRes.setErrorDescription(e.getMessage());
-
-            if (e.getSsoPolicyEnforcements() != null) {
-                for (PolicyEnforcementStatement stmt : e.getSsoPolicyEnforcements()) {
-                    SSOPolicyEnforcementStatementType stmtType = new SSOPolicyEnforcementStatementType();
-                    stmtType.setNs(stmt.getNs());
-                    stmtType.setName(stmt.getName());
-                    if (stmt.getValues() != null) {
-                        stmtType.getValues().addAll(stmt.getValues());
-                    }
-                    atRes.getSsoPolicyEnforcements().add(stmtType);
-                }
-            }
-
-            if (logger.isDebugEnabled())
-                logger.debug(e.getMessage(), e);
-
-        } catch (Exception e) {
-            // Something went wrong
-            atRes.setError(ErrorCodeType.SERVER_ERROR);
-            atRes.setErrorDescription(e.getMessage());
-            logger.error(e.getMessage(), e);
+        client = resolveOAuth2Client(atReq.getClientId(), atRes);
+        if (client == null) {
+            throw new OAuth2ServerException(ErrorCodeType.UNAUTHORIZED_CLIENT, "Invalid clientId/clientSecret");
         }
 
+        // Authenticate the client, unless an error has occurred.
+        authenticateRequest(client, atReq, atRes);
 
-        // --------------------------------------------
-        // Emit OAuth Access Token
-        // --------------------------------------------
+        // Generate Token
+        OAuth2SecurityTokenEmissionContext securityTokenEmissionCtx = new OAuth2SecurityTokenEmissionContext();
+
+        // Send extra information to STS, using the emission context
+        //securityTokenEmissionCtx.setMember(sp);
+        //securityTokenEmissionCtx.setAuthnState(authnState);
+        securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+
+        securityTokenEmissionCtx = emitAccessTokenFromClaims(exchange, securityTokenEmissionCtx, atReq.getUsername());
+
+        // Call STS and wait for OAuth AccessToken
+        OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
+        OAuth2IdPMediator mediator = (OAuth2IdPMediator) channel.getIdentityMediator();
+
+        // Generate Message content
+
+        VelocityEngine velocityEngine = new VelocityEngine();
+        velocityEngine.setProperty(Velocity.RESOURCE_LOADER, "classpath");
+
+        velocityEngine.addProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".class",
+                "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+        velocityEngine.setProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".cache", "false");
+
+        velocityEngine.setProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".modificationCheckInterval",
+                "2");
+
+        velocityEngine.init();
+        VelocityContext veCtx = new VelocityContext();
+
+
+        // Build a context
+        veCtx.put("username", atReq.getUsername());
+        veCtx.put("token", at.getAccessToken());
+
+        for (TemplatePropertyType prop : atReq.getProperties()) {
+            veCtx.put(prop.getName(), prop.getValues().get(0)); /// Only first value supported for now
+        }
+
+        StringWriter msg = new StringWriter();
+        velocityEngine.evaluate(veCtx, msg, "default", new StringReader(atReq.getTemplate()));
+
+        msg.toString();
+
+        // TODO : Make transport configurable
+
+        MailService mailService = mediator.getMailService();
+
+        // Send message
+        String from = ""; // Configured
+        String to = atReq.getUsername();
+        String subject = "";
+        String contentType = "";
+        mailService.send(from, to, subject, msg.toString(), contentType);
+
 
 
         // send response back
-        EndpointDescriptor ed = null; // TODO : Only works for SOAP messages!
+        EndpointDescriptor ed = null;
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                atRes, "AccessTokenResponseType", null, ed, null));
+                atRes, "SendPasswordlessLinkResponseType", null, ed, null));
 
         exchange.setOut(out);
 
+
     }
 
-/**
+    /**
      * This will return an emission context with both, the required SAMLR2 Assertion and the associated Subject.
      *
      * @return SamlR2 Security emission context containing SAMLR2 Assertion and Subject.
      */
     protected OAuth2SecurityTokenEmissionContext emitAccessTokenFromClaims(CamelMediationExchange exchange,
                                                                            OAuth2SecurityTokenEmissionContext accessAccessTokenEmissionCtx,
-                                                                           String username,
-                                                                           String password) throws Exception {
+                                                                           String username) throws Exception {
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -161,7 +163,7 @@ public class TokenProducer extends AbstractOAuth2Producer {
 
         SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
         // Send artifact id as RST context information, similar to relay state.
-        RequestSecurityTokenType rst = buildRequestSecurityToken(username, password, emitterCtxArtifact.getContent());
+        RequestSecurityTokenType rst = buildRequestSecurityToken(username, emitterCtxArtifact.getContent());
 
         if (logger.isDebugEnabled())
             logger.debug("Requesting OAuth 2 Access Token (RST) w/context " + rst.getContext());
@@ -188,7 +190,7 @@ public class TokenProducer extends AbstractOAuth2Producer {
 
     }
 
-    private RequestSecurityTokenType buildRequestSecurityToken(String username, String password, String context) throws OAuth2Exception {
+    private RequestSecurityTokenType buildRequestSecurityToken(String username, String context) throws OAuth2Exception {
         logger.debug("generating RequestSecurityToken...");
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
 
@@ -204,8 +206,10 @@ public class TokenProducer extends AbstractOAuth2Producer {
         AttributedString usernameString = new AttributedString();
         usernameString.setValue( username );
 
+        String pwdlessLink = context;
+
         usernameToken.setUsername( usernameString );
-        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password);
+        usernameToken.getOtherAttributes().put(new QName(Constants.PWDLESS_LINK), pwdlessLink);
 
         rstRequest.getAny().add(ofwss.createUsernameToken(usernameToken));
 
@@ -216,19 +220,21 @@ public class TokenProducer extends AbstractOAuth2Producer {
         return rstRequest;
     }
 
-    protected void validateRequest(AccessTokenRequestType atReq, AccessTokenResponseType atRes) throws InvalidRequestException {
+    protected void validateRequest(SendPasswordlessLinkRequestType atReq, SendPasswordlessLinkResponseType atRes) throws InvalidRequestException {
 
         if (atReq.getClientId() == null) {
-            throw new InvalidRequestException(ErrorCodeType.INVALID_REQUEST, "Access Token Request MUST include a client id");
+            throw new InvalidRequestException(ErrorCodeType.INVALID_REQUEST, "Passworless Token Request MUST include a client id");
         }
 
         if (atReq.getClientSecret() == null) {
-            throw new InvalidRequestException(ErrorCodeType.INVALID_REQUEST, "Access Token Request MUST include a client secret");
+            throw new InvalidRequestException(ErrorCodeType.INVALID_REQUEST, "Passworless Token Request MUST include a client secret");
         }
 
     }
 
-    protected boolean authenticateRequest(OAuth2Client client, AccessTokenRequestType atReq, AccessTokenResponseType atRes) throws OAuth2ServerException {
+
+
+    protected boolean authenticateRequest(OAuth2Client client, SendPasswordlessLinkRequestType atReq, SendPasswordlessLinkResponseType atRes) throws OAuth2ServerException {
         // TODO : Improve: support other authn methods (user grant permission), strong authn, add password hashing, etc
         if (logger.isTraceEnabled()) {
             logger.trace("Authenticating req "+atReq.getClientId()+" for client " + client);
@@ -241,6 +247,4 @@ public class TokenProducer extends AbstractOAuth2Producer {
         return true;
 
     }
-
-
 }
