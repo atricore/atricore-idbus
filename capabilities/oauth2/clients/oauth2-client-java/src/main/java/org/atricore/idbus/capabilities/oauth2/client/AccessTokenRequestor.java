@@ -5,6 +5,8 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenRequestType;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
+import org.atricore.idbus.common.oauth._2_0.protocol.SendPasswordlessLinkRequestType;
+import org.atricore.idbus.common.oauth._2_0.protocol.SendPasswordlessLinkResponseType;
 import org.atricore.idbus.common.oauth._2_0.wsdl.OAuthPortType;
 
 /**
@@ -12,26 +14,12 @@ import org.atricore.idbus.common.oauth._2_0.wsdl.OAuthPortType;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class AccessTokenRequestor {
-
-    private String clientId;
-
-    private String clientSecret;
-
-    private String endpoint;
-
-    private String wsdlLocation;
-
-    private OAuthPortType wsClient;
+public class AccessTokenRequestor extends AbstractWSClient {
 
     private boolean logMessages;
 
     public AccessTokenRequestor(String clientId, String clientSecret, String endpoint, String wsdlLocation) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.endpoint = endpoint;
-        this.wsdlLocation = wsdlLocation;
-        this.wsClient = doMakeWsClient();
+        super(clientId, clientSecret, endpoint, wsdlLocation);
     }
 
     public boolean isLogMessages() {
@@ -46,13 +34,13 @@ public class AccessTokenRequestor {
 
         // Build OAuth2 AccessToken request
         AccessTokenRequestType req = new AccessTokenRequestType();
-        req.setClientId(clientId);
-        req.setClientSecret(clientSecret);
+        req.setClientId(getClientId());
+        req.setClientSecret(getClientSecret());
         req.setUsername(username);
         req.setPassword(password);
 
         // Request a Token
-        AccessTokenResponseType res = wsClient.accessTokenRequest(req);
+        AccessTokenResponseType res = getWsClient().accessTokenRequest(req);
 
         if (res.getError() != null) {
             String errMsg = "Cannot get access token: " + res.getError().value() + " ["+res.getErrorDescription()+"]";
@@ -63,25 +51,6 @@ public class AccessTokenRequestor {
         }
 
         return res.getAccessToken();
-    }
-
-    protected OAuthPortType doMakeWsClient() {
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-
-        if (logMessages) {
-            factory.getInInterceptors().add(new LoggingInInterceptor());
-            factory.getOutInterceptors().add(new LoggingOutInterceptor());
-        }
-
-        factory.setServiceClass(OAuthPortType.class);
-        factory.setAddress(endpoint);
-        if (wsdlLocation != null && !wsdlLocation.equals(""))
-            factory.setWsdlLocation(wsdlLocation);
-
-        OAuthPortType client = (OAuthPortType) factory.create();
-
-        return client;
-
     }
 
 }
