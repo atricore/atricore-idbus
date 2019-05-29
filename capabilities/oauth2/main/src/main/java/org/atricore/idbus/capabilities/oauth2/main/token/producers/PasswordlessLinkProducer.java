@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URLEncoder;
 
 public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
@@ -108,6 +109,9 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
         // Build a context
         veCtx.put("username", atReq.getUsername());
         veCtx.put("token", at.getAccessToken());
+
+        veCtx.put("encodedToken", URLEncoder.encode(at.getAccessToken(), "UTF-8"));
+        veCtx.put("targetSP", atReq.getTargetSP());
         for (TemplatePropertyType prop : atReq.getProperties()) {
             veCtx.put(prop.getName(), prop.getValues().get(0)); /// Only first value supported for now
         }
