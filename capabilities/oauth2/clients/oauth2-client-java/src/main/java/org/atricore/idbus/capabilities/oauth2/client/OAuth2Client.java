@@ -103,6 +103,18 @@ public class OAuth2Client implements ConfigurationConstants {
         }
     }
 
+
+    public void sendPasswordlessLink(String username, String targetSP, String template) throws OAuth2ClientException {
+
+        try {
+            getSendPasswordlessLinkClient().sendPasswordlessLink(username, targetSP, template, null);
+        } catch (OAuth2ClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OAuth2ClientException(e);
+        }
+    }
+
     public void sendPasswordlessLink(String username, String targetSP, String template, Properties properties) throws OAuth2ClientException {
 
         try {

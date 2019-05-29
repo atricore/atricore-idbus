@@ -10,6 +10,8 @@ public class PasswordLessConfig {
 
     private boolean enabled;
 
+    private String sender;
+
     public String getSubject() {
         return subject;
     }
@@ -40,5 +42,13 @@ public class PasswordLessConfig {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 }

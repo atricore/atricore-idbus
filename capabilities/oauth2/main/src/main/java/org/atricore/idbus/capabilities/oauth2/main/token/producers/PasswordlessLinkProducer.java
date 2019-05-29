@@ -14,10 +14,7 @@ import org.atricore.idbus.common.oauth._2_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.Constants;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mail.MailService;
-import org.atricore.idbus.kernel.main.mediation.Artifact;
-import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
-import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
-import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
@@ -51,13 +48,18 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        OAuth2IdPMediator mediator = (OAuth2IdPMediator) channel.getIdentityMediator();
+        PasswordLessConfig config = mediator.getPasswordLessConfig();
+
+        if (!config.isEnabled())
+            throw new IdentityMediationException("Service not available.  Passwordless authentication not enabled.");
 
         SendPasswordlessLinkRequestType atReq = (SendPasswordlessLinkRequestType) in.getMessage().getContent();
 
         // We are acting as OAUTH 2.0 Authorization server, we consider it an IDP role.
         SendPasswordlessLinkResponseType atRes = new SendPasswordlessLinkResponseType();
-
 
         OAuth2Client client = null;
         // This returns the SP associated with the OAuth request.
@@ -83,10 +85,8 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
         // Call STS and wait for OAuth AccessToken
         OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
-        OAuth2IdPMediator mediator = (OAuth2IdPMediator) channel.getIdentityMediator();
 
         // Generate Message content
-
         VelocityEngine velocityEngine = new VelocityEngine();
         velocityEngine.setProperty(Velocity.RESOURCE_LOADER, "classpath");
 
@@ -108,28 +108,27 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
         // Build a context
         veCtx.put("username", atReq.getUsername());
         veCtx.put("token", at.getAccessToken());
-
         for (TemplatePropertyType prop : atReq.getProperties()) {
             veCtx.put(prop.getName(), prop.getValues().get(0)); /// Only first value supported for now
         }
 
-        StringWriter msg = new StringWriter();
-        velocityEngine.evaluate(veCtx, msg, "default", new StringReader(atReq.getTemplate()));
+        // TODO : Decrit access token and add user properties ?
 
-        msg.toString();
+        // In/Out
+        StringReader template = new StringReader(atReq.getTemplate() != null  ? atReq.getTemplate() : config.getTemplate());
+        StringWriter msg = new StringWriter();
+
+        velocityEngine.evaluate(veCtx, msg, "default", template);
 
         // TODO : Make transport configurable
-
         MailService mailService = mediator.getMailService();
 
         // Send message
-        String from = ""; // Configured
+        String from = config.getSender(); // Configured
         String to = atReq.getUsername();
-        String subject = "";
-        String contentType = "";
+        String subject = config.getSubject();
+        String contentType = "text/html";// config.getContentType();
         mailService.send(from, to, subject, msg.toString(), contentType);
-
-
 
         // send response back
         EndpointDescriptor ed = null;
@@ -138,7 +137,6 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
                 atRes, "SendPasswordlessLinkResponseType", null, ed, null));
 
         exchange.setOut(out);
-
 
     }
 
