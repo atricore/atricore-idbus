@@ -16,18 +16,8 @@ import org.atricore.idbus.common.oauth._2_0.wsdl.OAuthPortType;
  */
 public class AccessTokenRequestor extends AbstractWSClient {
 
-    private boolean logMessages;
-
     public AccessTokenRequestor(String clientId, String clientSecret, String endpoint, String wsdlLocation) {
         super(clientId, clientSecret, endpoint, wsdlLocation);
-    }
-
-    public boolean isLogMessages() {
-        return logMessages;
-    }
-
-    public void setLogMessages(boolean logMessages) {
-        this.logMessages = logMessages;
     }
 
     public String requestTokenForUsernamePassword(String username, String password) throws Exception {

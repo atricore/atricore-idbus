@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.main.provisioning.impl;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
@@ -648,9 +649,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             User user = identityPartition.findUserById(setPwdRequest.getUserId());
 
-            String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword(), user.getSalt());
-            if (!user.getUserPassword().equals(currentPwd)) {
-                throw new InvalidPasswordException("Provided password is invalid");
+            //
+            String currentPwd = setPwdRequest.getCurrentPassword();
+            if ("BCRYPT".equalsIgnoreCase(hashAlgorithm)) {
+                BCrypt.Result result = BCrypt.verifyer().verify(currentPwd.toCharArray(), user.getUserPassword());
+                if (!result.verified)
+                    throw new InvalidPasswordException("Provided password is invalid");
+            } else {
+                String expectedHash = createPasswordHash(currentPwd, user.getSalt());
+                if (!user.getUserPassword().equals(expectedHash)) {
+                    throw new InvalidPasswordException("Provided password is invalid");
+                }
             }
 
             // TODO : Apply password validation rules
@@ -1185,6 +1194,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         if (logger.isDebugEnabled())
             logger.debug("Creating password hash for [" + password + "] with algorithm/encoding/salt [" + getHashAlgorithm() + "/" + getHashEncoding() + "/" + salt + "]");
+
+        if (hashAlgorithm != null  && "BCRYPT".equalsIgnoreCase(getHashAlgorithm())) {
+            // Set the cost to a fixed 12 for now.
+            return BCrypt.withDefaults().hashToString(12, password.toCharArray());
+        }
 
         if (salt != null)
             password = salt + password;
