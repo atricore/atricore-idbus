@@ -56,5 +56,6 @@ public interface Constants  {
 
     String AUTHN_SOURCE = "urn:org:atricore:idbus:kernel:main:sts:AuthnSource";
 
+    String PWDLESS_LINK = "urn:org:atricore:idbus:kernel:main:authn:pwdless-link";;
 
 }

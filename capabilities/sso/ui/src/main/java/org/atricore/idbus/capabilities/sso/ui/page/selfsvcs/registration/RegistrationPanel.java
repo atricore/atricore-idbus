@@ -11,7 +11,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PasswordUtil;
+import org.atricore.idbus.kernel.main.authn.util.PasswordUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.SecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
@@ -365,10 +365,8 @@ public class RegistrationPanel extends Panel {
         if (!registration.getNewPassword().equals(registration.getRetypedPassword()))
             throw new RegistrationException("error.password.doNotMatch", "Invalid temporary password");
 
-        String hash = PasswordUtil.createPasswordHash(registration.getPassword(), getHashAlgorithm(), getHashEncoding(), getDigest());
-        if (!hash.equals(tmpUser.getUserPassword())) {
+        if (!PasswordUtil.verifyPwd(registration.getPassword(), tmpUser.getUserPassword(), getHashAlgorithm(), getHashEncoding(), getDigest()))
             throw new RegistrationException("error.tmpPassword.invalid", "Invalid temporary password");
-        }
 
         RegistrationModel registration = getRegisterModel();
 

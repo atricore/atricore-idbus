@@ -17,6 +17,8 @@ public enum OAuth2Service {
 
     TokenService(new QName(OAuth2Constants.OAUTH2_SERVICE_BASE_URI, "TokenService")),
 
+    PasswordlessLinkService(new QName(OAuth2Constants.OAUTH2_SERVICE_BASE_URI, "PasswordlessLink")),
+
 ;
 
     private QName qname;

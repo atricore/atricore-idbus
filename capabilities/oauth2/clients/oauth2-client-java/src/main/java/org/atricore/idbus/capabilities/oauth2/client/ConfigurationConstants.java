@@ -15,6 +15,8 @@ public interface ConfigurationConstants {
 
     public static final String AUTHN_ENDPOINT = "oauth2.authnEndpoint";
 
+    public static final String PWDLESSLINK_ENDPOINT = "oauth2.pwdlessLinkEndpoint";
+
     public static final String RESOURCE_SVR_ENDPOINT = "oauth2.resourceServerEndpoint";
 
     public static final String SP_ALIAS = "oauth2.spAlias";

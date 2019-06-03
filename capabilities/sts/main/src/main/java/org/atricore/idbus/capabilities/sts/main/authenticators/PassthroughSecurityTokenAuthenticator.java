@@ -25,6 +25,8 @@ public class PassthroughSecurityTokenAuthenticator extends AbstractSecurityToken
 
     private QName previousSessionNs = new QName(Constants.PREVIOUS_SESSION_NS);
 
+    private QName pwdlessLink = new QName(Constants.PWDLESS_LINK);
+
     public PassthroughSecurityTokenAuthenticator() {
         super("PASS_THROUGH");
     }
@@ -55,6 +57,11 @@ public class PassthroughSecurityTokenAuthenticator extends AbstractSecurityToken
 
             // Authenticate when PROXY attribute is set.
             if (usrToken.getOtherAttributes().get(previousSessionNs) != null) {
+                return true;
+            }
+
+            // Authenticate when PWDLESS-LINK attribute is set.
+            if (usrToken.getOtherAttributes().get(pwdlessLink) != null) {
                 return true;
             }
         }

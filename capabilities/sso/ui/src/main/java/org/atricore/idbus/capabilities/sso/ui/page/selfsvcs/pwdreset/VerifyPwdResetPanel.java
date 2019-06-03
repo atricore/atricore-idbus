@@ -15,8 +15,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PasswordUtil;
-import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
+import org.atricore.idbus.kernel.main.authn.util.PasswordUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
@@ -156,21 +155,14 @@ public class VerifyPwdResetPanel extends Panel {
     protected boolean verifyPwdReset() throws Exception {
 
         // Verify each question
-
-        String a1 = PasswordUtil.createPasswordHash(model.getAnswer1(), getHashAlgorithm(), getHashEncoding(), getDigest());
-        if (!a1.equals(questions[0].getAnswer())) {
+        if (!PasswordUtil.verifyPwd(model.getAnswer1(), questions[0].getAnswer(), getHashAlgorithm(), getHashEncoding(), getDigest()))
             return false;
-        }
 
-        String a2 = PasswordUtil.createPasswordHash(model.getAnswer2(), getHashAlgorithm(), getHashEncoding(), getDigest());
-        if (!a2.equals(questions[1].getAnswer())) {
+        if (!PasswordUtil.verifyPwd(model.getAnswer2(), questions[1].getAnswer(), getHashAlgorithm(), getHashEncoding(), getDigest()))
             return false;
-        }
 
-        String a3 = PasswordUtil.createPasswordHash(model.getAnswer3(), getHashAlgorithm(), getHashEncoding(), getDigest());
-        if (!a3.equals(questions[2].getAnswer())) {
+        if (!PasswordUtil.verifyPwd(model.getAnswer3(), questions[2].getAnswer(), getHashAlgorithm(), getHashEncoding(), getDigest()))
             return false;
-        }
 
         return true;
     }

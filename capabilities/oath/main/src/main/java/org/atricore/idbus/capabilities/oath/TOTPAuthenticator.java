@@ -25,6 +25,9 @@ import java.util.Set;
 
 import static org.atricore.idbus.capabilities.sts.main.authenticators.TwoFactorSecurityTokenAuthenticator.PASSCODE_NS;
 
+/**
+ * TIME-BASED One Time Password authenticator
+ */
 public class TOTPAuthenticator implements SecurityTokenAuthenticator, CredentialProvider {
 
 
