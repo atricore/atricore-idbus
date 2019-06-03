@@ -166,6 +166,40 @@
         </complexContent>
     </complexType>
 
+    <element name="SendPasswordlessLinkRequest" type="oauth2p:SendPasswordlessLinkRequestType"/>
+    <complexType name="SendPasswordlessLinkRequestType">
+        <complexContent>
+            <extension base="oauth2p:OAuthRequestAbstractType">
+                <sequence>
+                    <element name="template" type="string" minOccurs="0" maxOccurs="1"/>
+                    <element name="properties" type="oauth2p:TemplatePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+                <attribute name="clientId" type="string" use="required"/>
+                <attribute name="clientSecret" type="string" use="required"/>
+                <attribute name="username" type="string" use="required"/>
+
+                <attribute name="targetSP" type="string" use="required"/>
+
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="SendPasswordlessLinkResponse" type="oauth2p:SendPasswordlessLinkResponseType"/>
+    <complexType name="SendPasswordlessLinkResponseType">
+        <complexContent>
+            <extension base="oauth2p:OAuthResponseAbstractType">
+            </extension>
+        </complexContent>
+    </complexType>
+
+
+    <complexType name="TemplatePropertyType">
+        <sequence>
+            <element name="values" type="anyType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="name" type="string" use="required"/>
+    </complexType>
+
     <complexType name="SSOPolicyEnforcementStatementType">
         <sequence>
             <element name="values" type="anyType" minOccurs="0" maxOccurs="unbounded"/>

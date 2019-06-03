@@ -15,7 +15,7 @@
   ~
   ~ You should have received a copy of the GNU Lesser General Public
   ~ License along with this software; if not, write to the Free
-  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ Software Foundation, Inc., 51 Franlin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
@@ -175,6 +175,31 @@
                 </xsd:complexContent>
             </xsd:complexType>
 
+            <xsd:element name="SendPasswordlessLinkRequest" type="oauth2p:SendPasswordlessLinkRequestType"/>
+            <xsd:complexType name="SendPasswordlessLinkRequestType">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:OAuthRequestAbstractType">
+                        <xsd:sequence>
+                            <xsd:element name="template" type="string" minOccurs="0" maxOccurs="1"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="clientId" type="string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="string" use="required"/>
+                        <xsd:attribute name="username" type="string" use="required"/>
+
+                        <xsd:attribute name="targetSP" type="string" use="required"/>
+
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:element name="SendPasswordlessLinkResponse" type="oauth2p:SendPasswordlessLinkResponseType"/>
+            <xsd:complexType name="SendPasswordlessLinkResponseType">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:OAuthResponseAbstractType">
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
             <xsd:complexType name="SSOPolicyEnforcementStatementType">
                 <xsd:sequence>
                     <xsd:element name="values" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
@@ -260,6 +285,14 @@
         <part name="body" element="oauth2p:AccessTokenResponse"/>
     </message>
 
+    <message name="SendPasswordlessLinkRequestMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkRequest"/>
+    </message>
+
+    <message name="SendPasswordlessLinkResponseMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkResponse"/>
+    </message>
+
 
     <portType name="OAuthPortType">
 
@@ -275,6 +308,13 @@
                         message="tns:AccessTokenRequestMessage"/>
             <output name="AccessTokenResponseOutput"
                          message="tns:AccessTokenResponseMessage"/>
+        </operation>
+
+        <operation name="SendPasswordlessLinkRequest">
+            <input name="SendPasswordlessLinkRequestInput"
+                   message="tns:SendPasswordlessLinkRequestMessage"/>
+            <output name="SendPasswordlessLinkResponseOutput"
+                    message="tns:SendPasswordlessLinkResponseMessage"/>
         </operation>
 
 
@@ -304,6 +344,18 @@
                 <soap:body use="literal"/>
             </input>
             <output name="AccessTokenResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="SendPasswordlessLinkRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="SendPasswordlessLinkRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SendPasswordlessLinkResponseOutput">
                 <soap:body use="literal"/>
             </output>
         </operation>

@@ -13,7 +13,9 @@ import javax.security.auth.Subject;
 /**
  * TODO : rfu
  *
- * This is couter based, we need to keep track of the number of emitted tokens for each user, and
+ * HMAC-BASED One Time Password authenticator
+ *
+ * This is counter based, we need to keep track of the number of emitted tokens for each user, and
  * use a way of syncing counters.
  */
 public class HOTPAuthenticator implements SecurityTokenAuthenticator, CredentialProvider {

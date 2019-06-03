@@ -22,12 +22,14 @@
 package org.atricore.idbus.kernel.main.authn.scheme;
 
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.authn.util.Crypt;
+import org.atricore.idbus.kernel.main.authn.util.PasswordUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -191,9 +193,6 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         String knownUserName = getUserName(_knowCredentials);
         String expectedPassword = getPassword(_knowCredentials);
 
-        // We might have to hash the password.
-        password = createPasswordHash(password, _knowCredentials);
-
         // Validate user identity ...
         if (userid != null) {
             if (!validateUser(userid, knownUserId)) {
@@ -273,25 +272,24 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     /**
      * This method validates the input password agaist the expected password.
      *
-     * @param inputPassword
-     * @param expectedPassword
+     * @param inputPassword plain text password
+     * @param storedHashedPassword
      */
-    protected boolean validatePassword(String inputPassword, String expectedPassword) {
+    protected boolean validatePassword(String inputPassword, String storedHashedPassword) throws SSOAuthenticationException {
 
         if (logger.isDebugEnabled())
             logger.debug("Validating passwords...");
 
-        // Validate input and expected passwords.
-        if (inputPassword == null && expectedPassword == null)
-            return false;
+        String saltPrefix = getSalt(_knowCredentials);
+        if (getSaltPrefix() != null) {
+            if (saltPrefix == null)
+                saltPrefix = getSaltPrefix();
+            else
+                saltPrefix  = getSaltPrefix() + saltPrefix;
+        }
 
-        if (_ignorePasswordCase && _hashAlgorithm == null)
-            return inputPassword.equalsIgnoreCase(expectedPassword);
-        else if (_hashAlgorithm != null && _hashEncoding.equals("HEX"))
-            // HEX values are case insensitive when using HASH
-            return inputPassword.equalsIgnoreCase(expectedPassword);
-        else
-            return inputPassword.equals(expectedPassword);
+        return PasswordUtil.verifyPwd(inputPassword, storedHashedPassword, getSaltLength(), getSaltSuffix(), saltPrefix,
+                getHashAlgorithm(), getHashEncoding(), getHashCharset(), getDigest());
     }
 
     /**
@@ -333,90 +331,16 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         if (logger.isDebugEnabled())
             logger.debug("Creating password hash with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
 
-        // Check for special encryption mechanisms, not supported by the JDK
-        if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {
-            // Get known password
-            String knownPassword = getPassword(knowCredentials);
-            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, _saltLength) : "";
-
-            return Crypt.crypt(salt, password);
-
-        }
-
-        // If SALT is available, use it
-        String salt = getSalt(knowCredentials);
-        if (salt != null) {
-            if (logger.isTraceEnabled())
-                logger.trace("Using random/user specific salt value as prefix");
-
-            password = salt + password;
-
-        } else {
-
-            // Look for fixed salts:
-
-            if (_saltSuffix != null) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("Using fixed salt value as suffix");
-
-                password = password + _saltSuffix;
-            }
-
-            if (_saltPrefix != null) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("Using fixed salt value as prefix");
-
-                password = _saltPrefix + password;
-
-            }
-        }
-
-        byte[] passBytes;
-        String passwordHash = null;
-
-        // convert password to byte data
-        try {
-            if (_hashCharset == null)
-                passBytes = password.getBytes();
+        String saltPrefix = getSalt(knowCredentials);
+        if (getSaltPrefix() != null) {
+            if (saltPrefix == null)
+                saltPrefix = getSaltPrefix();
             else
-                passBytes = password.getBytes(_hashCharset);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("charset " + _hashCharset + " not found. Using platform default.");
-            passBytes = password.getBytes();
+                saltPrefix  = getSaltPrefix() + saltPrefix;
         }
 
-        // calculate the hash and apply the encoding.
-        try {
-
-            byte[] hash;
-            // Hash algorithm is optional
-            if (_hashAlgorithm != null)
-                hash = getDigest().digest(passBytes);
-            else
-                hash = passBytes;
-
-            // At this point, hashEncoding is required.
-            if ("BASE64".equalsIgnoreCase(_hashEncoding)) {
-                passwordHash = CipherUtil.encodeBase64(hash);
-
-            } else if ("HEX".equalsIgnoreCase(_hashEncoding)) {
-                passwordHash = CipherUtil.encodeBase16(hash);
-
-            } else if (_hashEncoding == null) {
-                logger.error("You must specify a hashEncoding when using hashAlgorithm");
-
-            } else {
-                logger.error("Unsupported hash encoding format " + _hashEncoding);
-
-            }
-
-        } catch (Exception e) {
-            logger.error("Password hash calculation failed : \n" + e.getMessage() != null ? e.getMessage() : e.toString(), e);
-        }
-
-        return passwordHash;
+        return PasswordUtil.createPasswordHash(password, getSaltLength(), getSaltSuffix(), saltPrefix,
+                getHashAlgorithm(), getHashEncoding(), getHashCharset(), getDigest());
 
     }
 
@@ -427,6 +351,12 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      * @throws SSOAuthenticationException
      */
     protected MessageDigest getDigest() throws SSOAuthenticationException {
+
+        if (_hashAlgorithm.equalsIgnoreCase("BCRYPT"))
+            return null;
+
+        if (_hashAlgorithm.equalsIgnoreCase("CRYPT"))
+            return null;
 
         MessageDigest _digest = null;
         if (_hashAlgorithm != null) {

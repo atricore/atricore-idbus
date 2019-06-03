@@ -20,6 +20,8 @@ public class OAuth2Client implements ConfigurationConstants {
 
     protected AccessTokenRequestor requestor;
 
+    protected PasswordlessLinkClient pwdlessLinkClient;
+
     private boolean init;
 
     public OAuth2Client(String configPath) {
@@ -55,6 +57,13 @@ public class OAuth2Client implements ConfigurationConstants {
 
             requestor.setLogMessages(Boolean.parseBoolean(config.getProperty(LOG_MESSAGES, "false")));
 
+            pwdlessLinkClient = new PasswordlessLinkClient(config.getProperty(CLIENT_ID),
+                    config.getProperty(CLIENT_SECRET),
+                    config.getProperty(PWDLESSLINK_ENDPOINT),
+                    config.getProperty(WSDL_LOCATION));
+
+            pwdlessLinkClient.setLogMessages(Boolean.parseBoolean(config.getProperty(LOG_MESSAGES, "false")));
+
             init = true;
         } catch (IOException e) {
             throw new OAuth2ClientException(e);
@@ -69,6 +78,16 @@ public class OAuth2Client implements ConfigurationConstants {
         return requestor;
     }
 
+
+    public PasswordlessLinkClient getSendPasswordlessLinkClient() throws OAuth2ClientException {
+        if (!init) {
+            throw new OAuth2ClientException("OAuth2 client not initialized");
+        }
+
+        return pwdlessLinkClient;
+    }
+
+
     /**
      * Requests an authorization token for the given username and password.
      */
@@ -77,6 +96,29 @@ public class OAuth2Client implements ConfigurationConstants {
         try {
             String accessToken = getAccessTokenRequestor().requestTokenForUsernamePassword(usr, pwd);
             return accessToken;
+        } catch (OAuth2ClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OAuth2ClientException(e);
+        }
+    }
+
+
+    public void sendPasswordlessLink(String username, String targetSP, String template) throws OAuth2ClientException {
+
+        try {
+            getSendPasswordlessLinkClient().sendPasswordlessLink(username, targetSP, template, null);
+        } catch (OAuth2ClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OAuth2ClientException(e);
+        }
+    }
+
+    public void sendPasswordlessLink(String username, String targetSP, String template, Properties properties) throws OAuth2ClientException {
+
+        try {
+            getSendPasswordlessLinkClient().sendPasswordlessLink(username, targetSP, template, properties);
         } catch (OAuth2ClientException e) {
             throw e;
         } catch (Exception e) {
