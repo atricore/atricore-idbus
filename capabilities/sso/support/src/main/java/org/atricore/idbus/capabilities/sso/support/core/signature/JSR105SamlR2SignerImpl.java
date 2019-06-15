@@ -301,7 +301,12 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                 if (digest != null) {
                     if (logger.isDebugEnabled())
                         logger.debug("Using requested method " + digest + "withRSA");
-                    signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                    try {
+                        signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Defaulting to valid value! " + e.getMessage());
+                        signatureMethod = SignMethod.SHA256_WITH_RSA.getSpec();
+                    }
                 } else if (signMethodSpec != null) {
                     if (logger.isDebugEnabled())
                         logger.debug("Using configured method " + digest + "withRSA");
@@ -324,7 +329,13 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             logger.debug("Using signature method/algorithm " + signatureMethod + "/" + keyAlgorithm);
 
             try {
-                SignMethod sm = SignMethod.fromValues(digest, keyAlgorithm);
+                SignMethod sm = null;
+                try {
+                    signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Defaulting to valid value! " + e.getMessage());
+                    signatureMethod = SignMethod.SHA256_WITH_RSA.getSpec();
+                }
                 signature = Signature.getInstance(sm.getName());
 
             } catch (IllegalArgumentException e) {
@@ -1063,7 +1074,12 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                 if (digest != null) {
                     if (logger.isDebugEnabled())
                         logger.debug("Using requested method " + digest + "withRSA");
-                    signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                    try {
+                        signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Defaulting to valid value! " + e.getMessage());
+                        signatureMethod = SignMethod.SHA256_WITH_RSA.getSpec();
+                    }
                 } else if (signMethodSpec != null) {
                     if (logger.isDebugEnabled())
                         logger.debug("Using configured method " + digest + "withRSA");
