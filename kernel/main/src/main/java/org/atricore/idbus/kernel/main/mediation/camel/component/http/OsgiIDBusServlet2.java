@@ -280,7 +280,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         httpContext.setAttribute("org.atricorel.idbus.kernel.main.binding.http.CookieDomain", cookieDomain);
 
         if (logger.isTraceEnabled())
-            logger.trace("Staring to follow redirects for " + req.getPathInfo());
+            logger.trace("Starting to follow redirects for " + req.getPathInfo());
 
         // Store received headers and send them back to the browser
         List<Header> storedHeaders = new ArrayList<Header>(40);
