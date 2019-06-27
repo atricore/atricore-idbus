@@ -801,6 +801,8 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             return new HashMap<String, String>();
         }
 
+        httpMsgBody.reset();
+
         // Parse HTTP MSG BODY
         byte[] buf = new byte[2048];
 

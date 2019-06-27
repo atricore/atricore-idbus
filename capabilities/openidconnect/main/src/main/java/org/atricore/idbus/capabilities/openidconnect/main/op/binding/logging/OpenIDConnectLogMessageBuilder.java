@@ -134,12 +134,12 @@ public class OpenIDConnectLogMessageBuilder implements LogMessageBuilder {
             } else if (content instanceof Response) {
                 Response r = (Response) content;
 
-                if (r instanceof OIDCAccessTokenResponse) {
-                    OIDCAccessTokenResponse oidc = (OIDCAccessTokenResponse) r;
+                if (r instanceof OIDCTokenResponse) {
+                    OIDCTokenResponse oidc = (OIDCTokenResponse) r;
 
-                    JWT jwt = oidc.getIDToken();
-                    String idTokenStr = oidc.getIDTokenString();
-                    AccessToken at = oidc.getAccessToken();
+                    JWT jwt = oidc.getOIDCTokens().getIDToken();
+                    String idTokenStr = oidc.getOIDCTokens().getIDTokenString();
+                    AccessToken at = oidc.getOIDCTokens().getAccessToken();
 
                     logMsg.append("oidc-msg=\"OIDCAccessTokenResponse\" " +
                             "id-token-header=\"" + (jwt != null ? jwt.getHeader().toString() : "null") + "\" " +

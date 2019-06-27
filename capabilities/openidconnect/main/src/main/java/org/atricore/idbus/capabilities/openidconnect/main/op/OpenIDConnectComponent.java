@@ -37,8 +37,16 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new TokenEndpoint(uri, this, parameters);
                 break;
 
+            case RPTokenService:
+                endpoint = new RPTokenEndpoint(uri, this, parameters);
+                break;
+
             case RPInitLogoutService:
                 endpoint = new RPInitLogoutEndpoint(uri, this, parameters);
+                break;
+
+            case MetadataService:
+                endpoint = new MetadataEndpoint(uri, this, parameters);
                 break;
 
             case SSOAssertionConsumerService:

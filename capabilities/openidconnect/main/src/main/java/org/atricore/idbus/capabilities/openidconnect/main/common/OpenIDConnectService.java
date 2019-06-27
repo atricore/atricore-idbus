@@ -21,7 +21,11 @@ public enum OpenIDConnectService {
 
     TokenService(OpenIDConnectConstants.TokenService_QNAME),
 
+    RPTokenService(OpenIDConnectConstants.RPTokenService_QNAME),
+
     RPInitLogoutService(OpenIDConnectConstants.RPInitLogoutService_QNAME),
+
+    MetadataService(OpenIDConnectConstants.MetadataService_QNAME),
 
     // Relaying Party Services
     AuthorizationConsumerService(OpenIDConnectConstants.AuthorizationConsumerService_QNAME),

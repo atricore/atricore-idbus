@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.op.binding.AuthnHttpBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.op.binding.LogoutHttpBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.op.binding.TokenRestfulBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.op.binding.TokenRequestRestfulBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.binding.OpenIDConnectHttpAuthzBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
@@ -67,7 +67,7 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
                 mb = new AuthnHttpBinding(channel);
                 break;
             case OPENID_PROVIDER_TOKEN_RESTFUL:
-                mb = new TokenRestfulBinding(channel);
+                mb = new TokenRequestRestfulBinding(channel);
                 break;
             default:
         }

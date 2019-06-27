@@ -11,6 +11,7 @@ import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,11 +27,11 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     // Non-serializable version
     private transient AuthenticationRequest authnRequest;
-    private Map<String, String> authnRequestAsParams;
+    private Map<String, List<String>> authnRequestAsParams;
 
     // Non-serializable version
     private transient LogoutRequest logoutRequest;
-    private Map<String, String> logoutRequestAsParams;
+    private Map<String, List<String>> logoutRequestAsParams;
 
 
     // Current emitted Authorization code

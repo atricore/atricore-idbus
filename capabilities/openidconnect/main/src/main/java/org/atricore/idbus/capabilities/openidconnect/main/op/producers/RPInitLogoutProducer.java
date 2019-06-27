@@ -99,16 +99,16 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
         URI postLogoutURI = logoutRequest.getPostLogoutRedirectionURI();
 
         if (postLogoutURI == null)
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
 
         // POST LOGOUT URI
         if (metadata.getPostLogoutRedirectionURIs() != null &&
                 metadata.getPostLogoutRedirectionURIs().size() > 0 &&
                 !validateURI(metadata.getPostLogoutRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI()))
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
 
          if (!validateURI(metadata.getRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI())) {
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
         }
     }
 

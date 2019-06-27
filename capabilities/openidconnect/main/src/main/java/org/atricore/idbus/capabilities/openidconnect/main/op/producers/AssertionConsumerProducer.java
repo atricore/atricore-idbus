@@ -58,7 +58,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             throw new OpenIDConnectException("IdP initiated not supported (or state was lost)");
         }
 
-        AuthenticationRequest  samlAuthnRequest = authnCtx.getAuthnRequest();
+        AuthenticationRequest  oidcAuthnRequest = authnCtx.getAuthnRequest();
         SPInitiatedAuthnRequestType ssoAuthnRequest = authnCtx.getSsoAuthnRequest();
         if (ssoAuthnRequest == null) {
             // TODO : Process unsolicited response
@@ -71,10 +71,10 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
 
         // Build an OpenIDConnect authentication response based on the original request
-        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, samlAuthnRequest);
+        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, oidcAuthnRequest);
 
         // Resolve response ED
-        EndpointDescriptor ed = resolveRedirectUri(samlAuthnRequest, (AuthorizationResponse) authnResponse);
+        EndpointDescriptor ed = resolveRedirectUri(oidcAuthnRequest, (AuthorizationResponse) authnResponse);
 
         // Ad alternate state key, to be used by back-channel.
         state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY,
@@ -85,6 +85,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         // Clear authn context
         authnCtx.setSsoAuthnRequest(null);
         authnCtx.setAuthnRequest(null);
+        authnCtx.setIdpAlias(response.getIdpAlias());
 
         // Store authz code
         if (authnResponse instanceof AuthenticationSuccessResponse) {

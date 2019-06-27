@@ -35,7 +35,7 @@ public class AuthorizationGrantAuthenticator extends AbstractSecurityTokenAuthen
             BinarySecurityTokenType authzGrantToken = (BinarySecurityTokenType) requestToken;
 
             String params = authzGrantToken.getValue();
-            AuthorizationGrant authzGrant = AuthorizationGrant.parse(Util.unmarshall(params));
+            AuthorizationGrant authzGrant = AuthorizationGrant.parse(Util.unmarshallMultiValue(params));
 
             Credential c = new AuthorizationCodeGrantCredential(authzGrant);
 

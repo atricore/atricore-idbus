@@ -190,7 +190,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Redirection_uri is invalid: " + requestedRedirectURI.toString());
 
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "redirection_uri is invalid: " + requestedRedirectURI.toString());
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "redirection_uri is invalid: " + requestedRedirectURI.toString());
         }
 
         // ClientID
@@ -206,7 +206,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
             if (logger.isDebugEnabled())
                 logger.debug("request resolution not supported: " + authnReq.getRequestURI().toString());
 
-            throw new OpenIDConnectProviderException(OIDCError.REQUEST_URI_NOT_SUPPORTED.setURI(authnReq.getRedirectionURI()), "request resolution not supported");
+            throw new OpenIDConnectProviderException(OAuth2Error.REQUEST_URI_NOT_SUPPORTED.setURI(authnReq.getRedirectionURI()), "request resolution not supported");
         }
 
 

@@ -4,7 +4,7 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.AuthorizationGrant;
@@ -16,23 +16,21 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.JWTID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
-import com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse;
+import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
 import org.atricore.idbus.capabilities.openidconnect.main.common.Util;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.Constants;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -55,10 +53,15 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
+ * This creates an OIDC token based on different grant types (CODE, JWT BEARER, etc).
  *
+ * The producer actually runs as part of the SSO/SAML Produces because it access the STS.  Since JOSSO
+ * is SAML enabled, the STS will issue the token based on a previous authentication that craeted a SAML assertion
+ * and an AUTHZ CODE as part of the SAML statements.
  */
 public class TokenProducer extends AbstractOpenIDProducer {
 
@@ -82,10 +85,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
         MediationState state = in.getMessage().getState();
 
         OpenIDConnectBinding binding = OpenIDConnectBinding.asEnum(endpoint.getBinding());
-
-        EndpointDescriptor errorEndpoint = new EndpointDescriptorImpl("rp-error",
-                OpenIDConnectService.TokenService.toString(),
-                binding.getValue(), null, null);
 
         // If we have an authorization_code , the state MUST have the proper alternate key.
         AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
@@ -135,7 +134,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
         }
 
-        TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, at, idToken, rt);
+
+        OIDCTokens tokens  = new OIDCTokens(idToken, at, rt);
+        TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
 
         // Send response back (this is a back-channel request)
 
@@ -227,7 +228,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
 
-            ReadOnlyJWTClaimsSet claims = null;
+            JWTClaimsSet claims = null;
             if (md.getRequestObjectJWEEnc() != null) {
                 EncryptedJWT encryptedAssertion = (EncryptedJWT) assertion;
                 JWEDecrypter decrypter = getDecrypter(mediator, clientInfo);
@@ -246,6 +247,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
                 // Todo Verify signature of nested JWT ?!
                 claims = signedAssertion.getJWTClaimsSet();
+            } else {
+                // TODO :
+                logger.error("No claims received/processed ...");
             }
 
             // Unique JWT ID
@@ -402,7 +406,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             // Send credentials with authn request:
             BinarySecurityTokenType authzGrantToken = new BinarySecurityTokenType();
 
-            authzGrantToken.setValue(Util.marshall(authzGrant.toParameters()));
+            authzGrantToken.setValue(Util.marshallMultiValue(authzGrant.toParameters()));
             authzGrantToken.setValueType(authzGrant.getType().getValue());
             authzGrantToken.setEncodingType("json");
 
@@ -571,12 +575,23 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
                 // Audience
                 FederationChannel fChannel = (FederationChannel) channel;
-                Audience aud = clientJWTAuthn.getJWTAuthenticationClaimsSet().getAudience();
+
+                List<Audience> auds = clientJWTAuthn.getJWTAuthenticationClaimsSet().getAudience();
+
                 String expectedAudience = fChannel.getMember().getAlias();
-                if (!aud.getValue().equals(expectedAudience)) {
+
+                boolean found = false;
+                for (Audience aud : auds) {
+                    if (aud.getValue().equals(expectedAudience)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
                     if (logger.isDebugEnabled())
-                        logger.debug("aud (received/expected) : " + aud + "/" + expectedAudience);
-                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_audience " + aud.getValue());
+                        logger.debug("aud expected : " + expectedAudience);
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_audience ");
                 }
 
                 // Expiration date, it can be up to five minutes in the past
@@ -679,8 +694,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
         return r;
     }
 
-    protected TokenResponse buildAccessTokenResponse(OIDCClientInformation clientInfo, AccessToken at, String idToken, RefreshToken rt) {
-        return new OIDCAccessTokenResponse(at, rt, idToken);
+    protected TokenResponse buildAccessTokenResponse(OIDCClientInformation clientInfo, OIDCTokens tokens) {
+        return new OIDCTokenResponse(tokens);
     }
 
     protected void validateRequest(TokenRequest tokenRequest, OpenIDConnectAuthnContext authnCtx) throws OpenIDConnectException {
@@ -738,7 +753,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
     }
 
     protected JWSVerifier getVerifier(OpenIDConnectOPMediator mediator, ClientInformation clientInfo)
-            throws NoSuchAlgorithmException {
+            throws NoSuchAlgorithmException, JOSEException {
 
         OIDCClientMetadata md = (OIDCClientMetadata) clientInfo.getMetadata();
         if (isSigngingAlgorithmSupported(MACVerifier.SUPPORTED_ALGORITHMS, md.getRequestObjectJWSAlg())) {

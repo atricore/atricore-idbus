@@ -61,6 +61,43 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
 
                     switch (binding) {
 
+                        case OPENID_PROVIDER_TOKEN_HTTP:
+                        case OPENID_PROVIDER_TOKEN_RESTFUL:
+
+                            // FROM idbus-http TO idbus-bind (through direct component)
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+                            // FROM idbus-bind TO oidc-svc
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + bindingChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("openidc-idp:" + ed.getType() +
+                                            "?channelRef=" + bindingChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+                                // FROM idbus-http TO idbus-bind (through direct component)
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+
+                                // FROM ibus-bind TO oauth2-svc
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                        "?binding=" + ed.getBinding() +
+                                        "&channelRef=" + bindingChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("openidc-idp:" + ed.getType() +
+                                                "?channelRef=" + bindingChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+
+                            break;
+
                         // http endpoints
                         case OPENID_PROVIDER_AUTHZ_RESTFUL:
                         case OPENID_PROVIDER_AUTHZ_HTTP:
