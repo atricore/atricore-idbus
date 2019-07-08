@@ -171,6 +171,12 @@
     </feature>
 
     <feature name="atricore-oauth2" version="${version}">
+
+        <bundle>mvn:joda-time/joda-time/2.9</bundle>
+        <bundle>mvn:com.nimbusds/lang-tag/1.4.4</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v7_3/${idbus.bundle.nimbus-jose-jwt-v7_3.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v6_13/${idbus.bundle.oauth2-oidc-sdk-v6_13.version}</bundle>
+
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v3_10/${idbus.bundle.nimbus-jose-jwt-v3_10.version}</bundle>
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1/${idbus.bundle.oauth2-oidc-sdk-v4_14_1.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.common/${idbus.cap.oauth2.version}</bundle>
@@ -406,6 +412,7 @@
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-xc/${jackson.version}</bundle>
         <bundle start-level="34">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}</bundle>
         <bundle start-level="35">mvn:org.bouncycastle/bcprov-jdk15on/${bcprov.version}</bundle>
+        <bundle start-level="35">mvn:org.bouncycastle/bcpkix-jdk15on/1.52</bundle>
         <bundle start-level="35">mvn:net.minidev/json-smart/${json-smart.version}</bundle>
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-v1_9_2/${idbus.bundle.jasypt-v1_9_2.version}</bundle>
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-spring31-v1_9_2/${idbus.bundle.jasypt-v1_9_2.version}</bundle>
