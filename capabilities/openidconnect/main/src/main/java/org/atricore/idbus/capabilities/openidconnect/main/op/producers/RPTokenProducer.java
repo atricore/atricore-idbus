@@ -1,7 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
-import com.nimbusds.oauth2.sdk.TokenRequest;
-import com.nimbusds.oauth2.sdk.TokenResponse;
+import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
@@ -11,21 +10,16 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMediator;
-import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederationService;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
@@ -72,10 +66,24 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         TokenRequest proxyTokenRequest = new TokenRequest(new URI(tokenEndpoint.getLocation()),
                 tokenRequest.getClientAuthentication(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
 
-        // Send request/process response (TODO : Eventually use mediation engine)
+        // Send request/process response
+        // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
         HTTPResponse proxyResponse = proxyTokenRequest.toHTTPRequest().send();
 
         TokenResponse proxyTokenResponse = TokenResponse.parse(proxyResponse);
+
+        if (proxyTokenResponse.indicatesSuccess()) {
+            AccessTokenResponse at = proxyTokenResponse.toSuccessResponse();
+            authnCtx.setTokens(at.getTokens());
+        } else {
+            TokenErrorResponse err = proxyTokenResponse.toErrorResponse();
+            authnCtx.setTokens(null);
+            ErrorObject error = err.getErrorObject();
+
+            if (logger.isDebugEnabled())
+                logger.error("Error obtaining AccessToken : " + error.getCode() + ". " + error.getDescription());
+
+        }
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 proxyTokenResponse,
@@ -87,99 +95,4 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         exchange.setOut(out);
     }
 
-    protected ServiceProvider lookupSPProxy() {
-        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
-        String spAlias = mediator.getSpAlias();
-        for (FederatedProvider provider : getFederatedProvider().getCircleOfTrust().getProviders()) {
-            if (provider instanceof ServiceProvider) {
-
-                ServiceProvider sp = (ServiceProvider)provider;
-                for (CircleOfTrustMemberDescriptor m : sp.getMembers()) {
-                    if (m.getAlias().equals(spAlias)) {
-                        if (logger.isDebugEnabled())
-                            logger.debug("Found Service Provider " + provider.getName() + " for alias " + spAlias);
-                        return (ServiceProvider) provider;
-                    }
-                }
-            }
-        }
-
-        logger.error("No SP Proxy found for alias " + spAlias);
-
-        return null;
-
-    }
-
-    protected EndpointDescriptor lookupTokenEndpoint(OpenIDConnectAuthnContext authnCtx) throws IdentityMediationException {
-
-        // Get SP Proxy -> IDP Channel -> IDP -> OIDC Service -> Channel -> Token Endpoint
-        ServiceProvider spProxy = lookupSPProxy();
-        if (spProxy == null) {
-            return null;
-        }
-
-        // Now, we need to identify the selected IDP
-        SPChannel spChannel = lookupSPChannel(spProxy, authnCtx.getIdpAlias());
-        if (spChannel == null)
-            return null;
-
-        IdentityMediationEndpoint tokenEndpoint = null;
-        for (IdentityMediationEndpoint endpoint : spChannel.getEndpoints()) {
-            if (endpoint.getType().equals(OpenIDConnectService.TokenService.toString()) &&
-                    endpoint.getBinding().equals(OpenIDConnectBinding.OPENID_PROVIDER_TOKEN_RESTFUL.getValue())) {
-
-                // This is the ED!
-                tokenEndpoint = endpoint;
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Using TOKEN RESTFUL endpoint [" + tokenEndpoint.getLocation() + "]");
-                break;
-            }
-        }
-
-        if (tokenEndpoint != null)
-            return spChannel.getIdentityMediator().resolveEndpoint(spChannel, tokenEndpoint);
-
-        logger.error("No Token Endpoint [" +
-                OpenIDConnectService.TokenService.toString() + "/" +
-                OpenIDConnectBinding.OPENID_PROVIDER_TOKEN_RESTFUL.getValue()+"] in channel " + spChannel.getName());
-
-        return null;
-    }
-
-    protected SPChannel lookupSPChannel(ServiceProvider spProxy, String idpAlias) {
-        SPChannel spChannel = null;
-        IdentityProvider idp = null;
-        for (FederatedProvider prov : spProxy.getChannel().getTrustedProviders()) {
-            if (prov instanceof IdentityProvider) {
-                idp = (IdentityProvider) prov;
-
-                FederationService oidcService = null;
-                if (idp.getDefaultFederationService().getServiceType().equals("urn:org:atricore:idbus:OIDC:1.0")) {
-                    oidcService = idp.getDefaultFederationService();
-                } else {
-                    for (FederationService svc : idp.getFederationServices()) {
-                        if (svc.getServiceType().equalsIgnoreCase("urn:org:atricore:idbus:OIDC:1.0")) {
-                            oidcService = svc;
-                            break;
-                        }
-                    }
-                }
-
-                if (oidcService == null) {
-                    logger.debug("IDP " + idp.getName() + " does not have OIDC service, make sure to enable OIDC.");
-                    continue;
-                }
-
-                // Use default channel from OIDC service
-                spChannel = (SPChannel) oidcService.getChannel();
-            }
-        }
-
-        if (spChannel == null) {
-            logger.error("No SP channel found for alias " + idpAlias);
-        }
-
-        return spChannel;
-    }
 }

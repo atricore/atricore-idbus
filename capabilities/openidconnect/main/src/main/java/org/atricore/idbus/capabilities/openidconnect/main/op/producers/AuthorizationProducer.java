@@ -143,6 +143,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
             RequestAttributeType a = new RequestAttributeType();
             a.setName(tvarName);
             a.setValue(in.getMessage().getState().getTransientVariable(tvarName));
+            req.getRequestAttribute().add(a);
         }
 
         return req;

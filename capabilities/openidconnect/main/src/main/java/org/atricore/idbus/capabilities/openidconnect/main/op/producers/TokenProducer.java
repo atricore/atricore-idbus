@@ -302,14 +302,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     protected OpenIDConnectSecurityTokenEmissionContext emitAccessTokenFromAuthzCode(MediationState state,
                                                                                      ClientInformation clientInfo,
-                                                                                     AuthorizationCodeGrant grant,
+                                                                                     AuthorizationCodeGrant authzGrant,
                                                                                      OpenIDConnectSecurityTokenEmissionContext ctx)
             throws Exception {
-
-        OpenIDConnectAuthnContext authnContext = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
-
-        AuthorizationCodeGrant authzGrant = (AuthorizationCodeGrant) grant;
-        AuthorizationCode authzCode = authzGrant.getAuthorizationCode();
 
         MessageQueueManager aqm = getArtifactQueueManager();
 

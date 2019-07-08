@@ -4,6 +4,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.OAuth2Error;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.oauth2.sdk.client.ClientMetadata;
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.OIDCError;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
@@ -93,6 +94,9 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
         OIDCClientMetadata metadata = client.getOIDCMetadata();
 
         // TODO : ID Token HINT : We need to get the token from the OP.
+        // TODO : Get session from tokens ?!
+        Tokens tokens = authnCtx.getTokens();
+
         JWT receivedIdToken = logoutRequest.getIDTokenHint();
         String receivedIdTokenStr = receivedIdToken.getParsedString();
 

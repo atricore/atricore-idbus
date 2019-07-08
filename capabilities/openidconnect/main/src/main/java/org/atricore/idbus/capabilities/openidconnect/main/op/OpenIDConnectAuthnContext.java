@@ -5,6 +5,7 @@ import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
@@ -41,6 +42,7 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     // Selected IDP Alias
     private String idpAlias;
+    private Tokens tokens;
 
     public String getIdpAlias() {
         return idpAlias;
@@ -135,4 +137,11 @@ public class OpenIDConnectAuthnContext implements Serializable {
         return logoutRequest;
     }
 
+    public void setTokens(Tokens tokens) {
+        this.tokens = tokens;
+    }
+
+    public Tokens getTokens() {
+        return tokens;
+    }
 }

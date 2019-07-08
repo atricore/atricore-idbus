@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op;
 
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
@@ -32,6 +33,16 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
 
     private OIDCClientInformation client;
 
+    private OIDCProviderMetadata provider;
+
+    public OIDCProviderMetadata getProvider() {
+        return provider;
+    }
+
+    public void setProvider(OIDCProviderMetadata provider) {
+        this.provider = provider;
+    }
+
     public OpenIDConnectBPMediator() {
         logger.info("OpenIDConnectBPMediator Instantiated");
     }
@@ -63,6 +74,7 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
 
                         case OPENID_PROVIDER_TOKEN_HTTP:
                         case OPENID_PROVIDER_TOKEN_RESTFUL:
+                        case OPENID_PROVIDER_INFO_RESTFUL:
 
                             // FROM idbus-http TO idbus-bind (through direct component)
                             from("idbus-http:" + ed.getLocation()).

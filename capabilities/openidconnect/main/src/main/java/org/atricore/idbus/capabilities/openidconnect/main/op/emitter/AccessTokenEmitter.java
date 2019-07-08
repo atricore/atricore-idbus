@@ -46,7 +46,7 @@ public class AccessTokenEmitter extends AbstractSecurityTokenEmitter {
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         // We can emit for any context with a valid subject when Token Type is OIDC_ACCESS!
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
-                WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE.equals(tokenType);
+                (WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE.equals(tokenType) || WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType));
     }
 
     @Override
@@ -57,11 +57,13 @@ public class AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
             try {
                 AccessToken at = new BearerAccessToken(64, lifetimeInSecs, scope);
-                SecurityToken<AccessToken> st = new SecurityTokenImpl<AccessToken>(at.getValue(), at);
+                SecurityTokenImpl<AccessToken> st = new SecurityTokenImpl<AccessToken>(at.getValue(),
+                        WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE,
+                        at);
 
-                // We're issuing an access token for OpenID, and not in the context of another protocol
                 Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
                 if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
+                    // We're issuing an access token for OpenID, and not in the context of another protocol
                     OpenIDConnectSecurityTokenEmissionContext oidcCtx = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
 
                     Subject subject = (Subject) context.getProperty(WSTConstants.SUBJECT_PROP);
@@ -72,6 +74,7 @@ public class AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                     // We're issuing an access token in the context of another protocol, probably SAML
                 }
 
+                st.setSerializedContent(at.getValue());
                 return st;
 
             } catch (Exception e) {
