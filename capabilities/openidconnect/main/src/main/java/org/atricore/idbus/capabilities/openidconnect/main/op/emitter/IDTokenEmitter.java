@@ -1,22 +1,27 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.emitter;
 
 import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.ParseException;
-import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
+import oasis.names.tc.saml._2_0.idbus.ExtAttributeListType;
+import oasis.names.tc.saml._2_0.idbus.ExtendedAttributeType;
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.ExtensionsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.KeyUtils;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectSecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
 import org.atricore.idbus.capabilities.sts.main.*;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
@@ -28,11 +33,15 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.Subject;
-import java.security.MessageDigest;
+import javax.xml.bind.JAXBElement;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.*;
+
+import static org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants.OIDC_EXT_NAMESPACE;
 
 /**
  * Emit an ID Token (JWT)
@@ -40,6 +49,10 @@ import java.util.*;
 public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
     private static final Log logger = LogFactory.getLog(IDTokenEmitter.class);
+
+    private SSOKeyResolver signer;
+
+    private SSOKeyResolver encrypter;
 
     private Map<String, OIDCClientInformation> clients;
 
@@ -101,21 +114,74 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
                 throw new SecurityTokenEmissionException("Cannot find OIDC Provider " + clientId);
             }
 
+            ExtAttributeListType extAttrs = null;
+            if (rstCtx instanceof  SamlR2SecurityTokenEmissionContext) {
+                SamlR2SecurityTokenEmissionContext saml2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+                AuthnRequestType authnReq = saml2Ctx.getAuthnState().getAuthnRequest();
+                if (authnReq != null) {
+                    ExtensionsType exts = authnReq.getExtensions();
+                    for (Object ext : exts.getAny()) {
+                        if (ext instanceof JAXBElement) {
+                            JAXBElement jaxbExt = (JAXBElement) ext;
+                            if (jaxbExt.getValue() instanceof ExtAttributeListType)
+                                extAttrs = (ExtAttributeListType) jaxbExt.getValue();
+                        }
+                    }
+                }
 
-            IDTokenClaimsSet claimsSet = buildClaimSet(subject, null, provider, client);
+            }
+
+            IDTokenClaimsSet claimsSet = buildClaimSet(subject, null, extAttrs, provider, client);
             if (claimsSet == null) {
                 logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
                 return null;
             }
 
-            // TODO : Get JWE/JWS options/algorithms from client MD or OP Default settings
-            SecretKey secretKey = KeyUtils.getKey(client);
-            SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet.toJWTClaimsSet());
+            // Get JWE/JWS options/algorithms from client MD or OP Default settings
+            JWSAlgorithm jwsAlgorithm = client.getOIDCMetadata().getIDTokenJWSAlg();
+            JWEAlgorithm jweAlgorithm = client.getOIDCMetadata().getIDTokenJWEAlg();
 
-            // Apply the HMAC
-            JWSSigner signer = new MACSigner(secretKey.getEncoded());
-            signedJWT.sign(signer);
+            SignedJWT signedJWT = null;
+            // Signature
+            if (jwsAlgorithm != null) {
+                if (JWSAlgorithm.Family.HMAC_SHA.contains(jwsAlgorithm)) {
 
+                    SecretKey secretKey = KeyUtils.extendOrTruncateKey(client);
+                    signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet.toJWTClaimsSet());
+
+                    // Apply the HMAC
+                    JWSSigner signer = new MACSigner(secretKey.getEncoded());
+                    signedJWT.sign(signer);
+
+                } else if (JWSAlgorithm.Family.EC.contains(jwsAlgorithm)) {
+                    // TODO : Do we need an EC key pair ?
+                    throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+                } else if (JWSAlgorithm.Family.ED.contains(jwsAlgorithm)) {
+                    // TODO : Do we need an ED key pair ?
+                    throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+
+                } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {
+
+                    // We have an RSA key pair as part of the IDP
+                    PrivateKey privateKey = (PrivateKey) this.signer.getPrivateKey();
+                    signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet.toJWTClaimsSet());
+                    JWSSigner signer = new RSASSASigner(privateKey);
+                    signedJWT.sign(signer);
+
+                } else {
+                    throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+                }
+            }
+
+            // Encryption
+            if (jweAlgorithm != null) {
+                // TODO :
+                throw new SecurityTokenEmissionException("Unsupported JWE Algorithm " + jweAlgorithm.getName());
+
+                // TODO for symetrical algorithms : SecretKeyDerivation.deriveSecretKey()
+            }
+
+            // TODO : JWS MUST be present ?!
             String idTokenStr = signedJWT.serialize();
             SecurityTokenImpl st = new SecurityTokenImpl<String>(uuidGenerator.generateId(),
                     WSTConstants.WST_OIDC_ID_TOKEN_TYPE,
@@ -147,6 +213,7 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
     protected IDTokenClaimsSet buildClaimSet(Subject subject,
                                              List<AbstractPrincipalType> proxyPrincipals,
+                                             ExtAttributeListType extAttributes,
                                              OIDCProviderMetadata provider,
                                              OIDCClientInformation client) {
 
@@ -177,8 +244,14 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
         IDTokenClaimsSet claimsSet = new IDTokenClaimsSet(iss, sub, aud, exp, iat);
 
         // TODO : authn_time
-        //
-        // TODO : nonce Return nonce from TokenRequest/AuthnRequest
+
+        // nonce from TokenRequest/AuthnRequest
+        if (extAttributes != null) {
+            String nonce = resolveExtAttributeValue(extAttributes, "nonce");
+            if (nonce != null) {
+                claimsSet.setNonce(new Nonce(nonce));
+            }
+        }
 
         // TODO : acr
 
@@ -235,6 +308,23 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
         return claimsSet;
 
+    }
+
+
+    public SSOKeyResolver getSigner() {
+        return signer;
+    }
+
+    public void setSigner(SSOKeyResolver signer) {
+        this.signer = signer;
+    }
+
+    public SSOKeyResolver getEncrypter() {
+        return encrypter;
+    }
+
+    public void setEncrypter(SSOKeyResolver encrypter) {
+        this.encrypter = encrypter;
     }
 
     public Map<String, OIDCClientInformation> getClients() {
@@ -302,6 +392,21 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
         return null;
 
+    }
+
+    /**
+     * Gets an OIDC attribute value.  It will add the OIDC Namespace to the provided name when seaching for values
+     */
+    protected String resolveExtAttributeValue(ExtAttributeListType extAttrs, String name) {
+        if (extAttrs == null)
+            return null;
+
+        for (ExtendedAttributeType attr : extAttrs.getExtendedAttribute()) {
+            if (attr.getName().equals(OIDC_EXT_NAMESPACE + ":" + name))
+                return attr.getValue();
+        }
+
+        return null;
     }
 
 }

@@ -49,6 +49,10 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new MetadataEndpoint(uri, this, parameters);
                 break;
 
+            case JWKService:
+                endpoint = new JWKEndpoint(uri, this, parameters);
+                break;
+
             case SSOAssertionConsumerService:
                 endpoint = new AssertionConsumerEndpoint(uri, this, parameters);
                 break;
@@ -56,13 +60,6 @@ public class OpenIDConnectComponent extends DefaultComponent {
             case SSOSingleLogoutService:
                 endpoint = new SSOSingleLogoutEndpoint(uri, this, parameters);
                 break;
-
-            case SSOSingleSignOnService:
-                endpoint = new SSOSingleSignOnEndpoint(uri, this, parameters);
-                break;
-
-
-
 
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID Connect endpoint " + remaining );

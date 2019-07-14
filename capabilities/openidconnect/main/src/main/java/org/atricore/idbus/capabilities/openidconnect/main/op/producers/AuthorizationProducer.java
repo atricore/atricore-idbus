@@ -67,7 +67,6 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-
         validateRequest(authnReq, mediator);
 
         // Create a SAML Authentication request based on configuration and received request.
@@ -141,7 +140,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         // Send all transient vars to SP
         for (String tvarName : in.getMessage().getState().getTransientVarNames()) {
             RequestAttributeType a = new RequestAttributeType();
-            a.setName(tvarName);
+            a.setName(OIDC_EXT_NAMESPACE  + ":" + tvarName);
             a.setValue(in.getMessage().getState().getTransientVariable(tvarName));
             req.getRequestAttribute().add(a);
         }

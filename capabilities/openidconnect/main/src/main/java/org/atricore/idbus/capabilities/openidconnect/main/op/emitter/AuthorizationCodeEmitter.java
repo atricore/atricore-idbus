@@ -56,7 +56,6 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
 
         String grantId = uuidGenerator.generateId();
 
-        // TODO : Proxy principals ?
         AuthorizationGrant authzGrant = new AuthorizationGrant(grantId, getSsoSessinId(context), subject,
                 System.currentTimeMillis() + tokenValiditySecs * 1000L);
 

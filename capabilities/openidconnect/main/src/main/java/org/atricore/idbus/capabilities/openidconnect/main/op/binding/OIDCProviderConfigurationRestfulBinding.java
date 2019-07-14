@@ -21,7 +21,7 @@ import java.io.ByteArrayInputStream;
 
 public class OIDCProviderConfigurationRestfulBinding extends AbstractOpenIDRestfulBinding {
 
-    private static final Log logger = LogFactory.getLog(TokenRequestRestfulBinding.class);
+    private static final Log logger = LogFactory.getLog(OIDCProviderConfigurationRestfulBinding.class);
 
     public OIDCProviderConfigurationRestfulBinding(Channel channel) {
         super(OpenIDConnectBinding.OPENID_PROVIDER_INFO_RESTFUL.getValue(), channel);

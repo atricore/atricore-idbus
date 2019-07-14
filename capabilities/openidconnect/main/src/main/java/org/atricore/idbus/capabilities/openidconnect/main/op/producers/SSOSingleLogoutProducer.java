@@ -25,11 +25,11 @@ import java.net.URI;
 import java.util.Set;
 
 /**
- *
+ * Receives an SLO Response and triggers an RP initiated SLO
  */
 public class SSOSingleLogoutProducer extends AbstractOpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(SSOSingleSignOnProducer.class);
+    private static final Log logger = LogFactory.getLog(SSOSingleLogoutProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 

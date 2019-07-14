@@ -2,10 +2,7 @@ package org.atricore.idbus.capabilities.openidconnect.main.binding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.op.binding.AuthnHttpBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.op.binding.LogoutHttpBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.op.binding.OIDCProviderConfigurationRestfulBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.op.binding.TokenRequestRestfulBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.op.binding.*;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.binding.OpenIDConnectHttpAuthzBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
@@ -75,6 +72,11 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
             case OPENID_PROVIDER_INFO_RESTFUL:
                 mb = new OIDCProviderConfigurationRestfulBinding(channel);
                 break;
+
+            case OPENID_PROVIDER_JWK_RESTFUL:
+                mb = new OIDCProviderJWKRestfulBinding(channel);
+                break;
+
 
         }
 

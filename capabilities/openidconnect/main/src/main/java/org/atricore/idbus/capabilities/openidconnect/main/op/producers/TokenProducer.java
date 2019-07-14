@@ -16,6 +16,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.JWTID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import com.nimbusds.oauth2.sdk.token.Token;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
@@ -23,7 +24,6 @@ import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.Util;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
@@ -113,30 +113,29 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // ----------------------------------------------
         if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
 
-            ctx = emitAccessTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, ctx);
-            at = ctx.getAccessToken();
-            rt = ctx.getRefreshToken();
+            at = (AccessToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
+            rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
             idToken = ctx.getIDToken();
 
 
         } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
                 grant.getType().equals(JWT_BEARER_PWD)) {
 
-
-            ctx = emitTokensForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, ctx);
-            at = ctx.getAccessToken();
-            rt = ctx.getRefreshToken();
+            at = (AccessToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
+            rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
             idToken = ctx.getIDToken();
-
 
         } else {
             logger.warn("Unsupported grant_type : " + grant.getType().getValue());
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
         }
 
-
         OIDCTokens tokens  = new OIDCTokens(idToken, at, rt);
         TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
+
+        ctx.setAccessToken(at);
+        ctx.setRefreshToken(rt);
+        ctx.setIDToken(idToken);
 
         // Send response back (this is a back-channel request)
 
@@ -152,9 +151,13 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     }
 
-    protected OpenIDConnectSecurityTokenEmissionContext emitTokensWithBasicAuthn(
+    /**
+     * Emits an access or refresh token
+     */
+    protected Token emitTokenWithBasicAuthn(
             ClientInformation clientInfo,
             OpenIDConnectSecurityTokenEmissionContext ctx,
+            String tokenType,
             String username,
             String password) throws Exception {
 
@@ -164,16 +167,16 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Emit a new security token
         // -------------------------------------------------------
 
-        // TODO : Improve communication mechanism between STS and IDP!
-        // Queue this contenxt and send the artifact as RST context information
+        // Queue this context and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(ctx);
-
         SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
+
+        // Access Token
         // Send artifact id as RST context information, similar to relay state.
-        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, username, password, emitterCtxArtifact.getContent());
+        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, username, password, tokenType, emitterCtxArtifact.getContent());
 
         if (logger.isDebugEnabled())
-            logger.debug("Requesting OAuth 2 Access Token (RST) w/context " + rst.getContext());
+            logger.debug("Requesting OIDC Access Token (RST) w/context " + rst.getContext());
 
         // Send request to STS
         try {
@@ -182,19 +185,14 @@ public class TokenProducer extends AbstractOpenIDProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
 
-            // Recover emission context, to retrieve Subject information
-            ctx = (OpenIDConnectSecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
-
             // Obtain access token from STS Response
-            JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
-            AccessToken accessToken = (AccessToken) token.getValue().getAny();
+            JAXBElement<RequestedSecurityTokenType> jaxbElementToken = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
+            Token token = (Token) jaxbElementToken .getValue().getAny();
             if (logger.isDebugEnabled())
-                logger.debug("Generated OAuth Access Token [" + accessToken.getValue() + "]");
+                logger.debug("Generated Token [" + token.getValue() + "]");
 
-            ctx.setAccessToken(accessToken);
+            return token;
 
-            // Return context with Assertion and Subject
-            return ctx;
         } catch (SecurityTokenAuthenticationFailure e) {
             logger.error(e.getMessage());
             throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED, "authn_failure");
@@ -204,11 +202,13 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
 
     /**
-     * For now this only works for JWT Bearer PWD gratn (josso extension)
+     * For now this only works for JWT Bearer PWD grant (IdBus extension)
+     *
+     * JWT MUST be signed and encrypted.
      */
-    protected OpenIDConnectSecurityTokenEmissionContext emitTokensForJWTBearer(MediationState state, ClientInformation clientInfo,
-                                                                               JWTBearerGrant grant,
-                                                                               OpenIDConnectSecurityTokenEmissionContext ctx)
+    protected Token emitTokenForJWTBearer(MediationState state, ClientInformation clientInfo, JWTBearerGrant grant,
+                                          String tokenType,
+                                          OpenIDConnectSecurityTokenEmissionContext ctx)
             throws Exception {
 
         try {
@@ -230,6 +230,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             JWTClaimsSet claims = null;
             if (md.getRequestObjectJWEEnc() != null) {
+
+                // Decrypt JWT Token
                 EncryptedJWT encryptedAssertion = (EncryptedJWT) assertion;
                 JWEDecrypter decrypter = getDecrypter(mediator, clientInfo);
                 if (decrypter == null)
@@ -240,15 +242,14 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 Payload payload = encryptedAssertion.getPayload();
                 SignedJWT signedAssertion = payload.toSignedJWT();
 
-                // TODO : Verify signature !
+                // Verify signature
                 JWSVerifier verifier = getVerifier(mediator, clientInfo);
-
                 signedAssertion.verify(verifier);
 
-                // Todo Verify signature of nested JWT ?!
+                // TODO : Verify signature of nested JWT ?
                 claims = signedAssertion.getJWTClaimsSet();
             } else {
-                // TODO :
+                // TODO : Better error handling
                 logger.error("No claims received/processed ...");
             }
 
@@ -275,14 +276,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "nbt: error");
 
             // Actually emit the tokens
-            emitTokensWithBasicAuthn(clientInfo, ctx, username, password);
+            return emitTokenWithBasicAuthn(clientInfo, ctx, tokenType, username, password);
 
-            if (ctx.getAccessToken() == null) {
-                logger.error("No AccessToken found for " + grant.getType().getValue());
-                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
-            }
-
-            return ctx;
         } catch (OpenIDConnectProviderException e) {
             throw e;
         } catch (java.text.ParseException e) {
@@ -300,10 +295,11 @@ public class TokenProducer extends AbstractOpenIDProducer {
         }
     }
 
-    protected OpenIDConnectSecurityTokenEmissionContext emitAccessTokenFromAuthzCode(MediationState state,
-                                                                                     ClientInformation clientInfo,
-                                                                                     AuthorizationCodeGrant authzGrant,
-                                                                                     OpenIDConnectSecurityTokenEmissionContext ctx)
+    protected Token emitTokenFromAuthzCode(MediationState state,
+                                           ClientInformation clientInfo,
+                                           AuthorizationCodeGrant authzGrant,
+                                           String tokenType,
+                                           OpenIDConnectSecurityTokenEmissionContext ctx)
             throws Exception {
 
         MessageQueueManager aqm = getArtifactQueueManager();
@@ -317,7 +313,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
         SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
         // Send artifact id as RST context information, similar to relay state.
-        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, authzGrant, emitterCtxArtifact.getContent());
+        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, authzGrant, tokenType, emitterCtxArtifact.getContent());
 
         if (logger.isDebugEnabled())
             logger.debug("Requesting OpenID Connect 2 Access Token (RST) w/context " + rst.getContext());
@@ -333,15 +329,12 @@ public class TokenProducer extends AbstractOpenIDProducer {
             ctx = (OpenIDConnectSecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
 
             // Obtain access token from STS Response
-            JAXBElement<RequestedSecurityTokenType> token = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
-            AccessToken accessToken = (AccessToken) token.getValue().getAny();
+            JAXBElement<RequestedSecurityTokenType> jaxbElementToken = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
+            Token token = (Token) jaxbElementToken.getValue().getAny();
             if (logger.isDebugEnabled())
-                logger.debug("Generated OAuth Access Token [" + accessToken.getValue() + "]");
+                logger.debug("Generated OIDC Access Token [" + token.getValue() + "]");
 
-            ctx.setAccessToken(accessToken);
-
-            // Return context with Assertion and Subject
-            return ctx;
+            return token;
 
         } catch (SecurityTokenAuthenticationFailure e) {
             logger.error(e.getMessage());
@@ -353,13 +346,14 @@ public class TokenProducer extends AbstractOpenIDProducer {
     protected RequestSecurityTokenType buildRequestSecurityToken(ClientInformation client,
                                                                String username,
                                                                String password,
+                                                               String tokenType,
                                                                String context) throws OpenIDConnectException {
         logger.debug("generating RequestSecurityToken...");
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
 
         RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
 
-        rstRequest.getAny().add(of.createTokenType(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE));
+        rstRequest.getAny().add(of.createTokenType(tokenType));
         rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
 
         org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
@@ -384,6 +378,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     protected RequestSecurityTokenType buildRequestSecurityToken(ClientInformation client,
                                                                  AuthorizationCodeGrant authzGrant,
+                                                                 String tokenType,
                                                                  String context) throws OpenIDConnectException {
 
 
@@ -393,7 +388,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
 
-            rstRequest.getAny().add(of.createTokenType(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE));
+            rstRequest.getAny().add(of.createTokenType(tokenType));
             rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
 
             org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
@@ -531,8 +526,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue());
                 }
 
-
-
             } else if (clientAuthn instanceof ClientSecretPost) {
                 ClientSecretPost clientPostAuthn = (ClientSecretPost) clientAuthn;
                 secret = clientPostAuthn.getClientSecret();
@@ -562,7 +555,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 clientId = clientJWTAuthn.getClientID();
 
                 // Verify signature w/secret
-                JWSVerifier verifier = new MACVerifier(KeyUtils.getKey(clientInfo).getEncoded());
+                JWSVerifier verifier = new MACVerifier(KeyUtils.extendOrTruncateKey(clientInfo).getEncoded());
                 SignedJWT assertion = clientJWTAuthn.getClientAssertion();
                 if (!assertion.verify(verifier)) {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue() + " : invalid_signature");
@@ -725,7 +718,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             isEncryptionAlgorithmSupported(DirectDecrypter.SUPPORTED_ALGORITHMS, md.getRequestObjectJWEAlg())) {
                 if (logger.isDebugEnabled())
                     logger.debug("Using Direct Decrypter, Shared Secret");
-                return new DirectDecrypter(KeyUtils.getKey(clientInfo));
+                return new DirectDecrypter(KeyUtils.extendOrTruncateKey(clientInfo));
         }
 
         if (isEncryptionMethodSupported(RSADecrypter.SUPPORTED_ENCRYPTION_METHODS, md.getRequestObjectJWEEnc()) &&
@@ -740,7 +733,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 isEncryptionAlgorithmSupported(AESDecrypter.SUPPORTED_ALGORITHMS, md.getRequestObjectJWEAlg())) {
             if (logger.isDebugEnabled())
                 logger.debug("Using AES Decrypter, Shared Secret");
-            return new AESDecrypter(KeyUtils.getKey(clientInfo));
+            return new AESDecrypter(KeyUtils.extendOrTruncateKey(clientInfo));
         }
 
         logger.warn("No JWE Decrypter created for " + md.getRequestObjectJWEEnc().getName() + "/" + md.getRequestObjectJWEAlg().getName());
@@ -754,7 +747,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         if (isSigngingAlgorithmSupported(MACVerifier.SUPPORTED_ALGORITHMS, md.getRequestObjectJWSAlg())) {
             if (logger.isDebugEnabled())
                 logger.debug("Using MAC Verifier, Shared Secret");
-            return new MACVerifier(KeyUtils.getKey(clientInfo).getEncoded());
+            return new MACVerifier(KeyUtils.extendOrTruncateKey(clientInfo).getEncoded());
         }
 
         if (isSigngingAlgorithmSupported(RSASSAVerifier.SUPPORTED_ALGORITHMS, md.getRequestObjectJWSAlg())) {

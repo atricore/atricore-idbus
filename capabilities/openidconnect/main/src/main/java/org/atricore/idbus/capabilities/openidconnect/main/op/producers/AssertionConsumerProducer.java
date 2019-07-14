@@ -10,6 +10,7 @@ import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
+import com.nimbusds.openid.connect.sdk.OIDCScopeValue;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
@@ -153,7 +154,6 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
                                                                  OpenIDConnectAuthnContext authnCtx,
                                                                  AuthenticationRequest authnRequest) throws OpenIDConnectException, IdentityMediationException, URISyntaxException {
 
-        // TODO : ERROR handling
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         MediationState state = in.getMessage().getState();
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
@@ -169,8 +169,12 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
             OpenIDConnectTokenType tokenType = OpenIDConnectTokenType.asEnum(responseTypeValue.getValue());
 
+            if (logger.isDebugEnabled())
+                logger.debug("ResponseType " + tokenType + " requested.");
+
             // We provide the requested tokens, this is normally either 'code'  or 'id_token token'
             if (tokenType.equals(OpenIDConnectTokenType.AUTHZ_CODE)) {
+
                 // Look for the subject attribute that matches the token type we need to issue, if any!
                 code = new AuthorizationCode(resolveToken(response, tokenType.getFQTN()));
 
@@ -178,7 +182,8 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY , code.getValue());
 
             } else if (tokenType.equals(OpenIDConnectTokenType.ACCESS_TOKEN)) {
-                accessToken = new BearerAccessToken(resolveToken(response, tokenType.getFQTN()));
+                // TODO : This is also defined in the Acces Token Emitter, we can hard-code or let the user define this in the console instead.
+                accessToken = new BearerAccessToken(resolveToken(response, tokenType.getFQTN()), 300l, new Scope(OIDCScopeValue.OPENID));
 
             } else if (tokenType.equals(OpenIDConnectTokenType.ID_TOKEN)) {
 
@@ -188,8 +193,10 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
                     logger.error(e.getMessage());
                     throw new OpenIDConnectException(e);
                 }
+
             } else  {
                 /// What token is this ?!
+                logger.warn("Unknown token type " + tokenType);
 
             }
 

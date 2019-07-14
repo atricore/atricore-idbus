@@ -29,6 +29,8 @@ public interface OpenIDConnectConstants {
 
     QName MetadataService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "MetadataService");
 
+    QName JWKService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "JWK");
+
     QName SSOAssertionConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "AssertionConsumerService");
 
     QName SSOSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "SSOSingleSignOnService");
@@ -54,6 +56,7 @@ public interface OpenIDConnectConstants {
 
     QName SPSSODescriptor_QNAME = new QName("urn:openidconnect:1.0", "RelayingPartyDesriptor");
 
+    String OIDC_EXT_NAMESPACE = "urn:org:atricore:idbus:openidconnect:ext";
 
     String SEC_CTX_AUTHZ_CODE_KEY = "authorization_code";
 

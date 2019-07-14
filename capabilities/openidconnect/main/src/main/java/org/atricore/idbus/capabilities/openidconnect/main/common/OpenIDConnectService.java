@@ -27,6 +27,8 @@ public enum OpenIDConnectService {
 
     MetadataService(OpenIDConnectConstants.MetadataService_QNAME),
 
+    JWKService(OpenIDConnectConstants.JWKService_QNAME),
+
     // Relaying Party Services
     AuthorizationConsumerService(OpenIDConnectConstants.AuthorizationConsumerService_QNAME),
 
