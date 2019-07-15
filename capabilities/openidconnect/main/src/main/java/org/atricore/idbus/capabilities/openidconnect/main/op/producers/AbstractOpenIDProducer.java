@@ -104,14 +104,13 @@ public abstract class AbstractOpenIDProducer extends AbstractCamelProducer<Camel
      *
      * We take the default channel for that sevice.
      */
-    protected SPChannel lookupOIDCSPChannel(ServiceProvider spProxy, String idpAlias) {
+    protected SPChannel lookupOIDCSPChannel(ServiceProvider spProxy) {
         SPChannel spChannel = null;
         IdentityProvider idp = null;
 
         // Get all trusted providers by this SP
         for (FederatedProvider prov : spProxy.getChannel().getTrustedProviders()) {
 
-            //
             if (prov instanceof IdentityProvider) {
 
                 idp = (IdentityProvider) prov;
@@ -139,7 +138,7 @@ public abstract class AbstractOpenIDProducer extends AbstractCamelProducer<Camel
         }
 
         if (spChannel == null) {
-            logger.error("No SP channel found for alias " + idpAlias);
+            logger.error("No SP channel found ! Make sure to enable OpenID Connect in your IdP!");
         }
 
         return spChannel;
@@ -193,7 +192,7 @@ public abstract class AbstractOpenIDProducer extends AbstractCamelProducer<Camel
         }
 
         // Now, we need to identify the selected IDP
-        SPChannel spChannel = lookupOIDCSPChannel(spProxy, authnCtx.getIdpAlias());
+        SPChannel spChannel = lookupOIDCSPChannel(spProxy);
         if (spChannel == null)
             return null;
 

@@ -76,10 +76,6 @@ public class AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
                 st.setSerializedContent(at.getValue());
 
-                // Store the Token if the context supports it.
-                if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext)
-                    ((OpenIDConnectSecurityTokenEmissionContext)rstCtx).setAccessToken(at);
-
                 return st;
 
             } catch (Exception e) {

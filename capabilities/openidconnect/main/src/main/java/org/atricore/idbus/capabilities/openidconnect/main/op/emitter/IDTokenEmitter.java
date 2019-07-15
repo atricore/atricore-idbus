@@ -18,7 +18,9 @@ import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.jose.SecretKeyDerivation;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.Nonce;
+import com.nimbusds.openid.connect.sdk.claims.AccessTokenHash;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
@@ -142,7 +144,9 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
             }
 
-            IDTokenClaimsSet claimsSet = buildClaimSet(subject, null, extAttrs, opMetadata, client);
+
+
+            IDTokenClaimsSet claimsSet = buildClaimSet(context, subject, null, extAttrs, opMetadata, client);
             if (claimsSet == null) {
                 logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
                 return null;
@@ -241,8 +245,11 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
             st.setSerializedContent(idTokenStr);
 
             // Store the Token if the context supports it.
-            if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext)
-                ((OpenIDConnectSecurityTokenEmissionContext)rstCtx).setIDToken(idTokenStr);
+            if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
+                OpenIDConnectSecurityTokenEmissionContext oidcCtx = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
+                oidcCtx.setIDToken(idTokenStr);
+                oidcCtx.setSubject(subject);
+            }
 
             return st;
 
@@ -262,11 +269,11 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
         return null;
     }
 
-    protected IDTokenClaimsSet buildClaimSet(Subject subject,
+    protected IDTokenClaimsSet buildClaimSet(SecurityTokenProcessingContext context, Subject subject,
                                              List<AbstractPrincipalType> proxyPrincipals,
                                              ExtAttributeListType extAttributes,
                                              OIDCProviderMetadata provider,
-                                             OIDCClientInformation client) {
+                                             OIDCClientInformation client) throws ParseException {
 
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
         if (ssoUsers == null || ssoUsers.size() < 1) {
@@ -301,6 +308,27 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
             String nonce = resolveExtAttributeValue(extAttributes, "nonce");
             if (nonce != null) {
                 claimsSet.setNonce(new Nonce(nonce));
+            }
+        }
+
+        for (SecurityToken st : context.getEmittedTokens()) {
+
+            if (st.getNameIdentifier().equals(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE)) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Computing at_hash");
+                AccessToken at = (AccessToken) st.getContent();
+
+                if (at == null) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Computing with Serialized content");
+
+                    at = AccessToken.parse(st.getSerializedContent());
+                }
+
+                JWSAlgorithm jwsAlgorithm = client.getOIDCMetadata().getIDTokenJWSAlg();
+                claimsSet.setAccessTokenHash(AccessTokenHash.compute(at, jwsAlgorithm));
             }
         }
 
