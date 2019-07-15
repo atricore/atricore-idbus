@@ -67,6 +67,11 @@ public class RefreshTokenEmitter extends AbstractSecurityTokenEmitter {
                 }
 
                 st.setSerializedContent(rt.getValue());
+
+                // Store the Token if the context supports it.
+                if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext)
+                    ((OpenIDConnectSecurityTokenEmissionContext)rstCtx).setRefreshToken(rt);
+
                 return st;
 
             } catch (Exception e) {

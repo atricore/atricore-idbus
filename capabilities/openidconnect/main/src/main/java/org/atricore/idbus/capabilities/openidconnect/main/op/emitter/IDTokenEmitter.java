@@ -1,16 +1,28 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.emitter;
 
 import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.AESEncrypter;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyType;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jwt.EncryptedJWT;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.ParseException;
+import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.oauth2.sdk.jose.SecretKeyDerivation;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
+import org.bouncycastle.jce.provider.*;
 import oasis.names.tc.saml._2_0.idbus.ExtAttributeListType;
 import oasis.names.tc.saml._2_0.idbus.ExtendedAttributeType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
@@ -35,10 +47,9 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import javax.crypto.SecretKey;
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.*;
 
 import static org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants.OIDC_EXT_NAMESPACE;
@@ -105,12 +116,12 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
             Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
 
             OIDCClientInformation client = resolveClientInformation(clientId);
-            OIDCProviderMetadata provider = resolveProviderInformation(clientId);
+            OIDCProviderMetadata opMetadata = resolveProviderInformation(clientId);
             if (client == null) {
                 throw new SecurityTokenEmissionException("Cannot find OIDC Client " + clientId);
             }
 
-            if (provider == null) {
+            if (opMetadata == null) {
                 throw new SecurityTokenEmissionException("Cannot find OIDC Provider " + clientId);
             }
 
@@ -131,7 +142,7 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
             }
 
-            IDTokenClaimsSet claimsSet = buildClaimSet(subject, null, extAttrs, provider, client);
+            IDTokenClaimsSet claimsSet = buildClaimSet(subject, null, extAttrs, opMetadata, client);
             if (claimsSet == null) {
                 logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
                 return null;
@@ -139,50 +150,90 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
             // Get JWE/JWS options/algorithms from client MD or OP Default settings
             JWSAlgorithm jwsAlgorithm = client.getOIDCMetadata().getIDTokenJWSAlg();
+
             JWEAlgorithm jweAlgorithm = client.getOIDCMetadata().getIDTokenJWEAlg();
+            EncryptionMethod encMethod = client.getOIDCMetadata().getIDTokenJWEEnc();
 
-            SignedJWT signedJWT = null;
-            // Signature
-            if (jwsAlgorithm != null) {
+            JWT idTokenJWT = null;
+
+            // Encryption takes precedence over signature
+            if (jweAlgorithm != null && encMethod != null) {
+
+                try {
+                    EncryptedJWT encryptedJWT = new EncryptedJWT(new JWEHeader(jweAlgorithm, encMethod), claimsSet.toJWTClaimsSet());
+                    JWEEncrypter jwtEncrypter = null;
+
+                    if (JWEAlgorithm.Family.RSA.contains(jweAlgorithm)) {
+
+                        // We encrypt with the client's public key
+                        // TODO : get RSA Public key from certificate provided in the console!
+                        /*
+                        JWK publicKey = resolveClientEncryptionKey(client, KeyUse.ENCRYPTION, KeyType.forAlgorithm(jweAlgorithm));
+                        RSAPublicKey rsaPublicKey = null;
+                        RSAEncrypter jwtEncrypter = new RSAEncrypter(rsaPublicKey);
+                        jwtEncrypter .getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+                        encryptedJWT.encrypt(jwtEncrypter);
+
+                         */
+
+                        throw new SecurityTokenEmissionException("Unsupported Encryption Algorithm " + jweAlgorithm.getName());
+
+                    } else if (JWEAlgorithm.Family.AES_GCM_KW.contains(jweAlgorithm) ||
+                            JWEAlgorithm.Family.AES_KW.contains(jweAlgorithm)) {
+
+                        SecretKey key = SecretKeyDerivation.deriveSecretKey(client.getSecret(), jweAlgorithm, encMethod);
+                        jwtEncrypter = new AESEncrypter(key);
+
+                    } else {
+                        // TODO : Support other algorithms
+                        throw new SecurityTokenEmissionException("Unsupported Encryption Algorithm " + jweAlgorithm.getName());
+                    }
+
+                    jwtEncrypter .getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+                    encryptedJWT.encrypt(jwtEncrypter);
+                    idTokenJWT = encryptedJWT;
+
+                } catch (JOSEException e) {
+                    throw new SecurityTokenEmissionException("Unsupported JWE Algorithm/Method " + jweAlgorithm.getName() + "/" + encMethod.getName() + ". " + e.getMessage(), e);
+                }
+
+            } else if (jwsAlgorithm != null) {
+
+                SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet.toJWTClaimsSet());
+                JWSSigner jwtSigner = null;
+
                 if (JWSAlgorithm.Family.HMAC_SHA.contains(jwsAlgorithm)) {
-
                     SecretKey secretKey = KeyUtils.extendOrTruncateKey(client);
-                    signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet.toJWTClaimsSet());
-
-                    // Apply the HMAC
-                    JWSSigner signer = new MACSigner(secretKey.getEncoded());
-                    signedJWT.sign(signer);
+                    jwtSigner = new MACSigner(secretKey.getEncoded());
 
                 } else if (JWSAlgorithm.Family.EC.contains(jwsAlgorithm)) {
                     // TODO : Do we need an EC key pair ?
                     throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+
                 } else if (JWSAlgorithm.Family.ED.contains(jwsAlgorithm)) {
                     // TODO : Do we need an ED key pair ?
                     throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
 
                 } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {
-
+                    // We sign with our private key
                     // We have an RSA key pair as part of the IDP
                     PrivateKey privateKey = (PrivateKey) this.signer.getPrivateKey();
-                    signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet.toJWTClaimsSet());
-                    JWSSigner signer = new RSASSASigner(privateKey);
-                    signedJWT.sign(signer);
+                    jwtSigner = new RSASSASigner(privateKey);
 
                 } else {
                     throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
                 }
+
+                signedJWT.sign(jwtSigner);
+                idTokenJWT = signedJWT;
             }
 
-            // Encryption
-            if (jweAlgorithm != null) {
-                // TODO :
-                throw new SecurityTokenEmissionException("Unsupported JWE Algorithm " + jweAlgorithm.getName());
-
-                // TODO for symetrical algorithms : SecretKeyDerivation.deriveSecretKey()
+            if (idTokenJWT == null) {
+                throw new SecurityTokenEmissionException("Either encryption or signature MUST be enabled");
             }
 
-            // TODO : JWS MUST be present ?!
-            String idTokenStr = signedJWT.serialize();
+            // Serialize JWT
+            String idTokenStr = idTokenJWT.serialize();
             SecurityTokenImpl st = new SecurityTokenImpl<String>(uuidGenerator.generateId(),
                     WSTConstants.WST_OIDC_ID_TOKEN_TYPE,
                     idTokenStr);
@@ -404,6 +455,17 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
         for (ExtendedAttributeType attr : extAttrs.getExtendedAttribute()) {
             if (attr.getName().equals(OIDC_EXT_NAMESPACE + ":" + name))
                 return attr.getValue();
+        }
+
+        return null;
+    }
+
+    protected JWK resolveClientEncryptionKey(ClientInformation client, KeyUse keyUse, KeyType keyType) {
+        JWKSet keys = client.getMetadata().getJWKSet();
+
+        for (JWK key : keys.getKeys()) {
+            if (key.getKeyUse().equals(keyUse) && key.getKeyType().equals(keyType))
+                return key;
         }
 
         return null;

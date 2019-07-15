@@ -207,6 +207,7 @@
         <commons-pool.version>1.5.4</commons-pool.version>
         <commons-vfs.version>1.0_1</commons-vfs.version>
         <bcprov.version>1.52</bcprov.version>
+        <bcpkix.version>1.52</bcpkix.version>
         <bcrypt.version>0.8.0</bcrypt.version>
         <cxf.version>2.2.2</cxf.version>
         <dom4j.version>1.6.1_3</dom4j.version>
@@ -2596,7 +2597,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
-            <version>1.52</version>
+            <version>${bcpkix.version}</version>
         </dependency>
 
         <dependency>

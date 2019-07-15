@@ -85,6 +85,7 @@
 
         <xercesImpl.version>2.9.1</xercesImpl.version>
         <karaf.version>2.2.3</karaf.version>
+        <bcprov.version>1.52</bcprov.version>
 
         <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
     </properties>
