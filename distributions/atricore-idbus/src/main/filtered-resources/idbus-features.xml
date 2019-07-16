@@ -174,7 +174,7 @@
 
         <bundle>mvn:joda-time/joda-time/2.9</bundle>
         <bundle>mvn:com.nimbusds/lang-tag/1.4.4</bundle>
-        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v7_3/${idbus.bundle.nimbus-jose-jwt-v7_3.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v7_4/${idbus.bundle.nimbus-jose-jwt-v7_4.version}</bundle>
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v6_13/${idbus.bundle.oauth2-oidc-sdk-v6_13.version}</bundle>
 
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.common/${idbus.cap.oauth2.version}</bundle>
