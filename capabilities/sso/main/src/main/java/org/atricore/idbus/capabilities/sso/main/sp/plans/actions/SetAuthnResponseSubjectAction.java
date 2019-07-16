@@ -30,7 +30,7 @@ public class SetAuthnResponseSubjectAction extends AbstractSSOAction {
             SubjectType subject = ProtocolUtils.toSubjectType(spSecurityContext.getSubject());
             ssoResponse.setSubject(subject);
             ssoResponse.setSessionIndex(spSecurityContext.getSessionIndex());
-
+            ssoResponse.setIdpAlias(spSecurityContext.getIdpAlias());
         }
 
     }

@@ -53,7 +53,7 @@ public class OpenIDConnectOPBindingFactory extends MediationBindingFactory imple
                 mb = new AuthnHttpBinding(channel);
                 break;
             case OPENID_PROVIDER_TOKEN_RESTFUL:
-                mb = new TokenRestfulBinding(channel);
+                mb = new TokenRequestRestfulBinding(channel);
                 break;
             default:
         }

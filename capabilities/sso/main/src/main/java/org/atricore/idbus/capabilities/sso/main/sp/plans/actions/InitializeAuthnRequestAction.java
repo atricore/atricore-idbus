@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.capabilities.sso.main.sp.plans.actions;
 
+import oasis.names.tc.saml._2_0.idbus.ExtAttributeListType;
+import oasis.names.tc.saml._2_0.idbus.ExtendedAttributeType;
 import oasis.names.tc.saml._2_0.idbus.SPEntryType;
 import oasis.names.tc.saml._2_0.idbus.SPListType;
 import oasis.names.tc.saml._2_0.metadata.EndpointType;
@@ -40,6 +42,7 @@ import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
+import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatRequestType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
@@ -127,12 +130,15 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
             // JOSSO SAML Extension (only if IDP Channel supports it)
             if (idpChannel instanceof IdPChannel) {
-                IdPChannel extIdPChannel = (IdPChannel) idpChannel;
 
+                IdPChannel extIdPChannel = (IdPChannel) idpChannel;
                 if (extIdPChannel.isProxyModeEnabled() && extIdPChannel.isEnableProxyExtension()) {
                     // We're acting as a proxy,
-
-                    //logger.warn("IDP capabilities detection improvement required");
+                    ExtensionsType ext = authn.getExtensions();
+                    if (ext == null) {
+                        ext = new ExtensionsType();
+                        authn.setExtensions(ext);
+                    }
 
                     SPEntryType spEntry = new SPEntryType();
                     spEntry.setName(ssoAuthnReq.getIssuer());
@@ -144,13 +150,20 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
                     JAXBElement<SPListType> jaxbSPList = new JAXBElement<SPListType>(new QName(SAMLR2Constants.SAML_IDBUS_NS, "SPList"), SPListType.class, spList);
 
-                    ExtensionsType ext = authn.getExtensions();
-                    if (ext == null) {
-                        ext = new ExtensionsType();
-                        authn.setExtensions(ext);
-                    }
-
                     ext.getAny().add(jaxbSPList);
+
+                    // Other attributes
+                    if (ssoAuthnReq.getRequestAttribute() != null) {
+                        ExtAttributeListType extAttrList = new ExtAttributeListType();
+                        for (RequestAttributeType attr : ssoAuthnReq.getRequestAttribute()) {
+                            ExtendedAttributeType extAttr = new ExtendedAttributeType();
+                            extAttr.setName(attr.getName());
+                            extAttr.setValue(attr.getValue());
+                            extAttrList.getExtendedAttribute().add(extAttr);
+                        }
+                        JAXBElement<ExtAttributeListType> jaxbExtAttributesList = new JAXBElement<ExtAttributeListType>(new QName(SAMLR2Constants.SAML_IDBUS_NS, "ExtAttributeList"), ExtAttributeListType.class, extAttrList);
+                        ext.getAny().add(jaxbExtAttributesList);
+                    }
                 }
             }
 
@@ -159,8 +172,6 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
             passive = true;
             logger.debug("Generating PASSIVE Authn Request (SPSessionHeartBeat received)");
         }
-
-
 
         // saml:Subject [optional]
         // TODO : If credentials are present, Send SAML Subject, as stated in Saml 2 profiles : 4.1.4.1 <AuthnRequest> Usage

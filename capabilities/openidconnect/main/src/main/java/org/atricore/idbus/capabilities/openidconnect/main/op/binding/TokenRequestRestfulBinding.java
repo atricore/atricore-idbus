@@ -23,17 +23,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
  */
-public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
+public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
 
-    private static final Log logger = LogFactory.getLog(TokenRestfulBinding.class);
+    private static final Log logger = LogFactory.getLog(TokenRequestRestfulBinding.class);
 
-    public TokenRestfulBinding(Channel channel) {
+    public TokenRequestRestfulBinding(Channel channel) {
         super(OpenIDConnectBinding.OPENID_PROVIDER_TOKEN_RESTFUL.getValue(), channel);
     }
 
@@ -90,9 +92,12 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
 
             // Authorization Grant
             // Create map with all transient vars (includes http params).
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, List<String>> params = new HashMap<String, List<String>>();
             for (String var : state.getTransientVarNames()) {
-                params.put(var, state.getTransientVariable(var));
+
+                List<String> values = new ArrayList<String>();
+                values.add(state.getTransientVariable(var));
+                params.put(var, values);
             }
             AuthorizationGrant authzGrant = AuthorizationGrant.parse(params);
 
@@ -270,7 +275,11 @@ public class TokenRestfulBinding extends AbstractOpenIDRestfulBinding {
                 state = new MediationStateImpl(lState);
             }
 
-            return state;
+            // Parameters as transient variables
+            MediationStateImpl mutableState = (MediationStateImpl) state;
+            mutableState.setTransientVars(params);
+
+            return mutableState;
         } catch (IOException e) {
             logger.error("Error creating state, providing new instance");
             return createMediationState(exchange, params);

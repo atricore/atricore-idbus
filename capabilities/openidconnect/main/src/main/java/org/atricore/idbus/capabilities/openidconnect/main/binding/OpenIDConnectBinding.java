@@ -18,6 +18,8 @@ public enum OpenIDConnectBinding {
     OPENID_PROVIDER_LOGOUT_HTTP("urn:net:openidconnect:1.0:op:bindings:logout:http", true),
     OPENID_PROVIDER_TOKEN_HTTP("urn:net:openidconnect:1.0:op:bindings:token:http", false),
     OPENID_PROVIDER_TOKEN_RESTFUL("urn:net:openidconnect:1.0:op:bindings:token:restful", false),
+    OPENID_PROVIDER_INFO_RESTFUL("urn:net:openidconnect:1.0:op:bindings:provider-info:restful", false),
+    OPENID_PROVIDER_JWK_RESTFUL("urn:net:openidconnect:1.0:op:bindings:jwk:restful", false),
 
     // Binding URIs for non-native openid endpoints used to communicate with other capabilities
     SSO_REDIRECT(SSOBinding.SSO_REDIRECT.getValue(), SSOBinding.SSO_REDIRECT.isFrontChannel()),

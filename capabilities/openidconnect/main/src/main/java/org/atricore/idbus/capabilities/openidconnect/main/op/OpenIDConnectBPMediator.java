@@ -1,11 +1,13 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op;
 
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -31,6 +33,16 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
     private String spAlias;
 
     private OIDCClientInformation client;
+
+    private OIDCProviderMetadata provider;
+
+    public OIDCProviderMetadata getProvider() {
+        return provider;
+    }
+
+    public void setProvider(OIDCProviderMetadata provider) {
+        this.provider = provider;
+    }
 
     public OpenIDConnectBPMediator() {
         logger.info("OpenIDConnectBPMediator Instantiated");
@@ -60,6 +72,45 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
                     EndpointDescriptor ed = resolveEndpoint(bindingChannel, endpoint);
 
                     switch (binding) {
+
+                        case OPENID_PROVIDER_TOKEN_HTTP:
+                        case OPENID_PROVIDER_TOKEN_RESTFUL:
+                        case OPENID_PROVIDER_INFO_RESTFUL:
+                        case OPENID_PROVIDER_JWK_RESTFUL:
+
+                            // FROM idbus-http TO idbus-bind (through direct component)
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+                            // FROM idbus-bind TO oidc-svc
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + bindingChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("openidc-idp:" + ed.getType() +
+                                            "?channelRef=" + bindingChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+                            if (ed.getResponseLocation() != null) {
+                                // FROM idbus-http TO idbus-bind (through direct component)
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+
+                                // FROM ibus-bind TO oauth2-svc
+                                from("idbus-bind:camel://direct:" + ed.getName() + "-response" +
+                                        "?binding=" + ed.getBinding() +
+                                        "&channelRef=" + bindingChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("openidc-idp:" + ed.getType() +
+                                                "?channelRef=" + bindingChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
+
+                            break;
 
                         // http endpoints
                         case OPENID_PROVIDER_AUTHZ_RESTFUL:
@@ -202,4 +253,5 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
     public void setClient(OIDCClientInformation client) {
         this.client = client;
     }
+
 }

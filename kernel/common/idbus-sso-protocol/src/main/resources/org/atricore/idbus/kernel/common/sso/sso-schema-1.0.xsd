@@ -289,6 +289,7 @@
                     <element name="SubjectRoles" type="ssop:SubjectRoleType" maxOccurs="unbounded"/>
                 </sequence>
 
+                <attribute name="idpAlias" type="string" />
                 <attribute name="SessionIndex" type="string" use="required"/>
                 <attribute name="Failed" type="boolean" use="required"/>
 

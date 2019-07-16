@@ -37,8 +37,20 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new TokenEndpoint(uri, this, parameters);
                 break;
 
+            case RPTokenService:
+                endpoint = new RPTokenEndpoint(uri, this, parameters);
+                break;
+
             case RPInitLogoutService:
                 endpoint = new RPInitLogoutEndpoint(uri, this, parameters);
+                break;
+
+            case MetadataService:
+                endpoint = new MetadataEndpoint(uri, this, parameters);
+                break;
+
+            case JWKService:
+                endpoint = new JWKEndpoint(uri, this, parameters);
                 break;
 
             case SSOAssertionConsumerService:
@@ -48,13 +60,6 @@ public class OpenIDConnectComponent extends DefaultComponent {
             case SSOSingleLogoutService:
                 endpoint = new SSOSingleLogoutEndpoint(uri, this, parameters);
                 break;
-
-            case SSOSingleSignOnService:
-                endpoint = new SSOSingleSignOnEndpoint(uri, this, parameters);
-                break;
-
-
-
 
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID Connect endpoint " + remaining );

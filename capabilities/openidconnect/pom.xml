@@ -85,6 +85,7 @@
 
         <xercesImpl.version>2.9.1</xercesImpl.version>
         <karaf.version>2.2.3</karaf.version>
+        <bcprov.version>1.52</bcprov.version>
 
         <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
     </properties>
@@ -210,13 +211,13 @@
 
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.nimbus-jose-jwt-v3_10</artifactId>
+                <artifactId>org.atricore.idbus.bundles.nimbus-jose-jwt-v7_3</artifactId>
                 <version>${idbus.nimbus-jose-jwt.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1</artifactId>
+                <artifactId>org.atricore.idbus.bundles.oauth2-oidc-sdk-v6_13</artifactId>
                 <version>${idbus.oauth2-oidc-sdk.version}</version>
             </dependency>
 

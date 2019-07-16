@@ -136,7 +136,7 @@ public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticati
     protected Credential[] getKnownCredentials() throws SSOAuthenticationException {
         AuthorizationCodeGrantCredential receviedCredential = (AuthorizationCodeGrantCredential) this._inputCredentials[0];
         com.nimbusds.oauth2.sdk.AuthorizationCodeGrant receivedAuthzGrant = (com.nimbusds.oauth2.sdk.AuthorizationCodeGrant) receviedCredential.getValue();
-        securityToken = tokenStore.retrieve(receivedAuthzGrant .getAuthorizationCode().getValue());
+        securityToken = tokenStore.retrieve(receivedAuthzGrant.getAuthorizationCode().getValue());
 
         if (securityToken == null) {
             logger.debug("Unknown authorization grant " + receivedAuthzGrant.toString());

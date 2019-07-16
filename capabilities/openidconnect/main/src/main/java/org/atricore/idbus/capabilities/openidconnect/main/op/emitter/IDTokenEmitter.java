@@ -1,38 +1,60 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.emitter;
 
 import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.DirectEncrypter;
+import com.nimbusds.jose.crypto.AESEncrypter;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.RSAEncrypter;
+import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyType;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jwt.EncryptedJWT;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.oauth2.sdk.jose.SecretKeyDerivation;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.openid.connect.sdk.Nonce;
+import com.nimbusds.openid.connect.sdk.claims.AccessTokenHash;
 import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
+import org.bouncycastle.jce.provider.*;
+import oasis.names.tc.saml._2_0.idbus.ExtAttributeListType;
+import oasis.names.tc.saml._2_0.idbus.ExtendedAttributeType;
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.ExtensionsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.KeyUtils;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectSecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
-import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
+import org.atricore.idbus.capabilities.sts.main.*;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.Subject;
-import java.security.MessageDigest;
+import javax.xml.bind.JAXBElement;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.*;
+
+import static org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants.OIDC_EXT_NAMESPACE;
 
 /**
  * Emit an ID Token (JWT)
@@ -41,7 +63,15 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
     private static final Log logger = LogFactory.getLog(IDTokenEmitter.class);
 
+    private SSOKeyResolver signer;
+
+    private SSOKeyResolver encrypter;
+
     private Map<String, OIDCClientInformation> clients;
+
+    private Map<String, OIDCClientInformation> clientsBySp;
+
+    private Map<String, OIDCProviderMetadata> providers;
 
     @Override
     public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
@@ -52,14 +82,18 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
     @Override
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
 
-        Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
-        if (rstCtx == null && !(rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext))
-            return false;
-
         // We can emit for OIDC context with a valid subject when Token Type is OIDC_ACCESS or OIDC_ID_TOKEN
-        return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
+        if (context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
                 (WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE.equals(tokenType) ||
-                        WSTConstants.WST_OIDC_ID_TOKEN_TYPE.equals(tokenType));
+                        WSTConstants.WST_OIDC_ID_TOKEN_TYPE.equals(tokenType)))
+            return true;
+
+        // We can emit for SAML, if we have a valid ClientID
+        if (WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType)) {
+            return resolveClientID(context, requestToken) != null;
+        }
+
+        return false;
     }
 
     @Override
@@ -67,8 +101,6 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
                               Object requestToken,
                               String tokenType) throws SecurityTokenEmissionException {
         try {
-
-
 
             // We need an authenticated subject
             Subject subject = (Subject) context.getProperty(WSTConstants.SUBJECT_PROP);
@@ -78,56 +110,149 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
             }
 
             // We need a client ID
-            String clientId = null;
-            if (requestToken instanceof UsernameTokenType ) {
-                UsernameTokenType userCredentials = (UsernameTokenType) requestToken;
-                clientId = userCredentials.getOtherAttributes().get(OpenIDConnectConstants.CLIENT_ID);
-            } else if (requestToken instanceof BinarySecurityTokenType) {
-                BinarySecurityTokenType userCredentials = (BinarySecurityTokenType) requestToken;
-                clientId = userCredentials.getOtherAttributes().get(OpenIDConnectConstants.CLIENT_ID);
-            }
+            String clientId = resolveClientID(context, requestToken);
 
             if (clientId == null)
                 throw new SecurityTokenEmissionException(OpenIDConnectConstants.CLIENT_ID + " not provided as token attribute");
 
             Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
 
-            // Only emit in the context of OIDC
-            if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
+            OIDCClientInformation client = resolveClientInformation(clientId);
+            OIDCProviderMetadata opMetadata = resolveProviderInformation(clientId);
+            if (client == null) {
+                throw new SecurityTokenEmissionException("Cannot find OIDC Client " + clientId);
+            }
 
-                OIDCClientInformation client = resolveClientInformation(clientId);
-                if (client == null) {
-                    throw new SecurityTokenEmissionException("Cannot find OIDC Client " + clientId);
+            if (opMetadata == null) {
+                throw new SecurityTokenEmissionException("Cannot find OIDC Provider " + clientId);
+            }
+
+            ExtAttributeListType extAttrs = null;
+            if (rstCtx instanceof  SamlR2SecurityTokenEmissionContext) {
+                SamlR2SecurityTokenEmissionContext saml2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+                AuthnRequestType authnReq = saml2Ctx.getAuthnState().getAuthnRequest();
+                if (authnReq != null) {
+                    ExtensionsType exts = authnReq.getExtensions();
+                    for (Object ext : exts.getAny()) {
+                        if (ext instanceof JAXBElement) {
+                            JAXBElement jaxbExt = (JAXBElement) ext;
+                            if (jaxbExt.getValue() instanceof ExtAttributeListType)
+                                extAttrs = (ExtAttributeListType) jaxbExt.getValue();
+                        }
+                    }
                 }
-
-                OpenIDConnectSecurityTokenEmissionContext ctx = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
-
-                IDTokenClaimsSet claimsSet = buildClaimSet(ctx, subject, null, client);
-                if (claimsSet == null) {
-                    logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
-                    return null;
-                }
-
-                // TODO : Get JWE/JWS options/algorithms from client MD or OP Default settings
-                SecretKey secretKey = KeyUtils.getKey(client);
-                SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet.toJWTClaimsSet());
-
-                // Apply the HMAC
-                JWSSigner signer = new MACSigner(secretKey.getEncoded());
-                signedJWT.sign(signer);
-
-                String idTokenStr = signedJWT.serialize();
-
-                SecurityTokenImpl st = new SecurityTokenImpl<String>(uuidGenerator.generateId(), idTokenStr);
-
-                OpenIDConnectSecurityTokenEmissionContext oidcCtx = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
-                oidcCtx.setIDToken(idTokenStr);
-
-                return st;
 
             }
 
-            return null;
+
+
+            IDTokenClaimsSet claimsSet = buildClaimSet(context, subject, null, extAttrs, opMetadata, client);
+            if (claimsSet == null) {
+                logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
+                return null;
+            }
+
+            // Get JWE/JWS options/algorithms from client MD or OP Default settings
+            JWSAlgorithm jwsAlgorithm = client.getOIDCMetadata().getIDTokenJWSAlg();
+
+            JWEAlgorithm jweAlgorithm = client.getOIDCMetadata().getIDTokenJWEAlg();
+            EncryptionMethod encMethod = client.getOIDCMetadata().getIDTokenJWEEnc();
+
+            JWT idTokenJWT = null;
+
+            // Encryption takes precedence over signature
+            if (jweAlgorithm != null && encMethod != null) {
+
+                try {
+                    EncryptedJWT encryptedJWT = new EncryptedJWT(new JWEHeader(jweAlgorithm, encMethod), claimsSet.toJWTClaimsSet());
+                    JWEEncrypter jwtEncrypter = null;
+
+                    if (JWEAlgorithm.Family.RSA.contains(jweAlgorithm)) {
+
+                        // We encrypt with the client's public key
+                        // TODO : get RSA Public key from certificate provided in the console!
+                        /*
+                        JWK publicKey = resolveClientEncryptionKey(client, KeyUse.ENCRYPTION, KeyType.forAlgorithm(jweAlgorithm));
+                        RSAPublicKey rsaPublicKey = null;
+                        RSAEncrypter jwtEncrypter = new RSAEncrypter(rsaPublicKey);
+                        jwtEncrypter .getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+                        encryptedJWT.encrypt(jwtEncrypter);
+
+                         */
+
+                        throw new SecurityTokenEmissionException("Unsupported Encryption Algorithm " + jweAlgorithm.getName());
+
+                    } else if (JWEAlgorithm.Family.AES_GCM_KW.contains(jweAlgorithm) ||
+                            JWEAlgorithm.Family.AES_KW.contains(jweAlgorithm)) {
+
+                        SecretKey key = SecretKeyDerivation.deriveSecretKey(client.getSecret(), jweAlgorithm, encMethod);
+                        jwtEncrypter = new AESEncrypter(key);
+
+                    } else {
+                        // TODO : Support other algorithms
+                        throw new SecurityTokenEmissionException("Unsupported Encryption Algorithm " + jweAlgorithm.getName());
+                    }
+
+                    jwtEncrypter .getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+                    encryptedJWT.encrypt(jwtEncrypter);
+                    idTokenJWT = encryptedJWT;
+
+                } catch (JOSEException e) {
+                    throw new SecurityTokenEmissionException("Unsupported JWE Algorithm/Method " + jweAlgorithm.getName() + "/" + encMethod.getName() + ". " + e.getMessage(), e);
+                }
+
+            } else if (jwsAlgorithm != null) {
+
+                SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet.toJWTClaimsSet());
+                JWSSigner jwtSigner = null;
+
+                if (JWSAlgorithm.Family.HMAC_SHA.contains(jwsAlgorithm)) {
+                    SecretKey secretKey = KeyUtils.extendOrTruncateKey(client);
+                    jwtSigner = new MACSigner(secretKey.getEncoded());
+
+                } else if (JWSAlgorithm.Family.EC.contains(jwsAlgorithm)) {
+                    // TODO : Do we need an EC key pair ?
+                    throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+
+                } else if (JWSAlgorithm.Family.ED.contains(jwsAlgorithm)) {
+                    // TODO : Do we need an ED key pair ?
+                    throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+
+                } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {
+                    // We sign with our private key
+                    // We have an RSA key pair as part of the IDP
+                    PrivateKey privateKey = (PrivateKey) this.signer.getPrivateKey();
+                    jwtSigner = new RSASSASigner(privateKey);
+
+                } else {
+                    throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+                }
+
+                signedJWT.sign(jwtSigner);
+                idTokenJWT = signedJWT;
+            }
+
+            if (idTokenJWT == null) {
+                throw new SecurityTokenEmissionException("Either encryption or signature MUST be enabled");
+            }
+
+            // Serialize JWT
+            String idTokenStr = idTokenJWT.serialize();
+            SecurityTokenImpl st = new SecurityTokenImpl<String>(uuidGenerator.generateId(),
+                    WSTConstants.WST_OIDC_ID_TOKEN_TYPE,
+                    idTokenStr);
+
+            st.setSerializedContent(idTokenStr);
+
+            // Store the Token if the context supports it.
+            if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
+                OpenIDConnectSecurityTokenEmissionContext oidcCtx = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
+                oidcCtx.setIDToken(idTokenStr);
+                oidcCtx.setSubject(subject);
+            }
+
+            return st;
+
         } catch (NoSuchAlgorithmException e) {
             throw new SecurityTokenEmissionException(e);
         } catch (ParseException e) {
@@ -144,10 +269,11 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
         return null;
     }
 
-    protected IDTokenClaimsSet buildClaimSet(OpenIDConnectSecurityTokenEmissionContext ctx,
-                                             Subject subject,
+    protected IDTokenClaimsSet buildClaimSet(SecurityTokenProcessingContext context, Subject subject,
                                              List<AbstractPrincipalType> proxyPrincipals,
-                                             OIDCClientInformation client) {
+                                             ExtAttributeListType extAttributes,
+                                             OIDCProviderMetadata provider,
+                                             OIDCClientInformation client) throws ParseException {
 
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
         if (ssoUsers == null || ssoUsers.size() < 1) {
@@ -161,7 +287,7 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
         com.nimbusds.oauth2.sdk.id.Subject sub = new com.nimbusds.oauth2.sdk.id.Subject(user.getName());
 
         // iss : issuer
-        Issuer iss = new Issuer(ctx.getIssuer());
+        Issuer iss = new Issuer(provider.getIssuer());
 
         // aud : audience
         List<Audience> aud = Arrays.asList(new Audience(client.getID().getValue()));
@@ -176,8 +302,35 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
         IDTokenClaimsSet claimsSet = new IDTokenClaimsSet(iss, sub, aud, exp, iat);
 
         // TODO : authn_time
-        //
-        // TODO : nonce Return nonce from TokenRequest/AuthnRequest
+
+        // nonce from TokenRequest/AuthnRequest
+        if (extAttributes != null) {
+            String nonce = resolveExtAttributeValue(extAttributes, "nonce");
+            if (nonce != null) {
+                claimsSet.setNonce(new Nonce(nonce));
+            }
+        }
+
+        for (SecurityToken st : context.getEmittedTokens()) {
+
+            if (st.getNameIdentifier().equals(WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE)) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Computing at_hash");
+                AccessToken at = (AccessToken) st.getContent();
+
+                if (at == null) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Computing with Serialized content");
+
+                    at = AccessToken.parse(st.getSerializedContent());
+                }
+
+                JWSAlgorithm jwsAlgorithm = client.getOIDCMetadata().getIDTokenJWSAlg();
+                claimsSet.setAccessTokenHash(AccessTokenHash.compute(at, jwsAlgorithm));
+            }
+        }
 
         // TODO : acr
 
@@ -236,6 +389,23 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
     }
 
+
+    public SSOKeyResolver getSigner() {
+        return signer;
+    }
+
+    public void setSigner(SSOKeyResolver signer) {
+        this.signer = signer;
+    }
+
+    public SSOKeyResolver getEncrypter() {
+        return encrypter;
+    }
+
+    public void setEncrypter(SSOKeyResolver encrypter) {
+        this.encrypter = encrypter;
+    }
+
     public Map<String, OIDCClientInformation> getClients() {
         return clients;
     }
@@ -246,6 +416,87 @@ public class IDTokenEmitter extends AbstractSecurityTokenEmitter {
 
     protected OIDCClientInformation resolveClientInformation(String clientId) {
         return clients.get(clientId);
+    }
+
+    protected OIDCProviderMetadata resolveProviderInformation(String clientId) {
+        return providers.get(clientId);
+    }
+
+
+    public Map<String, OIDCClientInformation> getClientsBySp() {
+        return clientsBySp;
+    }
+
+    public void setClientsBySp(Map<String, OIDCClientInformation> clientsBySp) {
+        this.clientsBySp = clientsBySp;
+    }
+
+    public Map<String, OIDCProviderMetadata> getProviders() {
+        return providers;
+    }
+
+    public void setProviders(Map<String, OIDCProviderMetadata> providers) {
+        this.providers = providers;
+    }
+
+    protected String resolveClientID(SecurityTokenProcessingContext context, Object requestToken) {
+
+        // See if we have a client ID as a token attribute.
+        String clientId = null;
+        if (requestToken instanceof UsernameTokenType ) {
+            UsernameTokenType userCredentials = (UsernameTokenType) requestToken;
+            clientId = userCredentials.getOtherAttributes().get(OpenIDConnectConstants.CLIENT_ID);
+        } else if (requestToken instanceof BinarySecurityTokenType) {
+            BinarySecurityTokenType userCredentials = (BinarySecurityTokenType) requestToken;
+            clientId = userCredentials.getOtherAttributes().get(OpenIDConnectConstants.CLIENT_ID);
+        }
+
+        if (clientId != null)
+            return clientId;
+
+        // Get clientId from SP alias
+        SecurityTokenEmissionContext ctx = (SecurityTokenEmissionContext) context.getProperty(WSTConstants.RST_CTX);
+        if (ctx instanceof SamlR2SecurityTokenEmissionContext) {
+            // We are emitting in a SAML assertion emisison context
+            SamlR2SecurityTokenEmissionContext saml2Ctx = (SamlR2SecurityTokenEmissionContext) ctx;
+
+            // This is the SAML SP, it should be an OIDC Relaying Party proxy, or we can't emit.
+            CircleOfTrustMemberDescriptor sp = saml2Ctx.getMember();
+
+            OIDCClientInformation clientInfo = clientsBySp.get(sp.getAlias());
+
+            if (clientInfo != null)
+                return clientInfo.getID().getValue();
+        }
+
+        return null;
+
+    }
+
+    /**
+     * Gets an OIDC attribute value.  It will add the OIDC Namespace to the provided name when seaching for values
+     */
+    protected String resolveExtAttributeValue(ExtAttributeListType extAttrs, String name) {
+        if (extAttrs == null)
+            return null;
+
+        for (ExtendedAttributeType attr : extAttrs.getExtendedAttribute()) {
+            if (attr.getName().equals(OIDC_EXT_NAMESPACE + ":" + name))
+                return attr.getValue();
+        }
+
+        return null;
+    }
+
+    protected JWK resolveClientEncryptionKey(ClientInformation client, KeyUse keyUse, KeyType keyType) {
+        JWKSet keys = client.getMetadata().getJWKSet();
+
+        for (JWK key : keys.getKeys()) {
+            if (key.getKeyUse().equals(keyUse) && key.getKeyType().equals(keyType))
+                return key;
+        }
+
+        return null;
     }
 
 }

@@ -5,12 +5,14 @@ import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,11 +28,11 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     // Non-serializable version
     private transient AuthenticationRequest authnRequest;
-    private Map<String, String> authnRequestAsParams;
+    private Map<String, List<String>> authnRequestAsParams;
 
     // Non-serializable version
     private transient LogoutRequest logoutRequest;
-    private Map<String, String> logoutRequestAsParams;
+    private Map<String, List<String>> logoutRequestAsParams;
 
 
     // Current emitted Authorization code
@@ -40,6 +42,7 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     // Selected IDP Alias
     private String idpAlias;
+    private Tokens tokens;
 
     public String getIdpAlias() {
         return idpAlias;
@@ -134,4 +137,11 @@ public class OpenIDConnectAuthnContext implements Serializable {
         return logoutRequest;
     }
 
+    public void setTokens(Tokens tokens) {
+        this.tokens = tokens;
+    }
+
+    public Tokens getTokens() {
+        return tokens;
+    }
 }

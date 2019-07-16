@@ -1,12 +1,17 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.*;
-import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
+import com.nimbusds.openid.connect.sdk.OIDCScopeValue;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,11 +23,16 @@ import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnC
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.Iterator;
 
 /**
@@ -58,7 +68,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             throw new OpenIDConnectException("IdP initiated not supported (or state was lost)");
         }
 
-        AuthenticationRequest  samlAuthnRequest = authnCtx.getAuthnRequest();
+        AuthenticationRequest  oidcAuthnRequest = authnCtx.getAuthnRequest();
         SPInitiatedAuthnRequestType ssoAuthnRequest = authnCtx.getSsoAuthnRequest();
         if (ssoAuthnRequest == null) {
             // TODO : Process unsolicited response
@@ -71,20 +81,32 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
 
         // Build an OpenIDConnect authentication response based on the original request
-        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, samlAuthnRequest);
+        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, oidcAuthnRequest);
 
         // Resolve response ED
-        EndpointDescriptor ed = resolveRedirectUri(samlAuthnRequest, (AuthorizationResponse) authnResponse);
+        EndpointDescriptor ed = resolveRedirectUri(oidcAuthnRequest, (AuthorizationResponse) authnResponse);
 
-        // Ad alternate state key, to be used by back-channel.
-        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY,
-                ((AuthenticationSuccessResponse) authnResponse).getAuthorizationCode().getValue());
 
-        // TODO : Store unmarshalled tokens w/expiration
+        if (authnResponse instanceof AuthenticationSuccessResponse) {
+            AuthenticationSuccessResponse sr = (AuthenticationSuccessResponse) authnResponse;
+            AuthorizationCode code = sr.getAuthorizationCode();
+
+            // Ad alternate state key, to be used by back-channel.
+            // It "code" is requested, we need an alternative key
+            if (code != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code.getValue());
+
+            // Store tokens in state
+            if (sr.getIDToken() != null && sr.getAccessToken() != null) {
+                Tokens oidcTokens = new OIDCTokens(sr.getIDToken(), sr.getAccessToken(), null);
+                authnCtx.setTokens(oidcTokens);
+            }
+        }
 
         // Clear authn context
         authnCtx.setSsoAuthnRequest(null);
         authnCtx.setAuthnRequest(null);
+        authnCtx.setIdpAlias(response.getIdpAlias());
 
         // Store authz code
         if (authnResponse instanceof AuthenticationSuccessResponse) {
@@ -130,9 +152,8 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
      */
     protected AuthenticationResponse buildAuthenticationResponse(CamelMediationExchange exchange,
                                                                  OpenIDConnectAuthnContext authnCtx,
-                                                                 AuthenticationRequest authnRequest) throws OpenIDConnectException {
+                                                                 AuthenticationRequest authnRequest) throws OpenIDConnectException, IdentityMediationException, URISyntaxException {
 
-        // TODO : ERROR handling
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         MediationState state = in.getMessage().getState();
         SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
@@ -148,23 +169,35 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
             OpenIDConnectTokenType tokenType = OpenIDConnectTokenType.asEnum(responseTypeValue.getValue());
 
-            // Look for the subject attribute that matches the token type we need to issue, if any!
-            String tokenValue = resolveToken(response, tokenType.getFQTN());
-            if (tokenValue == null)
-                throw new OpenIDConnectException("No token type ["+tokenType.getFQTN()+"] found in response " + response.getID());
+            if (logger.isDebugEnabled())
+                logger.debug("ResponseType " + tokenType + " requested.");
 
+            // We provide the requested tokens, this is normally either 'code'  or 'id_token token'
             if (tokenType.equals(OpenIDConnectTokenType.AUTHZ_CODE)) {
-                code = new AuthorizationCode(tokenValue);
+
+                // Look for the subject attribute that matches the token type we need to issue, if any!
+                code = new AuthorizationCode(resolveToken(response, tokenType.getFQTN()));
 
                 // Add alternative state key to keep state on back-channel requests
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY , code.getValue());
 
             } else if (tokenType.equals(OpenIDConnectTokenType.ACCESS_TOKEN)) {
-                accessToken = new BearerAccessToken(tokenValue);
+                // TODO : This is also defined in the Acces Token Emitter, we can hard-code or let the user define this in the console instead.
+                accessToken = new BearerAccessToken(resolveToken(response, tokenType.getFQTN()), 300l, new Scope(OIDCScopeValue.OPENID));
 
             } else if (tokenType.equals(OpenIDConnectTokenType.ID_TOKEN)) {
-                // TODO : Get JWT ID Token
-                //idToken = tokenValue;
+
+                try {
+                    idToken = JWTParser.parse(resolveToken(response, tokenType.getFQTN()));
+                } catch (ParseException e) {
+                    logger.error(e.getMessage());
+                    throw new OpenIDConnectException(e);
+                }
+
+            } else  {
+                /// What token is this ?!
+                logger.warn("Unknown token type " + tokenType);
+
             }
 
         }
@@ -222,7 +255,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
      * @param tokenType
      * @return
      */
-    protected String resolveToken(SPAuthnResponseType response, String tokenType) {
+    protected String resolveToken(SPAuthnResponseType response, String tokenType) throws OpenIDConnectException {
 
         // Get subject from response
         SubjectType subject = response.getSubject();
@@ -240,9 +273,8 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             }
         }
 
-        logger.debug("No Subject attribute found ["+tokenType+"] in Subject " );
+        throw new OpenIDConnectException("No token type ["+tokenType+"] found in response " + response.getID());
 
-        return null;
     }
 
 }

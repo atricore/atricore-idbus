@@ -1,6 +1,8 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
+import com.nimbusds.oauth2.sdk.jose.SecretKeyDerivation;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -13,19 +15,36 @@ import java.util.Arrays;
  */
 public class KeyUtils {
 
-    public static SecretKey getKey(ClientInformation clientInfo) throws NoSuchAlgorithmException {
+    /**
+     * Creats an AES Secret from client MD secret.
+     *
+     * The algorithm requires the key to be of the same length as the
+     * "block-size" of the hashing algorithm (SHA256 = 64-byte blocks).
+     *
+     * Extension is performed by appending zeros.
+     *
+     * This implementation creates a 256 bit key.
+     *
+     */
+    public static SecretKey extendOrTruncateKey(ClientInformation clientInfo) throws NoSuchAlgorithmException, JOSEException {
+        // Client private key.
+        return SecretKeyDerivation.deriveSecretKey(clientInfo.getSecret(), 256);
+    }
 
-        byte[] key = clientInfo.getSecret().getValueBytes();
-        if (key.length != 32) {
-            // We need a 32 byte length key, so  ...
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            key = sha.digest(key);
-            key = Arrays.copyOf(key, 32);
-        }
-
-        SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-
-        return secretKey;
+    /**
+     * Creats an AES Secret from client MD secret.
+     *
+     * The algorithm requires the key to be of the same length as the
+     * "block-size" of the hashing algorithm (SHA256 = 64-byte blocks).
+     *
+     * Extension is performed by appending zeros.
+     *
+     * You can provide the length in bits: 128, 192, 256, 384, 512)
+     *
+     */
+    public static SecretKey extendOrTruncateKey(ClientInformation clientInfo, int bit) throws NoSuchAlgorithmException, JOSEException {
+        // Client private key.
+        return SecretKeyDerivation.deriveSecretKey(clientInfo.getSecret(), bit);
     }
 
 }

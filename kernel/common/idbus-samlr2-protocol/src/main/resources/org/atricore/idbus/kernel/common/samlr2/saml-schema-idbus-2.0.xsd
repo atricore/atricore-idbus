@@ -73,6 +73,20 @@
         <attribute name="Loc" type="anyURI" use="optional"/>
     </complexType>
 
+    <!-- Use to add attributes to SAML messages using the SAML extension -->
+
+    <element name="ExtAttributeList" type="samli:ExtAttributeListType"/>
+    <complexType name="ExtAttributeListType">
+        <sequence>
+            <element ref="samli:ExtendedAttribute" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <element name="ExtendedAttribute" type="samli:ExtendedAttributeType"/>
+    <complexType name="ExtendedAttributeType">
+        <attribute name="Name" type="string" use="required"/>
+        <attribute name="Value" type="string" use="required"/>
+    </complexType>
+
     <element name="ErrorDetails" type="string"/>
 
 </schema>

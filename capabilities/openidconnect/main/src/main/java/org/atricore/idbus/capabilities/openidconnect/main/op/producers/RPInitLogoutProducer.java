@@ -4,6 +4,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.OAuth2Error;
 import com.nimbusds.oauth2.sdk.client.ClientInformation;
 import com.nimbusds.oauth2.sdk.client.ClientMetadata;
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.OIDCError;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
@@ -93,22 +94,25 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
         OIDCClientMetadata metadata = client.getOIDCMetadata();
 
         // TODO : ID Token HINT : We need to get the token from the OP.
+        // TODO : Get session from tokens ?!
+        Tokens tokens = authnCtx.getTokens();
+
         JWT receivedIdToken = logoutRequest.getIDTokenHint();
         String receivedIdTokenStr = receivedIdToken.getParsedString();
 
         URI postLogoutURI = logoutRequest.getPostLogoutRedirectionURI();
 
         if (postLogoutURI == null)
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
 
         // POST LOGOUT URI
         if (metadata.getPostLogoutRedirectionURIs() != null &&
                 metadata.getPostLogoutRedirectionURIs().size() > 0 &&
                 !validateURI(metadata.getPostLogoutRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI()))
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
 
          if (!validateURI(metadata.getRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI())) {
-            throw new OpenIDConnectProviderException(OIDCError.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
         }
     }
 

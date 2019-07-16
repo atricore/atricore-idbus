@@ -331,10 +331,10 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             try {
                 SignMethod sm = null;
                 try {
-                    signatureMethod = SignMethod.fromValues(digest, "RSA").getSpec();
+                    sm = SignMethod.fromValues(digest, "RSA");
                 } catch (IllegalArgumentException e) {
                     logger.warn("Defaulting to valid value! " + e.getMessage());
-                    signatureMethod = SignMethod.SHA256_WITH_RSA.getSpec();
+                    sm = SignMethod.SHA256_WITH_RSA;
                 }
                 signature = Signature.getInstance(sm.getName());
 

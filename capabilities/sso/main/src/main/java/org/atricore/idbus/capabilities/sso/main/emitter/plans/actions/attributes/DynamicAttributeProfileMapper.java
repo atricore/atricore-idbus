@@ -148,63 +148,6 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
     }
 
     @Override
-    protected Collection<AttributeType> tokenToAttributes(SecurityToken securityToken) {
-
-        // Additional tokens
-        List<AttributeType> attrTokens = new ArrayList<AttributeType>();
-
-        if (securityToken.getSerializedContent() != null &&
-                securityToken.getNameIdentifier() != null) {
-
-            // Token Value
-            {
-                // This should be properly encoded !!
-                AttributeType attrToken = new AttributeType();
-
-                if (securityToken.getNameIdentifier() != null) {
-                    if (securityToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
-                        attrToken.setFriendlyName("OAUTH2");
-                    } else {
-                        attrToken.setFriendlyName(securityToken.getNameIdentifier());
-                    }
-
-                }
-
-                // Token by name identifier
-                attrToken.setName(securityToken.getNameIdentifier());
-                attrToken.setNameFormat(AttributeNameFormat.URI.getValue());
-                attrToken.getAttributeValue().add(securityToken.getSerializedContent());
-
-                attrTokens.add(attrToken);
-            }
-
-            // Token ID
-            {
-                AttributeType attrTokenById = new AttributeType();
-
-                if (securityToken.getNameIdentifier() != null) {
-                    if (securityToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
-                        attrTokenById.setFriendlyName("OAUTH2_ID");
-                    } else {
-                        attrTokenById.setFriendlyName(securityToken.getNameIdentifier() + "_ID");
-                    }
-                }
-
-                // Token by name identifier
-                attrTokenById.setName(securityToken.getNameIdentifier() + "_ID");
-                attrTokenById.setNameFormat(AttributeNameFormat.URI.getValue());
-                attrTokenById.getAttributeValue().add(securityToken.getId());
-
-                attrTokens.add(attrTokenById);
-            }
-        } else {
-            logger.debug("Ignoring token " + securityToken.getNameIdentifier());
-        }
-
-        return attrTokens;
-    }
-
-    @Override
     public AuthnCtxClass toAuthnCtxClass(Subject ssoSubject, AuthnCtxClass original) {
         AttributeMapping authnCtxClassAttributeMapping = getAttributeMapping(AUTHN_CTX_CLASS_ATTR_NAME);
         if (authnCtxClassAttributeMapping != null && authnCtxClassAttributeMapping.getReportedAttrName() != null &&
