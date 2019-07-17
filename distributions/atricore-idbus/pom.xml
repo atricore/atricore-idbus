@@ -153,7 +153,7 @@
         <!--idbus.bundle.nimbus-jose-jwt-v3_10.version>1.5.0-SNAPSHOT</idbus.bundle.nimbus-jose-jwt-v3_10.version>
         <idbus.bundle.oauth2-oidc-sdk-v4_14_1.version>1.5.0-SNAPSHOT</idbus.bundle.oauth2-oidc-sdk-v4_14_1.version-->
 
-        <idbus.bundle.nimbus-jose-jwt-v7_3.version>1.5.0-SNAPSHOT</idbus.bundle.nimbus-jose-jwt-v7_3.version>
+        <idbus.bundle.nimbus-jose-jwt-v7_4.version>1.5.0-SNAPSHOT</idbus.bundle.nimbus-jose-jwt-v7_4.version>
         <idbus.bundle.oauth2-oidc-sdk-v6_13.version>1.5.0-SNAPSHOT</idbus.bundle.oauth2-oidc-sdk-v6_13.version>
         <idbus.bundle.jasypt-v1_9_2.version>1.5.0-SNAPSHOT</idbus.bundle.jasypt-v1_9_2.version>
 
@@ -1554,8 +1554,8 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.nimbus-jose-jwt-v7_3</artifactId>
-            <version>${idbus.bundle.nimbus-jose-jwt-v7_3.version}</version>
+            <artifactId>org.atricore.idbus.bundles.nimbus-jose-jwt-v7_4</artifactId>
+            <version>${idbus.bundle.nimbus-jose-jwt-v7_4.version}</version>
         </dependency>
 
         <dependency>

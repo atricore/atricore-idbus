@@ -138,7 +138,7 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.nimbus-jose-jwt-v7_3</artifactId>
+            <artifactId>org.atricore.idbus.bundles.nimbus-jose-jwt-v7_4</artifactId>
             <scope>provided</scope>
         </dependency>
 
