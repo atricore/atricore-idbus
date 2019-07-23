@@ -847,7 +847,7 @@ public class SingleLogoutProducer extends SSOProducer {
         // XML Signature, saml2 core, section 5
         if (mediator.isValidateRequestsSignature()) {
 
-            if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
+            if (endpoint.getBinding().equals(SSOBinding.SAMLR2_POST.getValue())) {
 
                 // If no signature is present, throw an exception!
                 if (request.getSignature() == null)
@@ -874,7 +874,7 @@ public class SingleLogoutProducer extends SSOProducer {
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
                 }
-            } else {
+            } else if (endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
                 // HTTP-Redirect binding signature validation !
                 try {
                     signer.validateQueryString(spMd,
