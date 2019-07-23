@@ -61,25 +61,9 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
             throw new SSOException("Entity Selector request issued by non-local SP " + spName);
         }
 
-        Deque<String> idps = ctx.getSelectionState().getPreviousCotMembers();
-        for (String idpAlias : idps) {
-            // Check default channel
-            FederationChannel defaultChannel = sp.getDefaultFederationService().getChannel();
-            idp = lookupAliasInChannel(idpAlias, defaultChannel);
-            if (idp != null) {
-                logger.trace("Found previously selected IdP in default channel [" + defaultChannel.getName() + "] " + idp.getAlias());
-                return idp;
-            }
-
-            // Check override channels
-            for (FederationChannel overrideChannel : sp.getDefaultFederationService().getOverrideChannels()) {
-                idp = lookupAliasInChannel(idpAlias, overrideChannel);
-                if (idp != null) {
-                    logger.trace("Found previously selected IdP in override channel [" + overrideChannel.getName() + "] " + idp.getAlias());
-                    return idp;
-                }
-            }
-        }
+        idp = lookupPreviouslySelectedIdP(ctx, sp);
+        if (idp != null)
+            return idp;
 
         // Try with selected IDP alias first
         {
@@ -118,6 +102,12 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
             }
         }
 
+
+        UserClaim rememberSelection = ctx.getUserClaim(REMEMBER_IDP_ATTR);
+        if (rememberSelection != null)
+            logger.warn("Using deprecated claim  [" + REMEMBER_IDP_ATTR + "]. It will be ignored!");
+
+/*
         UserClaim rememberSelection = ctx.getUserClaim(REMEMBER_IDP_ATTR);
         if (rememberSelection != null && idp != null) {
             if (logger.isDebugEnabled())
@@ -131,6 +121,8 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
             ctx.getMediationState().removeLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember");
         }
 
+ */
+
         return idp;
 
     }
@@ -138,7 +130,29 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
     @Override
     public List<EndpointDescriptor> getUserClaimsEndpoints(EntitySelectionContext ctx, SelectorChannel channel) {
 
+        /*
         if (ctx.getMediationState().getLocalVariable("urn:org:atricore:idbus:capabilities:sso:select:usr:cotMember") != null)
+            return Collections.EMPTY_LIST;
+
+         */
+
+        String spName = ctx.getRequest().getIssuer();
+
+        ServiceProvider sp = null;
+        for (FederatedProvider provider : ctx.getCotManager().getCot().getProviders()) {
+            if (provider.getName().equals(spName)) {
+                sp = (ServiceProvider) provider;
+                break;
+            }
+        }
+
+        if (sp == null) {
+            logger.warn("Entity Selector request issued by non-local SP " + spName);
+            return Collections.EMPTY_LIST;
+        }
+
+
+        if (lookupPreviouslySelectedIdP(ctx, sp) != null)
             return Collections.EMPTY_LIST;
 
         CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
@@ -166,6 +180,35 @@ public class UserSelectedIdPEntitySelector extends AbstractEntitySelector {
             return endpoints;
 
         return null;
+    }
+
+    protected CircleOfTrustMemberDescriptor lookupPreviouslySelectedIdP(EntitySelectionContext ctx, ServiceProvider sp) {
+
+        CircleOfTrustMemberDescriptor idp = null;
+
+
+        Deque<String> idps = ctx.getSelectionState().getPreviousCotMembers();
+        for (String idpAlias : idps) {
+            // Check default channel
+            FederationChannel defaultChannel = sp.getDefaultFederationService().getChannel();
+            idp = lookupAliasInChannel(idpAlias, defaultChannel);
+            if (idp != null) {
+                logger.trace("Found previously selected IdP in default channel [" + defaultChannel.getName() + "] " + idp.getAlias());
+                return idp;
+            }
+
+            // Check override channels
+            for (FederationChannel overrideChannel : sp.getDefaultFederationService().getOverrideChannels()) {
+                idp = lookupAliasInChannel(idpAlias, overrideChannel);
+                if (idp != null) {
+                    logger.trace("Found previously selected IdP in override channel [" + overrideChannel.getName() + "] " + idp.getAlias());
+                    return idp;
+                }
+            }
+        }
+
+        return null;
+
     }
 
 
