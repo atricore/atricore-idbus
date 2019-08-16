@@ -24,6 +24,7 @@ import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.Util;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
@@ -117,6 +118,10 @@ public class TokenProducer extends AbstractOpenIDProducer {
             rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
             idToken = ctx.getIDToken();
 
+            // Add refresh token as alternative state ID
+            if (rt != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+
 
         } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
                 grant.getType().equals(JWT_BEARER_PWD)) {
@@ -124,6 +129,22 @@ public class TokenProducer extends AbstractOpenIDProducer {
             at = (AccessToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
             rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
             idToken = ctx.getIDToken();
+
+            // Add refresh token as alternative state ID
+            if (rt != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+
+
+        } else if (grant.getType().equals(GrantType.REFRESH_TOKEN)) {
+
+            at = (AccessToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
+            rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
+            idToken = ctx.getIDToken();
+
+            // Add refresh token as alternative state ID
+            if (rt != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+
 
         } else {
             logger.warn("Unsupported grant_type : " + grant.getType().getValue());
@@ -200,6 +221,52 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     }
 
+
+    protected Token emitTokenFromRefreshToken(MediationState state, ClientInformation clientInfo, RefreshTokenGrant grant,
+                                              String tokenType,
+                                              OpenIDConnectSecurityTokenEmissionContext ctx)
+            throws Exception {
+
+        MessageQueueManager aqm = getArtifactQueueManager();
+
+        // -------------------------------------------------------
+        // Emit a new security token
+        // -------------------------------------------------------
+
+        // Queue this context and send the artifact as RST context information
+        Artifact emitterCtxArtifact = aqm.pushMessage(ctx);
+
+        SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
+        // Send artifact id as RST context information, similar to relay state.
+        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, grant, tokenType, emitterCtxArtifact.getContent());
+
+        if (logger.isDebugEnabled())
+            logger.debug("Requesting OpenID Connect 2 Access Token (RST) w/context " + rst.getContext());
+
+        // Send request to STS
+        try {
+            RequestSecurityTokenResponseType rstrt = sts.requestSecurityToken(rst);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Received Request Security Token Response (RSTR) w/context " + rstrt.getContext());
+
+            // Recover emission context, to retrieve Subject information
+            ctx = (OpenIDConnectSecurityTokenEmissionContext) aqm.pullMessage(ArtifactImpl.newInstance(rstrt.getContext()));
+
+            // Obtain access token from STS Response
+            JAXBElement<RequestedSecurityTokenType> jaxbElementToken = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
+            Token token = (Token) jaxbElementToken.getValue().getAny();
+            if (logger.isDebugEnabled())
+                logger.debug("Generated OIDC Access Token [" + token.getValue() + "]");
+
+            return token;
+
+        } catch (SecurityTokenAuthenticationFailure e) {
+            logger.error(e.getMessage());
+            throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED, "authn_failure");
+        }
+
+    }
 
     /**
      * For now this only works for JWT Bearer PWD grant (IdBus extension)
@@ -401,6 +468,46 @@ public class TokenProducer extends AbstractOpenIDProducer {
             authzGrantToken.setEncodingType("json");
 
             authzGrantToken.getOtherAttributes().put(new QName(Constants.AUTHZ_CODE_NS), client.getID().getValue());
+            authzGrantToken.getOtherAttributes().put(CLIENT_ID, client.getID().getValue());
+
+            rstRequest.getAny().add(ofwss.createBinarySecurityToken(authzGrantToken));
+
+            if (context != null)
+                rstRequest.setContext(context);
+
+            logger.debug("generated RequestSecurityToken [" + rstRequest + "]");
+            return rstRequest;
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectException(e);
+        }
+    }
+
+    protected RequestSecurityTokenType buildRequestSecurityToken(ClientInformation client,
+                                                                 RefreshTokenGrant refreshTokenGrant,
+                                                                 String tokenType,
+                                                                 String context) throws OpenIDConnectException {
+
+
+        logger.debug("generating RequestSecurityToken...");
+        try {
+            org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of = new org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory();
+
+            RequestSecurityTokenType rstRequest = new RequestSecurityTokenType();
+
+            rstRequest.getAny().add(of.createTokenType(tokenType));
+            rstRequest.getAny().add(of.createRequestType(WSTConstants.WST_ISSUE_REQUEST));
+
+            org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory ofwss = new org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.ObjectFactory();
+
+            // Send credentials with authn request:
+            BinarySecurityTokenType authzGrantToken = new BinarySecurityTokenType();
+
+            authzGrantToken.setValue(Util.marshallMultiValue(refreshTokenGrant.toParameters()));
+            authzGrantToken.setValueType(refreshTokenGrant.getType().getValue());
+            authzGrantToken.setEncodingType("json");
+
+            authzGrantToken.getOtherAttributes().put(new QName(Constants.REFRESH_TOKEN_NS), client.getID().getValue());
             authzGrantToken.getOtherAttributes().put(CLIENT_ID, client.getID().getValue());
 
             rstRequest.getAny().add(ofwss.createBinarySecurityToken(authzGrantToken));
