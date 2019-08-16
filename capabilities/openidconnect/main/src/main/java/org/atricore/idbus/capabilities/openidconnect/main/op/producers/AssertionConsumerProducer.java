@@ -5,6 +5,7 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
@@ -202,15 +203,16 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         }
 
-        // TODO : Calculate session state according to
+        // TODO : Calculate session state according to ?
         // http://openid.net/specs/openid-connect-session-1_0.html#CreatingUpdatingSessions
 
+        State sessionState = new State(response.getSessionIndex());
         AuthenticationResponse authnResponse = new AuthenticationSuccessResponse(authnRequest.getRedirectionURI(),
                 code, 
                 idToken, 
                 accessToken, 
                 authnRequest.getState(),
-                null,
+                sessionState,
                 authnRequest.getResponseMode());
 
         return authnResponse;

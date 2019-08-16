@@ -52,6 +52,8 @@ public interface Constants  {
 
     String AUTHZ_CODE_NS = "urn:org:atricore:idbus:kernel:main:authn:authz-code";
 
+    String REFRESH_TOKEN_NS = "urn:org:atricore:idbus:kernel:main:authn:refresh-token";
+
     String CSCA_NS = "urn:org:atricore:idbus:kernel:main:authn:csca";
 
     String AUTHN_SOURCE = "urn:org:atricore:idbus:kernel:main:sts:AuthnSource";

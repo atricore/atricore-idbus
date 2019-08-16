@@ -60,6 +60,8 @@ public interface OpenIDConnectConstants {
 
     String SEC_CTX_AUTHZ_CODE_KEY = "authorization_code";
 
+    String SEC_CTX_REFRESH_TOKEN_KEY = "refresh_token";
+
     String AUTHN_CTX_KEY = "urn:org:atricore:idbus:capabilities:openidconnect:authnCtx";
 
     /**
