@@ -6,7 +6,6 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.oauth2.sdk.Scope;
-import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.Issuer;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
@@ -28,16 +27,14 @@ import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 
 import javax.security.auth.Subject;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
 
 
     private static final Log logger = LogFactory.getLog(JWTAccessTokenEmitter.class);
 
-    private long lifetimeInSecs = 300L;
+    private long timeToLive = 300L;
 
     private Scope scope = new Scope();
 
@@ -139,7 +136,7 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
 
                 String jwtTokenStr = token.serialize();
 
-                AccessToken at = new BearerAccessToken(jwtTokenStr, lifetimeInSecs, scope);
+                AccessToken at = new BearerAccessToken(jwtTokenStr, timeToLive, scope);
                 SecurityTokenImpl<AccessToken> st = new SecurityTokenImpl<AccessToken>(at.getValue(),
                         WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE,
                         at);
@@ -172,5 +169,13 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
     @Override
     protected IdentityArtifact createOutArtifact(Object requestToken, String tokenType) {
         return null;
+    }
+
+    public long getTimeToLive() {
+        return timeToLive;
+    }
+
+    public void setTimeToLive(long timeToLive) {
+        this.timeToLive = timeToLive;
     }
 }

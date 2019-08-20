@@ -23,7 +23,7 @@ public class BearerAccessTokenEmitter extends OIDCTokenEmitter {
 
     private static final Log logger = LogFactory.getLog(BearerAccessTokenEmitter.class);
 
-    private long lifetimeInSecs = 300L;
+    private long timeToLive = 300L;
 
     private Scope scope = new Scope();
 
@@ -65,7 +65,7 @@ public class BearerAccessTokenEmitter extends OIDCTokenEmitter {
 
             try {
 
-                AccessToken at = new BearerAccessToken(64, lifetimeInSecs, scope);
+                AccessToken at = new BearerAccessToken(64, timeToLive, scope);
                 SecurityTokenImpl<AccessToken> st = new SecurityTokenImpl<AccessToken>(at.getValue(),
                         WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE,
                         at);
@@ -102,4 +102,11 @@ public class BearerAccessTokenEmitter extends OIDCTokenEmitter {
         return null;
     }
 
+    public long getTimeToLive() {
+        return timeToLive;
+    }
+
+    public void setTimeToLive(long timeToLive) {
+        this.timeToLive = timeToLive;
+    }
 }

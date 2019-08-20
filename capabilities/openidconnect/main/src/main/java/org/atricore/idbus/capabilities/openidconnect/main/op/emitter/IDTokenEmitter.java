@@ -42,6 +42,8 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
 
     private SSOKeyResolver encrypter;
 
+    private long timeToLive = 300L;
+
     @Override
     public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
@@ -175,7 +177,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         Date iat = new Date();
 
         // exp : expires
-        Date exp = new Date(System.currentTimeMillis() + 5L * 60L * 1000L); // TODO : Configure
+        Date exp = new Date(System.currentTimeMillis() + timeToLive * 1000L); // TODO : Configure
 
         // Prepare JWT with claims set
         IDTokenClaimsSet claimsSet = new IDTokenClaimsSet(iss, sub, aud, exp, iat);
@@ -285,6 +287,11 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         this.encrypter = encrypter;
     }
 
+    public long getTimeToLive() {
+        return timeToLive;
+    }
 
-
+    public void setTimeToLive(long timeToLive) {
+        this.timeToLive = timeToLive;
+    }
 }
