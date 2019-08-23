@@ -48,6 +48,8 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
             // We need this code to run here, triggered by spring, so that
             // the identity appliance unit classloader is used ...
 
+            logger.info("Initializing mediation unit: " + getName() + "[" + bundleContext.getBundle().getSymbolicName() + "] " + this);
+
             super.afterPropertiesSet();
 
             ApplicationContext applicationContext = this.getApplicationContext();

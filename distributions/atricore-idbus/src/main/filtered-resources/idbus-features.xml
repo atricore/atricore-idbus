@@ -408,6 +408,12 @@
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-mapper-asl/${jackson.version}</bundle>
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-jaxrs/${jackson.version}</bundle>
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-xc/${jackson.version}</bundle>
+
+        <bundle start-level="34">mvn:com.fasterxml.jackson.core/jackson-core/${fasterxml-jackson.version}</bundle>
+        <bundle start-level="34">mvn:com.fasterxml.jackson.core/jackson-databind/${fasterxml-jackson.version}</bundle>
+        <bundle start-level="34">mvn:com.fasterxml.jackson.core/jackson-annotations/${fasterxml-jackson.version}</bundle>
+        <bundle start-level="34">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${fasterxml-jackson.version}</bundle>
+
         <bundle start-level="34">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}</bundle>
         <bundle start-level="35">mvn:org.bouncycastle/bcprov-jdk15on/${bcprov.version}</bundle>
         <bundle start-level="35">mvn:org.bouncycastle/bcpkix-jdk15on/${bcpkix.version}</bundle>

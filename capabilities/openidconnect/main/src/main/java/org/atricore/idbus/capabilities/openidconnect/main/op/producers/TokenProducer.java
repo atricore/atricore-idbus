@@ -145,6 +145,15 @@ public class TokenProducer extends AbstractOpenIDProducer {
             if (rt != null)
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
 
+        } else if (grant.getType().equals(GrantType.PASSWORD)) {
+            at = (AccessToken) emitTokenForPassword(state, clientInfo, (ResourceOwnerPasswordCredentialsGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
+            rt = (RefreshToken) emitTokenForPassword(state, clientInfo, (ResourceOwnerPasswordCredentialsGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
+            idToken = ctx.getIDToken();
+
+            // Add refresh token as alternative state ID
+            if (rt != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+
 
         } else {
             logger.warn("Unsupported grant_type : " + grant.getType().getValue());
@@ -344,6 +353,53 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             // Actually emit the tokens
             return emitTokenWithBasicAuthn(clientInfo, ctx, tokenType, username, password);
+
+        } catch (OpenIDConnectProviderException e) {
+            throw e;
+        } catch (java.text.ParseException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+        } catch (JOSEException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+        } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
+        }
+    }
+
+    /**
+     * For now this only works for JWT Bearer PWD grant (IdBus extension)
+     *
+     * JWT MUST be signed and encrypted.
+     */
+    protected Token emitTokenForPassword(MediationState state, ClientInformation clientInfo, ResourceOwnerPasswordCredentialsGrant grant,
+                                          String tokenType,
+                                          OpenIDConnectSecurityTokenEmissionContext ctx)
+            throws Exception {
+
+        try {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Validating JWT Bearer Grant [" + clientInfo.getID().getValue() + "]");
+
+            long now = System.currentTimeMillis();
+
+            // Authenticate User with JWT
+            String username = grant.getUsername();
+            Secret password = grant.getPassword();
+
+            if (username == null || password == null) {
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "credentials not provided");
+            }
+
+            OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
+
+            // Actually emit the tokens
+            return emitTokenWithBasicAuthn(clientInfo, ctx, tokenType, username, password.getValue());
 
         } catch (OpenIDConnectProviderException e) {
             throw e;

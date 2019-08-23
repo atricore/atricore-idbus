@@ -60,6 +60,9 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
+        if (authnCtx == null)
+            authnCtx = new OpenIDConnectAuthnContext();
+
         // TODO : Use localhost actually!
         EndpointDescriptor tokenEndpoint = lookupTokenEndpoint(authnCtx);
 
@@ -85,6 +88,9 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
                 logger.error("Error obtaining AccessToken : " + error.getCode() + ". " + error.getDescription());
 
         }
+
+        // Update context
+        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 proxyTokenResponse,

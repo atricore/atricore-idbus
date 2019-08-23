@@ -189,9 +189,12 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
 
         String marshalledHttpResponseBody = "";
 
+        int code = 200;
         if (out.getContent() instanceof TokenResponse) {
             try {
                 TokenResponse tokenResponse = (TokenResponse) out.getContent();
+                if (!tokenResponse.indicatesSuccess())
+                    code = 400;
                 HTTPResponse httpResponse = tokenResponse.toHTTPResponse();
 
                 marshalledHttpResponseBody = httpResponse.getContent();
@@ -218,7 +221,7 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
 
             httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
             httpOut.getHeaders().put("Pragma", "no-cache");
-            httpOut.getHeaders().put("http.responseCode", 200);
+            httpOut.getHeaders().put("http.responseCode", code);
             httpOut.getHeaders().put("Content-Type", "application/json");
             handleCrossOriginResourceSharing(exchange);
 

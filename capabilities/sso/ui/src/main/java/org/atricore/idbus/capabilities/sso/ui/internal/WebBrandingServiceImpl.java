@@ -7,6 +7,8 @@ import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingServiceException;
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.context.BundleContextAware;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,13 +19,20 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class WebBrandingServiceImpl implements WebBrandingService {
+public class WebBrandingServiceImpl implements WebBrandingService, BundleContextAware {
 
     private static final Log logger = LogFactory.getLog(WebBrandingServiceImpl.class);
 
     private Map<String, WebBranding> brandings = new ConcurrentHashMap<String, WebBranding>();
     
-    private Set<WebBrandingEventListener> listeners = new HashSet<WebBrandingEventListener>(); 
+    private Set<WebBrandingEventListener> listeners = new HashSet<WebBrandingEventListener>();
+
+    private BundleContext bundleContext;
+
+    @Override
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 
     public WebBrandingServiceImpl() {
 
@@ -31,8 +40,8 @@ public class WebBrandingServiceImpl implements WebBrandingService {
 
     public void init() {
         // Leave this to make easy detecting service startup
-        logger.info("Web Branding service ACTIVE");
-        System.out.println("Web Branding service ACTIVE");
+        logger.info("Web Branding service ACTIVE " + bundleContext.getBundle().getSymbolicName());
+        System.out.println("Web Branding service ACTIVE " + bundleContext.getBundle().getSymbolicName());
     }
 
     public WebBranding lookup(String id) {

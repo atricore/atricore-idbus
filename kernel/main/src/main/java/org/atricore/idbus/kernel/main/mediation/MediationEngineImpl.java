@@ -68,7 +68,7 @@ public class MediationEngineImpl implements MediationEngine, MediationUnitLifecy
             String unitName = event.getUnitName();
 
             if (logger.isTraceEnabled())
-                logger.trace("Procesing event " + event.getType() + " for unit " + event.getUnitName());
+                logger.trace("Processing event " + event.getType() + " for unit " + event.getUnitName());
             
             IdentityMediationUnit unit = registry.lookupUnit(unitName);
             if (unit == null) {
