@@ -12,6 +12,9 @@ import javax.security.auth.Subject;
  */
 public interface SubjectNameIDBuilder {
 
+
+    boolean supportsPolicy(String nameIDPolicy);
+
     boolean supportsPolicy(NameIDPolicyType nameIDPolicy);
 
     NameIDType buildNameID(NameIDPolicyType nameIDPolicy, Subject s);

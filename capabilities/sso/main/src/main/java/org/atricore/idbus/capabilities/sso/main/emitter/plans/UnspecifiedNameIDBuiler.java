@@ -21,6 +21,10 @@ public class UnspecifiedNameIDBuiler extends  AbstractSubjectNameIDBuilder  {
     // The name of the property to be used as name ID
     private String ssoUserProperty;
 
+    public boolean supportsPolicy(String nameIDPolicy) {
+        return nameIDPolicy.equalsIgnoreCase(NameIDFormat.UNSPECIFIED.getValue());
+    }
+
     public boolean supportsPolicy(NameIDPolicyType nameIDPolicy) {
         return nameIDPolicy.getFormat().equals(NameIDFormat.UNSPECIFIED.getValue());
     }
