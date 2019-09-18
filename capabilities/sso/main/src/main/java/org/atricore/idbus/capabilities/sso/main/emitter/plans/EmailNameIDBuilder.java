@@ -21,6 +21,10 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
 
     private String ssoUserProperty = null;
 
+    public boolean supportsPolicy(String nameIDPolicy) {
+        return nameIDPolicy.equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
+    }
+
     public boolean supportsPolicy(NameIDPolicyType nameIDPolicy) {
         return nameIDPolicy.getFormat().equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
     }

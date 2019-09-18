@@ -32,6 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
@@ -103,7 +104,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-        in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
         long s = System.currentTimeMillis();
         String metric = mediator.getMetricsPrefix() + "/Sso/Transactions/";
@@ -1156,7 +1158,8 @@ public class SingleLogoutProducer extends SSOProducer {
             out.setMessage(new MediationMessageImpl(entityRequest.getID(),
                     entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
 
-            state.setLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP, state.getAttribute("SAMLR2Signer"));
+            // TODO : DO NOT STORE NON SERIALIZABLE CONTENT!!!!
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP, state.getAttribute("SAMLR2Signer-channel"));
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse != null ? ssoResponse : null);
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP, ssoResponse != null ? "LogoutResponse" : "LogoutLocation");
@@ -1343,6 +1346,11 @@ public class SingleLogoutProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, spEndpoint);
         idPlanExchange.setProperty(VAR_SECURITY_CONTEXT, secCtx);
+
+//        idPlanExchange.setTransientProperty(SSOPlanningConstants.VAR_IGNORE_REQUESTED_NAMEID_POLICY, new Boolean(this.isIgnoreRequestedNameIDPolicy()));
+//        idPlanExchange.setTransientProperty(SSOPlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
+//        idPlanExchange.setTransientProperty(SSOPlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
+
 
         // Create in/out artifacts
         IdentityArtifact<LogoutRequestType> in =

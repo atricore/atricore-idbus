@@ -3,6 +3,7 @@ package org.atricore.idbus.capabilities.sso.main.idp.producers;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
@@ -10,6 +11,7 @@ import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -49,7 +51,8 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         EndpointDescriptor destination = (EndpointDescriptor) state.getLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP);
         String relayState = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP);
         String type = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP);
-        SamlR2Signer signer = (SamlR2Signer) state.getLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP);
+        String signerChannel = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP);
+        SamlR2Signer signer = resolveSignerForChannel(signerChannel);
 
         state.setAttribute("SAMLR2Signer", signer);
 
@@ -82,4 +85,23 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         exchange.setOut(out);
 
     }
+
+    protected SamlR2Signer resolveSignerForChannel(String channelName) {
+
+        if (channelName == null)
+            return null;
+
+        for (Channel c : channel.getUnitContainer().getUnit().getChannels()) {
+
+            if (c.getName().equals(channelName)) {
+                AbstractSSOMediator ssoMediator = (AbstractSSOMediator) c.getIdentityMediator();
+                return ssoMediator.getSigner();
+            }
+        }
+
+        return null;
+
+    }
+
 }
+

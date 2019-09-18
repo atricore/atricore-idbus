@@ -301,22 +301,25 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
     }
 
     protected Element retrieveElement(String key) {
-        Element e = cache.get(key);
-        if (e == null) {
 
-            int retry = 0;
-            while (e == null && retry < receiveRetries) {
-                // Wait and try again, maybe state is on the road :)
-                if (logger.isTraceEnabled())
-                    logger.trace("Cache miss, wait for " + 500 + " ms");
+            Element e = cache.get(key);
+            if (e == null) {
 
-                try { Thread.sleep(500); } catch (InterruptedException ie ) { /* Ignore this */ }
-                e = cache.get(key);
-                retry ++;
+                int retry = 0;
+                while (e == null && retry < receiveRetries) {
+                    // Wait and try again, maybe state is on the road :)
+                    if (logger.isTraceEnabled())
+                        logger.trace("Cache miss, wait for " + 500 + " ms");
+
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ie) { /* Ignore this */ }
+                    e = cache.get(key);
+                    retry++;
+                }
             }
-        }
 
-        return e;
+            return e;
     }
 
     /**

@@ -21,13 +21,17 @@
 
 package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions;
 
+import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.SubjectNameIDBuilder;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.planning.jbpm.AbstractIdentityPlanActionHandler;
 import org.jbpm.graph.exe.ExecutionContext;
+
+import java.util.Collection;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -44,6 +48,44 @@ public abstract class AbstractSSOAssertionAction extends AbstractIdentityPlanAct
     }
 
     protected void doInit(ExecutionContext executionContext) throws Exception {
+
+    }
+
+    protected SubjectNameIDBuilder resolveNameIDBuiler(ExecutionContext executionContext, NameIDPolicyType nameIDPolicy) {
+        return resolveNameIDBuiler(executionContext, nameIDPolicy.getFormat());
+    }
+
+    protected SubjectNameIDBuilder resolveNameIDBuiler(ExecutionContext executionContext, String nameIDPolicy) {
+
+        Boolean ignoreRequestedNameIDPolicy = (Boolean) executionContext.getContextInstance().getTransientVariable(VAR_IGNORE_REQUESTED_NAMEID_POLICY);
+
+        SubjectNameIDBuilder defaultNameIDBuilder = (SubjectNameIDBuilder) executionContext.getContextInstance().getTransientVariable(VAR_DEFAULT_NAMEID_BUILDER);
+        if (ignoreRequestedNameIDPolicy != null && ignoreRequestedNameIDPolicy) {
+            if (logger.isDebugEnabled())
+                logger.debug("Ignoring requested NameIDPolicy, using DefaultNameIDBuilder : " + defaultNameIDBuilder);
+            return defaultNameIDBuilder;
+        }
+
+        Collection<SubjectNameIDBuilder> nameIdBuilders =
+                (Collection<SubjectNameIDBuilder>) executionContext.getContextInstance().getTransientVariable(VAR_NAMEID_BUILDERS);
+
+        if (nameIdBuilders == null || nameIdBuilders.size() == 0)
+            throw new RuntimeException("No NameIDBuilders configured for plan!");
+
+        for (SubjectNameIDBuilder nameIDBuilder : nameIdBuilders) {
+
+            if (nameIDBuilder.supportsPolicy(nameIDPolicy)) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using NameIDBuilder : " + nameIDBuilder);
+                return nameIDBuilder;
+
+            }
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Using DefaultNameIDBuilder : " + defaultNameIDBuilder);
+
+        return defaultNameIDBuilder;
 
     }
 

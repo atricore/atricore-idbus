@@ -231,37 +231,4 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
         return nameIDPolicy;
     }
 
-    protected SubjectNameIDBuilder resolveNameIDBuiler(ExecutionContext executionContext, NameIDPolicyType nameIDPolicy) {
-
-        Boolean ignoreRequestedNameIDPolicy = (Boolean) executionContext.getContextInstance().getTransientVariable(VAR_IGNORE_REQUESTED_NAMEID_POLICY);
-
-        SubjectNameIDBuilder defaultNameIDBuilder = (SubjectNameIDBuilder) executionContext.getContextInstance().getTransientVariable(VAR_DEFAULT_NAMEID_BUILDER);
-        if (ignoreRequestedNameIDPolicy != null && ignoreRequestedNameIDPolicy) {
-            if (logger.isDebugEnabled())
-                logger.debug("Ignoring requested NameIDPolicy, using DefaultNameIDBuilder : " + defaultNameIDBuilder);
-            return defaultNameIDBuilder;
-        }
-
-        Collection<SubjectNameIDBuilder> nameIdBuilders =
-                (Collection<SubjectNameIDBuilder>) executionContext.getContextInstance().getTransientVariable(VAR_NAMEID_BUILDERS);
-
-        if (nameIdBuilders == null || nameIdBuilders.size() == 0)
-            throw new RuntimeException("No NameIDBuilders configured for plan!");
-
-        for (SubjectNameIDBuilder nameIDBuilder : nameIdBuilders) {
-
-            if (nameIDBuilder.supportsPolicy(nameIDPolicy)) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Using NameIDBuilder : " + nameIDBuilder);
-                return nameIDBuilder;
-
-            }
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Using DefaultNameIDBuilder : " + defaultNameIDBuilder);
-
-        return defaultNameIDBuilder;
-
-    }
 }

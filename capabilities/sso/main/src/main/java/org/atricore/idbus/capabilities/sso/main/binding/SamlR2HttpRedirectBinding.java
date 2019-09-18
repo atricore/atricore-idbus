@@ -242,7 +242,11 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             // Follow SAML 2.0 Binding, section 3.4.4.1 DEFLATE Encoding , regarding Digital Siganture usage.
             // Generate HTTP Redirect binding SigAlg and Signature parameters (this requires access to Provider signer!)
             MediationState state = samlOut.getMessage().getState();
-            SamlR2Signer signer = (SamlR2Signer) state.getAttribute("SAMLR2Signer");
+
+
+            String signerChannel = (String) state.getAttribute("SAMLR2Signer-channel");
+            SamlR2Signer signer = resolveSignerForChannel(signerChannel);
+
             if (signer != null) {
                 AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
                 ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
@@ -386,5 +390,23 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
         }
         return retString;
     }
+
+    protected SamlR2Signer resolveSignerForChannel(String channelName) {
+
+        if (channelName == null)
+            return null;
+
+        for (Channel c : channel.getUnitContainer().getUnit().getChannels()) {
+
+            if (c.getName().equals(channelName)) {
+                AbstractSSOMediator ssoMediator = (AbstractSSOMediator) c.getIdentityMediator();
+                return ssoMediator.getSigner();
+            }
+        }
+
+        return null;
+
+    }
+
 
 }

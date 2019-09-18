@@ -100,7 +100,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-        in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
         try {
 
