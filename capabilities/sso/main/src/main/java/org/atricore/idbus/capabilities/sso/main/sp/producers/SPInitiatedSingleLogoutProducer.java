@@ -100,7 +100,8 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
             // May be used later by HTTP-Redirect binding!
             SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
-            in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
             SPInitiatedLogoutRequestType ssoLogoutRequest =
                     (SPInitiatedLogoutRequestType) in.getMessage().getState().getLocalVariable(
@@ -141,7 +142,9 @@ public class SPInitiatedSingleLogoutProducer extends SSOProducer {
 
             // May be used later by HTTP-Redirect binding!
             SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
-            in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
+
             String relayState = in.getMessage().getState().getLocalState().getId();
 
             // Look for a security context, if any

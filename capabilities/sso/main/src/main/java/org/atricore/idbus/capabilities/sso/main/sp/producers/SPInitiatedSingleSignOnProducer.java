@@ -83,7 +83,8 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
-        in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
         Object content = in.getMessage().getContent();
 
@@ -106,7 +107,8 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
             // May be used later by HTTP-Redirect binding!
             SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
-            in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
             SPInitiatedAuthnRequestType ssoAuthnReq =
                 (SPInitiatedAuthnRequestType) in.getMessage().getContent();
@@ -244,7 +246,8 @@ public class SPInitiatedSingleSignOnProducer extends SSOProducer {
 
             // May be used later by HTTP-Redirect binding!
             SSOSPMediator mediator = (SSOSPMediator) channel.getIdentityMediator();
-            in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+            in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
             SPInitiatedAuthnRequestType ssoAuthnReq =
                     (SPInitiatedAuthnRequestType) in.getMessage().getState().getLocalVariable(

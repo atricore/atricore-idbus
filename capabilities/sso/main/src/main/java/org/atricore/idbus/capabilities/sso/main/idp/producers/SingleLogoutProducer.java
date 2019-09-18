@@ -104,7 +104,8 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-        in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
         long s = System.currentTimeMillis();
         String metric = mediator.getMetricsPrefix() + "/Sso/Transactions/";
@@ -1157,7 +1158,8 @@ public class SingleLogoutProducer extends SSOProducer {
             out.setMessage(new MediationMessageImpl(entityRequest.getID(),
                     entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
 
-            state.setLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP, state.getAttribute("SAMLR2Signer"));
+            // TODO : DO NOT STORE NON SERIALIZABLE CONTENT!!!!
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP, state.getAttribute("SAMLR2Signer-channel"));
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse != null ? ssoResponse : null);
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
             state.setLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP, ssoResponse != null ? "LogoutResponse" : "LogoutLocation");

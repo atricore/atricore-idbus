@@ -130,7 +130,8 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-        state.setAttribute("SAMLR2Signer", mediator.getSigner());
+        //state.setAttribute("SAMLR2Signer", mediator.getSigner());
+        state.setAttribute("SAMLR2Signer-channel", channel.getName());
 
         // Originally received Authn request from binding channel
         // When using IdP initiated SSO, this will be null!
