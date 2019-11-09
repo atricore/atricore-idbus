@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.SubjectNameIDBuilder;
+import org.atricore.idbus.capabilities.sso.main.idp.plans.actions.InitializeLogoutRequestAction;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.capabilities.sso.support.profiles.SubjectConfirmationMethod;
@@ -198,6 +199,11 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
     }
 
 
+    /**
+     * @see InitializeLogoutRequestAction#resolveNameIDPolicy()
+     * @param ctx
+     * @return
+     */
     protected NameIDPolicyType resolveNameIDPolicy(SamlR2SecurityTokenEmissionContext ctx) {
 
         // Take NameID policy from request

@@ -121,7 +121,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
             // Add refresh token as alternative state ID
             if (rt != null)
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-
+            if (at != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
 
         } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
                 grant.getType().equals(JWT_BEARER_PWD)) {
@@ -133,6 +134,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
             // Add refresh token as alternative state ID
             if (rt != null)
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+            if (at != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
 
 
         } else if (grant.getType().equals(GrantType.REFRESH_TOKEN)) {
@@ -144,6 +147,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
             // Add refresh token as alternative state ID
             if (rt != null)
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+            if (at != null)
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
 
         } else if (grant.getType().equals(GrantType.PASSWORD)) {
             at = (AccessToken) emitTokenForPassword(state, clientInfo, (ResourceOwnerPasswordCredentialsGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
@@ -167,8 +172,15 @@ public class TokenProducer extends AbstractOpenIDProducer {
         ctx.setRefreshToken(rt);
         ctx.setIDToken(idToken);
 
-        // Send response back (this is a back-channel request)
+        // Store tokens in state
+        OpenIDConnectAuthnContext authnCtx =
+                (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+        if (authnCtx == null)
+            authnCtx = new OpenIDConnectAuthnContext();
+        authnCtx.setTokens(tokens);
+        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
 
+        // Send response back (this is a back-channel request)
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 tokenResponse,
                 "AccessTokenResponse",

@@ -75,6 +75,7 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
 
                         case OPENID_PROVIDER_TOKEN_HTTP:
                         case OPENID_PROVIDER_TOKEN_RESTFUL:
+                        case OPENID_PROVIDER_USERINFO_RESTFUL:
                         case OPENID_PROVIDER_INFO_RESTFUL:
                         case OPENID_PROVIDER_JWK_RESTFUL:
 

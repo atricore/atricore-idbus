@@ -99,7 +99,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
             // Store tokens in state
             if (sr.getIDToken() != null && sr.getAccessToken() != null) {
-                Tokens oidcTokens = new OIDCTokens(sr.getIDToken(), sr.getAccessToken(), null);
+                OIDCTokens oidcTokens = new OIDCTokens(sr.getIDToken(), sr.getAccessToken(), null);
                 authnCtx.setTokens(oidcTokens);
             }
         }

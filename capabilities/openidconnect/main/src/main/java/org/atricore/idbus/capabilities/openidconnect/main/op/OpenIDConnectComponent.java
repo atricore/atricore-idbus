@@ -37,8 +37,16 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new TokenEndpoint(uri, this, parameters);
                 break;
 
+            case UserInfoService:
+                endpoint = new UserInfoEndpoint(uri, this, parameters);
+                break;
+
             case RPTokenService:
                 endpoint = new RPTokenEndpoint(uri, this, parameters);
+                break;
+
+            case RPUserInfoService:
+                endpoint = new RPUserInfoEndpoint(uri, this, parameters);
                 break;
 
             case RPInitLogoutService:
