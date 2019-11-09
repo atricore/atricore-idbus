@@ -1,8 +1,12 @@
 package org.atricore.idbus.capabilities.sso.main.idp.plans;
 
+import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.SubjectNameIDBuilder;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanningException;
 import org.atricore.idbus.kernel.planning.jbpm.AbstractJbpmIdentityPlan;
+
+import java.util.Set;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -10,12 +14,50 @@ import org.atricore.idbus.kernel.planning.jbpm.AbstractJbpmIdentityPlan;
  */
 public class SamlR2SloRequestToSamlR2RespPlan extends AbstractJbpmIdentityPlan {
 
+    private boolean ignoreRequestedNameIDPolicy;
+
+    private Set<SubjectNameIDBuilder> nameIDBuilders;
+
+    private SubjectNameIDBuilder defaultNameIDBuilder;
+
     protected String getProcessDescriptorName() {
         return "idpsso-samlr2sloreq-to-samlr2response";
     }
 
     @Override
-    public IdentityPlanExecutionExchange prepare(IdentityPlanExecutionExchange exchange) throws IdentityPlanningException {
-        return super.prepare(exchange);
+    public IdentityPlanExecutionExchange prepare(IdentityPlanExecutionExchange ex) throws IdentityPlanningException {
+
+        /**
+         * Only available in IDPs
+         */
+        ex.setTransientProperty(SSOPlanningConstants.VAR_IGNORE_REQUESTED_NAMEID_POLICY, new Boolean(this.isIgnoreRequestedNameIDPolicy()));
+        ex.setTransientProperty(SSOPlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
+        ex.setTransientProperty(SSOPlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
+
+        return super.prepare(ex);
+    }
+
+    public Set<SubjectNameIDBuilder> getNameIDBuilders() {
+        return nameIDBuilders;
+    }
+
+    public void setNameIDBuilders(Set<SubjectNameIDBuilder> nameIDBuilders) {
+        this.nameIDBuilders = nameIDBuilders;
+    }
+
+    public SubjectNameIDBuilder getDefaultNameIDBuilder() {
+        return defaultNameIDBuilder;
+    }
+
+    public void setDefaultNameIDBuilder(SubjectNameIDBuilder defaultNameIDBuilder) {
+        this.defaultNameIDBuilder = defaultNameIDBuilder;
+    }
+
+    public boolean isIgnoreRequestedNameIDPolicy() {
+        return ignoreRequestedNameIDPolicy;
+    }
+
+    public void setIgnoreRequestedNameIDPolicy(boolean ignoreRequestedNameIDPolicy) {
+        this.ignoreRequestedNameIDPolicy = ignoreRequestedNameIDPolicy;
     }
 }

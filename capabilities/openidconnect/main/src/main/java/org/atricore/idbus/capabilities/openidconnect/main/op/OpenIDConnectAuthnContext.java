@@ -8,6 +8,10 @@ import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
+import net.minidev.json.JSONObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 
@@ -19,6 +23,8 @@ import java.util.Map;
  *
  */
 public class OpenIDConnectAuthnContext implements Serializable {
+
+    private static final Log logger = LogFactory.getLog(OpenIDConnectAuthnContext.class);
 
     // Request sent to SSO endpoint
     private SPInitiatedAuthnRequestType ssoAuthnRequest;
@@ -42,7 +48,7 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     // Selected IDP Alias
     private String idpAlias;
-    private Tokens tokens;
+    private JSONObject tokens;
 
     public String getIdpAlias() {
         return idpAlias;
@@ -137,11 +143,17 @@ public class OpenIDConnectAuthnContext implements Serializable {
         return logoutRequest;
     }
 
-    public void setTokens(Tokens tokens) {
-        this.tokens = tokens;
+    public void setTokens(OIDCTokens tokens) {
+
+        this.tokens = (tokens != null ? tokens.toJSONObject() : null);
     }
 
     public Tokens getTokens() {
-        return tokens;
+        try {
+            return tokens != null ? OIDCTokens.parse(tokens) : null;
+        } catch (ParseException e) {
+            logger.error("CANNOT UNMARSHAL JSONOBJECT : " + e.getMessage(), e);
+            return null;
+        }
     }
 }

@@ -186,7 +186,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Utility to load credentials from the store.
      *
-     * @return the array of konw credentials associated with the authenticated Principal.
+     * @return the array of known credentials associated with the authenticated Principal.
      * @throws SSOAuthenticationException if an error occures while accessing the store.
      */
     protected Credential[] getKnownCredentials() throws SSOAuthenticationException {

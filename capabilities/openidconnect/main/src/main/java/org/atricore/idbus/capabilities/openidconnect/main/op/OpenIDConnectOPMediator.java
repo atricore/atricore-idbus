@@ -62,6 +62,7 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
                     switch (binding) {
                         case OPENID_PROVIDER_TOKEN_HTTP:
                         case OPENID_PROVIDER_TOKEN_RESTFUL:
+                        case OPENID_PROVIDER_USERINFO_RESTFUL:
 
                             // FROM idbus-http TO idbus-bind (through direct component)
                             from("idbus-http:" + ed.getLocation()).

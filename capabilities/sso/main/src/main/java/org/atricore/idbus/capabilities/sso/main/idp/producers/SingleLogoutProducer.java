@@ -1347,11 +1347,6 @@ public class SingleLogoutProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, spEndpoint);
         idPlanExchange.setProperty(VAR_SECURITY_CONTEXT, secCtx);
 
-//        idPlanExchange.setTransientProperty(SSOPlanningConstants.VAR_IGNORE_REQUESTED_NAMEID_POLICY, new Boolean(this.isIgnoreRequestedNameIDPolicy()));
-//        idPlanExchange.setTransientProperty(SSOPlanningConstants.VAR_DEFAULT_NAMEID_BUILDER, getDefaultNameIDBuilder());
-//        idPlanExchange.setTransientProperty(SSOPlanningConstants.VAR_NAMEID_BUILDERS, getNameIDBuilders());
-
-
         // Create in/out artifacts
         IdentityArtifact<LogoutRequestType> in =
                 new IdentityArtifactImpl<LogoutRequestType>(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "LogoutRequest"),

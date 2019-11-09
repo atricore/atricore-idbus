@@ -23,7 +23,11 @@ public interface OpenIDConnectConstants {
     
     QName TokenService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "TokenService");
 
+    QName UserInfoService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "UserInfoService");
+
     QName RPTokenService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "RPTokenService");
+
+    QName RPUserInfoService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "RPTUserInfoService");
 
     QName RPInitLogoutService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "LogoutService");
 
@@ -61,6 +65,8 @@ public interface OpenIDConnectConstants {
     String SEC_CTX_AUTHZ_CODE_KEY = "authorization_code";
 
     String SEC_CTX_REFRESH_TOKEN_KEY = "refresh_token";
+
+    String SEC_CTX_ACCESS_TOKEN_KEY = "access_token";
 
     String AUTHN_CTX_KEY = "urn:org:atricore:idbus:capabilities:openidconnect:authnCtx";
 

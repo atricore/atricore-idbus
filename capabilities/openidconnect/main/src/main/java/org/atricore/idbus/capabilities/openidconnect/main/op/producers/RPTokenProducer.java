@@ -2,6 +2,9 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.nimbusds.oauth2.sdk.token.Tokens;
+import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,7 +40,7 @@ import java.net.URI;
  */
 public class RPTokenProducer extends AbstractOpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(TokenProducer.class);
+    private static final Log logger = LogFactory.getLog(RPTokenProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
@@ -71,11 +74,12 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
         HTTPResponse proxyResponse = proxyTokenRequest.toHTTPRequest().send();
 
-        TokenResponse proxyTokenResponse = TokenResponse.parse(proxyResponse);
+        OIDCTokenResponse proxyTokenResponse = OIDCTokenResponse.parse(proxyResponse);
 
         if (proxyTokenResponse.indicatesSuccess()) {
-            AccessTokenResponse at = proxyTokenResponse.toSuccessResponse();
-            authnCtx.setTokens(at.getTokens());
+            OIDCTokenResponse at = proxyTokenResponse.toSuccessResponse();
+            OIDCTokens tokens = at.getTokens().toOIDCTokens();
+
         } else {
             TokenErrorResponse err = proxyTokenResponse.toErrorResponse();
             authnCtx.setTokens(null);
@@ -85,6 +89,9 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
                 logger.error("Error obtaining AccessToken : " + error.getCode() + ". " + error.getDescription());
 
         }
+
+        // Store context
+        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 proxyTokenResponse,

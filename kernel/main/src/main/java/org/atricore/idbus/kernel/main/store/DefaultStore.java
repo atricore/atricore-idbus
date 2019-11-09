@@ -124,19 +124,19 @@ public class DefaultStore extends AbstractStore {
 
         // First Name
         if (jdoUser.getFirstName() != null) {
-            SSONameValuePair firstName = new SSONameValuePair("firstName", jdoUser.getFirstName());
+            SSONameValuePair firstName = new SSONameValuePair("given_name", jdoUser.getFirstName());
             ssoUser.addProperty(firstName);
         }
 
         // Last Name
         if (jdoUser.getSurename() != null) {
-            SSONameValuePair lastName = new SSONameValuePair("lastName", jdoUser.getSurename());
+            SSONameValuePair lastName = new SSONameValuePair("family_name", jdoUser.getSurename());
             ssoUser.addProperty(lastName);
         }
 
         // Common Name
         if (jdoUser.getCommonName() != null) {
-            SSONameValuePair commonName = new SSONameValuePair("commonName", jdoUser.getCommonName());
+            SSONameValuePair commonName = new SSONameValuePair("name", jdoUser.getCommonName());
             ssoUser.addProperty(commonName);
         }
 
@@ -148,13 +148,13 @@ public class DefaultStore extends AbstractStore {
 
         // Language
         if (jdoUser.getLanguage() != null) {
-            SSONameValuePair language = new SSONameValuePair("language", jdoUser.getLanguage());
+            SSONameValuePair language = new SSONameValuePair("locale", jdoUser.getLanguage());
             ssoUser.addProperty(language);
         }
 
         // Telephone Number
         if (jdoUser.getTelephoneNumber() != null) {
-            SSONameValuePair telephoneNumber = new SSONameValuePair("telephoneNumber", jdoUser.getTelephoneNumber());
+            SSONameValuePair telephoneNumber = new SSONameValuePair("phone_number", jdoUser.getTelephoneNumber());
             ssoUser.addProperty(telephoneNumber);
         }
 

@@ -3,8 +3,12 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.binding;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.*;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
+import com.nimbusds.openid.connect.sdk.UserInfoRequest;
+import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
@@ -23,19 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-/**
- *
- */
-public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
 
-    private static final Log logger = LogFactory.getLog(TokenRequestRestfulBinding.class);
+public class UserInfoRequestRestfulBinding extends AbstractOpenIDHttpBinding {
 
-    public TokenRequestRestfulBinding(Channel channel) {
+    private static final Log logger = LogFactory.getLog(UserInfoRequestRestfulBinding.class);
+
+    public UserInfoRequestRestfulBinding(Channel channel) {
         super(OpenIDConnectBinding.OPENID_PROVIDER_TOKEN_RESTFUL.getValue(), channel);
     }
 
@@ -48,69 +46,27 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             Exchange exchange = message.getExchange().getExchange();
             Message httpMsg = exchange.getIn();
 
+            MediationState state = getState(exchange);
+
             if (logger.isDebugEnabled())
                 logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 
             if (httpMsg.getHeader("http.requestMethod") == null ||
-                    !httpMsg.getHeader("http.requestMethod").equals("POST")) {
+                    !httpMsg.getHeader("http.requestMethod").equals("GET")) {
                 throw new IllegalArgumentException("Unknown message, no valid HTTP Method header found!");
             }
 
-            MediationState state = getState(exchange);
 
 
             // Build request object
             java.net.URI uri = null;
 
-            // ClientID
-            ClientID clientID = state.getTransientVariable("client_id") != null ?
-                    new ClientID(state.getTransientVariable("client_id")) : null;
+            String accessTokenValue = getAccessToken(httpMsg);
+            BearerAccessToken accessToken = new BearerAccessToken(accessTokenValue);
+            UserInfoRequest userInfoRequest = new UserInfoRequest(uri, accessToken);
 
-            // Client Authentication mechanism: // TODO PKI, etc.
-            // TODO : Verify that the mechanism is enabled for the requesting RP
-            ClientAuthentication clientAuthn = null;
-            if (state.getTransientVariable("client_assertion") != null) {
-                String assertionType = state.getTransientVariable("client_assertion_type");
-
-                if (JWTAuthentication.CLIENT_ASSERTION_TYPE.equals(assertionType)) {
-                    SignedJWT assertion = SignedJWT.parse(state.getTransientVariable("client_assertion"));
-                    clientAuthn = new ClientSecretJWT(assertion);
-                }
-
-            } else if (state.getTransientVariable("client_secret") != null) {
-                Secret secret = new Secret(state.getTransientVariable("client_secret"));
-                clientAuthn = new ClientSecretPost(clientID, secret);
-            } else if (httpMsg.getHeader("Authorization") != null) {
-                String authorization = httpMsg.getHeader("Authorization").toString();
-                clientAuthn = ClientSecretBasic.parse(authorization);
-            }
-
-            if (clientAuthn == null) {
-                logger.error("Client Authentication is required");
-                throw new RuntimeException(OAuth2Error.UNAUTHORIZED_CLIENT.getCode());
-            }
-
-            // Authorization Grant
-            // Create map with all transient vars (includes http params).
-            Map<String, List<String>> params = new HashMap<String, List<String>>();
-            for (String var : state.getTransientVarNames()) {
-
-                List<String> values = new ArrayList<String>();
-                values.add(state.getTransientVariable(var));
-                params.put(var, values);
-            }
-            AuthorizationGrant authzGrant = AuthorizationGrant.parse(params);
-
-            // Scope
-            Scope scope = null;
-            if (state.getTransientVariable("scope") != null)
-                scope = Scope.parse(state.getTransientVariable("scope"));
-
-            // Audience
-            TokenRequest tokenRequest = new TokenRequest(uri, clientAuthn, authzGrant, scope);
-
-            return new MediationMessageImpl<TokenRequest>(httpMsg.getMessageId(),
-                    tokenRequest,
+            return new MediationMessageImpl<UserInfoRequest>(httpMsg.getMessageId(),
+                    userInfoRequest,
                     null,
                     null,
                     null,
@@ -189,16 +145,16 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
 
         String marshalledHttpResponseBody = "";
 
-        if (out.getContent() instanceof TokenResponse) {
+        if (out.getContent() instanceof UserInfoResponse) {
             try {
-                TokenResponse tokenResponse = (TokenResponse) out.getContent();
-                HTTPResponse httpResponse = tokenResponse.toHTTPResponse();
+                UserInfoResponse userInfoResponse = (UserInfoResponse) out.getContent();
+                HTTPResponse httpResponse = userInfoResponse.toHTTPResponse();
 
                 marshalledHttpResponseBody = httpResponse.getContent();
 
             } catch (SerializeException e) {
-                logger.error("Error marshalling TokenResponse to JSON: " + e.getMessage(), e);
-                throw new IllegalStateException("Error marshalling TokenResponse to JSON: " + e.getMessage());
+                logger.error("Error marshalling UserInfoResponse to JSON: " + e.getMessage(), e);
+                throw new IllegalStateException("Error marshalling UserInfoResponse to JSON: " + e.getMessage());
             }
         } else {
             throw new IllegalStateException("Content type supported for OIDC HTTP Redirect binding " + out.getContentType() + " ["+out.getContent()+"]");
@@ -237,17 +193,22 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
 
         try {
 
-            MediationState state = null;
+            Message httpMsg = exchange.getIn();
 
-            // Read params now, but send them to state creation method later
             params = getParameters(exchange.getIn().getHeader("org.apache.camel.component.http.query", String.class));
             if (exchange.getIn().getHeader("http.requestMethod").equals("POST"))
                 params.putAll(getParameters((InputStream) exchange.getIn().getBody()));
 
-            String code = params.get("code");
-            if (code == null) {
+            MediationState state = null;
+
+            // Read params now, but send them to state creation method later
+
+            String accessTokenValue = getAccessToken(httpMsg);
+            logger.trace("Using access token: " + accessTokenValue);
+
+            if (accessTokenValue == null) {
                 if (logger.isDebugEnabled())
-                    logger.debug("No code received, creating new state ");
+                    logger.debug("No access token  received, creating new state ");
                 state = createMediationState(exchange, params);
                 return state;
             }
@@ -258,14 +219,14 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             // Add retries just in case we're in a cluster (they are disabled in non HA setups)
             int retryCount = getRetryCount();
             if (retryCount > 0) {
-                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code, retryCount, getRetryDelay());
+                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, accessTokenValue, retryCount, getRetryDelay());
             } else {
-                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code);
+                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, accessTokenValue);
             }
 
             // Add retries just in case we're in a cluster (they are disabled in non HA setups)
             if (logger.isDebugEnabled())
-                logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for authz_code " + code);
+                logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for access token " + accessTokenValue);
 
             if (lState == null) {
                 // Create a new local state instance ?
@@ -280,9 +241,21 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             mutableState.setTransientVars(params);
 
             return mutableState;
-        } catch (IOException e) {
-            logger.error("Error creating state, providing new instance");
+        } catch (Exception e) {
+            logger.error("Error creating state, providing new instance!", e);
             return createMediationState(exchange, params);
         }
+    }
+
+    protected String getAccessToken(Message httpMsg) {
+        String accessTokenValue = (String) httpMsg.getHeader("Authorization"); // Bearer SlAV32hkKG Get value
+        if (accessTokenValue == null || "".equals(accessTokenValue))
+            logger.error("No Authorization header found in HTTP GET");
+
+        if (accessTokenValue.startsWith("Bearer ")) {
+            accessTokenValue = accessTokenValue.substring("Bearer ".length());
+        }
+
+        return accessTokenValue;
     }
 }
