@@ -163,6 +163,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                 attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
                 attrProp.getAttributeValue().add(attributeMapping.getAttrName().substring(1, attributeMapping.getAttrName().length() - 1));
                 userAttrs.add(attrProp);
+
             } else if (attributeMapping.getAttrName().startsWith("vt:")) {
 
                 String vtExpr = attributeMapping.getAttrName().substring("vt:".length());
@@ -182,7 +183,13 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                         attrProp.setName(attributeMapping.getReportedAttrName());
                         attrProp.setFriendlyName(attrProp.getName());
                         attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
-                        attrProp.getAttributeValue().add(baos.toString());
+                        String tokens = baos.toString().trim();
+
+                        // Support multiple values
+                        StringTokenizer st = new StringTokenizer(tokens);
+                        while(st.hasMoreTokens())
+                            attrProp.getAttributeValue().add(st.nextToken());
+
                         userAttrs.add(attrProp);
                     } else {
                         logger.error("Invalid expression ["+vtExpr+"] for " + attributeMapping.getReportedAttrName());
@@ -204,6 +211,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
         List<AttributeType> attrRoles = new ArrayList<AttributeType>();
 
+        // TODO : Allow groups expression group-vt:
         AttributeMapping groupsAttributeMapping = getAttributeMapping(GROUPS_ATTR_NAME);
         if (groupsAttributeMapping != null || includeNonMappedProperties) {
             AttributeType attrRole = new AttributeType();

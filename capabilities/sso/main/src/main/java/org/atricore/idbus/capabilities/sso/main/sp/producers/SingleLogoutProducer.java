@@ -230,7 +230,7 @@ public class SingleLogoutProducer extends SSOProducer {
             }
 
             if (idpSloRequest.getReplyTo() == null) {
-                logger.error("No (SSO Artifact) endpoint found in channel " + channel.getName() + " for service " +
+                logger.error("No Proxy SLO endpoint found in channel " + channel.getName() + " for service " +
                         SSOMetadataConstants.ProxySingleLogoutService_QName.toString());
             }
 

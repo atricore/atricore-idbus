@@ -62,6 +62,7 @@ import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
+import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 import org.atricore.idbus.kernel.main.federation.*;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
@@ -91,6 +92,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import java.security.Principal;
 import java.util.*;
 
 /**
@@ -392,7 +394,13 @@ public class AssertionConsumerProducer extends SSOProducer {
                 if (logger.isTraceEnabled())
                     logger.trace("Using identity mapper : " + im.getClass().getName());
 
-                federatedSubject = im.map(idpSubject, localAccountSubject);
+                String remoteAddress = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+                Set<Principal> additionalPrincipals = new HashSet<Principal>();
+                SubjectAttribute ipAddress = new SubjectAttribute("remoteIpAddress", remoteAddress);
+                additionalPrincipals.add(ipAddress);
+
+                federatedSubject = im.map(idpSubject, localAccountSubject, additionalPrincipals);
+
             }
 
             // Add IDP Name to federated Subject
