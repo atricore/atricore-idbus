@@ -3,13 +3,16 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attribute
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
-import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 
 import javax.security.auth.Subject;
+import java.io.*;
 import java.util.*;
 
 public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
@@ -27,14 +30,55 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
     private Map<String, AttributeMapping> attributeMaps = new HashMap<String, AttributeMapping>();
 
+    private boolean includeNonMappedProperties = true;
+
     public DynamicAttributeProfileMapper() {
         setType(SamlR2AttributeProfileType.CUSTOM);
+    }
+
+    private VelocityEngine velocityEngine;
+
+    private boolean init = false;
+
+    public void init() {
+        if (init)
+            return;
+
+        try {
+            velocityEngine = new VelocityEngine();
+
+            // Setup classpath resource loader  (Actually not used!)
+            velocityEngine.setProperty(Velocity.RESOURCE_LOADER, "classpath");
+
+            velocityEngine.addProperty(
+                    "classpath." + Velocity.RESOURCE_LOADER + ".class",
+                    "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+            velocityEngine.setProperty(
+                    "classpath." + Velocity.RESOURCE_LOADER + ".cache", "false");
+
+            velocityEngine.setProperty(
+                    "classpath." + Velocity.RESOURCE_LOADER + ".modificationCheckInterval",
+                    "2");
+
+            velocityEngine.init();
+
+            init = true;
+
+        } catch (Exception e) {
+            logger.error("Cannot initialize serializer, velocity error: " + e.getMessage(), e);
+        }
+
     }
 
     @Override
     protected Collection<AttributeType> userToAttributes(SSOUser ssoUser, SamlR2SecurityTokenEmissionContext emissionContext) {
 
+        init();
+
         List<AttributeType> userAttrs = new ArrayList<AttributeType>();
+
+        VelocityContext veCtx = new VelocityContext();
 
         // Principal
         AttributeMapping principalAttributeMapping = getAttributeMapping(PRINCIPAL_ATTR_NAME);
@@ -46,6 +90,8 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                     principalAttributeMapping.getReportedAttrName() : "principal");
             attrPrincipal.setNameFormat(principalAttributeMapping.getReportedAttrNameFormat());
             attrPrincipal.getAttributeValue().add(ssoUser.getName());
+
+            veCtx.put("principal", principalAttributeMapping.getReportedAttrNameFormat());
         }
 
         // IdP SSO Session
@@ -58,6 +104,8 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                     idpSsoSessionAttributeMapping.getReportedAttrName() : "idpSsoSession");
             idpSsoSession.setNameFormat(idpSsoSessionAttributeMapping.getReportedAttrNameFormat());
             idpSsoSession.getAttributeValue().add(emissionContext.getSessionIndex());
+
+            veCtx.put("idpSsoSession", emissionContext.getSessionIndex());
         }
 
 
@@ -66,7 +114,11 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
             // Keep attributes simple, if they are URIs, remove prefixes
             for (SSONameValuePair property : ssoUser.getProperties()) {
+
+                veCtx.put(property.getName(), property.getValue());
+
                 AttributeMapping attributeMapping = getAttributeMapping(property.getName());
+
                 if (attributeMapping != null) {
                     AttributeType attrProp = new AttributeType();
 
@@ -80,11 +132,28 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                     attrProp.getAttributeValue().add(property.getValue());
 
                     userAttrs.add(attrProp);
+
+                } else if (includeNonMappedProperties) {
+
+                    AttributeType attrProp = new AttributeType();
+
+                    // Only qualify property names if needed
+                    attrProp.setName(property.getName());
+                    if (property.getName().indexOf(':') >= 0) {
+                        attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
+                    } else {
+                        attrProp.setNameFormat(AttributeNameFormat.BASIC.getValue());
+                    }
+
+                    attrProp.getAttributeValue().add(property.getValue());
+                    userAttrs.add(attrProp);
                 }
+
             }
+
         }
 
-        // Add constants
+        // Add constants and expressions!
         for (AttributeMapping attributeMapping : attributeMaps.values()) {
             if (attributeMapping.getAttrName().startsWith("\"") && attributeMapping.getAttrName().endsWith("\"") &&
                     attributeMapping.getReportedAttrName() != null && !attributeMapping.getReportedAttrName().equals("")) {
@@ -94,6 +163,42 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                 attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
                 attrProp.getAttributeValue().add(attributeMapping.getAttrName().substring(1, attributeMapping.getAttrName().length() - 1));
                 userAttrs.add(attrProp);
+
+            } else if (attributeMapping.getAttrName().startsWith("vt:")) {
+
+                String vtExpr = attributeMapping.getAttrName().substring("vt:".length());
+                OutputStream baos = new ByteArrayOutputStream();
+                OutputStreamWriter out  = new OutputStreamWriter(baos);
+
+                InputStream is = new ByteArrayInputStream(vtExpr.getBytes());
+                Reader in = new InputStreamReader(is);
+
+
+                // Support scripting!
+                try {
+                    if (velocityEngine.evaluate(veCtx, out, attributeMapping.getReportedAttrName(), in)) {
+                        out.flush();
+
+                        AttributeType attrProp = new AttributeType();
+                        attrProp.setName(attributeMapping.getReportedAttrName());
+                        attrProp.setFriendlyName(attrProp.getName());
+                        attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
+                        String tokens = baos.toString().trim();
+
+                        // Support multiple values
+                        StringTokenizer st = new StringTokenizer(tokens);
+                        while(st.hasMoreTokens())
+                            attrProp.getAttributeValue().add(st.nextToken());
+
+                        userAttrs.add(attrProp);
+                    } else {
+                        logger.error("Invalid expression ["+vtExpr+"] for " + attributeMapping.getReportedAttrName());
+                    }
+                } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
+                }
+
+
             }
         }
 
@@ -102,14 +207,16 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
     @Override
     protected Collection<AttributeType> rolesToAttributes(Set<SSORole> ssoRoles) {
+        init();
 
         List<AttributeType> attrRoles = new ArrayList<AttributeType>();
 
+        // TODO : Allow groups expression group-vt:
         AttributeMapping groupsAttributeMapping = getAttributeMapping(GROUPS_ATTR_NAME);
-        if (groupsAttributeMapping != null) {
+        if (groupsAttributeMapping != null || includeNonMappedProperties) {
             AttributeType attrRole = new AttributeType();
 
-            attrRole.setName((groupsAttributeMapping.getReportedAttrName() != null &&
+            attrRole.setName((groupsAttributeMapping!= null && groupsAttributeMapping.getReportedAttrName() != null &&
                     !groupsAttributeMapping.getReportedAttrName().equals("")) ?
                     groupsAttributeMapping.getReportedAttrName() : "groups");
             attrRole.setFriendlyName(attrRole.getName());
@@ -125,6 +232,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
     @Override
     protected Collection<AttributeType> policiesToAttributes(Set<PolicyEnforcementStatement> ssoPolicies) {
+        init();
         // SSO Enforced policies
         // TODO : Can we use SAML Authn context information ?!
         List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
@@ -149,6 +257,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
     @Override
     public AuthnCtxClass toAuthnCtxClass(Subject ssoSubject, AuthnCtxClass original) {
+        init();
         AttributeMapping authnCtxClassAttributeMapping = getAttributeMapping(AUTHN_CTX_CLASS_ATTR_NAME);
         if (authnCtxClassAttributeMapping != null && authnCtxClassAttributeMapping.getReportedAttrName() != null &&
                 !authnCtxClassAttributeMapping.getReportedAttrName().equals("")) {
@@ -165,5 +274,13 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
         for (AttributeMapping attributeMapping : attributeMaps) {
             this.attributeMaps.put(attributeMapping.getAttrName(), attributeMapping);
         }
+    }
+
+    public boolean isIncludeNonMappedProperties() {
+        return includeNonMappedProperties;
+    }
+
+    public void setIncludeNonMappedProperties(boolean includeNonMappedProperties) {
+        this.includeNonMappedProperties = includeNonMappedProperties;
     }
 }

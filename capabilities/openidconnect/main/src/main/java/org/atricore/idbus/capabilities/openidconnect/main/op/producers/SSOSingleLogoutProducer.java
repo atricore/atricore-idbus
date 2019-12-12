@@ -1,6 +1,7 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.oauth2.sdk.OAuth2Error;
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.commons.logging.Log;
@@ -10,6 +11,9 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMediator;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.common.sso._1_0.protocol.IDPPRoxyInitiatedLogoutResponseType;
+import org.atricore.idbus.common.sso._1_0.protocol.IDPProxyInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -39,6 +43,66 @@ public class SSOSingleLogoutProducer extends AbstractOpenIDProducer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        if (in.getMessage().getContent() instanceof SSOResponseType) {
+            doProcessSSOResponse((SSOResponseType) in.getMessage().getContent(), exchange);
+
+        } else if (in.getMessage().getContent() instanceof IDPProxyInitiatedLogoutRequestType) {
+            doProcessSLOProxyRequest((IDPProxyInitiatedLogoutRequestType) in.getMessage().getContent(), exchange);
+        }
+
+    }
+
+    protected void doProcessSLOProxyRequest(IDPProxyInitiatedLogoutRequestType sloProxyRequest, CamelMediationExchange exchange) {
+        // Invalidate OIDC Authn context.
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        MediationState state = in.getMessage().getState();
+
+        OpenIDConnectAuthnContext authnCtx =
+                (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+
+        if (authnCtx != null) {
+            Tokens t = authnCtx.getTokens();
+            if (logger.isDebugEnabled())
+                logger.debug("Invalidating " + t.getAccessToken());
+        }
+
+        // Clear state.
+        state.removeLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+
+
+        // Send SSOResponse back to requesting party
+        IDPPRoxyInitiatedLogoutResponseType ssoProxyResponse = new IDPPRoxyInitiatedLogoutResponseType();
+        ssoProxyResponse.setInReplayTo(sloProxyRequest.getID());
+
+        // TODO : Check if we need to notify the IDP selector!!!
+        /*
+        EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, requiredSpChannel);
+        if (idpSelectorCallbackEndpoint != null) {
+            logger.warn("NOT Sending Current Selected IdP request (IMPLEMENT), callback location : " + idpSelectorCallbackEndpoint);
+        }
+         */
+
+        EndpointDescriptor proxyEd = new EndpointDescriptorImpl("idp-proxy-init-slo-repsonse",
+                "SLOService",
+                SSOBinding.SSO_ARTIFACT.toString(),
+                sloProxyRequest.getReplyTo(),
+                null);
+
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                ssoProxyResponse, "IDPPRoxyInitiatedLogoutResponse", null, proxyEd, in.getMessage().getState()));
+
+        exchange.setOut(out);
+        return;
+
+    }
+
+
+    protected void doProcessSSOResponse(SSOResponseType sloResponse, CamelMediationExchange exchange) throws Exception {
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         MediationState state = in.getMessage().getState();
 
@@ -47,8 +111,6 @@ public class SSOSingleLogoutProducer extends AbstractOpenIDProducer {
 
         SPInitiatedLogoutRequestType sloRequest = authnCtx.getSloRequest();
         LogoutRequest logoutRequest = authnCtx.getLogoutRequest();
-
-        SSOResponseType sloResponse = (SSOResponseType) in.getMessage().getContent();
 
         verifyResponse(sloResponse, sloRequest);
 
