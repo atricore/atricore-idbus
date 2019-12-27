@@ -104,7 +104,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         if (transactionId != null) {
             PendingTransaction t = transactionStore.retrieve(transactionId);
             long now = System.currentTimeMillis();
-            return t.getExpiresOn() < now;
+            return t.getExpiresOn() > now;
         }
 
         return false;
