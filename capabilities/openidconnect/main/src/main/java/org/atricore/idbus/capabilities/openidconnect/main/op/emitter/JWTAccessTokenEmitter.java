@@ -28,6 +28,7 @@ import org.atricore.idbus.kernel.planning.IdentityArtifact;
 
 import javax.security.auth.Subject;
 import java.util.Date;
+import java.util.UUID;
 
 public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
 
@@ -130,14 +131,17 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
                 // exp
                 Date exp = new Date(System.currentTimeMillis() + 5L * 60L * 1000L);
 
+                // JTI
+                String jti = uuidGenerator.generateId();
+
                 // Claims
-                JWTClaimsSet claimSet = new JWTClaimsSet.Builder().issuer(iss.getValue()).expirationTime(exp).claim("aud", audList).build();
+                JWTClaimsSet claimSet = new JWTClaimsSet.Builder().issuer(iss.getValue()).expirationTime(exp).claim("aud", audList).jwtID(jti).build();
                 JWT token = signJWT(client, this.signer.getPrivateKey(), jwsAlgorithm, claimSet);
 
                 String jwtTokenStr = token.serialize();
 
                 AccessToken at = new BearerAccessToken(jwtTokenStr, timeToLive, scope);
-                SecurityTokenImpl<AccessToken> st = new SecurityTokenImpl<AccessToken>(at.getValue(),
+                SecurityTokenImpl<AccessToken> st = new SecurityTokenImpl<AccessToken>(jti,
                         WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE,
                         at);
 
