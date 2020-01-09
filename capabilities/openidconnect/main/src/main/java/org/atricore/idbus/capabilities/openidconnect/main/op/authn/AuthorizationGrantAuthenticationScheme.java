@@ -13,7 +13,7 @@ import java.security.Principal;
 import java.util.Set;
 
 /**
- * TODO: This must be able to authenticate a token request by processing an authorization grant.
+ * This authenticates an authorization code grant.
  */
 public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticationScheme {
 
