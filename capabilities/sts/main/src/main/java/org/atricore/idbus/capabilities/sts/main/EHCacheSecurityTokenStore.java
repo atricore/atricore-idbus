@@ -137,6 +137,10 @@ public class EHCacheSecurityTokenStore implements
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
             int timeToLive = (int) (token.getExpiresOn() - System.currentTimeMillis());
+            if (timeToLive <= 0 ) {
+                logger.warn("Time to live not provided in token, defaulting to " + defaultTimteToLive);
+                timeToLive = defaultTimteToLive;
+            }
 
             Element e = new Element(token.getId(), token);
             e.setTimeToLive(timeToLive);
