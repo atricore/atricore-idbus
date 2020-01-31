@@ -52,9 +52,9 @@ public class IdPSelectorCallbackProducer extends SSOProducer {
         String relayState = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP);
         String type = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_TYPE_VAR_TMP);
         String signerChannel = (String) state.getLocalVariable(SSOConstants.SSO_RESPONSE_SIGNER_VAR_TMP);
-        SamlR2Signer signer = resolveSignerForChannel(signerChannel);
+        //SamlR2Signer signer = resolveSignerForChannel(signerChannel);
 
-        state.setAttribute("SAMLR2Signer", signer);
+        state.setAttribute("SAMLR2Signer-channel", signerChannel);
 
         if (logger.isDebugEnabled()) {
             if (ssoResponse instanceof ResponseType) {

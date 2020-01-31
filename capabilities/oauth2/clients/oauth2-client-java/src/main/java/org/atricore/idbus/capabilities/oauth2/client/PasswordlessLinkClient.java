@@ -16,7 +16,7 @@ public class PasswordlessLinkClient extends AbstractWSClient {
      *
      * @param username
      * @param targetSP
-     * @param template Veolicity template to build the message with the link
+     * @param template Velocity template to build the message with the link
      * @throws Exception
      */
     public void sendPasswordlessLink(String username, String targetSP, String template, Properties templateProperties) throws Exception {
