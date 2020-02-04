@@ -153,7 +153,7 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
         String subject = evaluateVelocity(e, veCtx, config.getSubject());
         String contentType = "text/html";  // config.getContentType();
 
-        String template = atReq.getTemplate() != null  ? atReq.getTemplate() : config.getTemplate();
+        String template = atReq.getTemplate() != null ? atReq.getTemplate() : config.getTemplate();
         String msg = evaluateVelocity(e, veCtx, template);
 
         mailService.send(from, to, subject, msg.toString(), contentType);

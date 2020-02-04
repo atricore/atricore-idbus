@@ -2,6 +2,7 @@
 <%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2ClientException" %>
 <%@ page import="org.atricore.idbus.common.oauth._2_0.protocol.SSOPolicyEnforcementStatementType" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Properties" %>
 <%
 
     // Create oauth 2 client using properties file and initialize it
@@ -14,12 +15,14 @@
 
     try {
 
-        String defaultSPAlias = "https://josso.atricore.com/IDBUS/IDA-1/SP-APP-1/SAML2/MD";
+        String defaultSPAlias = "https://sso.atricore.com/IDBUS/MLINK/SP-1/SAML2/MD";
+        Properties props = new Properties();
+        props.setProperty("remember_me", "true");
 
-        client.sendPasswordlessLink(request.getParameter("username"), defaultSPAlias, "");
+        // **/SOAP
 
+        client.sendPasswordlessLink(request.getParameter("username"), defaultSPAlias, null, props);
 
-        return;
     } catch (OAuth2ClientException e) {
         error = e;
     }

@@ -1,15 +1,10 @@
 <html>
 <body>
 <h3>Hello $username</h3>
-<p>Follow This link:<br/>
-    <a href="http://localhost:8081/IDBUS/DEV/IDP/SAML2/SSO/IDP_INITIATE?atricore_security_token=$encodedToken&scope=preauth-token&atricore_sp_alias=$targetSP">LOGIN</a>
+<p>You requested an authentication link, please click <a href="$authnURL">LOGIN</a> to access your application.
 </p>
 <p>
-    <br/>TOKEN  : $token
-    <br/>
-    <br/>E.TOKEN: $encodedToken
-    <br/>
-    <br/>TARGET :$targetSP
+    <br/>targetSP :$targetSP
 </p>
 </body>
 </html>
