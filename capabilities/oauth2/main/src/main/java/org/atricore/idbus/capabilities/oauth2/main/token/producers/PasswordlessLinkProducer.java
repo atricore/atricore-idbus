@@ -35,6 +35,7 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.Properties;
 
@@ -64,6 +65,8 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
         // We are acting as OAUTH 2.0 Authorization server, we consider it an IDP role.
         SendPasswordlessLinkResponseType atRes = new SendPasswordlessLinkResponseType();
+        atRes.setError(null);
+        atRes.setStatusCode(new BigInteger("200"));
 
         OAuth2Client client = null;
         // This returns the SP associated with the OAuth request.
@@ -153,7 +156,7 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
         String subject = evaluateVelocity(e, veCtx, config.getSubject());
         String contentType = "text/html";  // config.getContentType();
 
-        String template = atReq.getTemplate() != null ? atReq.getTemplate() : config.getTemplate();
+        String template = config.getTemplate();
         String msg = evaluateVelocity(e, veCtx, template);
 
         mailService.send(from, to, subject, msg.toString(), contentType);
@@ -273,7 +276,7 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
         return true;
 
     }
-    
+
     protected VelocityEngine buildVelocityEngine() throws Exception {
 
         VelocityEngine e = new VelocityEngine();
