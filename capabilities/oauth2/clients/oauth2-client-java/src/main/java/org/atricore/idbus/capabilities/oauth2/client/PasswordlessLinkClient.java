@@ -16,17 +16,15 @@ public class PasswordlessLinkClient extends AbstractWSClient {
      *
      * @param username
      * @param targetSP
-     * @param template Velocity template to build the message with the link
      * @throws Exception
      */
-    public void sendPasswordlessLink(String username, String targetSP, String template, Properties templateProperties) throws Exception {
+    public void sendPasswordlessLink(String username, String targetSP, Properties templateProperties) throws Exception {
 
         SendPasswordlessLinkRequestType req = new SendPasswordlessLinkRequestType();
         req.setClientId(getClientId());
         req.setClientSecret(getClientSecret());
         req.setUsername(username);
         req.setTargetSP(targetSP);
-        req.setTemplate(template);
 
         if (templateProperties != null) {
             while (templateProperties.propertyNames().hasMoreElements()) {
