@@ -53,6 +53,14 @@
         <part name="body" element="oauth2p:AccessTokenResponse"/>
     </message>
 
+    <message name="SendPasswordlessLinkRequestMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkRequest"/>
+    </message>
+
+    <message name="SendPasswordlessLinkResponseMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkResponse"/>
+    </message>
+
 
     <portType name="OAuthPortType">
 
@@ -62,7 +70,7 @@
             <output name="AuthorizationResponseOutput"
                          message="tns:AuthorizationResponseMessage"/>
         </operation>
-        
+
         <operation name="AccessTokenRequest">
             <input name="AccessTokenRequestInput"
                         message="tns:AccessTokenRequestMessage"/>
@@ -70,9 +78,15 @@
                          message="tns:AccessTokenResponseMessage"/>
         </operation>
 
+        <operation name="SendPasswordlessLinkRequest">
+            <input name="SendPasswordlessLinkRequestInput"
+                   message="tns:SendPasswordlessLinkRequestMessage"/>
+            <output name="SendPasswordlessLinkResponseOutput"
+                    message="tns:SendPasswordlessLinkResponseMessage"/>
+        </operation>
 
     </portType>
-    
+
     <binding name="OAuthSoapBinding" type="tns:OAuthPortType">
         <soap:binding style="document"
                       transport="http://schemas.xmlsoap.org/soap/http"/>
@@ -101,6 +115,19 @@
             </output>
         </operation>
 
+        <operation name="SendPasswordlessLinkRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="SendPasswordlessLinkRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SendPasswordlessLinkResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+
     </binding>
 
 
@@ -112,5 +139,5 @@
             <soap:address location="http://localhost:8081/OAuthService/"/>
         </port>
     </wsdl:service>
-    
+
 </wsdl:definitions>

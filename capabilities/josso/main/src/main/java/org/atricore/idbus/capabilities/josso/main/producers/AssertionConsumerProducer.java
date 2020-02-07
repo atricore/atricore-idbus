@@ -160,10 +160,10 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         }
 
         // Validate in-reply-to
-        if (response.getInReplayTo() == null ||
+        if (response.getInReplayTo() != null &&
                 !request.getID().equals(response.getInReplayTo())) {
             throw new JossoException("Response is not a reply to " +
-                    request.getID() + " ["+(response.getInReplayTo() == null ? "<null>" : response.getInReplayTo())+"]");
+                    request.getID() + " [" + response.getInReplayTo() + "]");
 
         }
 

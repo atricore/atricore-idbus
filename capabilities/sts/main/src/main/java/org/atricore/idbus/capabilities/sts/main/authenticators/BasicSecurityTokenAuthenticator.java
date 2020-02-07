@@ -47,20 +47,8 @@ public class BasicSecurityTokenAuthenticator extends AbstractSecurityTokenAuthen
         if (requestToken instanceof UsernameTokenType) {
 
             UsernameTokenType usernameToken = (UsernameTokenType) requestToken;
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("UsernameTokenType [" + usernameToken.getUsername().getValue() + "]");
-
-                Map<QName, String> map = usernameToken.getOtherAttributes();
-                for (QName key : map.keySet()) {
-                    String value = map.get(key);
-                    logger.trace("UsernameTokenType [" + usernameToken.getUsername().getValue() + "]. Attr: " + key + "=["+value+"]");
-                }
-            }
-
             if (usernameToken.getOtherAttributes().get( new QName( PASSWORD_NS) ) != null)
                 return true;
-
 
         }
 
