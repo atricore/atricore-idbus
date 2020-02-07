@@ -98,12 +98,13 @@
                 </xsd:complexContent>
             </xsd:complexType>
 
+
             <xsd:element name="AuthorizationRequest" type="oauth2p:AuthorizationRequestType"/>
             <xsd:complexType name="AuthorizationRequestType">
                 <xsd:complexContent>
                     <xsd:extension base="oauth2p:OAuthRequestAbstractType">
-                        <xsd:attribute name="scope" type="xsd:string" use="required"/>
-                        <xsd:attribute name="responseType" type="xsd:string" use="required" default="code"/>
+                        <xsd:attribute name="scope" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="responseType" type="xsd:string" use="optional" default="code"/>
                         <xsd:attribute name="clientId" type="xsd:string" use="required"/>
 
                         <xsd:attribute name="redirectUri" type="xsd:string" use="optional"/>
@@ -130,7 +131,7 @@
             <xsd:complexType name="AuthorizationResponseType">
                 <xsd:complexContent>
                     <xsd:extension base="oauth2p:OAuthResponseAbstractType">
-                        <xsd:attribute name="code" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="code" type="xsd:string" use="required"/>
                         <xsd:attribute name="accessToken" type="xsd:string" use="optional"/>
                         <xsd:attribute name="refreshToken" type="xsd:string" use="optional"/>
                         <xsd:attribute name="idToken" type="xsd:string" use="optional"/>
@@ -171,6 +172,7 @@
                         <xsd:attribute name="idToken" type="xsd:string" use="optional"/>
                         <xsd:attribute name="tokenType" type="xsd:string" use="optional"/>
                         <xsd:attribute name="expiresIn" type="xsd:long" use="optional"/>
+
                     </xsd:extension>
                 </xsd:complexContent>
             </xsd:complexType>
@@ -180,13 +182,14 @@
                 <xsd:complexContent>
                     <xsd:extension base="oauth2p:OAuthRequestAbstractType">
                         <xsd:sequence>
-                            <xsd:element name="template" type="string" minOccurs="0" maxOccurs="1"/>
+                            <xsd:element name="template" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                            <xsd:element name="properties" type="oauth2p:TemplatePropertyType"  minOccurs="0" maxOccurs="unbounded"/>
                         </xsd:sequence>
-                        <xsd:attribute name="clientId" type="string" use="required"/>
-                        <xsd:attribute name="clientSecret" type="string" use="required"/>
-                        <xsd:attribute name="username" type="string" use="required"/>
+                        <xsd:attribute name="clientId" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="required"/>
+                        <xsd:attribute name="username" type="xsd:string" use="required"/>
 
-                        <xsd:attribute name="targetSP" type="string" use="required"/>
+                        <xsd:attribute name="targetSP" type="xsd:string" use="required"/>
 
                     </xsd:extension>
                 </xsd:complexContent>
@@ -198,6 +201,13 @@
                     <xsd:extension base="oauth2p:OAuthResponseAbstractType">
                     </xsd:extension>
                 </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="TemplatePropertyType">
+                <xsd:sequence>
+                    <xsd:element name="values" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
 
             <xsd:complexType name="SSOPolicyEnforcementStatementType">
@@ -298,16 +308,16 @@
 
         <operation name="AuthorizationRequest">
             <input name="AuthorizationRequestInput"
-                        message="tns:AuthorizationRequestMessage"/>
+                   message="tns:AuthorizationRequestMessage"/>
             <output name="AuthorizationResponseOutput"
-                         message="tns:AuthorizationResponseMessage"/>
+                    message="tns:AuthorizationResponseMessage"/>
         </operation>
 
         <operation name="AccessTokenRequest">
             <input name="AccessTokenRequestInput"
-                        message="tns:AccessTokenRequestMessage"/>
+                   message="tns:AccessTokenRequestMessage"/>
             <output name="AccessTokenResponseOutput"
-                         message="tns:AccessTokenResponseMessage"/>
+                    message="tns:AccessTokenResponseMessage"/>
         </operation>
 
         <operation name="SendPasswordlessLinkRequest">

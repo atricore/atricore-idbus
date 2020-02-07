@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OAuth2Common", "OAuth2Common.csproj", "{E71FCD38-234F-475A-A567-586920702671}"
 EndProject
 Global
@@ -15,8 +17,9 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E71FCD38-234F-475A-A567-586920702671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E71FCD38-234F-475A-A567-586920702671}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E71FCD38-234F-475A-A567-586920702671}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{E71FCD38-234F-475A-A567-586920702671}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E71FCD38-234F-475A-A567-586920702671}.Debug|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E71FCD38-234F-475A-A567-586920702671}.Debug|Mixed Platforms.Build.0 = Release|Any CPU
+		{E71FCD38-234F-475A-A567-586920702671}.Debug|Mixed Platforms.Deploy.0 = Release|Any CPU
 		{E71FCD38-234F-475A-A567-586920702671}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{E71FCD38-234F-475A-A567-586920702671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E71FCD38-234F-475A-A567-586920702671}.Release|Any CPU.Build.0 = Release|Any CPU
