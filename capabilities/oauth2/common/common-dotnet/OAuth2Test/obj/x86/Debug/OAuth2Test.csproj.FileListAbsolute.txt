@@ -8,3 +8,5 @@ C:\atricore\wa\atricore\git\atricore-idbus\capabilities\oauth2\common\common-dot
 C:\atricore\wa\atricore\git\atricore-idbus\capabilities\oauth2\common\common-dotnet\OAuth2Test\bin\Debug\Newtonsoft.Json.dll
 C:\atricore\wa\atricore\git\atricore-idbus\capabilities\oauth2\common\common-dotnet\OAuth2Test\bin\Debug\Newtonsoft.Json.pdb
 C:\atricore\wa\atricore\git\atricore-idbus\capabilities\oauth2\common\common-dotnet\OAuth2Test\bin\Debug\Newtonsoft.Json.xml
+C:\atricore\git\atricore\capabilities\oauth2\common\common-dotnet\OAuth2Test\obj\x86\Debug\OAuth2Test.exe
+C:\atricore\git\atricore\capabilities\oauth2\common\common-dotnet\OAuth2Test\obj\x86\Debug\OAuth2Test.pdb
