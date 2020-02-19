@@ -55,16 +55,74 @@
                 <xsd:attribute name="state" type="xsd:string" use="optional"/>
             </xsd:complexType>
 
+            <xsd:element name="TokenRequest" type="oauth2p:TokenRequestType"/>
+            <xsd:complexType name="TokenRequestType">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:OAuthRequestAbstractType">
+                        <xsd:sequence>
+                            <xsd:element name="clientAuthenthincation" type="oauth2p:ClientAuthenticationType" minOccurs="0" maxOccurs="1"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="grantType" use="required"/>
+                        <xsd:attribute name="code" use="required"/>
+                        <xsd:attribute name="redirectUri" use="required"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="ClientAuthenticationType" abstract="true">
+
+            </xsd:complexType>
+
+            <xsd:complexType name="ClientSecret">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:ClientAuthenticationType">
+                        <xsd:attribute name="clientId" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="required"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="ClientSecretJWT">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:ClientAuthenticationType">
+                        <xsd:attribute name="jwt" type="xsd:string" use="required"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="ClientPrivateKeyJWT">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:ClientAuthenticationType">
+                        <xsd:attribute name="jwt" type="xsd:string" use="required"/>
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+
             <xsd:element name="AuthorizationRequest" type="oauth2p:AuthorizationRequestType"/>
             <xsd:complexType name="AuthorizationRequestType">
                 <xsd:complexContent>
                     <xsd:extension base="oauth2p:OAuthRequestAbstractType">
+                        <xsd:attribute name="scope" type="xsd:string" use="optional"/>
                         <xsd:attribute name="responseType" type="xsd:string" use="optional" default="code"/>
                         <xsd:attribute name="clientId" type="xsd:string" use="required"/>
-                        <xsd:attribute name="clientSecret" type="xsd:string" use="optional"/>
+
                         <xsd:attribute name="redirectUri" type="xsd:string" use="optional"/>
-                        <xsd:attribute name="scope" type="xsd:string" use="optional"/>
                         <xsd:attribute name="state" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="responseMode" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="nonce" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="display" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="prompt" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="maxAget" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="uiLocales" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="idTokenHint" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="loginHint" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="acrValues" type="xsd:string" use="optional"/>
+
+                        <!-- this attribute is non-normative -->
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="idpAlias" type="xsd:string" use="optional"/>
+
                     </xsd:extension>
                 </xsd:complexContent>
             </xsd:complexType>
@@ -74,6 +132,11 @@
                 <xsd:complexContent>
                     <xsd:extension base="oauth2p:OAuthResponseAbstractType">
                         <xsd:attribute name="code" type="xsd:string" use="required"/>
+                        <xsd:attribute name="accessToken" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="refreshToken" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="idToken" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="tokenType" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="expiresIn" type="xsd:long" use="optional"/>
                     </xsd:extension>
                 </xsd:complexContent>
             </xsd:complexType>
@@ -99,15 +162,60 @@
                     <xsd:extension base="oauth2p:OAuthResponseAbstractType">
                         <xsd:sequence>
                             <xsd:element name="oauthAttributes" type="oauth2p:OauthAttributeType" minOccurs="0"
-                                     maxOccurs="unbounded"/>
+                                         maxOccurs="unbounded"/>
+                            <xsd:element name="ssoPolicyEnforcements" type="oauth2p:SSOPolicyEnforcementStatementType" minOccurs="0"
+                                         maxOccurs="unbounded"/>
                         </xsd:sequence>
-                        <xsd:attribute name="tokeyType" type="xsd:string" use="required"/>
-                        <xsd:attribute name="accessToken" type="xsd:string" use="required"/>
-                        <xsd:attribute name="expiresIn" type="xsd:integer"/>
+
+                        <xsd:attribute name="accessToken" type="xsd:string" use="optional"/>
                         <xsd:attribute name="refreshToken" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="idToken" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="tokenType" type="xsd:string" use="optional"/>
+                        <xsd:attribute name="expiresIn" type="xsd:long" use="optional"/>
 
                     </xsd:extension>
                 </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:element name="SendPasswordlessLinkRequest" type="oauth2p:SendPasswordlessLinkRequestType"/>
+            <xsd:complexType name="SendPasswordlessLinkRequestType">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:OAuthRequestAbstractType">
+                        <xsd:sequence>
+                            <xsd:element name="template" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                            <xsd:element name="properties" type="oauth2p:TemplatePropertyType"  minOccurs="0" maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="clientId" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="required"/>
+                        <xsd:attribute name="username" type="xsd:string" use="required"/>
+
+                        <xsd:attribute name="targetSP" type="xsd:string" use="required"/>
+
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:element name="SendPasswordlessLinkResponse" type="oauth2p:SendPasswordlessLinkResponseType"/>
+            <xsd:complexType name="SendPasswordlessLinkResponseType">
+                <xsd:complexContent>
+                    <xsd:extension base="oauth2p:OAuthResponseAbstractType">
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+
+            <xsd:complexType name="TemplatePropertyType">
+                <xsd:sequence>
+                    <xsd:element name="values" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+
+            <xsd:complexType name="SSOPolicyEnforcementStatementType">
+                <xsd:sequence>
+                    <xsd:element name="values" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="ns" type="xsd:string" use="required"/>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
 
             <xsd:element name="RefreshAccessTokenRequest" type="oauth2p:RefreshAccessTokenRequestType"/>
@@ -132,6 +240,17 @@
                     <xsd:enumeration value="invalid_scope"/>
                     <xsd:enumeration value="server_error"/>
                     <xsd:enumeration value="temporary_unavailable"/>
+
+                    <!-- OpenID Connect values -->
+                    <xsd:enumeration value="interaction_required"/>
+                    <xsd:enumeration value="login_required"/>
+                    <xsd:enumeration value="account_selection_required"/>
+                    <xsd:enumeration value="consent_required"/>
+                    <xsd:enumeration value="invalid_request_uri"/>
+                    <xsd:enumeration value="invalid_request_object"/>
+                    <xsd:enumeration value="request_not_supported"/>
+                    <xsd:enumeration value="request_uri_not_supported"/>
+                    <xsd:enumeration value="registration_not_supported"/>
                 </xsd:restriction>
             </xsd:simpleType>
 
@@ -176,21 +295,36 @@
         <part name="body" element="oauth2p:AccessTokenResponse"/>
     </message>
 
+    <message name="SendPasswordlessLinkRequestMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkRequest"/>
+    </message>
+
+    <message name="SendPasswordlessLinkResponseMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkResponse"/>
+    </message>
+
 
     <portType name="OAuthPortType">
 
         <operation name="AuthorizationRequest">
             <input name="AuthorizationRequestInput"
-                        message="tns:AuthorizationRequestMessage"/>
+                   message="tns:AuthorizationRequestMessage"/>
             <output name="AuthorizationResponseOutput"
-                         message="tns:AuthorizationResponseMessage"/>
+                    message="tns:AuthorizationResponseMessage"/>
         </operation>
 
         <operation name="AccessTokenRequest">
             <input name="AccessTokenRequestInput"
-                        message="tns:AccessTokenRequestMessage"/>
+                   message="tns:AccessTokenRequestMessage"/>
             <output name="AccessTokenResponseOutput"
-                         message="tns:AccessTokenResponseMessage"/>
+                    message="tns:AccessTokenResponseMessage"/>
+        </operation>
+
+        <operation name="SendPasswordlessLinkRequest">
+            <input name="SendPasswordlessLinkRequestInput"
+                   message="tns:SendPasswordlessLinkRequestMessage"/>
+            <output name="SendPasswordlessLinkResponseOutput"
+                    message="tns:SendPasswordlessLinkResponseMessage"/>
         </operation>
 
 
@@ -220,6 +354,18 @@
                 <soap:body use="literal"/>
             </input>
             <output name="AccessTokenResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="SendPasswordlessLinkRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="SendPasswordlessLinkRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SendPasswordlessLinkResponseOutput">
                 <soap:body use="literal"/>
             </output>
         </operation>

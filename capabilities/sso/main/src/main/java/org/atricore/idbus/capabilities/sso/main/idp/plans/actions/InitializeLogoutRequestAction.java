@@ -1,10 +1,17 @@
 package org.atricore.idbus.capabilities.sso.main.idp.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
+import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.common.plans.actions.AbstractSSOAction;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.SubjectNameIDBuilder;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
@@ -12,10 +19,13 @@ import org.atricore.idbus.capabilities.sso.support.profiles.slo.LogoutReason;
 import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
 import javax.security.auth.Subject;
+import javax.xml.bind.JAXBElement;
 import java.util.Date;
 import java.util.Set;
 
@@ -57,33 +67,48 @@ public class InitializeLogoutRequestAction extends AbstractSSOAction {
         if (logger.isDebugEnabled())
             logger.debug("Initialize SLO Request for Subject " + secCtx.getSubject());        
 
-        // Subjenct NameID
+        // Subject NameID
         Set<SimplePrincipal> principals = secCtx.getSubject().getPrincipals(SimplePrincipal.class);
         if (principals == null || principals.size() != 1)
             throw new RuntimeException("Subject must contain one and only one SimplePrincipal");
         SimplePrincipal user = principals.iterator().next();
-
-        // TODO : Use subject format required by the destination provider! 
-        NameIDType subjectNameID = new NameIDType();
-        subjectNameID.setFormat(NameIDFormat.UNSPECIFIED.getValue());
-        subjectNameID.setValue(user.getName());
-        subjectNameID.setSPNameQualifier(sp.getAlias());
-
         Subject idpSubject = secCtx.getSubject();
 
-        if (idpSubject != null) {
-            Set<SubjectNameID> ids = idpSubject.getPrincipals(SubjectNameID.class);
+        // Use subject format required by the destination provider!
+        NameIDType subjectNameID = null;
+        NameIDPolicyType nameIDPolicy = resolveNameIDPolicy();
+        SubjectNameIDBuilder nameIDBuilder = resolveNameIDBuiler(executionContext, nameIDPolicy);
+        subjectNameID = nameIDBuilder.buildNameID(nameIDPolicy, idpSubject);
+        if (subjectNameID == null)
+            throw new RuntimeException("No NameID builder found for " + nameIDPolicy.getFormat());
 
-            if (ids != null && ids.size() == 1) {
-                SubjectNameID idpSubjectNameID = ids.iterator().next();
-                subjectNameID.setFormat(idpSubjectNameID.getFormat());
-                subjectNameID.setValue(idpSubjectNameID.getName());
-                subjectNameID.setNameQualifier(idpSubjectNameID.getNameQualifier());
-                subjectNameID.setSPNameQualifier(idpSubjectNameID.getLocalNameQualifier());
-            }
-        }
 
-        sloReq.setNameID( subjectNameID );
+        sloReq.setNameID( subjectNameID);
 
+    }
+
+    /**
+     * @see org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.BuildAuthnAssertionSubjectAction#resolveNameIDPolicy(SamlR2SecurityTokenEmissionContext)
+     * @return
+     */
+    protected NameIDPolicyType resolveNameIDPolicy() {
+
+        // TODO : Consider SP Metadata
+
+        // Take NameID policy from request
+        NameIDPolicyType nameIDPolicy = null;
+
+        if (logger.isDebugEnabled())
+            logger.debug("Using default NameIDPolicy");
+
+        // Default name id policy : unspecified
+        nameIDPolicy = new NameIDPolicyType();
+        nameIDPolicy.setFormat(NameIDFormat.UNSPECIFIED.getValue());
+
+        if (logger.isDebugEnabled())
+            logger.debug("Using request NameIDPolicy " + nameIDPolicy.getFormat());
+
+
+        return nameIDPolicy;
     }
 }

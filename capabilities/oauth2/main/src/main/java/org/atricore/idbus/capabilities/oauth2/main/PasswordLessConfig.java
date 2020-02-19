@@ -12,6 +12,10 @@ public class PasswordLessConfig {
 
     private String sender;
 
+    private String recipient;
+
+    private String idpUrl;
+
     public String getSubject() {
         return subject;
     }
@@ -50,5 +54,21 @@ public class PasswordLessConfig {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
+    }
+
+    public String getIdpUrl() {
+        return idpUrl;
+    }
+
+    public void setIdpUrl(String idpUrl) {
+        this.idpUrl = idpUrl;
     }
 }

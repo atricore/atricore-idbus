@@ -27,7 +27,7 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator(true);
 
     // Default to 10 minutes (in seconds)
-    private long tokenValiditySecs = 60L * 10L;
+    private long timeToLive = 60L * 10L;
 
     @Override
     public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
@@ -57,7 +57,7 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
         String grantId = uuidGenerator.generateId();
 
         AuthorizationGrant authzGrant = new AuthorizationGrant(grantId, getSsoSessinId(context), subject,
-                System.currentTimeMillis() + tokenValiditySecs * 1000L);
+                System.currentTimeMillis() + timeToLive * 1000L);
 
         SecurityTokenImpl st = new SecurityTokenImpl(grantId,
                 WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE,
@@ -81,12 +81,12 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
         throw new UnsupportedOperationException("Operation not available");
     }
 
-    public long getTokenValiditySecs() {
-        return tokenValiditySecs;
+    public long getTimeToLive() {
+        return timeToLive;
     }
 
-    public void setTokenValiditySecs(long tokenValiditySecs) {
-        this.tokenValiditySecs = tokenValiditySecs;
+    public void setTimeToLive(long timeToLive) {
+        this.timeToLive = timeToLive;
     }
 
     protected String getSsoSessinId(SecurityTokenProcessingContext context) {
@@ -100,4 +100,6 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
         }
         return ssoSessionId;
     }
+
+
 }

@@ -6,9 +6,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
+import org.atricore.idbus.capabilities.oauth2.common.OAuth2Claim;
 import org.atricore.idbus.capabilities.oauth2.main.*;
 import org.atricore.idbus.capabilities.oauth2.main.emitter.OAuth2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.oauth2.main.sso.producers.SingleSignOnProducer;
+import org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolver;
+import org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolverFactory;
+import org.atricore.idbus.capabilities.oauth2.rserver.SecureAccessTokenResolverFactory;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.oauth._2_0.protocol.*;
 import org.atricore.idbus.kernel.main.authn.Constants;
@@ -29,11 +34,10 @@ import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.io.ByteArrayInputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
+import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.util.Properties;
 
 public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
@@ -61,6 +65,8 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
         // We are acting as OAUTH 2.0 Authorization server, we consider it an IDP role.
         SendPasswordlessLinkResponseType atRes = new SendPasswordlessLinkResponseType();
+        atRes.setError(null);
+        atRes.setStatusCode(new BigInteger("200"));
 
         OAuth2Client client = null;
         // This returns the SP associated with the OAuth request.
@@ -86,52 +92,73 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
         // Call STS and wait for OAuth AccessToken
         OAuthAccessTokenType at = securityTokenEmissionCtx.getAccessToken();
+        // Decrypt access token and add user properties
+        Properties oauth2Config = new Properties();
+        oauth2Config.setProperty(SecureAccessTokenResolverFactory.SHARED_SECRECT_PROPERTY, client.getSecret());
+        oauth2Config.setProperty(SecureAccessTokenResolverFactory.TOKEN_VALIDITY_INTERVAL_PROPERTY, "30000");
+
+        AccessTokenResolver r = AccessTokenResolverFactory.newInstance(oauth2Config).newResolver();
+        OAuth2AccessToken token = r.resolve(at.getAccessToken());
 
         // Generate Message content
-        VelocityEngine velocityEngine = new VelocityEngine();
-        velocityEngine.setProperty(Velocity.RESOURCE_LOADER, "classpath");
+        VelocityEngine e = buildVelocityEngine();
 
-        velocityEngine.addProperty(
-                "classpath." + Velocity.RESOURCE_LOADER + ".class",
-                "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-
-        velocityEngine.setProperty(
-                "classpath." + Velocity.RESOURCE_LOADER + ".cache", "false");
-
-        velocityEngine.setProperty(
-                "classpath." + Velocity.RESOURCE_LOADER + ".modificationCheckInterval",
-                "2");
-
-        velocityEngine.init();
         VelocityContext veCtx = new VelocityContext();
 
 
         // Build a context
         veCtx.put("username", atReq.getUsername());
+        if (logger.isTraceEnabled())
+            logger.trace("Adding claim as velocity variable: username=" + atReq.getUsername());
+
         veCtx.put("token", at.getAccessToken());
+        if (logger.isTraceEnabled())
+            logger.trace("Adding claim as velocity variable: token=" + at.getAccessToken());
 
         veCtx.put("encodedToken", URLEncoder.encode(at.getAccessToken(), "UTF-8"));
+        if (logger.isTraceEnabled())
+            logger.trace("Adding claim as velocity variable: encodedToken=" + URLEncoder.encode(at.getAccessToken(), "UTF-8"));
+
+        if (logger.isTraceEnabled())
+            logger.trace("Adding claim as velocity variable: targetSP=" + atReq.getTargetSP());
         veCtx.put("targetSP", atReq.getTargetSP());
+
         for (TemplatePropertyType prop : atReq.getProperties()) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Adding claim as velocity variable: " + prop.getName() + "=" + prop.getValues().get(0));
+
             veCtx.put(prop.getName(), prop.getValues().get(0)); /// Only first value supported for now
         }
 
-        // TODO : Decrit access token and add user properties ?
+        for (OAuth2Claim claim : token.getClaims()) {
 
-        // In/Out
-        StringReader template = new StringReader(atReq.getTemplate() != null  ? atReq.getTemplate() : config.getTemplate());
-        StringWriter msg = new StringWriter();
+            if (!claim.getType().equals("ATTRIBUTE"))
+                continue;
 
-        velocityEngine.evaluate(veCtx, msg, "default", template);
+            veCtx.put(claim.getValue(), claim.getAttribute());
+            if (logger.isTraceEnabled())
+                logger.trace("Adding claim as velocity variable: " + claim.getValue() + "=" + claim.getAttribute());
+        }
+
+        String authnURL = config.getIdpUrl() + "?atricore_security_token=" + URLEncoder.encode(at.getAccessToken(), "UTF-8") +
+                "&scope=preauth-token" +
+                "&atricore_sp_alias=" + URLEncoder.encode(atReq.getTargetSP(), "UTF-8");
+
+        veCtx.put("authnURL", authnURL);
 
         // TODO : Make transport configurable
         MailService mailService = mediator.getMailService();
 
         // Send message
-        String from = config.getSender(); // Configured
-        String to = atReq.getUsername();
-        String subject = config.getSubject();
-        String contentType = "text/html";// config.getContentType();
+        String from = evaluateVelocity(e, veCtx, config.getSender());
+        String to = evaluateVelocity(e, veCtx, config.getRecipient());
+        String subject = evaluateVelocity(e, veCtx, config.getSubject());
+        String contentType = "text/html";  // config.getContentType();
+
+        String template = config.getTemplate();
+        String msg = evaluateVelocity(e, veCtx, template);
+
         mailService.send(from, to, subject, msg.toString(), contentType);
 
         // send response back
@@ -248,5 +275,33 @@ public class PasswordlessLinkProducer extends AbstractOAuth2Producer {
 
         return true;
 
+    }
+
+    protected VelocityEngine buildVelocityEngine() throws Exception {
+
+        VelocityEngine e = new VelocityEngine();
+
+        e.setProperty(Velocity.RESOURCE_LOADER, "classpath");
+
+        e.addProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".class",
+                "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+        e.setProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".cache", "false");
+
+        e.setProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".modificationCheckInterval",
+                "2");
+
+        e.init();
+
+        return e;
+    }
+
+    protected String evaluateVelocity(VelocityEngine e, VelocityContext veCtx, String template) throws IOException {
+        StringWriter msg = new StringWriter();
+        e.evaluate(veCtx, msg, "default", template);
+        return msg.toString();
     }
 }

@@ -8,7 +8,7 @@
     <ProjectGuid>{6ED511E8-EC93-48D7-BFBC-5F16E69973E2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OAuth2Protocol</RootNamespace>
+    <RootNamespace>Atricore</RootNamespace>
     <AssemblyName>OAuth2Protocol</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -102,11 +102,43 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OAuth2Protocol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service References\OAuth2Protocol.AccessTokenRequestor\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Service References\OAuth2Protocol.AccessTokenRequestor\Atricore.OAuth2Protocol.AccessTokenRequestor.AccessTokenResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OAuth2Protocol.AccessTokenRequestor\Atricore.OAuth2Protocol.AccessTokenRequestor.AuthorizationResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OAuth2Protocol.AccessTokenRequestor\Atricore.OAuth2Protocol.AccessTokenRequestor.SendPasswordlessLinkResponseType.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\OAuth2Protocol.AccessTokenRequestor\SSO-Service.wsdl" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\OAuth2Protocol.AccessTokenRequestor\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OAuth2Protocol.AccessTokenRequestor\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OAuth2Protocol.AccessTokenRequestor\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\OAuth2Protocol.AccessTokenRequestor\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

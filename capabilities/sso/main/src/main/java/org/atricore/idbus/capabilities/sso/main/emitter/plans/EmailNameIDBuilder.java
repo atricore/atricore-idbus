@@ -21,6 +21,10 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
 
     private String ssoUserProperty = null;
 
+    public boolean supportsPolicy(String nameIDPolicy) {
+        return nameIDPolicy.equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
+    }
+
     public boolean supportsPolicy(NameIDPolicyType nameIDPolicy) {
         return nameIDPolicy.getFormat().equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
     }
@@ -45,17 +49,21 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
     }
 
     protected String getEmail(SSOUser ssoUser, String[] emailPropNames) {
+
+        String email = null;
+        if (StringUtils.isNotBlank(ssoUserProperty)) {
+            email = getPropertyValue(ssoUser, ssoUserProperty);
+            logger.trace("Using email from property " + ssoUserProperty + ": " + email);
+            return email;
+        }
+
         for (int i = 0; i < emailPropNames.length; i++) {
             String emailPropName = emailPropNames[i];
-            String email = getPropertyValue(ssoUser, emailPropName);
-            if (email != null)
+            email = getPropertyValue(ssoUser, emailPropName);
+            if (email != null) {
+                logger.trace("Using email from default property " + emailPropName + ": " + email);
                 return email;
-
-            if (StringUtils.isNotBlank(ssoUserProperty))
-                email = getPropertyValue(ssoUser, ssoUserProperty);
-
-            return email;
-
+            }
         }
 
         return null;

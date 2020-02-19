@@ -1,13 +1,10 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.emitter;
 
-import com.nimbusds.oauth2.sdk.token.AccessToken;
-import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectSecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
@@ -23,7 +20,7 @@ import java.util.Set;
 /**
  * Emit a refresh token that can later be used to renew an access token
  */
-public class RefreshTokenEmitter extends AbstractSecurityTokenEmitter {
+public class RefreshTokenEmitter extends OIDCTokenEmitter {
 
     private static final Log logger = LogFactory.getLog(RefreshTokenEmitter.class);
 

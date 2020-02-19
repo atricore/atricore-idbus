@@ -176,6 +176,51 @@ public abstract class AbstractOpenIDProducer extends AbstractCamelProducer<Camel
     }
 
     /**
+     * Look up the user-info endpoint in the target IDP
+     *
+     * First looks for the SAML SP Proxy and find target IDP.  Then get the  SP Channel from that IDP.
+     *
+     * Then look for the TokenEndpoint
+     *
+     */
+    protected EndpointDescriptor lookupUserInfoEndpoint(OpenIDConnectAuthnContext authnCtx) throws IdentityMediationException {
+
+        // Get SP Proxy -> IDP Channel -> IDP -> OIDC Service -> Channel -> Token Endpoint
+        ServiceProvider spProxy = lookupSPProxy();
+        if (spProxy == null) {
+            return null;
+        }
+
+        // Now, we need to identify the selected IDP
+        SPChannel spChannel = lookupOIDCSPChannel(spProxy);
+        if (spChannel == null)
+            return null;
+
+        IdentityMediationEndpoint userInfoEndpoint = null;
+        for (IdentityMediationEndpoint endpoint : spChannel.getEndpoints()) {
+            if (endpoint.getType().equals(OpenIDConnectService.UserInfoService.toString()) &&
+                    endpoint.getBinding().equals(OpenIDConnectBinding.OPENID_PROVIDER_USERINFO_RESTFUL.getValue())) {
+
+                // This is the ED!
+                userInfoEndpoint = endpoint;
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using USERINFO RESTFUL endpoint [" + userInfoEndpoint.getLocation() + "]");
+                break;
+            }
+        }
+
+        if (userInfoEndpoint != null)
+            return spChannel.getIdentityMediator().resolveEndpoint(spChannel, userInfoEndpoint);
+
+        logger.error("No UserInfo Endpoint [" +
+                OpenIDConnectService.UserInfoService.toString() + "/" +
+                OpenIDConnectBinding.OPENID_PROVIDER_USERINFO_RESTFUL.getValue()+"] in channel " + spChannel.getName());
+
+        return null;
+    }
+
+    /**
      * Look up the token endpoint in the target IDP
      *
      * First looks for the SAML SP Proxy and find target IDP.  Then get the  SP Channel from that IDP.

@@ -69,6 +69,10 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
                 mb = new TokenRequestRestfulBinding(channel);
                 break;
 
+            case OPENID_PROVIDER_USERINFO_RESTFUL:
+                mb = new UserInfoRequestRestfulBinding(channel);
+                break;
+
             case OPENID_PROVIDER_INFO_RESTFUL:
                 mb = new OIDCProviderConfigurationRestfulBinding(channel);
                 break;

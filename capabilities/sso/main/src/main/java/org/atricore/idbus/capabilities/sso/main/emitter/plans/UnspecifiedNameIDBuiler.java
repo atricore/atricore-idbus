@@ -7,8 +7,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
+import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 
 import javax.security.auth.Subject;
+import java.security.Principal;
 
 /**
  *
@@ -21,6 +23,10 @@ public class UnspecifiedNameIDBuiler extends  AbstractSubjectNameIDBuilder  {
     // The name of the property to be used as name ID
     private String ssoUserProperty;
 
+    public boolean supportsPolicy(String nameIDPolicy) {
+        return nameIDPolicy.equalsIgnoreCase(NameIDFormat.UNSPECIFIED.getValue());
+    }
+
     public boolean supportsPolicy(NameIDPolicyType nameIDPolicy) {
         return nameIDPolicy.getFormat().equals(NameIDFormat.UNSPECIFIED.getValue());
     }
@@ -28,10 +34,11 @@ public class UnspecifiedNameIDBuiler extends  AbstractSubjectNameIDBuilder  {
     public NameIDType buildNameID(NameIDPolicyType nameIDPolicy, Subject s) {
 
         // Subject Name Identifier
-        SSOUser ssoUser = getSsoUser(s);
+
         String nameId = null;
 
         if (StringUtils.isNotBlank(ssoUserProperty)) {
+            SSOUser ssoUser = getSsoUser(s);
             nameId = getPropertyValue(ssoUser, ssoUserProperty);
             if (nameId == null)
                 logger.error("NameID: No value for user property ("+ssoUserProperty+"). User name will be used instead.");
@@ -39,8 +46,13 @@ public class UnspecifiedNameIDBuiler extends  AbstractSubjectNameIDBuilder  {
                 logger.debug("NameID ("+ssoUserProperty+")" + nameId);
         }
 
-        if (nameId == null)
-            nameId = ssoUser.getName();
+        // Get username as principal
+        if (nameId == null) {
+            for (Principal p : s.getPrincipals()) {
+                if (p instanceof SSOUser || p instanceof SimplePrincipal)
+                    nameId = p.getName();
+            }
+        }
 
         NameIDType subjectNameID = new NameIDType();
         subjectNameID.setValue(nameId);

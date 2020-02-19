@@ -53,7 +53,6 @@ public class JDBCIdentityStore extends AbstractDBIdentityStore {
      */
     protected String _connectionPassword = null;
 
-
     /**
      * The connection URL to use when trying to connect to the database.
      */

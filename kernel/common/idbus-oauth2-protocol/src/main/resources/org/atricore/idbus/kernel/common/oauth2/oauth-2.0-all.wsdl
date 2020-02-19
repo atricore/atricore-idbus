@@ -180,13 +180,14 @@
                 <xsd:complexContent>
                     <xsd:extension base="oauth2p:OAuthRequestAbstractType">
                         <xsd:sequence>
-                            <xsd:element name="template" type="string" minOccurs="0" maxOccurs="1"/>
+                            <xsd:element name="template" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                            <xsd:element name="properties" type="oauth2p:TemplatePropertyType" minOccurs="0" maxOccurs="unbounded"/>
                         </xsd:sequence>
-                        <xsd:attribute name="clientId" type="string" use="required"/>
-                        <xsd:attribute name="clientSecret" type="string" use="required"/>
-                        <xsd:attribute name="username" type="string" use="required"/>
+                        <xsd:attribute name="clientId" type="xsd:string" use="required"/>
+                        <xsd:attribute name="clientSecret" type="xsd:string" use="required"/>
+                        <xsd:attribute name="username" type="xsd:string" use="required"/>
 
-                        <xsd:attribute name="targetSP" type="string" use="required"/>
+                        <xsd:attribute name="targetSP" type="xsd:string" use="required"/>
 
                     </xsd:extension>
                 </xsd:complexContent>
@@ -199,6 +200,14 @@
                     </xsd:extension>
                 </xsd:complexContent>
             </xsd:complexType>
+
+            <xsd:complexType name="TemplatePropertyType">
+                <xsd:sequence>
+                    <xsd:element name="values" type="xsd:anyType" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:sequence>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+
 
             <xsd:complexType name="SSOPolicyEnforcementStatementType">
                 <xsd:sequence>

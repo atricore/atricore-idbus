@@ -54,8 +54,6 @@ public class JWKProducer extends AbstractOpenIDProducer {
         if (logger.isDebugEnabled())
             logger.debug("JWKSet requested for " + jwsAlgorithm);
 
-
-
         JWK key = null;
         JWKSet keySet = null;
 
