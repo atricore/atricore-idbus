@@ -105,7 +105,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
         Credential[] pc = null;
 
         // Populate the Subject
-        Set principals = _subject.getPrincipals();
+        Set<Principal> principals = _subject.getPrincipals();
         principals.add(principal);
 
         // Private credentials :
