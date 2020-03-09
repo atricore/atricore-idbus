@@ -11,6 +11,8 @@ import java.net.URL;
 import java.util.*;
 
 /**
+ * This policy will match
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy, InitializingBean {
@@ -70,6 +72,15 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
     }
 
 
+    /**
+     * This method matches those requests that were processed internally and produced an HTTP redirect (302)
+     * We need to compare if the target location received is actually an URL ot the IDBUS servler.
+     *
+     * If not, include/exclude configurations are used, same as:
+     *
+     * #match(HttpServletRequest req) witout a redirectUrl.
+     *
+     */
     public boolean match(HttpServletRequest originalReq, String redirectUrl) {
 
         if (logger.isTraceEnabled())
@@ -129,7 +140,7 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         StringBuffer originalUrl = originalReq.getRequestURL();
         String ctxPath = originalReq.getContextPath();
         if (ctxPath.equals("")) {
-            // TODO : Root context needs special treatment.
+            // Root context needs special treatment.
             throw new RuntimeException("Cannot work with mediation on root context !");
         }
 
@@ -149,6 +160,20 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
     }
 
+    /**
+     * This method matches those requests that MUST be processed internally
+     *
+     * 1. If the request hast the #IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST header set, it will NOT be matched
+     * to be processed internally. (It is already being processed internaly, this avoids infinite loops)
+     *
+     * 2. If the request is NOT an HTTP GET, it will NOT be matched.
+     *
+     * 3. If the request is for a SOAP endpoint, it will NOT be matched (no need to improve redirects here).
+     *
+     * 4. If the Location value (URL) matches those configured as included, it WILL be matched.
+     *
+     * 5. If the Location value (URL) matches those configured as excluded it will NOT be matched (unless 4., since it takes precedence)
+     */
     public boolean match(HttpServletRequest req) {
 
         if (logger.isTraceEnabled())
@@ -164,6 +189,14 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
         // Do not proxy SOAP requests
         if (req.getPathInfo().contains("/SOAP"))
+            return false;
+
+        // Do not proxy SOAP requests
+        if (req.getPathInfo().contains("/MD"))
+            return false;
+
+        // Do not proxy SOAP requests
+        if (req.getPathInfo().contains("/REST"))
             return false;
 
         StringBuffer reqUrl = req.getRequestURL();
