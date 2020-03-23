@@ -54,6 +54,9 @@ import java.util.*;
  * This servlet can follow redirects internally. If a redirect  location targets the same IDBus server,
  * it process it internally, without sending it to the browser.
  *
+ * The same servlet will both act as a client, when receiving a browser request and sending it to the proxy, and
+ * as the proxy when receiving requests generated as client.
+ *
  * An improved version of the servlet could actually act as a proxy/client for external redirects or even to process HTML
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -83,7 +86,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
     private HttpClient httpClient;
 
     private int connectionTimeoutMillis = 5000; // Five seconds
+
     private int socketTimeoutMillis = 300000; // Five minutes
+
+    private String xFrameOptoinsURLs;
+
+    private XFrameOptions mode;
+
+    private String nodeId;
 
     public OsgiIDBusServlet2() {
         super();
@@ -119,8 +129,45 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 logger.warn("Reuse HTTP client option is ON (EXPERIMENTAL !!!!)");
 
         }
+
+        if (kernelConfig == null) {
+            return;
+        }
+
+        nodeId = kernelConfig.getProperty("idbus.node");
+
+        String xFrameOptions = kernelConfig.getProperty("binding.http.xFrameOptionsMode");
+
+        if (xFrameOptions != null) {
+
+            mode = XFrameOptions.fromValue(xFrameOptions);
+
+            String xFrameOptoinsURLs = "";
+            if (kernelConfig.getProperty("binding.http.xFrameOptionsURLs") != null) {
+                StringTokenizer st = new StringTokenizer(kernelConfig.getProperty("binding.http.xFrameOptionsURLs"), ",");
+                while (st.hasMoreTokens()) {
+                    String s = st.nextToken();
+                    xFrameOptoinsURLs = xFrameOptoinsURLs + " '" + s + "'";
+                }
+            }
+
+        } else {
+            mode = XFrameOptions.DISABLED;
+        }
+
     }
 
+    /**
+     * this servlet is "recursive".  This means that some responses that should be sent back to the browser, but are
+     * actually HTTP redirects that this server will handle, will be processed locally.  An HTTP client will act on
+     * browser's behalf.  The servlet will receive a request and process it using the IDBus.  If the response is a redirect
+     * to another IDBus location/endpoints, an HTTP client will follow the redirect, until no more redirects are produced.
+     *
+     * @param req
+     * @param res
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
@@ -133,53 +180,31 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
             started = System.currentTimeMillis();
 
-            String nodeId = null;
-            if (kernelConfig != null) {
 
-                // Add node ID to response headers
-                nodeId = kernelConfig.getProperty("idbus.node");
-                if(nodeId != null)
-                    res.addHeader("X-IdBus-Node", nodeId);
+            // Add node ID to response headers
+            if(nodeId != null)
+                res.addHeader("X-IdBus-Node", nodeId);
 
-                // Add additional headers
-
-                String xFrameOptions = kernelConfig.getProperty("binding.http.xFrameOptionsMode");
-                if (xFrameOptions != null) {
-
-                    XFrameOptions mode = XFrameOptions.fromValue(xFrameOptions);
-
-                    String xFrameOptoinsURLs = "";
-                    if (kernelConfig.getProperty("binding.http.xFrameOptionsURLs") != null) {
-                        StringTokenizer st = new StringTokenizer(kernelConfig.getProperty("binding.http.xFrameOptionsURLs"), ",");
-                        while (st.hasMoreTokens()) {
-                            String s = st.nextToken();
-                            xFrameOptoinsURLs = xFrameOptoinsURLs + " '" + s + "'";
-                        }
-                    }
-
-
-                    switch(mode) {
-                        case DISABLED:
-                            // Nothing to do
-                            break;
-                        case SAME_ORIGIN:
-                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue());
-                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors 'self'" + xFrameOptoinsURLs);
-                            break;
-                        case ALLOW_FROM:
-                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue() + xFrameOptoinsURLs);
-                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors" + xFrameOptoinsURLs);
-                            break;
-                        case DENY:
-                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue());
-                            res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors 'none'");
-                            break;
-                        default:
-                            logger.error("Unknown X-Frame-Options mode " + mode.getValue());
-                           break;
-
-                    }
-                }
+            // Add additional headers
+            switch(mode) {
+                case DISABLED:
+                    // Nothing to do
+                    break;
+                case SAME_ORIGIN:
+                    res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue());
+                    res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors 'self'" + xFrameOptoinsURLs);
+                    break;
+                case ALLOW_FROM:
+                    res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue() + xFrameOptoinsURLs);
+                    res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors" + xFrameOptoinsURLs);
+                    break;
+                case DENY:
+                    res.addHeader(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, mode.getValue());
+                    res.addHeader(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors 'none'");
+                    break;
+                default:
+                    logger.error("Unknown X-Frame-Options mode " + mode.getValue());
+                   break;
 
             }
 
@@ -201,6 +226,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                     req.setAttribute("org.atricore.idbus.http.SecureCookies", "TRUE");
                 }
 
+                // -------------------------------------
+                // Process the request directly, without proxying it
+                // -------------------------------------
                 doService(req, res);
             } else {
                 StopWatch sw = new StopWatch("http-request-processing-time-ms");
@@ -214,6 +242,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                     req.setAttribute("org.atricore.idbus.http.SecureCookies", "TRUE");
                 }
 
+                // -------------------------------------
+                // Process the request with the client, as a proxy.
+                // -------------------------------------
                 doProxyInternally(req, res);
                 sw.stop();
                 mServer.recordResponseTimeMetric(ATRICORE_WEB_PROCESSING_TIME_MS_METRIC_NAME, sw.getTotalTimeMillis());
@@ -231,16 +262,29 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
     }
 
+    /**
+     * This method will process HTTP requests internally.  It will create an HTTP client
+     * and issue the received HttpServletRequest acting on browser's behalf.
+     *
+     * If the response is an HTTP redirect (302) to a URL that can also be handled internally, it will process it.
+     * This loop will end when a response cannot be handled internally, and a response to the browser will be created.
+     *
+     * The response will have all headers and cookies created during the internal looping process.
+     */
     protected void doProxyInternally(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
         String remoteAddr = null;
         String remoteHost = null;
+
+        // We need the remote address for auditing purposes.
+        // If this is NOT a proxied request (no parent thread header), we get remote address from
+        // standard headers.
         String parentThread = req.getHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST);
         if (parentThread == null) {
 
             if (req.getHeader("X-Forwarded-For") != null) {
-                // This means that we're probably behind a proxy
+                // This means that we're behind an external proxy
 
                 /**
                 The general format of the field is:
@@ -260,10 +304,12 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             }
             remoteHost = req.getRemoteHost();
         } else {
+            // We are working with a proxied request, use our internal/custom headers to get address and host
             remoteAddr = req.getHeader(HTTP_HEADER_IDBUS_REMOTE_ADDRESS);
             remoteHost = req.getHeader(HTTP_HEADER_IDBUS_REMOTE_HOST);
         }
 
+        // Now we need to build an HTTP request and issue it as a client (acting as the browser).
         HttpRequestBase proxyReq = buildProxyRequest(req, remoteAddr, remoteHost);
         URI reqUri = proxyReq.getURI();
         String cookieDomain = reqUri.getHost();
@@ -277,6 +323,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
         // Publish the original request, it will be removed from the context later, on the first internal redirect.
         httpContext.setAttribute("org.atricorel.idbus.kernel.main.binding.http.HttpServletRequest", req);
+
+        // Publish cookie domain as a client header
         httpContext.setAttribute("org.atricorel.idbus.kernel.main.binding.http.CookieDomain", cookieDomain);
 
         if (logger.isTraceEnabled())
@@ -287,13 +335,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         boolean followTargetUrl = true;
         byte[] buff = new byte[1024];
 
+        // As long as we receive redirects that must be handled locally, we loop.
         while(followTargetUrl) {
 
             if (logger.isTraceEnabled())
                 logger.trace("Sending internal request " + proxyReq);
 
             // ----------------------------------------------------
-            // Execute the request internally:
+            // Execute the request internally: this will be processed by this servlet (works recursively)
             // ----------------------------------------------------
             HttpResponse proxyRes = httpClient.execute(proxyReq, httpContext);
 
@@ -312,7 +361,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 headers = proxyRes.getAllHeaders();
 
                 for (Header header : headers) {
-                    // Ignored headers
+                    // Ignored headers, we will use original values for these.
                     if (header.getName().equals("Server")) continue;
                     if (header.getName().equals("Transfer-Encoding")) continue;
                     if (header.getName().equals("Location")) continue;
@@ -327,6 +376,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                         continue;
                     }
 
+                    // The sender of the response has explicitly ask no to follow this redirect.
                     if (header.getName().equals(HTTP_HEADER_IDBUS_FOLLOW_REDIRECT)) {
                         // Set 'followTargetUrl' to false
                         followTargetUrl = false;
@@ -350,7 +400,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                         Header location = proxyRes.getFirstHeader("Location");
                         targetUrl = location.getValue();
 
-                        // Check if the target URL is an IDBUS endpoint
+                        // Check if the target URL must be proxied or just serviced.
                         if (!followTargetUrl || !internalProcessingPolicy.match(req, targetUrl)) {
 
                             // This is outside our scope, send the response to the browser ...
@@ -380,8 +430,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 }
 
             } finally {
-
-                // Clean the client connection
+                // ---------------------------------------------------------
+                // Clean the client connection - START
+                // ---------------------------------------------------------
 
                 // Get hold of the response entity
                 HttpEntity entity = proxyRes.getEntity();
@@ -406,30 +457,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                             if (logger.isTraceEnabled())
                                 logger.trace("Sending entity content " + entity.getContentType() + " to browser");
 
-                            // Last received headers
-                            if (headers != null) {
-                                for (Header header : headers) {
-                                    if (header.getName().equals("Content-Type"))
-                                        res.setHeader(header.getName(), header.getValue());
-                                    if (header.getName().equals("Content-Length"))
-                                        res.setHeader(header.getName(), header.getValue());
-                                }
-                            }
-
                             // Previously stored headers
+                            prepareResponse(req, res, headers, storedHeaders);
+
                             res.setStatus(proxyRes.getStatusLine().getStatusCode());
-
-                            boolean secureRequestCookies  = req.getAttribute( "org.atricore.idbus.http.SecureCookies") != null;
-
-                            for (Header header : storedHeaders) {
-                                if (header.getName().startsWith("Set-Cookie")) {
-                                    String hValue = header.getValue() + (secureRequestCookies  ? ";Secure" : "");
-                                    if (logger.isTraceEnabled())
-                                        logger.trace("Adding 'Set-Cookie' header : " + header.getValue());
-                                    res.addHeader(header.getName(), hValue);
-                                } else
-                                    res.setHeader(header.getName(), header.getValue());
-                            }
 
                             // Send content to browser
                             IOUtils.copy(instream, res.getOutputStream());
@@ -485,37 +516,20 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
                     try {
                         if (!followTargetUrl) {
+                            //------------------------------------------------------------------------------------------
+                            // SEND LAST RESPONSE BACK TO THE BROWSER
+                            //
+                            // This will send the response back to the browser, when no content is received in the HTTP response.
+                            //------------------------------------------------------------------------------------------
 
                             if (logger.isTraceEnabled())
                                 logger.trace("Sending response to the browser, HTTP Status " + proxyRes.getStatusLine().getReasonPhrase());
 
-                            // If we're not following the target URL, send all to the browser
+                            // Send received HTTP STATUS (200, 403, 500, etc)
                             res.setStatus(proxyRes.getStatusLine().getStatusCode());
 
-                            if (headers != null) {
-                                // Latest headers
-                                for (Header header : headers) {
-                                    if (header.getName().equals("Content-Type"))
-                                        res.setHeader(header.getName(), header.getValue());
-                                    if (header.getName().equals("Content-Length"))
-                                        res.setHeader(header.getName(), header.getValue());
+                            prepareResponse(req, res, headers, storedHeaders);
 
-                                }
-                            }
-
-                            boolean secureRequestCookies  = req.getAttribute( "org.atricore.idbus.http.SecureCookies") != null;
-
-                            for (Header header : storedHeaders) {
-                                if (header.getName().startsWith("Set-Cookie")) {
-                                    String hValue = header.getValue() + (secureRequestCookies ? ";Secure" : "");
-                                    if (logger.isTraceEnabled())
-                                        logger.trace("Adding 'Set-Cookie' header : " + header.getValue());
-                                    res.addHeader(header.getName(), hValue);
-
-                                } else {
-                                    res.setHeader(header.getName(), header.getValue());
-                                }
-                            }
 
                         }
 
@@ -532,9 +546,15 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
 
                 }
+                // ---------------------------------------------------------
+                // Clean the client connection - END
+                // ---------------------------------------------------------
+
 
             }
 
+
+            // If we received a redirect that must be processed locally, build a new request for it.
             if (followTargetUrl) {
 
                 if (logger.isTraceEnabled())
@@ -632,10 +652,19 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         return httpClient;
     }
 
+    /**
+     * This will create an HTTP request on behalf of the user's browser, to be handled locally.
+     *
+     * @param req Received HTTP request
+     * @param remoteAddr user's remote address
+     * @param remoteHost user's remote host
+     *
+     */
     protected HttpRequestBase buildProxyRequest(HttpServletRequest req, String remoteAddr, String remoteHost) throws ServletException {
 
         HttpRequestBase proxyReq = null;
 
+        // First wi build a target URL, local to the IDBus.
         StringBuilder targetUrl = new StringBuilder();
 
         // Adapt location to local location
@@ -655,9 +684,10 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             targetUrl.append(req.getRequestURL());
         }
 
+        // Now we build an HTTP GET based on the new URL, to be used by the HTTP client.
         proxyReq = new HttpGet(targetUrl.toString());
-        // Mark request as PROXIED, so that we don't get into an infinite loop
 
+        // Copy all original headers except cookies (they are handled separately)
         Enumeration<String> hNames = req.getHeaderNames();
         while (hNames.hasMoreElements()) {
             String hName = hNames.nextElement();
@@ -670,8 +700,12 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             proxyReq.addHeader(hName, hValue);
         }
 
+
+        // Add remote address and host as headers, to keep track of original values
         proxyReq.addHeader(HTTP_HEADER_IDBUS_REMOTE_ADDRESS, remoteAddr);
         proxyReq.addHeader(HTTP_HEADER_IDBUS_REMOTE_HOST, remoteHost);
+
+        // Mark request as PROXIED, so that we don't get into an infinite loop in the servlet.
         proxyReq.addHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST, "TRUE");
         if (req.isSecure())
             proxyReq.addHeader(HTTP_HEADER_IDBUS_SECURE, "TRUE");
@@ -969,5 +1003,44 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             else
                 super.setHeader(name, value);
         }
+    }
+
+    /**
+     * Prepares the response to the browser
+     * @param req original request
+     * @param res original response
+     *
+     * @param headers headers received form last proxied request
+     * @param storedHeaders all previously stored headers from proxied requests
+     */
+    protected void prepareResponse(HttpServletRequest req, HttpServletResponse res, Header[] headers, List<Header> storedHeaders) {
+
+        // Send useful headers from last response.
+        if (headers != null) {
+            // Latest headers
+            for (Header header : headers) {
+                if (header.getName().equals("Content-Type"))
+                    res.setHeader(header.getName(), header.getValue());
+                if (header.getName().equals("Content-Length"))
+                    res.setHeader(header.getName(), header.getValue());
+
+            }
+        }
+
+        // Send new cookies, force them as secured if configured
+        boolean secureRequestCookies  = req.getAttribute( "org.atricore.idbus.http.SecureCookies") != null;
+
+        for (Header header : storedHeaders) {
+            if (header.getName().startsWith("Set-Cookie")) {
+                String hValue = header.getValue() + (secureRequestCookies ? ";Secure" : "");
+                if (logger.isTraceEnabled())
+                    logger.trace("Adding 'Set-Cookie' header : " + header.getValue());
+                res.addHeader(header.getName(), hValue);
+
+            } else {
+                res.setHeader(header.getName(), header.getValue());
+            }
+        }
+
     }
 }

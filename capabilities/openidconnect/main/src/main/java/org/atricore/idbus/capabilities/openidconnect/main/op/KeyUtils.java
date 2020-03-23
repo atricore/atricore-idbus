@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class KeyUtils {
 
     /**
-     * Creats an AES Secret from client MD secret.
+     * Creates an AES Secret from client MD secret.
      *
      * The algorithm requires the key to be of the same length as the
      * "block-size" of the hashing algorithm (SHA256 = 64-byte blocks).
@@ -32,7 +32,7 @@ public class KeyUtils {
     }
 
     /**
-     * Creats an AES Secret from client MD secret.
+     * Creates an AES Secret from client MD secret.
      *
      * The algorithm requires the key to be of the same length as the
      * "block-size" of the hashing algorithm (SHA256 = 64-byte blocks).

@@ -1,13 +1,15 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.emitter;
 
+import oasis.names.tc.saml._2_0.idbus.ExtAttributeListType;
+import oasis.names.tc.saml._2_0.idbus.ExtendedAttributeType;
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.ExtensionsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.op.AuthorizationGrant;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sts.main.AbstractSecurityTokenEmitter;
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
-import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
-import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.capabilities.sso.main.idp.producers.AuthenticationState;
+import org.atricore.idbus.capabilities.sts.main.*;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
@@ -15,7 +17,10 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 
 import javax.security.auth.Subject;
+import javax.xml.bind.JAXBElement;
 import java.util.List;
+
+import static org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants.OIDC_EXT_NAMESPACE;
 
 /**
  * Emit an authorization grant that can be later exchanged for an Access Token
@@ -56,7 +61,9 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
 
         String grantId = uuidGenerator.generateId();
 
-        AuthorizationGrant authzGrant = new AuthorizationGrant(grantId, getSsoSessinId(context), subject,
+        String nonce = getNonce(context);
+
+        AuthorizationGrant authzGrant = new AuthorizationGrant(grantId, getSsoSessinId(context), subject, nonce,
                 System.currentTimeMillis() + timeToLive * 1000L);
 
         SecurityTokenImpl st = new SecurityTokenImpl(grantId,
@@ -99,6 +106,57 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
             ssoSessionId = samlr2Ctx.getSessionIndex();
         }
         return ssoSessionId;
+    }
+
+    protected String getNonce(SecurityTokenProcessingContext context) {
+        Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
+        String ssoSessionId = null;
+        List<AbstractPrincipalType> proxyPrincipals = null;
+        if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
+            SamlR2SecurityTokenEmissionContext samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+
+            if (samlr2Ctx == null) {
+                logger.trace("No SAML emission context found ");
+                return null;
+            }
+
+            AuthenticationState authnState = samlr2Ctx.getAuthnState();
+            if (authnState == null) {
+                logger.trace("No Authentication State found");
+                return null;
+            }
+
+            AuthnRequestType authnRequest = authnState.getAuthnRequest();
+            if (authnRequest == null) {
+                logger.trace("No AuthnRequest found");
+                return null;
+            }
+
+            ExtensionsType extensions = authnRequest.getExtensions();
+            if (extensions == null) {
+                logger.trace("No SAML extensions found in AuthnRequest found");
+                return null;
+            }
+
+            for (Object any : extensions.getAny()) {
+                if (any instanceof JAXBElement) {
+
+                    JAXBElement e = (JAXBElement) any;
+                    if (e.getValue() instanceof ExtAttributeListType) {
+                        ExtAttributeListType extAttrs = (ExtAttributeListType) e.getValue();
+
+                        for (ExtendedAttributeType extAttr : extAttrs.getExtendedAttribute()) {
+                            if (extAttr.getName().equals(OIDC_EXT_NAMESPACE + ":nonce"))
+                                return extAttr.getValue();
+                        }
+                    }
+                }
+
+            }
+
+        }
+        return null;
+
     }
 
 

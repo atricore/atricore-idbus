@@ -10,6 +10,8 @@ import org.atricore.idbus.kernel.main.authn.scheme.AbstractAuthenticationScheme;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -58,6 +60,10 @@ public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticati
             return false;
         }
 
+        String nonce = expectedAuthzGrant.getAuthzGrant().getNonce();
+
+        _subject.getPrincipals();
+
         setAuthenticated(true);
 
         return true;
@@ -76,7 +82,12 @@ public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticati
         Set<SSOUser> ssoUsers = authzGrant.getSubject().getPrincipals(SSOUser.class);
         if (ssoUsers.size() == 1) {
             SSOUser ssoUser = ssoUsers.iterator().next();
-            return new SimplePrincipal(ssoUser.getName());
+            if (authzGrant.getNonce() != null) {
+                SSONameValuePair nonce = new SSONameValuePair("nonce", authzGrant.getNonce());
+                ((BaseUser)ssoUser).addProperty(nonce);
+            }
+
+            return ssoUser;
         }
 
         logger.error("No SSOUser principal found in retrieved security token " + securityToken.getId());
