@@ -275,7 +275,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             }
         }
 
-        throw new OpenIDConnectException("No token type ["+tokenType+"] found in response " + response.getID());\
+        throw new OpenIDConnectException("No token type ["+tokenType+"] found in response " + response.getID());
 
     }
 
