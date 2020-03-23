@@ -32,8 +32,8 @@
 
 <%
 
-    ErrorObject error = null;
     Exception exception = null;
+    ErrorObject error = null;
     AccessToken accessToken = null;
     RefreshToken refreshToken = null;
     BearerAccessToken bearerAccessToken = null;
@@ -99,20 +99,18 @@
             clientAuth = new ClientSecretBasic(clientId, secret);
         }
 
-        AuthorizationCode code = new AuthorizationCode(request.getParameter("code"));
-        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUri"));
 
         // Authorization Grant
-        AuthorizationGrant authzGrant = new AuthorizationCodeGrant(code, redirectUri);
+        RefreshToken currentRefreshToken = new RefreshToken(request.getParameter("refresh_token"));
+        AuthorizationGrant authzGrant = new RefreshTokenGrant(currentRefreshToken);
 
         // Scopes
         Scope scope = Scope.parse(props.getProperty("oidc.client.scopes"));
 
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, authzGrant, scope);
-        TokenResponse tokenRespose = null;
-        try {
-            tokenRespose = OIDCAccessTokenResponse.parse(tokenRequest.toHTTPRequest().send());
 
+        try {
+            TokenResponse tokenRespose = OIDCAccessTokenResponse.parse(tokenRequest.toHTTPRequest().send());
             if (! tokenRespose.indicatesSuccess()) {
                 // We got an error response...
                 TokenErrorResponse errorResponse = (TokenErrorResponse) tokenRespose;
@@ -135,11 +133,7 @@
                 claims = signedIdToken.getJWTClaimsSet();
 
             }
-
         } catch (ParseException e) {
-            error = e.getErrorObject();
-            exception = e;
-        } catch (SerializeException e) {
             error = e.getErrorObject();
             exception = e;
         }
@@ -154,7 +148,7 @@
 
 <html>
 <head>
-    <title>ODIC Client Test - JWT Bearer with Authorization Code </title>
+    <title>ODIC Client Test - JWT Bearer Refresh Token </title>
 </head>
 
 <h2>Outcome</h2>
@@ -170,8 +164,8 @@
 
     out.println("<br><br>");
 
-    out.println("<a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString() + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a>");
-}
+    out.println("<a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString()  + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a>");
+    }
 %>
 
 

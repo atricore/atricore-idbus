@@ -208,9 +208,9 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         State sessionState = new State(response.getSessionIndex());
         AuthenticationResponse authnResponse = new AuthenticationSuccessResponse(authnRequest.getRedirectionURI(),
-                code, 
-                idToken, 
-                accessToken, 
+                code,
+                idToken,
+                accessToken,
                 authnRequest.getState(),
                 sessionState,
                 authnRequest.getResponseMode());
@@ -275,7 +275,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             }
         }
 
-        throw new OpenIDConnectException("No token type ["+tokenType+"] found in response " + response.getID());
+        throw new OpenIDConnectException("No token type ["+tokenType+"] found in response " + response.getID());\
 
     }
 
