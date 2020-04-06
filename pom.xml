@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
   ~ Atricore IDBus
   ~
   ~ Copyright 2009, Atricore Inc.
@@ -541,7 +541,7 @@
 
         </pluginRepository>
 
-        <!-- Apache releases 
+        <!-- Apache releases
         <pluginRepository>
             <id>apache-releases</id>
             <name>Apache Releases repository</name>
