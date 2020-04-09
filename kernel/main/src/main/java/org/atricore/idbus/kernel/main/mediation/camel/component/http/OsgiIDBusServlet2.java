@@ -113,7 +113,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
             secureCookies = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.secureCookies", "false"));
             followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "true"));
-            processingUIenabled = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.cors.allowAll", "false"));
+            processingUIenabled = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.processingUIenabled", "false"));
 
             socketTimeoutMillis = Integer.parseInt(kernelConfig.getProperty("binding.http.socketTimeoutMillis", "300000"));
             connectionTimeoutMillis = Integer.parseInt(kernelConfig.getProperty("binding.http.connectionTimeoutMillis", "5000"));

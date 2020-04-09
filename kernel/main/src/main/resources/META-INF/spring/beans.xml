@@ -163,7 +163,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <bean id="mediationEngine" class="org.atricore.idbus.kernel.main.mediation.MediationEngineImpl">
         <property name="registry" ref="idsuRegistry"/>
     </bean>
-            
+
     <bean id="idsuRegistry" class="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistryImpl" >
         <property name="listeners">
             <set>
@@ -228,6 +228,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="binding.http.ajax">false</prop>
         <prop key="binding.http.secureCookies">false</prop>
         <prop key="binding.http.followRedirects">true</prop>
+        <prop key="binding.http.processingUIenabled">true</prop>
         <prop key="binding.http.reuseHttpClient">false</prop>
         <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
         <prop key="binding.http.displayErrorDebugInfo">true</prop>
@@ -249,7 +250,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <constructor-arg ref="kernelProps"/>
     </bean>
 
-    <osgi:service id="kernelConfigExporter" ref="kernelConfig" 
+    <osgi:service id="kernelConfigExporter" ref="kernelConfig"
                   interface="org.atricore.idbus.kernel.main.util.ConfigurationContext"/>
 
     <!-- placeholder configurer -->
