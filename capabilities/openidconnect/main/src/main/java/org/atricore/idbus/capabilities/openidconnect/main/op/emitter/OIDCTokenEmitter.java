@@ -123,6 +123,9 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
             // This is the SAML SP, it should be an OIDC Relaying Party proxy, or we can't emit.
             CircleOfTrustMemberDescriptor sp = saml2Ctx.getMember();
 
+            if (clientsBySp == null)
+                return null;
+            
             OIDCClientInformation clientInfo = clientsBySp.get(sp.getAlias());
 
             if (clientInfo != null)
