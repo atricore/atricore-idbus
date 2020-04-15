@@ -608,6 +608,8 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         proxyReq.addHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST, "TRUE");
         if (req.isSecure())
             proxyReq.addHeader(HTTP_HEADER_IDBUS_SECURE, "TRUE");
+        if (req.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROCESS_UI) != null)
+            proxyReq.addHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROCESS_UI, "true");
 
         return proxyReq;
     }

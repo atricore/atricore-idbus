@@ -1,0 +1,38 @@
+<html>
+<head>
+    <script>%s</script>
+    <style>%s</style>
+</head>
+
+<body>
+<div class="wrap">
+    <div class="loading">
+        <div class="bounceball"></div>
+        <div class="text">Loading...</div>
+    </div>
+</div>
+
+<script>
+    $(window).on('load', function() {
+        const METHOD = '#METHOD#';
+        $.get({
+            url: window.location.pathname + window.location.search,
+            method: METHOD,
+            headers: {
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                'X-IdBusProcessUI': 'true'
+            },
+            success: function(data, textStatus, request) {
+                let redirect = request.getResponseHeader("X-IdBusLocation");
+                if (redirect) {
+                    window.location.replace(redirect);
+                } else {
+                    $(data).appendTo('body');
+                    $('form').submit();
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
