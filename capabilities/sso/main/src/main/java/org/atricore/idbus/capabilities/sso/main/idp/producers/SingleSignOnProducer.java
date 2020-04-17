@@ -1410,15 +1410,13 @@ public class SingleSignOnProducer extends SSOProducer {
 
                     if (next instanceof SubjectNameIDType) {
 
-                        // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
                         SubjectNameIDType nameId = (SubjectNameIDType) next;
 
                         AttributedString usernameString = new AttributedString();
                         usernameString.setValue(nameId.getName());
                         usernameToken.setUsername(usernameString);
                         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), nameId.getName());
-                        // TODO : This is not accurate
-                        // TODO : We should honor the provided authn. context if any
+
                         usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
                         usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
                         // Also update authentication state
