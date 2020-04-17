@@ -26,6 +26,7 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
+import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
@@ -33,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.SAMLR11Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
+import org.atricore.idbus.capabilities.sso.support.core.InvalidXMLException;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
 import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
@@ -40,7 +42,10 @@ import org.w3._2001._04.xmlenc_.EncryptedDataType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,12 +58,73 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: XmlUtils.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
 public class XmlUtils {
+
+    private static final String XPATH_ABBREVIATED_SYNTAX = "(\\/(@?[\\w_?\\w:\\*]+(\\[[^]]+\\])*)?)+";
+
+    private static final String XPATH_EXPANDED_SYNTAX = "\\/?(ancestor(-or-self)?|descendant(-or-self)?|following(-sibling)?|attribute|child|namespace|parent|preceding(-sibling)?|self)";
+
+    private static final Pattern xpathAbbreviated = Pattern.compile(XPATH_ABBREVIATED_SYNTAX);
+
+    private static final Pattern xpathExpanded = Pattern.compile(XPATH_EXPANDED_SYNTAX);
+
+    private static String[] xpath = {
+            "/",
+            ".",
+            "@",
+            "*",
+            "[",
+            "]",
+            "(",
+            "(",
+            "{",
+            "}",
+            "?",
+            "$",
+            "#",
+            "|",
+            "*",
+            "div",
+            "=",
+            "!=",
+            "<",
+            "<=",
+            ">",
+            ">=",
+            "or",
+            "and",
+            "mod",
+            "node",
+            "ancestor",
+            "ancestor-or-self",
+            "descendant",
+            "descendant-or-self",
+            "following",
+            "following-sibling",
+            "attribute",
+            "child",
+            "namespace",
+            "parent",
+            "preceding",
+            "preceding-sibling",
+            "self",
+            "node",
+            "document-node",
+            "text",
+            "comment",
+            "namespace-code",
+            "processing-instruction",
+            "attribute",
+            "schema-attribute"
+    };
+
+
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
 
     private static final TreeSet<String> samlContextPackages = new TreeSet<String>();
@@ -66,6 +132,7 @@ public class XmlUtils {
     private static final Holder<JAXBUtils.CONSTRUCTION_TYPE> constructionType = new Holder<JAXBUtils.CONSTRUCTION_TYPE>();
 
     private static final XMLInputFactory staxIF = XMLInputFactory.newInstance();
+
     private static final XMLOutputFactory staxOF = XMLOutputFactory.newInstance();
 
     static {
@@ -81,7 +148,62 @@ public class XmlUtils {
         javax.xml.parsers.SAXParserFactory saxf =
                 SAXParserFactory.newInstance();
 
+        String FEATURE = null;
+
         try {
+            // -----------------------------------------------------------------------------
+            // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all
+            // XML entity attacks are prevented
+            // -----------------------------------------------------------------------------
+
+            // Xerces 2 only - http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl
+            //FEATURE = "http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl";
+            //dbf.setFeature(FEATURE, true);
+
+            FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+            dbf.setFeature(FEATURE, true);
+
+            // -----------------------------------------------------------------------------
+            // If you can't completely disable DTDs, then at least do the following:
+            // -----------------------------------------------------------------------------
+
+            // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-general-entities
+
+            // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-general-entities
+            //FEATURE = "http://xerces.apache.org/xerces2-j/features.html#external-general-entities";
+            //dbf.setFeature(FEATURE, false);
+
+            // JDK7+ - http://xml.org/sax/features/external-general-entities
+            FEATURE = "http://xml.org/sax/features/external-general-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-parameter-entities
+
+            // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-parameter-entities
+            //FEATURE = "http://xerces.apache.org/xerces2-j/features.html#external-parameter-entities";
+            //dbf.setFeature(FEATURE, false);
+
+            // JDK7+ - http://xml.org/sax/features/external-parameter-entities
+            FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // -----------------------------------------------------------------------------
+            // Disable external DTDs as well
+            // -----------------------------------------------------------------------------
+            FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+            dbf.setFeature(FEATURE, false);
+
+            // -----------------------------------------------------------------------------
+            // and these as well, per Timothy Morgan's 2014 paper: "XML Schema, DTD, and Entity Attacks"
+            // -----------------------------------------------------------------------------
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);
+
+            // And, per Timothy Morgan: "If for some reason support for inline DOCTYPEs are a requirement, then
+            // ensure the entity settings are disabled (as shown above) and beware that SSRF attacks
+            // (http://cwe.mitre.org/data/definitions/918.html) and denial
+            // of service attacks (such as billion laughs or decompression bombs via "jar:") are a risk."
+
             logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
             logger.debug("SAXParser = " + saxf.newSAXParser());
             logger.debug("XMLEventReader = " + staxIF.createXMLEventReader(new StringSource("<a>Hello</a>")));
@@ -202,10 +324,16 @@ public class XmlUtils {
         Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(request)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
-        if (o instanceof JAXBElement)
-            return (RequestAbstractType) ((JAXBElement) o).getValue();
 
-        return (RequestAbstractType) o;
+        RequestAbstractType samlRequest = null;
+        if (o instanceof JAXBElement)
+            samlRequest = (RequestAbstractType) ((JAXBElement) o).getValue();
+        else
+            samlRequest = (RequestAbstractType) o;
+
+        verifyRequest(samlRequest);
+
+        return samlRequest;
     }
 
 
@@ -217,8 +345,12 @@ public class XmlUtils {
     }
 
     public static RequestAbstractType unmarshalSamlR2Request(Document doc) throws Exception {
-        return (RequestAbstractType) unmarshal(doc, new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
+        RequestAbstractType samlRequest = (RequestAbstractType) unmarshal(doc, new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG,
                 SAMLR2Constants.SAML_IDBUS_PKG});
+
+        verifyRequest(samlRequest);
+
+        return samlRequest;
 
     }
 
@@ -303,10 +435,15 @@ public class XmlUtils {
         Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(response)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
+        StatusResponseType statusResponse = null;
         if (o instanceof JAXBElement)
-            return (StatusResponseType) ((JAXBElement) o).getValue();
+            statusResponse = (StatusResponseType) ((JAXBElement) o).getValue();
+        else
+            statusResponse = (StatusResponseType) o;
 
-        return (StatusResponseType) o;
+        verifyStatusResponse(statusResponse);
+
+        return statusResponse;
     }
 
     public static StatusResponseType unmarshalSamlR2Response(String base64Response) throws Exception {
@@ -314,8 +451,12 @@ public class XmlUtils {
     }
 
     public static StatusResponseType unmarshalSamlR2Response(Document doc) throws Exception {
-        return (StatusResponseType) unmarshal(doc,
+        StatusResponseType statusResponse = (StatusResponseType) unmarshal(doc,
                 new String[]{SAMLR2Constants.SAML_PROTOCOL_PKG, SAMLR2Constants.SAML_IDBUS_PKG});
+
+        verifyStatusResponse(statusResponse);
+
+        return statusResponse;
 
 
     }
@@ -351,10 +492,15 @@ public class XmlUtils {
         Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(request)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
+        SSORequestAbstractType ssoRequest = null;
         if (o instanceof JAXBElement)
-            return (SSORequestAbstractType) ((JAXBElement) o).getValue();
+            ssoRequest = (SSORequestAbstractType) ((JAXBElement) o).getValue();
+        else
+            ssoRequest = (SSORequestAbstractType) o;
 
-        return (SSORequestAbstractType) o;
+        verifySSORequest(ssoRequest);
+
+        return ssoRequest;
     }
 
 
@@ -401,10 +547,16 @@ public class XmlUtils {
         Object o = unmarshaller.unmarshal(staxIF.createXMLEventReader(new StringSource(response)));
         JAXBUtils.releaseJAXBUnmarshaller(jaxbContext, unmarshaller);
 
-        if (o instanceof JAXBElement)
-            return (SSOResponseType) ((JAXBElement) o).getValue();
 
-        return (SSOResponseType) o;
+        SSOResponseType ssoResponse = null;
+        if (o instanceof JAXBElement)
+            ssoResponse = (SSOResponseType) ((JAXBElement) o).getValue();
+        else
+            ssoResponse = (SSOResponseType) o;
+
+        verifySSOResponse(ssoResponse);
+
+        return ssoResponse;
     }
 
     public static StatusResponseType unmarshalSSOResponse(String base64Response) throws Exception {
@@ -671,12 +823,75 @@ public class XmlUtils {
     }
 
     public static AssertionType unmarshalSamlR2Assertion(Document doc) throws Exception {
-        return (AssertionType ) unmarshal(doc, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG,
+        AssertionType samlAssertion = (AssertionType) unmarshal(doc, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG,
                 SAMLR2Constants.SAML_IDBUS_PKG});
+
+        verifyAssertion(samlAssertion);
+
+        return samlAssertion;
     }
 
     public static EncryptedDataType unmarshalSamlR2EncryptedAssertion(Document doc) throws Exception {
-        return (EncryptedDataType) unmarshal(doc, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG,
+        EncryptedDataType encryptedType = (EncryptedDataType) unmarshal(doc, new String[]{SAMLR2Constants.SAML_ASSERTION_PKG,
                 SAMLR2Constants.SAML_IDBUS_PKG});
+
+        verifyEncryptedType(encryptedType);
+
+        return encryptedType;
+    }
+
+    public static void verifyRequest(RequestAbstractType samlRequest) throws Exception {
+        verifyID(samlRequest.getID());
+    }
+
+    public static void verifyAssertion(AssertionType samlAssertion) throws Exception {
+        verifyID(samlAssertion.getID());
+    }
+
+    public static void verifyEncryptedType(EncryptedDataType encryptedData) throws Exception {
+        verifyID(encryptedData.getId());
+    }
+
+    public static void verifyStatusResponse(StatusResponseType statusResponse) throws Exception {
+        verifyID(statusResponse.getID());
+
+        if (statusResponse instanceof ResponseType) {
+            ResponseType assertionResponse = ((ResponseType) statusResponse);
+            for (Object o : assertionResponse.getAssertionOrEncryptedAssertion()) {
+                if (o instanceof AssertionType) {
+                    verifyAssertion((AssertionType) o);
+                } else if (o instanceof EncryptedDataType) {
+                    verifyEncryptedType((EncryptedDataType) o);
+                }
+            }
+        }
+    }
+
+    public static void verifySSORequest(SSORequestAbstractType ssoRequest) throws Exception {
+        verifyID(ssoRequest.getID());
+    }
+
+    public static void verifySSOResponse(SSOResponseType ssoResponse) throws Exception {
+        verifyID(ssoResponse.getID());
+    }
+
+    public static void verifyID(String ID) throws Exception {
+
+        for (String s : xpath) {
+            if (ID.contains(s))
+                throw new InvalidXMLException("Invlaid ID " + ID + " [" + s + "]");
+
+        }
+
+/*
+        if (xpathAbbreviated.matcher(ID).matches()) {
+            throw new InvalidXMLException("Illegal ID value " + ID);
+        }
+
+        if (xpathExpanded.matcher(ID).matches()) {
+            throw new InvalidXMLException("Illegal ID value " + ID);
+        }
+*/
+
     }
 }

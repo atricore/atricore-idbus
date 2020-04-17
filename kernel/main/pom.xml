@@ -436,7 +436,6 @@
                             sun.security.util;resolution:=optional,
                             org.aspectj.lang;resolution:=optional,
                             org.aspectj.lang.reflect;resolution:=optional,
-
                             *
                         </Import-Package>
 
