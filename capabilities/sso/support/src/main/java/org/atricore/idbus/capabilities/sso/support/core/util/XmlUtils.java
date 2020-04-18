@@ -66,62 +66,14 @@ import java.util.regex.Pattern;
  */
 public class XmlUtils {
 
-    private static final String XPATH_ABBREVIATED_SYNTAX = "(\\/(@?[\\w_?\\w:\\*]+(\\[[^]]+\\])*)?)+";
-
-    private static final String XPATH_EXPANDED_SYNTAX = "\\/?(ancestor(-or-self)?|descendant(-or-self)?|following(-sibling)?|attribute|child|namespace|parent|preceding(-sibling)?|self)";
-
-    private static final Pattern xpathAbbreviated = Pattern.compile(XPATH_ABBREVIATED_SYNTAX);
-
-    private static final Pattern xpathExpanded = Pattern.compile(XPATH_EXPANDED_SYNTAX);
-
+    /**
+     * List of tokens that may be in an xpath expression.
+     */
     private static String[] xpath = {
-            "/",
-            ".",
-            "@",
-            "*",
-            "[",
-            "]",
-            "(",
-            "(",
-            "{",
-            "}",
-            "?",
-            "$",
-            "#",
-            "|",
-            "*",
-            "div",
-            "=",
-            "!=",
-            "<",
-            "<=",
-            ">",
-            ">=",
-            "or",
-            "and",
-            "mod",
-            "node",
-            "ancestor",
-            "ancestor-or-self",
-            "descendant",
-            "descendant-or-self",
-            "following",
-            "following-sibling",
-            "attribute",
-            "child",
-            "namespace",
-            "parent",
-            "preceding",
-            "preceding-sibling",
-            "self",
-            "node",
-            "document-node",
-            "text",
-            "comment",
-            "namespace-code",
-            "processing-instruction",
-            "attribute",
-            "schema-attribute"
+            "/", "..", "@", "*", "[", "]", "(", "(", "{", "}", "?", "$", "#", "|", "*", "div", "=", "!=", "<", "<=", ">", ">=", "or", "and",
+            "mod", "node", "ancestor", "ancestor-or-self", "descendant", "descendant-or-self", "following",
+            "following-sibling", "attribute", "child", "namespace", "parent", "preceding", "preceding-sibling", "self", "node",
+            "document-node", "text", "comment", "namespace-code", "processing-instruction", "attribute", "schema-attribute"
     };
 
 
@@ -155,33 +107,15 @@ public class XmlUtils {
             // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all
             // XML entity attacks are prevented
             // -----------------------------------------------------------------------------
-
-            // Xerces 2 only - http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl
-            //FEATURE = "http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl";
-            //dbf.setFeature(FEATURE, true);
-
             FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
             dbf.setFeature(FEATURE, true);
 
             // -----------------------------------------------------------------------------
             // If you can't completely disable DTDs, then at least do the following:
             // -----------------------------------------------------------------------------
-
-            // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-general-entities
-
-            // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-general-entities
-            //FEATURE = "http://xerces.apache.org/xerces2-j/features.html#external-general-entities";
-            //dbf.setFeature(FEATURE, false);
-
             // JDK7+ - http://xml.org/sax/features/external-general-entities
             FEATURE = "http://xml.org/sax/features/external-general-entities";
             dbf.setFeature(FEATURE, false);
-
-            // Xerces 1 - http://xerces.apache.org/xerces-j/features.html#external-parameter-entities
-
-            // Xerces 2 - http://xerces.apache.org/xerces2-j/features.html#external-parameter-entities
-            //FEATURE = "http://xerces.apache.org/xerces2-j/features.html#external-parameter-entities";
-            //dbf.setFeature(FEATURE, false);
 
             // JDK7+ - http://xml.org/sax/features/external-parameter-entities
             FEATURE = "http://xml.org/sax/features/external-parameter-entities";
@@ -875,23 +809,19 @@ public class XmlUtils {
         verifyID(ssoResponse.getID());
     }
 
+    /**
+     * Verifh that IDs do not have an XPath expression that the digital signature tool may try to resolve.
+     *
+     * @param ID
+     * @throws Exception
+     */
     public static void verifyID(String ID) throws Exception {
 
         for (String s : xpath) {
             if (ID.contains(s))
-                throw new InvalidXMLException("Invlaid ID " + ID + " [" + s + "]");
+                throw new InvalidXMLException("Invalid ID " + ID + " [" + s + "]");
 
         }
-
-/*
-        if (xpathAbbreviated.matcher(ID).matches()) {
-            throw new InvalidXMLException("Illegal ID value " + ID);
-        }
-
-        if (xpathExpanded.matcher(ID).matches()) {
-            throw new InvalidXMLException("Illegal ID value " + ID);
-        }
-*/
 
     }
 }

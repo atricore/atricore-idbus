@@ -31,7 +31,17 @@ import java.util.TreeSet;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class XmlUtils {
-    
+
+    /**
+     * List of tokens that may be in an xpath expression.
+     */
+    private static String[] xpath = {
+            "/", "..", "@", "*", "[", "]", "(", "(", "{", "}", "?", "$", "#", "|", "*", "div", "=", "!=", "<", "<=", ">", ">=", "or", "and",
+            "mod", "node", "ancestor", "ancestor-or-self", "descendant", "descendant-or-self", "following",
+            "following-sibling", "attribute", "child", "namespace", "parent", "preceding", "preceding-sibling", "self", "node",
+            "document-node", "text", "comment", "namespace-code", "processing-instruction", "attribute", "schema-attribute"
+    };
+
 
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
 
@@ -51,7 +61,33 @@ public class XmlUtils {
         javax.xml.parsers.SAXParserFactory saxf =
                 SAXParserFactory.newInstance();
 
+        String FEATURE = null;
+
         try {
+            // -----------------------------------------------------------------------------
+            // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all
+            // XML entity attacks are prevented
+            // -----------------------------------------------------------------------------
+            FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+            dbf.setFeature(FEATURE, true);
+
+            // -----------------------------------------------------------------------------
+            // If you can't completely disable DTDs, then at least do the following:
+            // -----------------------------------------------------------------------------
+            // JDK7+ - http://xml.org/sax/features/external-general-entities
+            FEATURE = "http://xml.org/sax/features/external-general-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // JDK7+ - http://xml.org/sax/features/external-parameter-entities
+            FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // -----------------------------------------------------------------------------
+            // Disable external DTDs as well
+            // -----------------------------------------------------------------------------
+            FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+            dbf.setFeature(FEATURE, false);
+
             logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
             logger.debug("SAXParser = " + saxf.newSAXParser());
             logger.debug("XMLEventReader = " + staxIF.createXMLEventReader(new StringSource("<a>Hello</a>")));
@@ -166,6 +202,23 @@ public class XmlUtils {
         JAXBUtils.releaseJAXBMarshaller(jaxbContext, m);
 
         return writer.toString();
+    }
+
+
+    /**
+     * Verifh that IDs do not have an XPath expression that the digital signature tool may try to resolve.
+     *
+     * @param ID
+     * @throws Exception
+     */
+    public static void verifyID(String ID) throws Exception {
+
+        for (String s : xpath) {
+            if (ID.contains(s))
+                throw new InvalidXMLException("Invalid ID " + ID + " [" + s + "]");
+
+        }
+
     }
 
 }

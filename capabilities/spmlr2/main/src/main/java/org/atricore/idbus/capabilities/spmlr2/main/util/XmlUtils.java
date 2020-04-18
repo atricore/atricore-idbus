@@ -35,6 +35,17 @@ import java.util.TreeSet;
  */
 public class XmlUtils {
 
+    /**
+     * List of tokens that may be in an xpath expression.
+     */
+    private static String[] xpath = {
+            "/", "..", "@", "*", "[", "]", "(", "(", "{", "}", "?", "$", "#", "|", "*", "div", "=", "!=", "<", "<=", ">", ">=", "or", "and",
+            "mod", "node", "ancestor", "ancestor-or-self", "descendant", "descendant-or-self", "following",
+            "following-sibling", "attribute", "child", "namespace", "parent", "preceding", "preceding-sibling", "self", "node",
+            "document-node", "text", "comment", "namespace-code", "processing-instruction", "attribute", "schema-attribute"
+    };
+
+
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
 
     private static final TreeSet<String> spmlContextPackages = new TreeSet<String>();
@@ -66,7 +77,33 @@ public class XmlUtils {
                 SAXParserFactory.newInstance();
 
 
+        String FEATURE = null;
+
         try {
+            // -----------------------------------------------------------------------------
+            // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all
+            // XML entity attacks are prevented
+            // -----------------------------------------------------------------------------
+            FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+            dbf.setFeature(FEATURE, true);
+
+            // -----------------------------------------------------------------------------
+            // If you can't completely disable DTDs, then at least do the following:
+            // -----------------------------------------------------------------------------
+            // JDK7+ - http://xml.org/sax/features/external-general-entities
+            FEATURE = "http://xml.org/sax/features/external-general-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // JDK7+ - http://xml.org/sax/features/external-parameter-entities
+            FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // -----------------------------------------------------------------------------
+            // Disable external DTDs as well
+            // -----------------------------------------------------------------------------
+            FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+            dbf.setFeature(FEATURE, false);
+
             logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
             logger.debug("SAXParser = " + saxf.newSAXParser());
             logger.debug("XMLEventReader = " + staxIF.createXMLEventReader(new StringSource("<a>Hello</a>")));
@@ -111,7 +148,9 @@ public class XmlUtils {
             request = decode(request);
 
         JAXBElement e = (JAXBElement) unmarshal(request, new String[]{ SPMLR2Constants.SPML_PKG });
-        return (RequestType) e.getValue();
+        RequestType req =  (RequestType) e.getValue();
+        verifyID(req.getRequestID());
+        return req;
     }
 
 
@@ -119,7 +158,9 @@ public class XmlUtils {
      * This unmarshalls a Base64 SPML Request
      */
     public static RequestType unmarshallSpmlR2Request(String base64Request) throws Exception {
-        return unmarshallSpmlR2Request(base64Request, true);
+        RequestType req =  unmarshallSpmlR2Request(base64Request, true);
+        verifyID(req.getRequestID());
+        return req;
     }
 
 
@@ -154,13 +195,15 @@ public class XmlUtils {
             response = decode(response);
         JAXBElement e = (JAXBElement) unmarshal(response,
                 new String[]{ SPMLR2Constants.SPML_PKG});
-        return (ResponseType) e.getValue();
-
+        ResponseType res = (ResponseType) e.getValue();
+        verifyID(res.getRequestID());
+        return res;
     }
 
     public static ResponseType unmarshallSpmlR2Response(String base64Response) throws Exception {
-        return unmarshallSpmlR2Response(base64Response, true);
-
+        ResponseType res = unmarshallSpmlR2Response(base64Response, true);
+        verifyID(res.getRequestID());
+        return res;
     }
 
     public static String decode(String content) {
@@ -241,6 +284,22 @@ public class XmlUtils {
             return ((JAXBElement) o).getValue();
 
         return o;
+
+    }
+
+    /**
+     * Verifh that IDs do not have an XPath expression that the digital signature tool may try to resolve.
+     *
+     * @param ID
+     * @throws Exception
+     */
+    public static void verifyID(String ID) throws Exception {
+
+        for (String s : xpath) {
+            if (ID.contains(s))
+                throw new InvalidXMLException("Invalid ID " + ID + " [" + s + "]");
+
+        }
 
     }
 
