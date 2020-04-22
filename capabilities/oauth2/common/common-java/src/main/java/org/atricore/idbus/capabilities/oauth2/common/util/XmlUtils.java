@@ -36,11 +36,10 @@ public class XmlUtils {
      * List of tokens that may be in an xpath expression.
      */
     private static String[] xpath = {
-            "/", "..", "@", "*", "[", "]", "(", "(", "{", "}", "?", "$", "#", "|", "*", "div", "=", "!=", "<", "<=", ">", ">=", "or", "and",
-            "mod", "node", "ancestor", "ancestor-or-self", "descendant", "descendant-or-self", "following",
-            "following-sibling", "attribute", "child", "namespace", "parent", "preceding", "preceding-sibling", "self", "node",
-            "document-node", "text", "comment", "namespace-code", "processing-instruction", "attribute", "schema-attribute"
-    };
+            "/", "..", "@", "*", "[", "]", "(", "(", "{", "}", "?", "$", "#", "|", "*", "=", "!=", "<", "<=", ">", ">=",
+            "node", "ancestor", "descendant", "following", "attribute", "child", "namespace", "parent", "preceding", "self",
+            "document-node", "text", "comment", "namespace-code", "processing-instruction",
+    };;
 
 
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
