@@ -23,6 +23,7 @@ public class ProcessingUIServletFilter implements Filter {
     private InternalProcessingPolicy internalProcessingPolicy;
 
     private boolean processingUIenabled;
+    private boolean followRedirects;
 
     private String pageTemplate;
 
@@ -45,6 +46,8 @@ public class ProcessingUIServletFilter implements Filter {
 
             processingUIenabled = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.processingUIenabled", "false"));
             logger.info("Processing UI Filter initialized: processingUIenabled=" + processingUIenabled);
+            followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "false"));
+            logger.info("Processing UI Filter initialized: followRedirects=" + followRedirects);
         }
     }
 
@@ -69,8 +72,8 @@ public class ProcessingUIServletFilter implements Filter {
         String requestUrl = hReq.getRequestURL().toString();
         logger.trace("Processing request: " + requestUrl);
 
-        // If processing UI is disabled, continue.
-        if (!processingUIenabled) {
+        // If processing UI is disabled or follow redirects is disabled, continue.
+        if (!processingUIenabled  || !followRedirects ) {
             chain.doFilter(req, res);
             return;
         }
