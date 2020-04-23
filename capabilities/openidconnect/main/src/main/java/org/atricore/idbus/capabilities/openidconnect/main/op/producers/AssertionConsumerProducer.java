@@ -82,7 +82,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
 
         // Build an OpenIDConnect authentication response based on the original request
-        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, oidcAuthnRequest);
+        AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, oidcAuthnRequest, response);
 
         // Resolve response ED
         EndpointDescriptor ed = resolveRedirectUri(oidcAuthnRequest, (AuthorizationResponse) authnResponse);
@@ -144,20 +144,21 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
     }
 
     /**
-     * This creates an OpenIDConnect authn response
+     * This creates an OpenIDConnect authn response based on a received SSO/SAML Authn response
      * @param exchange
      * @param authnCtx
      * @param authnRequest
      *
+     * @param response
      * @return
      */
     protected AuthenticationResponse buildAuthenticationResponse(CamelMediationExchange exchange,
                                                                  OpenIDConnectAuthnContext authnCtx,
-                                                                 AuthenticationRequest authnRequest) throws OpenIDConnectException, IdentityMediationException, URISyntaxException {
+                                                                 AuthenticationRequest authnRequest,
+                                                                 SPAuthnResponseType response) throws OpenIDConnectException, IdentityMediationException, URISyntaxException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         MediationState state = in.getMessage().getState();
-        SPAuthnResponseType response = (SPAuthnResponseType) in.getMessage().getContent();
 
         // Set all requested tokens as part of the response.
         AuthorizationCode code = null;
@@ -183,7 +184,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY , code.getValue());
 
             } else if (tokenType.equals(OpenIDConnectTokenType.ACCESS_TOKEN)) {
-                // TODO : This is also defined in the Acces Token Emitter, we can hard-code or let the user define this in the console instead.
+                // TODO : This is also defined in the Access Token Emitter, we can hard-code or let the user define this in the console instead.
                 accessToken = new BearerAccessToken(resolveToken(response, tokenType.getFQTN()), 300l, new Scope(OIDCScopeValue.OPENID));
 
             } else if (tokenType.equals(OpenIDConnectTokenType.ID_TOKEN)) {

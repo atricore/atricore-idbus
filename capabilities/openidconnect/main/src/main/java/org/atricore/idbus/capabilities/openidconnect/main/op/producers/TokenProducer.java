@@ -14,6 +14,7 @@ import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.JWTID;
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.oauth2.sdk.token.Token;
@@ -60,8 +61,8 @@ import java.util.Set;
 /**
  * This creates an OIDC token based on different grant types (CODE, JWT BEARER, etc).
  *
- * The producer actually runs as part of the SSO/SAML Produces because it access the STS.  Since JOSSO
- * is SAML enabled, the STS will issue the token based on a previous authentication that craeted a SAML assertion
+ * The producer actually runs as part of the SSO/SAML Producers because it access the STS.  Since JOSSO
+ * is SAML enabled, the STS will issue the token based on a previous authentication that created a SAML assertion
  * and an AUTHZ CODE as part of the SAML statements.
  */
 public class TokenProducer extends AbstractOpenIDProducer {
@@ -69,7 +70,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
     private static final Log logger = LogFactory.getLog(TokenProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
-    
+
     // Ten seconds (TODO : Get from mediator/console)
     private long timeToleranceInMillis = 5L * 60L * 1000L;
 
@@ -609,6 +610,17 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             ClientAuthenticationMethod enabledAuthnMethod = clientInfo.getMetadata().getTokenEndpointAuthMethod();
             ClientAuthentication clientAuthn = tokenRequest.getClientAuthentication();
+            AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
+            if (authzGrant instanceof AuthorizationCodeGrant) {
+                AuthorizationCodeGrant authzCodeGrant = (AuthorizationCodeGrant) authzGrant;
+                if (authzCodeGrant.getCodeVerifier() != null) {
+                    // TODO : Should we honor this ? ... we need the Code Challenge.
+
+                    CodeVerifier cv = authzCodeGrant.getCodeVerifier();
+                    cv.getExpirationDate();
+
+                }
+            }
 
             if (enabledAuthnMethod == null) {
                 if (logger.isDebugEnabled())
@@ -617,7 +629,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             }
 
             if (!clientAuthn.getMethod().equals(enabledAuthnMethod)) {
-                logger.error("The authentiation method used by the client is not enabled: " + clientAuthn.getMethod());
+                logger.error("The authentication method used by the client is not enabled: " + clientAuthn.getMethod());
                 throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue());
             }
 

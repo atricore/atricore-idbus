@@ -1,8 +1,6 @@
 <%@ page import="java.net.URI" %>
 <%@ page import="java.util.Properties" %>
 <%@ page import="java.io.InputStream" %>
-<%@ page import="java.net.HttpURLConnection" %>
-<%@ page import="java.io.ByteArrayOutputStream" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.ClientSecretJWT" %>
 <%@ page import="com.nimbusds.oauth2.sdk.*" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.ClientAuthentication" %>
@@ -16,14 +14,13 @@
 <%@ page import="com.nimbusds.oauth2.sdk.token.AccessToken" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.RefreshToken" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.BearerAccessToken" %>
-<%@ page import="com.nimbusds.oauth2.sdk.token.TokenPair" %>
 <%@ page import="java.net.URLDecoder" %>
-<%@ page import="com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse" %>
 <%@ page import="com.nimbusds.jwt.*" %>
 <%@ page import="com.nimbusds.oauth2.sdk.http.HTTPResponse" %>
 <%@ page import="com.nimbusds.jose.jwk.JWK" %>
 <%@ page import="com.nimbusds.jose.jwk.RSAKey" %>
 <%@ page import="com.nimbusds.jose.crypto.*" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.OIDCTokenResponse" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -32,9 +29,9 @@
     AccessToken accessToken = null;
     RefreshToken refreshToken = null;
     BearerAccessToken bearerAccessToken = null;
-    TokenPair tokenPair = null;
+
     JWT idToken = null;
-    ReadOnlyJWTClaimsSet claims = null;
+    JWTClaimsSet claims = null;
 
     try {
         Properties props = new Properties();
@@ -84,13 +81,12 @@
             JWSSigner signer = new MACSigner(secretKey.getEncoded());
 
             // Prepare JWT with claims set
-            JWTClaimsSet claimsSet = new JWTClaimsSet();
-            claimsSet.setSubject(props.getProperty("oidc.client.id"));
-            claimsSet.setIssuer(props.getProperty("oidc.client.id"));
-            claimsSet.setIssueTime(new Date());
-            claimsSet.setExpirationTime(new Date(System.currentTimeMillis() + (5L * 60L * 1000L)));
-            claimsSet.setJWTID(jid);
-            claimsSet.setAudience(Arrays.asList(props.getProperty("oidc.client.audience")));
+            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+            JWTClaimsSet claimsSet = builder.subject(props.getProperty("oidc.client.id")).
+                    issuer(props.getProperty("oidc.client.id")).
+                    issueTime(new Date()).
+                    expirationTime(new Date(System.currentTimeMillis() + (5L * 60L * 1000L))).
+                    jwtID(jid).audience(Arrays.asList(props.getProperty("oidc.client.audience"))).build();
 
             SignedJWT clientAssertion = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
             clientAssertion.sign(signer);
@@ -193,14 +189,13 @@
 
         } else {
 
-            OIDCAccessTokenResponse successResponse = (OIDCAccessTokenResponse) tokenResponse;
+            OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenResponse;
 
             // Get the access token, the server may also return a refresh token
-            accessToken = successResponse.getAccessToken();
-            refreshToken = successResponse.getRefreshToken();
-            bearerAccessToken = successResponse.getBearerAccessToken();
-            tokenPair = successResponse.getTokenPair();
-            idToken = successResponse.getIDToken();
+            accessToken = successResponse.getOIDCTokens().getAccessToken();
+            refreshToken = successResponse.getOIDCTokens().getRefreshToken();
+            bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
+            idToken = successResponse.getOIDCTokens().getIDToken();
 
             SignedJWT signedIdToken = (SignedJWT) idToken;
             JWSVerifier verifier = new RSASSAVerifier(rsaJwk.toRSAPublicKey());
