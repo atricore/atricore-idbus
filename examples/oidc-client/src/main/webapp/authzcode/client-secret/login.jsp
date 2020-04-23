@@ -19,7 +19,7 @@
         props.load(is);
 
         URI authnEndpoint = new URI(props.getProperty("oidc.authn.endpoint"));
-        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUri"));
+        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUriBase") + request.getContextPath() + "/authzcode/client-secret/process.jsp");
 
         Scope scope = Scope.parse(props.getProperty("oidc.client.scopes"));
 
@@ -31,7 +31,9 @@
         State state = new State();
         Nonce nonce = new Nonce();
 
-        AuthenticationRequest authnRequest = new AuthenticationRequest(authnEndpoint, rt, scope, clientId, redirectUri, state, nonce);
+        AuthenticationRequest authnRequest = new AuthenticationRequest.Builder(rt, scope, clientId, redirectUri).
+                endpointURI(authnEndpoint).state(state).nonce(nonce).build();
+
         response.sendRedirect(authnRequest.toURI().toString());
 
         //} catch (Exception e) {

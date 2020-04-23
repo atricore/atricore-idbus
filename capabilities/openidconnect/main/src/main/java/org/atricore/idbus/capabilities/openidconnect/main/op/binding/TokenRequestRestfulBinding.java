@@ -5,6 +5,7 @@ import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
@@ -69,6 +70,7 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             // Client Authentication mechanism: // TODO PKI, etc.
             // TODO : Verify that the mechanism is enabled for the requesting RP
             ClientAuthentication clientAuthn = null;
+            CodeVerifier codeVerifier = null;
             if (state.getTransientVariable("client_assertion") != null) {
                 String assertionType = state.getTransientVariable("client_assertion_type");
 
@@ -83,10 +85,12 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             } else if (httpMsg.getHeader("Authorization") != null) {
                 String authorization = httpMsg.getHeader("Authorization").toString();
                 clientAuthn = ClientSecretBasic.parse(authorization);
+            } else if (state.getTransientVariable("code_verifier") != null) {
+                codeVerifier = new CodeVerifier(state.getTransientVariable("code_verifier"));
             }
 
-            if (clientAuthn == null) {
-                logger.error("Client Authentication is required");
+            if (clientAuthn == null && codeVerifier == null) {
+                logger.error("Client Authentication/Code Verifier is required");
                 throw new RuntimeException(OAuth2Error.UNAUTHORIZED_CLIENT.getCode());
             }
 
@@ -106,8 +110,11 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             if (state.getTransientVariable("scope") != null)
                 scope = Scope.parse(state.getTransientVariable("scope"));
 
-            // Audience
-            TokenRequest tokenRequest = new TokenRequest(uri, clientAuthn, authzGrant, scope);
+            TokenRequest tokenRequest = null;
+            if (clientAuthn != null)
+                tokenRequest = new TokenRequest(uri, clientAuthn, authzGrant, scope);
+            else
+                tokenRequest = new TokenRequest(uri, clientID, authzGrant, scope);
 
             return new MediationMessageImpl<TokenRequest>(httpMsg.getMessageId(),
                     tokenRequest,

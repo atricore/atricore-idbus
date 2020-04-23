@@ -14,14 +14,23 @@ public class AuthorizationGrant implements Serializable {
     private String ssoSessionId;
     private Subject subject;
     private String nonce;
+    private String codeChallenge;
+    private String codeChallengeMethod;
 
-    public AuthorizationGrant(String id, String ssoSessionId, Subject subject, String nonce, long expiresOn) {
+    public AuthorizationGrant(String id, String ssoSessionId, Subject subject, String nonce,
+                              String codeChallenge,
+                              String codeChallengeMethod,
+                              long expiresOn) {
+
         this.id = id;
         this.ssoSessionId = ssoSessionId;
         this.subject = subject;
         this.creationTime = System.currentTimeMillis();
         this.expiresOn = expiresOn;
         this.nonce = nonce;
+        this.codeChallenge = codeChallenge;
+        this.codeChallengeMethod = codeChallengeMethod;
+
     }
 
     public String getId() {
@@ -46,5 +55,13 @@ public class AuthorizationGrant implements Serializable {
 
     public String getNonce() {
         return nonce;
+    }
+
+    public String getCodeChallenge() {
+        return codeChallenge;
+    }
+
+    public String getCodeChallengeMethod() {
+        return codeChallengeMethod;
     }
 }

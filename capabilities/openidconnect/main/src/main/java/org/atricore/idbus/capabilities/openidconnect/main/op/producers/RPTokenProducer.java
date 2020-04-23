@@ -67,8 +67,16 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         EndpointDescriptor tokenEndpoint = lookupTokenEndpoint(authnCtx);
 
         // Create a new TOKEN request w/new IDP TOKEN ENDPOINT
-        TokenRequest proxyTokenRequest = new TokenRequest(new URI(tokenEndpoint.getLocation()),
+
+
+        TokenRequest proxyTokenRequest = null;
+
+        if (tokenRequest.getClientAuthentication() != null)
+            proxyTokenRequest = new TokenRequest(new URI(tokenEndpoint.getLocation()),
                 tokenRequest.getClientAuthentication(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
+        else
+            proxyTokenRequest = new TokenRequest(new URI(tokenEndpoint.getLocation()),
+                    tokenRequest.getClientID(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
 
         // Send request/process response
         // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();

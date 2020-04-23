@@ -62,8 +62,11 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
         String grantId = uuidGenerator.generateId();
 
         String nonce = getNonce(context);
+        String codeChallenge = getCodeChallenge(context);
+        String codeChallengeMethod = getCodeChallengeMethod(context);
 
         AuthorizationGrant authzGrant = new AuthorizationGrant(grantId, getSsoSessinId(context), subject, nonce,
+                codeChallenge, codeChallengeMethod,
                 System.currentTimeMillis() + timeToLive * 1000L);
 
         SecurityTokenImpl st = new SecurityTokenImpl(grantId,
@@ -109,9 +112,21 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
     }
 
     protected String getNonce(SecurityTokenProcessingContext context) {
+        return getOIDCProperty(context, "nonce");
+    }
+
+    protected String getCodeChallenge(SecurityTokenProcessingContext context) {
+        return getOIDCProperty(context, "code_challenge");
+    }
+
+    protected String getCodeChallengeMethod(SecurityTokenProcessingContext context) {
+        return getOIDCProperty(context, "code_challenge_method");
+    }
+
+    protected String getOIDCProperty(SecurityTokenProcessingContext context, String name) {
+
         Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
-        String ssoSessionId = null;
-        List<AbstractPrincipalType> proxyPrincipals = null;
+
         if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
             SamlR2SecurityTokenEmissionContext samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
 
@@ -146,7 +161,7 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
                         ExtAttributeListType extAttrs = (ExtAttributeListType) e.getValue();
 
                         for (ExtendedAttributeType extAttr : extAttrs.getExtendedAttribute()) {
-                            if (extAttr.getName().equals(OIDC_EXT_NAMESPACE + ":nonce"))
+                            if (extAttr.getName().equals(OIDC_EXT_NAMESPACE + ":" + name))
                                 return extAttr.getValue();
                         }
                     }
