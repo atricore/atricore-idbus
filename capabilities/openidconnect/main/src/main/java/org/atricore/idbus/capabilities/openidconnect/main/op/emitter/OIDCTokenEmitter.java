@@ -1,14 +1,10 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.emitter;
 
 import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.AESEncrypter;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.crypto.*;
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyType;
-import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.*;
+import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -125,7 +121,7 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
 
             if (clientsBySp == null)
                 return null;
-            
+
             OIDCClientInformation clientInfo = clientsBySp.get(sp.getAlias());
 
             if (clientInfo != null)
@@ -214,11 +210,30 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
                 jwtSigner = new MACSigner(secretKey.getEncoded());
 
             } else if (JWSAlgorithm.Family.EC.contains(jwsAlgorithm)) {
-                // TODO : Do we need an EC key pair ?
-                throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
+
+                PrivateKey privateKey = (PrivateKey) key;
+                Curve curve = null;
+                if (jwsAlgorithm.equals(JWSAlgorithm.ES256))
+                    curve = Curve.P_256;
+                else if (jwsAlgorithm.equals(JWSAlgorithm.ES256K))
+                    curve = Curve.P_256K;
+                else if (jwsAlgorithm.equals(JWSAlgorithm.ES384))
+                    curve = Curve.P_384;
+                else if (jwsAlgorithm.equals(JWSAlgorithm.ES512))
+                    curve = Curve.P_521;
+
+                jwtSigner = new ECDSASigner(privateKey, curve);
 
             } else if (JWSAlgorithm.Family.ED.contains(jwsAlgorithm)) {
-                // TODO : Do we need an ED key pair ?
+                // TODO : Do we need an ED key pair
+                /*
+                // Generate a key pair with Ed25519 curve
+                OctetKeyPair jwk = new OctetKeyPairGenerator(Curve.Ed25519).keyID("123").generate();
+                OctetKeyPair publicJWK = jwk.toPublicJWK();
+
+                // Create the EdDSA signer
+                JWSSigner signer = new Ed25519Signer(jwk);
+                */
                 throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
 
             } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {

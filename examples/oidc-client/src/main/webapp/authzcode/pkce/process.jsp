@@ -10,7 +10,7 @@
 <%@ page import="javax.crypto.spec.SecretKeySpec" %>
 <%@ page import="java.security.MessageDigest" %>
 <%@ page import="com.nimbusds.jose.*" %>
-<%@ page import="org.apache.commons.codec.binary.Base64" %>
+
 <%@ page import="java.security.SecureRandom" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.AccessToken" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.RefreshToken" %>
@@ -22,6 +22,20 @@
 <%@ page import="com.nimbusds.oauth2.sdk.auth.Secret" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.OIDCTokenResponse" %>
 <%@ page import="com.nimbusds.oauth2.sdk.pkce.CodeVerifier" %>
+<%@ page import="com.nimbusds.jose.crypto.ECDSAVerifier" %>
+<%@ page import="com.nimbusds.jose.crypto.MACVerifier" %>
+<%@ page import="java.security.PublicKey" %>
+<%@ page import="java.security.interfaces.RSAPublicKey" %>
+<%@ page import="java.security.spec.X509EncodedKeySpec" %>
+<%@ page import="java.security.KeyFactory" %>
+<%@ page import="com.nimbusds.jose.crypto.RSASSAVerifier" %>
+<%@ page import="com.nimbusds.oauth2.sdk.jose.SecretKeyDerivation" %>
+<%@ page import="javax.crypto.SecretKey" %>
+<%@ page import="org.apache.commons.codec.binary.Base64" %>
+<%@ page import="java.security.cert.Certificate" %>
+<%@ page import="java.security.cert.CertificateFactory" %>
+<%@ page import="java.io.ByteArrayInputStream" %>
+<%@ page import="sun.security.provider.X509Factory" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -39,29 +53,51 @@
     CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");;
 
     try {
+
+        // Configuration properties:
         Properties props = new Properties();
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
 
         sloUrl = props.getProperty("oidc.logout.endpoint");
 
-        // use SHA-1 to generate a hash from your key and trim the result to 256 bit (32 bytes)
-        byte[] key = props.getProperty("oidc.client.secret").getBytes("UTF-8");
+        // -------------------------------------------------
+        // Load shared secret
+        // Use SHA-1 to generate a hash from your key and trim the result to 256 bit (32 bytes)
+        Secret secret = new Secret(props.getProperty("oidc.client.secret"));
+        SecretKey secretKey = SecretKeyDerivation.deriveSecretKey(secret, 256);
 
-        if (key.length != 32) {
-            // We need a 32 byte length key, so  ...
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            key = sha.digest(key);
-            key = Arrays.copyOf(key, 32);
-        }
-        SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
+        // -------------------------------------------------
+        // Load IDP RSA Public key from a dert file
+        String publicKeyContent = props.getProperty("oidc.idp.certificateRSA");
+        byte [] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
 
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        Certificate cert = cf.generateCertificate(new ByteArrayInputStream(publicKeyContentBytes));
+        PublicKey pubKey = cert.getPublicKey();
+
+        // Load IDP RSA Public key from a pub key file
+        /*
+        publicKeyContent = props.getProperty("oidc.idp.pubKeyRSA");
+        byte [] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll("-----BEGIN PUBLIC KEY-----", "").replaceAll("-----END PUBLIC KEY-----", ""));
+
+        X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(publicKeyContentBytes);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        PublicKey pubKey = kf.generatePublic(keySpecX509);
+        */
+
+        // -------------------------------------------------
+        // Token endpoint
         URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));
 
+        // -------------------------------------------------
+        // Process response.
+
+        // Get authorization code
         AuthorizationCode code = new AuthorizationCode(request.getParameter("code"));
         URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUriBase"));
 
-        // Authorization Grant
+        // Build an authorization grant using CODE VERIFIER
         AuthorizationGrant authzGrant = new AuthorizationCodeGrant(code, redirectUri, codeVerifier);
 
         // Scopes
@@ -70,6 +106,7 @@
         // Client ID
         ClientID clientId = new ClientID(props.getProperty("oidc.client.id"));
 
+        // Build a token request
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientId, authzGrant, scope);
         TokenResponse tokenRespose = null;
         try {
@@ -91,8 +128,18 @@
                 idToken = successResponse.getOIDCTokens().getIDToken();
 
                 SignedJWT signedIdToken = (SignedJWT) idToken;
-                // TODO : JWSVerifier verifier = new RSASSAVerifier(publicKey);
-                // TODO : signedIdToken.verify(verifier);
+
+                // RSA Signature check
+                // JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
+
+                // EC (ES256,etc. ) Signature check
+                // JWSVerifier verifier = new ECDSAVerifier(pubKey);
+
+                // HMAC
+                JWSVerifier verifier = new MACVerifier(secretKey);
+
+                // Verify signature
+                signedIdToken.verify(verifier);
                 claims = signedIdToken.getJWTClaimsSet();
 
             }
@@ -102,6 +149,8 @@
             exception = e;
         } catch (SerializeException e) {
             //error = e.getErrorObject();
+            exception = e;
+        } catch (JOSEException e) {
             exception = e;
         }
 
@@ -120,7 +169,10 @@
 
 <h2>Outcome</h2>
 
-<%out.println("CodeVerifier: " + (codeVerifier != null ? codeVerifier.getValue() : "NA/"));%>
+<%
+    out.println("CodeVerifier: " + (codeVerifier != null ? codeVerifier.getValue() : "NA"));
+    out.println("<br><br>");
+%>
 
 <% if (error == null && exception == null) {
     out.println("Claims: " + claims + "</br></br>");

@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op;
 
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
@@ -30,6 +31,8 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
     private SSOKeystoreKeyResolver signKeyResolver;
 
     private SSOKeystoreKeyResolver encryptKeyResolver;
+
+    private OIDCProviderMetadata provider;
 
     private List<OIDCClientInformation> clients;
 
@@ -192,5 +195,13 @@ public class OpenIDConnectOPMediator extends AbstractCamelMediator {
 
     public void setClients(List<OIDCClientInformation> clients) {
         this.clients = clients;
+    }
+
+    public OIDCProviderMetadata getProvider() {
+        return provider;
+    }
+
+    public void setProvider(OIDCProviderMetadata provider) {
+        this.provider = provider;
     }
 }

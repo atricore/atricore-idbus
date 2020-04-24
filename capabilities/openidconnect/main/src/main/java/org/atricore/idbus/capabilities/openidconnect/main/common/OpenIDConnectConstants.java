@@ -20,7 +20,7 @@ public interface OpenIDConnectConstants {
     QName TwitterAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "TwitterAuthzTokenConsumerService");
 
     QName AuthzCodeProviderService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "AuthzCodeProviderService");
-    
+
     QName TokenService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "TokenService");
 
     QName UserInfoService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "UserInfoService");
@@ -62,7 +62,7 @@ public interface OpenIDConnectConstants {
 
     String OIDC_EXT_NAMESPACE = "urn:org:atricore:idbus:openidconnect:ext";
 
-    String SEC_CTX_AUTHZ_CODE_KEY = "authorization_code";
+    String SEC_CTX_AUTHZ_CODE_KEY = "code";
 
     String SEC_CTX_REFRESH_TOKEN_KEY = "refresh_token";
 

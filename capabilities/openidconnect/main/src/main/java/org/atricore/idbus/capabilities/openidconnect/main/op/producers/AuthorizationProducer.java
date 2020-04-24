@@ -4,8 +4,11 @@ import com.nimbusds.oauth2.sdk.OAuth2Error;
 import com.nimbusds.oauth2.sdk.ResponseMode;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.pkce.CodeChallenge;
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.OIDCError;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import org.apache.commons.codec.binary.Base64;
@@ -180,6 +183,7 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
     protected void validateRequest(AuthenticationRequest authnReq, OpenIDConnectBPMediator mediator) throws OpenIDConnectException {
         OIDCClientInformation client = mediator.getClient();
         OIDCClientMetadata metadata = client.getOIDCMetadata();
+        OIDCProviderMetadata idpMetadata = mediator.getProvider();
 
         // Verify redirect_uri
         URI requestedRedirectURI = authnReq.getRedirectionURI();
@@ -192,6 +196,22 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
 
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "redirection_uri is invalid: " + requestedRedirectURI.toString());
         }
+
+        // Authz Grant
+        CodeChallengeMethod ccm = authnReq.getCodeChallengeMethod();
+        boolean ccmSupported = true; // TODO :
+        if (idpMetadata.getCodeChallengeMethods() != null) {
+            for (CodeChallengeMethod supportedMethod : idpMetadata.getCodeChallengeMethods()) {
+                if (ccm.equals(supportedMethod)) {
+                    ccmSupported = true;
+                    break;
+                }
+
+            }
+        }
+
+        if (!ccmSupported)
+            throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED.setURI(authnReq.getRedirectionURI()), "code_challenge_method not supported " + ccm);
 
         // ClientID
         ClientID receivedClientID = authnReq.getClientID();
