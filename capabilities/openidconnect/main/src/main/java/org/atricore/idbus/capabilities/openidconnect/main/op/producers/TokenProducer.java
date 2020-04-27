@@ -626,7 +626,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
             ClientAuthenticationMethod enabledAuthnMethod = clientInfo.getMetadata().getTokenEndpointAuthMethod();
             ClientAuthentication clientAuthn = tokenRequest.getClientAuthentication();
             AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
-            if (authzGrant instanceof AuthorizationCodeGrant) {
+            // No authn method means code challenge!
+            if (authzGrant instanceof AuthorizationCodeGrant && enabledAuthnMethod == null) {
 
                 AuthorizationCodeGrant authzCodeGrant = (AuthorizationCodeGrant) authzGrant;
                 if (authzCodeGrant.getCodeVerifier() != null) {

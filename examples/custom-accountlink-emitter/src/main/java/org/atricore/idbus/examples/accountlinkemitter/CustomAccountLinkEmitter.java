@@ -6,6 +6,7 @@ import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.federation.*;
 
 import javax.security.auth.Subject;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,25 +44,43 @@ public class CustomAccountLinkEmitter implements AccountLinkEmitter {
                 NameIDFormat fmt = NameIDFormat.asEnum( subjectNameID.getFormat() );
                 switch ( fmt ) {
                     case UNSPECIFIED:
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.UNSPECIFIED.getValue());
+                        return new DynamicAccountLinkImpl( subject,
+                                subjectNameID.getName(),
+                                NameIDFormat.UNSPECIFIED.getValue(),
+                                ctx instanceof Map ? (Map<String, String>) ctx : null);
 
                     case EMAIL:
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.EMAIL.getValue());
+                        return new DynamicAccountLinkImpl( subject,
+                                subjectNameID.getName(),
+                                NameIDFormat.EMAIL.getValue(),
+                                ctx instanceof Map ? (Map<String, String>) ctx : null);
 
                     case TRANSIENT:
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.TRANSIENT.getValue() );
+                        return new DynamicAccountLinkImpl( subject,
+                                subjectNameID.getName(),
+                                NameIDFormat.TRANSIENT.getValue(),
+                                ctx instanceof Map ? (Map<String, String>) ctx : null);
 
                     case PERSISTENT:
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.PERSISTENT.getValue() );
+                        return new DynamicAccountLinkImpl( subject,
+                                subjectNameID.getName(),
+                                NameIDFormat.PERSISTENT.getValue(),
+                                ctx instanceof Map ? (Map<String, String>) ctx : null);
 
                     default:
                         logger.warn("Unrecognized Name ID Format : " + fmt);
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.UNSPECIFIED.getValue());
+                        return new DynamicAccountLinkImpl( subject,
+                                subjectNameID.getName(),
+                                NameIDFormat.UNSPECIFIED.getValue(),
+                                ctx instanceof Map ? (Map<String, String>) ctx : null);
 
                 }
             } else {
                 // If no format is specified, take the subject id as is, and force UNSPECIFIED
-                return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.UNSPECIFIED.getValue());
+                return new DynamicAccountLinkImpl( subject,
+                        subjectNameID.getName(),
+                        NameIDFormat.UNSPECIFIED.getValue(),
+                        ctx instanceof Map ? (Map<String, String>) ctx : null);
             }
 
         }

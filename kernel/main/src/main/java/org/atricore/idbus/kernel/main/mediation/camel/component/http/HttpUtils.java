@@ -28,7 +28,7 @@ public class HttpUtils {
         }
 
         BundleContext bc = wac.getBundleContext();
-
+/*
         for (Bundle b : bc.getBundles()) {
             if (b.getRegisteredServices() != null) {
 
@@ -62,7 +62,7 @@ public class HttpUtils {
                     logger.trace("(" + b.getBundleId() + ") " + b.getSymbolicName() + "services:<null>");
             }
         }
-
+*/
 
         Map<String, ConfigurationContext> kernelCfgsMap = wac.getBeansOfType(ConfigurationContext.class);
         if (kernelCfgsMap == null) {
@@ -81,4 +81,6 @@ public class HttpUtils {
         return kCfg;
 
     }
+
+
 }

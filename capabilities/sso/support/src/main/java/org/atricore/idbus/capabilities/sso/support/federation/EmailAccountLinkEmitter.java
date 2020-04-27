@@ -28,6 +28,7 @@ import org.atricore.idbus.kernel.main.federation.*;
 
 import javax.security.auth.Subject;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,7 +37,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class EmailAccountLinkEmitter implements AccountLinkEmitter {
+public class EmailAccountLinkEmitter extends AbstractAccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( EmailAccountLinkEmitter.class );
 
@@ -54,12 +55,15 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
         Set<SubjectNameID> nameIds = subject.getPrincipals(SubjectNameID.class);
         if (nameIds != null) {
             if ( logger.isDebugEnabled() )
-                logger.debug( "SubjectNameID Pricipals found: " + nameIds.size() );
+                logger.debug( "SubjectNameID Principals found: " + nameIds.size() );
 
             for (SubjectNameID nameId : nameIds) {
                 if (nameId.getFormat() == null || nameId.getFormat().equals(NameIDFormat.EMAIL.getValue())) {
                     String email = nameId.getName();
-                    return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                    return newBuilder(subject,
+                            email.substring(0, email.indexOf("@")),
+                            NameIDFormat.UNSPECIFIED.getValue(), ctx).build();
+
                 }
             }
         }
@@ -69,13 +73,13 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
         Set<SubjectAttribute> subjectAttrs = subject.getPrincipals( SubjectAttribute.class );
 
         if ( logger.isDebugEnabled() )
-            logger.debug( "SubjectAttribute Pricipals found: " + subjectAttrs.size() );
+            logger.debug( "SubjectAttribute principals found: " + subjectAttrs.size() );
 
         for (SubjectAttribute subjectAttribute : subjectAttrs ) {
 
             if ( logger.isDebugEnabled() ) {
-                logger.debug( "Pricipal Name: " + subjectAttribute.getName() );
-                logger.debug( "Pricipal Format: " + subjectAttribute.getValue() );
+                logger.debug( "Principal name: " + subjectAttribute.getName() );
+                logger.debug( "Principal format: " + subjectAttribute.getValue() );
             }
 
             // TODO : Make configurable rules to take email from attributes !!!
@@ -92,9 +96,16 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
                     logger.debug("Found email as attribute ["+email+"]");
 
                 if (stripEmailDomain)
-                    return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+                    return newBuilder(subject,
+                            email.substring(0, email.indexOf("@")),
+                            NameIDFormat.UNSPECIFIED.getValue(),
+                            ctx).build();
+
                 else
-                    return new DynamicAccountLinkImpl(subject, email, NameIDFormat.EMAIL.getValue());
+                    return newBuilder(subject,
+                            email,
+                            NameIDFormat.EMAIL.getValue(),
+                            ctx).build();
             }
 
         }
@@ -108,7 +119,7 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
             if (logger.isDebugEnabled())
                 logger.debug("Found email as subject id ["+email+"]");
 
-            return new DynamicAccountLinkImpl(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue());
+            return newBuilder(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue(), ctx).build();
         }
 
         /*
@@ -133,5 +144,6 @@ public class EmailAccountLinkEmitter implements AccountLinkEmitter {
     public void setStripEmailDomain(boolean stripEmailDomain) {
         this.stripEmailDomain = stripEmailDomain;
     }
+
 }
 

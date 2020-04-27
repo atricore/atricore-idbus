@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.federation;
 
+import org.atricore.idbus.kernel.main.store.UserKey;
+
 import javax.security.auth.Subject;
 import java.io.Serializable;
 
@@ -36,13 +38,15 @@ public interface AccountLink extends Serializable {
     String getLocalAccountNameIdentifier();
 
     Subject getIdpSubject();
-    
+
+    UserKey getUserKey();
+
     boolean isEnabled();
-    
+
     void setEnabled(boolean enabled);
-    
+
     boolean isDeleted();
-    
+
     void setDeleted(boolean deleted);
-    
+
 }

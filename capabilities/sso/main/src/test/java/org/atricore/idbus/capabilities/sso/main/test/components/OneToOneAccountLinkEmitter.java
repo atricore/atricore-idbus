@@ -28,6 +28,7 @@ import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
 import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 
 import javax.security.auth.Subject;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -49,7 +50,9 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
 
         for (SubjectAttribute idpAttr : idpAttrs) {
             if (idpAttr.getName().equals("urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:principal")) {
-                return new DynamicAccountLinkImpl(subject, idpAttr.getValue(), NameIDFormat.UNSPECIFIED.getValue() );
+                return new DynamicAccountLinkImpl(subject, idpAttr.getValue(),
+                        NameIDFormat.UNSPECIFIED.getValue(),
+                        ctx instanceof Map ? (Map<String, String>) ctx : null);
             }
         }
 

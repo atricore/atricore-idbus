@@ -28,6 +28,7 @@ import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
 import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 
 import javax.security.auth.Subject;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,7 +37,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class UidAccountLinkEmitter implements AccountLinkEmitter {
+public class UidAccountLinkEmitter extends AbstractAccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( UidAccountLinkEmitter.class );
 
@@ -70,7 +71,7 @@ public class UidAccountLinkEmitter implements AccountLinkEmitter {
                     logger.debug("Found UID ["+uid+"]");
 
                 // uid attribute is used as username
-                return new DynamicAccountLinkImpl(subject, uid , NameIDFormat.UNSPECIFIED.getValue());
+                return newBuilder(subject, uid , NameIDFormat.UNSPECIFIED.getValue(), ctx).build();
             }
 
         }
@@ -89,6 +90,7 @@ public class UidAccountLinkEmitter implements AccountLinkEmitter {
         return null;
 
     }
+
 }
 
 
