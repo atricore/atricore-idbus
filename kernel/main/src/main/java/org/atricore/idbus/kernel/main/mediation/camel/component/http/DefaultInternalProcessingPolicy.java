@@ -199,6 +199,9 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         if (req.getPathInfo().contains("/REST"))
             return false;
 
+        if (req.getPathInfo().contains("/JWKS"))
+            return false;
+
         if (req.getPathInfo().contains("/SPNEGO/NEGOTIATE"))
             return false;
 

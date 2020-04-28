@@ -138,6 +138,8 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         if (logger.isDebugEnabled())
             logger.debug("Writing HTTP Servlet Response");
 
+        handleProcessingUIResponse(message.getExchange(), httpServletResponse);
+
         handleCrossOriginResourceSharing(message.getExchange());
 
         // append headers
@@ -168,6 +170,36 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
             logger.trace("Writing HTTP Servlet Response");
 
         super.doWriteResponse(message, httpServletResponse);
+    }
+
+
+    /**
+     * This can handle redirects when using the Processing UI page.
+     */
+    protected void handleProcessingUIResponse(Exchange exchange, HttpServletResponse response) {
+
+        OsgiIDBusServlet2.WHttpServletResponse wr = (OsgiIDBusServlet2.WHttpServletResponse) response;
+
+        Message out = exchange.getOut();
+        HttpMessage httpIn = (HttpMessage) exchange.getIn();
+
+        // This is a non-proxied request using the processing UI page.
+        // Check if the status code is redirect, and modify the response so that the page can handle it.
+        if (httpIn.getRequest().getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST) == null &&
+        httpIn.getRequest().getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROCESS_UI) != null) {
+
+            if (out.getHeader("http.responseCode") != null) {
+                int code = (Integer) out.getHeader("http.responseCode", Integer.class);
+
+                if (code == 302) {
+                    // We don't have the Location header, set up the expected header, but tell the page to use
+                    // The original location value.
+                    out.setHeader("http.responseCode", 200);
+                    response.setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_LOCATION, "<USE-Location>");
+                }
+            }
+        }
+
     }
 
     /**

@@ -5,8 +5,10 @@ import org.atricore.idbus.kernel.common.support.jdbc.JDBCManagerException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -16,6 +18,8 @@ import java.util.Properties;
 public class DynamicJDBCIdentityStore extends AbstractDBIdentityStore {
 
     private JDBCDriverManager manager;
+
+    private DataSource dataSource;
 
     /**
      * The connection username to use when trying to connect to the database.
@@ -101,8 +105,16 @@ public class DynamicJDBCIdentityStore extends AbstractDBIdentityStore {
             props.put("password", connectionPassword);
 
         try {
-            return manager.getConnection(driverName, connectionURL, props, classPath);
+
+            if (dataSource == null) {
+                dataSource = manager.getDataSource(driverName, connectionURL, props, classPath);
+            }
+
+            return dataSource.getConnection();
+
         } catch (JDBCManagerException e) {
+            throw new SSOIdentityException(e);
+        } catch (SQLException e) {
             throw new SSOIdentityException(e);
         }
     }

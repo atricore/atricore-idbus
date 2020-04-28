@@ -18,6 +18,8 @@
     function onSuccess(data, textStatus, request) {
         let redirect = request.getResponseHeader("X-IdBusLocation");
         if (redirect) {
+            if (redirect == '<USE-Location>')
+                redirect = request.getResponseHeader("Location");
             window.location.replace(redirect);
         } else {
             $(data).appendTo('#forms-container');

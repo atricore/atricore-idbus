@@ -721,7 +721,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             throws ServletException, IOException {
 
         // FIX For a bug in CXF!
-        HttpServletResponse res = new WHttpServletResponse(r);
+        WHttpServletResponse res = new WHttpServletResponse(r);
 
         // Lazy  identity mediation registry
         if (registry == null)
@@ -918,7 +918,11 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         return (MonitoringServer)wac.getBean("monitoring");
     }
 
-    protected class WHttpServletResponse extends HttpServletResponseWrapper {
+    public class WHttpServletResponse extends HttpServletResponseWrapper {
+
+        private int status;
+
+        private String location;
 
         public WHttpServletResponse(HttpServletResponse response) {
             super(response);
@@ -930,6 +934,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 super.addHeader("Content-Type", value);
             else
                 super.addHeader(name, value);
+
+            if (name.equalsIgnoreCase("location"))
+                this.location = value;
         }
 
         @Override
@@ -938,6 +945,30 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 super.setHeader("Content-Type", value);
             else
                 super.setHeader(name, value);
+
+            if (name.equalsIgnoreCase("location"))
+                this.location = value;
+
+        }
+
+        @Override
+        public void setStatus(int sc) {
+            this.status = status;
+            super.setStatus(sc);
+        }
+
+        @Override
+        public void setStatus(int sc, String sm) {
+            this.status = status;
+            super.setStatus(sc, sm);
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public String getLocation() {
+            return location;
         }
     }
 

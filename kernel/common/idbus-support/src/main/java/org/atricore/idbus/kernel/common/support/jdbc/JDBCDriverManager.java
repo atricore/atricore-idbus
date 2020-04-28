@@ -7,6 +7,7 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileFilter;
 import java.net.URL;
@@ -146,15 +147,22 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
         this.configuredDrivers = configuredDrivers;
     }
 
+    public DataSource getDataSource( String driverClass, String url,
+                                     Properties connectionProperties, Collection<String> driverClassPath ) throws JDBCManagerException {
+        DataSource ds = new DriverManagerDataSource(driverClass, url, connectionProperties, driverClassPath, this);
+        // TODO : Pooling!
+        return ds;
+    }
+
     public Connection getConnection( String driverClass, String url,
 			Properties connectionProperties, Collection<String> driverClassPath ) throws JDBCManagerException {
         try {
 
             if (driverClass == null || "".equals(driverClass))
-                throw new JDBCManagerException("Driver class canont be null or empty");
+                throw new JDBCManagerException("Driver class cannot be null or empty");
 
             if (url == null || "".equals(url))
-                throw new JDBCManagerException("Connection URL canont be null or empty");
+                throw new JDBCManagerException("Connection URL cannot be null or empty");
 
             if ( logger.isTraceEnabled())
                 logger.trace( "Request JDBC Connection: driverClass="
@@ -177,7 +185,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
                                               Collection<String> driverClassPath)
             throws SQLException, JDBCManagerException {
 
-        // no driverinfo extension for driverClass connectionFactory       
+        // no driverinfo extension for driverClass connectionFactory
         // no JNDI Data Source URL defined, or
         // not able to get a JNDI data source connection,
         // use the JDBC DriverManager instead to get a JDBC connection
