@@ -10,7 +10,6 @@ import java.util.Map;
  */
 public abstract class AbstractAccountLinkEmitter implements AccountLinkEmitter {
 
-
     protected AccountLinkBuilder newBuilder(Subject subject, String localAccount, String accountFormat, Object cxt) {
         return new DynamicAccountLinkImpl.Builder().
                         idpSubject(subject).

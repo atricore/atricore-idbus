@@ -261,6 +261,10 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         Map<String, Object> ctx = new HashMap<String, Object>();
 
+        // Remote IP Address
+        ctx.put(AccountLinkEmitter.REMOTE_ADDRESS, exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress"));
+
+        // Last Linked Subject
         Subject lastLinkedSubject = null;
         if (lastSecCtx != null && lastSecCtx.getSubject() != null) {
             // We have a previous valid subject
@@ -273,6 +277,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         Subject lastUnlinkedIdPSubject = (Subject) state.getLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubject");
         CircleOfTrustMemberDescriptor lastUnlinkedIdP = (CircleOfTrustMemberDescriptor) state.getLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubjectIdP");
 
+        // Last Un-linked Subject/IdP
         if (lastUnlinkedIdPSubject != null) {
             // We have a previous unlinked
             if (logger.isDebugEnabled())
@@ -282,6 +287,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
 
         CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
+        ctx.put(AccountLinkEmitter.IDP, idp);
 
         AccountLink acctLink = null;
         AccountLinkEmitter accountLinkEmitter = fChannel.getAccountLinkEmitter();
@@ -1092,8 +1098,8 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         // IssueInstant
 		/*
-		   -  required 
-		   -  check that the response time is not before request time (use UTC) 
+		   -  required
+		   -  check that the response time is not before request time (use UTC)
 		   -  check that time difference is not bigger than X
 		   */
     	if(response.getIssueInstant() == null){
@@ -1138,7 +1144,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                             StatusDetails.INVALID_ISSUE_INSTANT,
                             response.getIssueInstant().toGregorianCalendar().toString() +
                                     " expired after " + ttl + "ms");
-    			} 
+    			}
     		}
 
     	}
@@ -1159,7 +1165,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                     StatusDetails.UNSUPPORTED_VERSION,
                     response.getVersion());
         }
-    	
+
         // InResponseTo, saml2 core, section 3.2.2
     	// Request can be null for IDP initiated SSO
 
@@ -1191,7 +1197,7 @@ public class AssertionConsumerProducer extends SSOProducer {
     	if(response.getStatus() != null) {
     		if(response.getStatus().getStatusCode() != null) {
 
-    			if(StringUtils.isEmpty(response.getStatus().getStatusCode().getValue()) 
+    			if(StringUtils.isEmpty(response.getStatus().getStatusCode().getValue())
     					|| !isStatusCodeValid(response.getStatus().getStatusCode().getValue())){
 
     				throw new SSOResponseException(response,
@@ -1212,7 +1218,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_STATUS);
     	}
-    	
+
 		// XML Signature, saml2 core, section 5 (always validate response signatures
         // HTTP-Redirect binding does not support embedded signatures
         if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
@@ -1286,7 +1292,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         EncryptedElementType encryptedAssertion = null;
         boolean encrypted = false;
 
-        // Decrypt if encrypted 
+        // Decrypt if encrypted
         List assertionObjects = response.getAssertionOrEncryptedAssertion();
         for (Object assertionObject : assertionObjects) {
 			if(assertionObject instanceof AssertionType){
@@ -1405,10 +1411,10 @@ public class AssertionConsumerProducer extends SSOProducer {
                                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                                     StatusDetails.NO_METHOD);
 						}
-						
+
 						// saml2 core, section 2.4.1.2
 						if(subConf.getSubjectConfirmationData() != null){
-							SubjectConfirmationDataType scData = subConf.getSubjectConfirmationData(); 
+							SubjectConfirmationDataType scData = subConf.getSubjectConfirmationData();
 							if(assertion.getConditions() != null){
 								logger.debug("scData.getNotBefore(): " + scData.getNotBefore());
 								logger.debug("assertion.getConditions().getNotBefore()" + assertion.getConditions().getNotBefore());
@@ -1430,14 +1436,14 @@ public class AssertionConsumerProducer extends SSOProducer {
 									&& scData.getNotOnOrAfter().normalize().compare(scData.getNotBefore().normalize()) < 0){
 								// TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
                                 logger.warn("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
-								
+
 							}
 						}
-						
+
 					}
 				}
-								
-			} else if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() == null 
+
+			} else if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() == null
 						|| assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().size() == 0){
 				throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
@@ -1449,7 +1455,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_SUBJECT);
 			}
-			
+
 	        // AuthnStatement, saml2 core, section 2.7.2
 	        List<AuthnStatementType> authnStatementList = getAuthnStatements(assertion);
 	        if(authnStatementList.size() != 0){
@@ -1467,7 +1473,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                                 StatusDetails.NO_AUTHN_CONTEXT);
 					}
 				}
-	        }	        
+	        }
 		}
 
 
@@ -1507,12 +1513,12 @@ public class AssertionConsumerProducer extends SSOProducer {
 		XMLGregorianCalendar notOnOrAfterUTC = null;
 
 		if(conditions.getNotBefore() != null){
-			//normalize to UTC			
+			//normalize to UTC
 			logger.debug("Conditions.NotBefore: " + conditions.getNotBefore());
 
 			notBeforeUTC = conditions.getNotBefore().normalize();
 			logger.debug("Conditions.NotBefore normalized: " + notBeforeUTC.toString());
-			
+
 			if(!notBeforeUTC.isValid()){
 				throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
@@ -1610,8 +1616,8 @@ public class AssertionConsumerProducer extends SSOProducer {
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_IN_AUDIENCE);
 			}
-		}		
-		
+		}
+
 	}
 
     private Calendar getSessionNotOnOrAfter(AssertionType assertion) {
@@ -1635,18 +1641,18 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         return null;
     }
-    
+
     private List<AuthnStatementType> getAuthnStatements(AssertionType assertion){
     	ArrayList<AuthnStatementType> statementsList = new ArrayList<AuthnStatementType>();
-    	
-		if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() != null 
+
+		if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() != null
 				&& assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().size() != 0){
 			for (Object statement : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
 				if(statement instanceof AuthnStatementType){
 					statementsList.add((AuthnStatementType)statement);
 				}
 			}
-		}    	
+		}
     	return statementsList;
     }
 
@@ -1745,7 +1751,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         // Create a new Security Context
         secCtx = new SPSecurityContext();
-        
+
         secCtx.setIdpAlias(idp.getAlias());
         secCtx.setIdpSsoSession(idpSessionIndex);
         secCtx.setSubject(federatedSubject);
@@ -1791,7 +1797,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
             if (logger.isTraceEnabled())
                 logger.trace("Stored SP Security Context in " + getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-            
+
             return secCtx;
         } catch (SSOSessionException e) {
             throw new SSOException(e);
