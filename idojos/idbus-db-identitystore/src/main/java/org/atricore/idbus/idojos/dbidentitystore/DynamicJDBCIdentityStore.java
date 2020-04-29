@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -20,6 +21,16 @@ public class DynamicJDBCIdentityStore extends AbstractDBIdentityStore {
     private JDBCDriverManager manager;
 
     private DataSource dataSource;
+
+
+    private boolean pooledDatasource = false;
+    private int acquireIncrement = 3;
+    private int initialPoolSize = 3;
+    private int minPoolSize = 3;
+    private int maxPoolSize = 15;
+    private int idleConnectionTestPeriod = 0;
+    private int maxIdleTime = 0;
+
 
     /**
      * The connection username to use when trying to connect to the database.
@@ -81,6 +92,61 @@ public class DynamicJDBCIdentityStore extends AbstractDBIdentityStore {
         return classPath;
     }
 
+    public boolean isPooledDatasource() {
+        return pooledDatasource;
+    }
+
+    public void setPooledDatasource(boolean pooledDatasource) {
+        this.pooledDatasource = pooledDatasource;
+    }
+
+    public int getAcquireIncrement() {        return acquireIncrement;
+    }
+
+    public void setAcquireIncrement(int acquireIncrement) {
+        this.acquireIncrement = acquireIncrement;
+    }
+
+    public int getInitialPoolSize() {
+        return initialPoolSize;
+    }
+
+    public void setInitialPoolSize(int initialPoolSize) {
+        this.initialPoolSize = initialPoolSize;
+    }
+
+    public int getMinPoolSize() {
+        return minPoolSize;
+    }
+
+    public void setMinPoolSize(int minPoolSize) {
+        this.minPoolSize = minPoolSize;
+    }
+
+    public int getMaxPoolSize() {
+        return maxPoolSize;
+    }
+
+    public void setMaxPoolSize(int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
+    }
+
+    public int getIdleConnectionTestPeriod() {
+        return idleConnectionTestPeriod;
+    }
+
+    public void setIdleConnectionTestPeriod(int idleConnectionTestPeriod) {
+        this.idleConnectionTestPeriod = idleConnectionTestPeriod;
+    }
+
+    public int getMaxIdleTime() {
+        return maxIdleTime;
+    }
+
+    public void setMaxIdleTime(int maxIdleTime) {
+        this.maxIdleTime = maxIdleTime;
+    }
+
     public void setClassPath(List<String> classPath) {
         this.classPath = classPath;
     }
@@ -107,7 +173,22 @@ public class DynamicJDBCIdentityStore extends AbstractDBIdentityStore {
         try {
 
             if (dataSource == null) {
-                dataSource = manager.getDataSource(driverName, connectionURL, props, classPath);
+
+                DataSource ds = manager.getDataSource(driverName, connectionURL, props, classPath);
+
+                if (pooledDatasource) {
+                    Map overrideProps = new java.util.HashMap();
+                    overrideProps.put("acquireIncrement", acquireIncrement);
+                    overrideProps.put("initialPoolSize", initialPoolSize);
+                    overrideProps.put("minPoolSize", minPoolSize);
+                    overrideProps.put("maxPoolSize", maxPoolSize);
+                    overrideProps.put("idleConnectionTestPeriod", idleConnectionTestPeriod);
+                    overrideProps.put("maxIdleTime", maxIdleTime);
+
+                    ds = manager.getPooledDataSource(ds, overrideProps);
+                }
+
+                this.dataSource = ds;
             }
 
             return dataSource.getConnection();

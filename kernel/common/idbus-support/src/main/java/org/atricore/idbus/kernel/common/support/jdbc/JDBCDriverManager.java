@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.common.support.jdbc;
 
+import com.mchange.v2.c3p0.DataSources;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.common.support.osgi.ExternalResourcesClassLoader;
@@ -147,11 +148,19 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
         this.configuredDrivers = configuredDrivers;
     }
 
+
+    public DataSource getPooledDataSource(DataSource ds, Map overrideProps) throws JDBCManagerException {
+        try {
+            return DataSources.pooledDataSource(ds, overrideProps);
+        } catch (SQLException e) {
+            throw new JDBCManagerException(e);
+        }
+    }
+
     public DataSource getDataSource( String driverClass, String url,
-                                     Properties connectionProperties, Collection<String> driverClassPath ) throws JDBCManagerException {
-        DataSource ds = new DriverManagerDataSource(driverClass, url, connectionProperties, driverClassPath, this);
-        // TODO : Pooling!
-        return ds;
+                                     Properties connectionProperties,
+                                     Collection<String> driverClassPath ) throws JDBCManagerException {
+        return new DriverManagerDataSource(driverClass, url, connectionProperties, driverClassPath, this);
     }
 
     public Connection getConnection( String driverClass, String url,
