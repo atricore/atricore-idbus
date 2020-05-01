@@ -127,6 +127,7 @@
                         <Export-Package>
                             org.atricore.idbus.kernel.common.support.*;version=${project.version},
                             com.mchange.v2.c3p0.*;version=0.9.5.5,
+                            com.mchange.lang.*;version=0.2.19
                         </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
