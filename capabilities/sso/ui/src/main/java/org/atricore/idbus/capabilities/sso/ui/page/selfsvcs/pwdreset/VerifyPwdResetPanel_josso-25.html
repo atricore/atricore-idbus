@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.3-strict.dtd">
+
+<body>
+<wicket:panel>
+
+    <h2><wicket:message key="title"/></h2>
+
+    <div wicket:id="feedbackBox">
+        <span wicket:id="feedback"/>
+    </div>
+
+    <form wicket:id="verifyPwdResetForm">
+
+        <hr class="spacer"/>
+
+        <div class="form-input">
+            <label class="login-label" for="answer1"><span wicket:id="question1">Q1</span></label>
+            <input wicket:id="answer1" type="text" class="form-text" path="name" />
+        </div>
+
+        <div class="form-input">
+            <label class="login-label" for="answer2"><span wicket:id="question2">Q2</span></label>
+            <input wicket:id="answer2" type="text" class="form-text" path="name" />
+        </div>
+
+        <div class="form-input" >
+            <label class="login-label" for="answer3"><span wicket:id="question1">Q3</span></label>
+            <input wicket:id="answer3" type="text" class="form-text" path="name" />
+        </div>
+
+        <input type="submit" value="Continue" class="btn btn--primary" wicket:id="doVerifyPwdReset"/>
+
+
+    </form>
+
+
+</wicket:panel>
+</body>
+</html>

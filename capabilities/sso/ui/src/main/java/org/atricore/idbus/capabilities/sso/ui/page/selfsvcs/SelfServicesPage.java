@@ -161,6 +161,10 @@ public abstract class SelfServicesPage extends BasePage {
                 if (logger.isDebugEnabled())
                     logger.debug("Found IDP initiated SSO Endpoint ["+idpInitiatedSsoEndpoint+"] for SP  : " + sp.getName());
 
+                if (sp.getResourceType() == null) {
+                    // This is a virtual/proxy provider ?
+                }
+
                 apps.add(new PartnerAppModel(sp.getName(),
                         sp.getName(),
                         sp.getDisplayName() != null ? sp.getDisplayName() : sp.getDescription(),

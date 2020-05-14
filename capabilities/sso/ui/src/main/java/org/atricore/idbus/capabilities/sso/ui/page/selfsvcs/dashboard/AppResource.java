@@ -58,4 +58,5 @@ public enum AppResource {
     public String getImage() {
         return image;
     }
+
 }

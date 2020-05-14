@@ -48,7 +48,7 @@ import java.util.*;
 public abstract class BaseWebApplication extends WebApplication implements WebBrandingEventListener {
 
     private static final Log logger = LogFactory.getLog(BaseWebApplication.class);
-    
+
     private static final Set<String> imageExtensions = new HashSet<String>();
 
     private static final Set<String> fontExtensions = new HashSet<String>();
@@ -56,7 +56,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     protected boolean ready;
 
     // Dependency injection does not work for application objects (pax-wicket)!
-    
+
     protected BundleContext bundleContext;
 
     protected ApplicationRegistry appConfigRegistry;
@@ -101,6 +101,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         imageExtensions.add("tif"); // Tagged Image File
         imageExtensions.add("yuv"); // YUV Encoded Image File
         imageExtensions.add("ico"); // Icon file
+        imageExtensions.add("svg"); // Vector graphic
+
     }
 
 
@@ -165,7 +167,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     public boolean isReady() {
         return ready;
     }
-    
+
     @Override
     protected void init() {
         super.init();
@@ -239,6 +241,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
 
     protected void preInit() {
+
         setRequestCycleProvider(new IRequestCycleProvider()
         {
             public RequestCycle get(RequestCycleContext context)
@@ -256,7 +259,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         // Resource settings
         getResourceSettings().setEncodeJSessionId(false);
 
-        // Avoid redirections on UI pages
+        // Avoid redirects on UI pages
         getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
 
     }
@@ -369,17 +372,17 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         postConfig();
         refreshBranding();
     }
-    
+
     public void refreshBranding() {
-        
+
         Set<String> resourcePaths = new HashSet<String>();
 
         // TODO : Instead of taking resources list from branding, also support scanning specific packages of specific bundles !!!!
         if (branding != null) {
-            
+
             // TODO : Reset locale
 
-            // Mount branding shared resources explicitly declared 
+            // Mount branding shared resources explicitly declared
             for (BrandingResource resource : branding.getResources()) {
                 // All shared resource MUST be scoped to AppResourceLocator
                 if (resource.isShared()) {
@@ -392,12 +395,12 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                         logger.trace("Mounting EXPLICITLY shared resource ["+resource.getId()+"] at /" + resource.getPath());
                 }
             }
-            
+
             // Auto-discovery all resources bound to AppResourceLocator class package.
             // Make them available as global resources
             Bundle b = bundleContext.getBundle();
             String basePath = "/" + AppResourceLocator.class.getPackage().getName().replace('.', '/');
-            
+
             Enumeration e = b.findEntries(basePath, "*", true);
             while (e.hasMoreElements()) {
                 URL location = (URL) e.nextElement();
@@ -459,7 +462,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         }
 
     }
-    
+
     protected BrandingResourceType getTypeFromPath(String path) {
         //String imgs
         int mid = path.lastIndexOf('.');
@@ -471,7 +474,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         if (extension.equalsIgnoreCase("js"))
             return BrandingResourceType.SCRIPT;
-        
+
         if (imageExtensions.contains(extension))
             return BrandingResourceType.IMAGE;
 
@@ -483,7 +486,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         return BrandingResourceType.OTHER;
     }
-    
+
     public void removeBranding() {
         // TODO : What happens when the branding is removed ?!
         logger.warn("Configured branding was removed ! ["+branding.getId()+"]");

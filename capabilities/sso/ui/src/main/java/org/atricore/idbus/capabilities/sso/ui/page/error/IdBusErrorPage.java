@@ -90,6 +90,8 @@ public class IdBusErrorPage extends BasePage {
                     add(new Label("status", "N/A"));
                     add(new Label("secStatus", ""));
                     add(new Label("details", "N/A"));
+
+                    fillCausesList(new CausesModel(null));
                 }
 
             } catch (Exception e) {
@@ -130,6 +132,8 @@ public class IdBusErrorPage extends BasePage {
 //            cause.printStackTrace(errorPrintWriter);
 //            causes.add(errorWriter.toString());
 
+            // causes.add(cause.getMessage());
+
             rootCause = cause;
             cause = cause.getCause();
         }
@@ -137,8 +141,11 @@ public class IdBusErrorPage extends BasePage {
         Writer errorWriter = new StringWriter();
         PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
 
-        rootCause.printStackTrace(errorPrintWriter);
-        causes.add(errorWriter.toString());
+        // do not provide a stack trace:
+        // rootCause.printStackTrace(errorPrintWriter);
+        // causes.add(errorWriter.toString());
+
+        causes.add(rootCause != null ? rootCause.getMessage() : "ERROR");
 
         return causes;
 

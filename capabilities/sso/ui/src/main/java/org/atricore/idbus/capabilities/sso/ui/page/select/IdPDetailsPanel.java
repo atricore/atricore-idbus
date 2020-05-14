@@ -29,12 +29,8 @@ public class IdPDetailsPanel extends Panel {
 
         super.onInitialize();
 
-        // IDP Description
-        add(new Label("description", model.getObject().getDescription()));
-
-        // IDP Initiated SSO link
+    // IDP Initiated SSO link
         add(new Link<IdPModel>("ssoLink", model) {
-
             @Override
             public void onClick() {
                 // Send response back!
@@ -42,7 +38,7 @@ public class IdPDetailsPanel extends Panel {
                 idp.getName();
                 mediator.onSelectIdp(idp.getName(), true);
             }
-        });
+        }.add(new Label("description", model.getObject().getDescription())));
     }
 
 

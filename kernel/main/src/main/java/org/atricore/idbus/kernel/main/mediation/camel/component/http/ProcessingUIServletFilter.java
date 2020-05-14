@@ -32,32 +32,43 @@ public class ProcessingUIServletFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        servletContext = filterConfig.getServletContext();
-        prepareUiPageTemplate();
 
-        if (kernelConfig == null) {
-            // Lazy load kernel config
-            kernelConfig = HttpUtils.lookupKernelConfig(servletContext);
+        // Disable the filter if something goes wrong
+
+        try {
+            servletContext = filterConfig.getServletContext();
+            prepareUiPageTemplate();
 
             if (kernelConfig == null) {
-                logger.error("No Kernel Configuration Context found!");
-                throw new ServletException("No Kernel Configuration Context found!");
-            }
+                // Lazy load kernel config
+                kernelConfig = HttpUtils.lookupKernelConfig(servletContext);
 
-            processingUIenabled = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.processingUIenabled", "false"));
-            logger.info("Processing UI Filter initialized: processingUIenabled=" + processingUIenabled);
-            followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "false"));
-            logger.info("Processing UI Filter initialized: followRedirects=" + followRedirects);
+                if (kernelConfig == null) {
+                    logger.error("No Kernel Configuration Context found! Disabling filter.");
+                    processingUIenabled = false;
+                    //throw new ServletException("No Kernel Configuration Context found!");
+                    return;
+                }
+
+                processingUIenabled = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.processingUIenabled", "false"));
+                logger.info("Processing UI Filter initialized: processingUIenabled=" + processingUIenabled);
+                followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "false"));
+                logger.info("Processing UI Filter initialized: followRedirects=" + followRedirects);
+            }
+        } catch (Exception e) {
+            logger.error("Processing UI Filter disabled due to error: " + e.getMessage(), e);
+            this.processingUIenabled = false;
         }
     }
 
     private void prepareUiPageTemplate() throws ServletException {
         try {
-            String html = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/processing-ui/page.html"));
+            String html = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/processing-ui/josso-25/page.html"));
             String jquery = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/processing-ui/jquery.js"));
-            String css = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/processing-ui/styles.css"));
-            pageTemplate = String.format(html, jquery, css);
+
+            pageTemplate = String.format(html, jquery);
         } catch (IOException e) {
+            logger.error("Cannot load resource : " + e.getMessage(), e);
             throw new ServletException("Couldn't generate HTML page for Processing UI");
         }
     }
@@ -71,6 +82,11 @@ public class ProcessingUIServletFilter implements Filter {
         HttpServletResponse hRes = (HttpServletResponse) res;
         String requestUrl = hReq.getRequestURL().toString();
         logger.trace("Processing request: " + requestUrl);
+
+        if (((HttpServletRequest) req).getRequestURI().startsWith("/IDBUS/processing-ui")) {
+            chain.doFilter(req, res);
+            return;
+        }
 
         // If processing UI is disabled or follow redirects is disabled, continue.
         if (!processingUIenabled  || !followRedirects ) {

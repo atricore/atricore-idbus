@@ -65,7 +65,7 @@ public class ReqPwdResetPanel extends Panel {
 
                 } catch (UserNotFoundException e) {
                     // Hide the fact that the user does not exist
-                    onReqPwdResetFailed();
+                    onReqPwdResetSucceeded();
                     return;
                 } catch (Exception e) {
                     logger.error("Fatal error during password reset request : " + e.getMessage(), e);
@@ -118,6 +118,7 @@ public class ReqPwdResetPanel extends Panel {
         String c = resp.getCode();
 
         String from = getLocalizer().getString("email.sender", this, "josso@swirebev.com");
+
         app.getMailService().send(from,
                 user.getEmail(),
                 "Password Reset", buildEMailText(user, t).toString(),

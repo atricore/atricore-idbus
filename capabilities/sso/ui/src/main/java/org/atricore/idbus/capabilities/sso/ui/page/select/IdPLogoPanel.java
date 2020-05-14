@@ -6,6 +6,10 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
+import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
+import org.atricore.idbus.capabilities.sso.ui.WebBranding;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.model.IdPModel;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.AppResource;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
@@ -30,6 +34,21 @@ public class IdPLogoPanel extends Panel {
     protected void onInitialize() {
         super.onInitialize();
 
+        String idpLogoResource = null;
+
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        if (app.getBranding() != null) {
+            WebBranding b = app.getBranding();
+            for (BrandingResource r  : b.getResources()) {
+                if (r.getType().equals(BrandingResourceType.IMAGE) && r.getId().equals(model.getObject().getProviderType())) {
+                    idpLogoResource = r.getPath();
+                }
+            }
+        }
+
+        if (idpLogoResource == null)
+            idpLogoResource = AppResource.getForResource(model.getObject().getProviderType()).getImage();
+
         Link idpLogo = new Link<IdPModel>("ssoLink", model) {
             @Override
             public void onClick() {
@@ -41,9 +60,8 @@ public class IdPLogoPanel extends Panel {
         };
 
         idpLogo.add(
-            new Image("idpLogo", new PackageResourceReference(AppResourceLocator.class,
-                    AppResource.getForResource(model.getObject().getProviderType()).getImage()))
-        );
+            new Image("idpLogo",
+                    new PackageResourceReference(AppResourceLocator.class, idpLogoResource )));
 
         add(idpLogo);
     }

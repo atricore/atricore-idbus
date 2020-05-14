@@ -82,6 +82,8 @@ public class SSOIdPApplication extends BaseWebApplication {
         addPageMount("SS/CONFIRM", RegistrationPage.class);
 
         addPageMount("SS/PWDCHANGE", PwdChangePage.class);
+        //addPageMount("SS/SECQUESTIONCHNG", PwdChangePage.class);
+
         addPageMount("SS/REQPWDRESET", ReqPwdResetPage.class);
         addPageMount("SS/VFYPWDRESET", VerifyPwdResetPage.class);
         addPageMount("SS/PWDRESET", PwdResetPage.class);

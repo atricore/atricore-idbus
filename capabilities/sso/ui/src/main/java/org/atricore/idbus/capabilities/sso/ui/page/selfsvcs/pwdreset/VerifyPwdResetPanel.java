@@ -16,10 +16,12 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.authn.util.PasswordUtil;
+import org.atricore.idbus.kernel.main.provisioning.domain.SecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.w3._1999.xhtml.Div;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -29,6 +31,8 @@ import java.util.Map;
 import java.util.Random;
 
 /**
+ * Password reset verification using security questions
+ *
  * @author: sgonzalez@atriocore.com
  * @date: 4/16/13
  */
@@ -64,28 +68,16 @@ public class VerifyPwdResetPanel extends Panel {
         super(id);
         this.user = user;
 
-        Random rg = new Random();
+        // Create feedback panel and add it to page
+        final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
+        add(feedbackBox);
 
+        final FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback.setOutputMarkupId(true);
+        feedbackBox.add(feedback);
+
+        // Build the FORM
         model = new VerifyPwdResetModel();
-
-        // Get three security questions to recover the password:
-        Map<Integer, UserSecurityQuestion>  q = new HashMap<Integer, UserSecurityQuestion>();
-        for (int i = 0 ;  i < 3 ; i ++) {
-            q.put(i, user.getSecurityQuestions()[i]);
-        }
-
-        SSOWebSession session = (SSOWebSession) getSession();
-        if (session.getSecurityQuestions() == null) {
-            questions = new UserSecurityQuestion[q.values().size()];
-            int idx = 0;
-            for (UserSecurityQuestion sq : q.values()) {
-                questions[idx] = sq;
-                idx ++;
-            }
-            session.setSecurityQuestions(questions);
-        } else {
-            questions = session.getSecurityQuestions();
-        }
 
         form = new StatelessForm<VerifyPwdResetModel>("verifyPwdResetForm", new CompoundPropertyModel<VerifyPwdResetModel>(model));
 
@@ -108,44 +100,81 @@ public class VerifyPwdResetPanel extends Panel {
             }
         };
 
+        final TextField<String> answer1 = new TextField<String>("answer1");
+        answer1.setVisible(false);
+        form.add(answer1);
+
+        final TextField<String> answer2 = new TextField<String>("answer2");
+        answer2.setVisible(false);
+        form.add(answer2);
+
+        final TextField<String> answer3 = new TextField<String>("answer3");
+        answer3.setVisible(false);
+        form.add(answer3);
+
         form.add(submit);
+
+        // If no security questions, we have a problem.
+        if (user.getSecurityQuestions() == null || user.getSecurityQuestions().length < 3) {
+
+            final Label q1Label = new Label("question1", "N/A");
+            q1Label.setVisible(false);
+            form.add(q1Label);
+
+            Div d = new Div();
+
+            final Label q2Label = new Label("question2", "N/A");
+            q2Label.setVisible(false);
+            form.add(q2Label);
+
+            final Label q3Label = new Label("question3", "N/A");
+            q3Label.setVisible(false);
+            form.add(q3Label);
+            form.setVisible(false);
+            submit.setEnabled(false);
+
+            add(form);
+
+            return;
+        }
+
+
+        Map<Integer, UserSecurityQuestion> q = new HashMap<Integer, UserSecurityQuestion>();
+        for (int i = 0; i < 3; i++) {
+            q.put(i, user.getSecurityQuestions()[i]);
+        }
+
+
+        SSOWebSession session = (SSOWebSession) getSession();
+        if (session.getSecurityQuestions() == null) {
+            questions = new UserSecurityQuestion[q.values().size()];
+            int idx = 0;
+            for (UserSecurityQuestion sq : q.values()) {
+                questions[idx] = sq;
+                idx++;
+            }
+            session.setSecurityQuestions(questions);
+        } else {
+            questions = session.getSecurityQuestions();
+        }
+
 
         // Q1
         UserSecurityQuestion q1 = questions[0];
-        String q1Text = getQuestionText(q1);
-        final Label q1Label = new Label("question1", q1Text);
-        form.add(q1Label);
-
-        final TextField<String> answer1 = new TextField<String>("answer1");
-        form.add(answer1);
+        form.add(new Label("question1", getQuestionText(q1)));
+        answer1.setVisible(true);
 
         // Q2
-        UserSecurityQuestion q2 = questions[1];
-        String q2Text = getQuestionText(q2);
-        final Label q2Label = new Label("question2", q2Text);
-        form.add(q2Label);
-
-        final TextField<String> answer2 = new TextField<String>("answer2");
-        form.add(answer2);
+        UserSecurityQuestion q2 = questions[0];
+        form.add(new Label("question2", getQuestionText(q2)));
+        answer2.setVisible(true);
 
         // Q3
-        UserSecurityQuestion q3 = questions[2];
-        String q3Text = getQuestionText(q3);
-        final Label q3Label = new Label("question3", q3Text);
-        form.add(q3Label);
-
-        final TextField<String> answer3 = new TextField<String>("answer3");
-        form.add(answer3);
+        UserSecurityQuestion q3 = questions[0];
+        form.add(new Label("question3", getQuestionText(q3)));
+        answer3.setVisible(true);
 
         add(form);
-
-        // Create feedback panel and add it to page
-        final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
-        add(feedbackBox);
-
-        final FeedbackPanel feedback = new FeedbackPanel("feedback");
-        feedback.setOutputMarkupId(true);
-        feedbackBox.add(feedback);
 
 
     }
@@ -153,6 +182,10 @@ public class VerifyPwdResetPanel extends Panel {
 
 
     protected boolean verifyPwdReset() throws Exception {
+
+        if (questions == null || questions.length < 1) {
+            error(getLocalizer().getString("app.error", this, "Operation failed"));
+        }
 
         // Verify each question
         if (!PasswordUtil.verifyPwd(model.getAnswer1(), questions[0].getAnswer(), getHashAlgorithm(), getHashEncoding(), getDigest()))

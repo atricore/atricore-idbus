@@ -3,30 +3,28 @@
       xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.3-strict.dtd">
 
 <body>
-
+<wicket:extend>
 <div class="wrapper">
     <div class="card">
 
         <header class="card-header">
             <h1>
                 <!-- <img class="logo" src="img/atricore-logo.svg" alt="Atricore"> -->
-                <img class="logo logo-josso" src="img/josso-logo.svg" alt="Josso">
+                <img class="logo logo-josso" src="/IDBUS/processing-ui/josso-25/img/josso-logo.svg" alt="Josso">
             </h1>
             <!-- <h2>Quick and Easy Identity & Access</h2> -->
         </header>
 
         <div class="card-body">
 
-            <h3>Sign In to your <em>Josso Account</em></h3>
-
-            <wicket:extend>
-                <wicket:container wicket:id="signIn" />
-            </wicket:extend>
+            <h3><wicket:message key="claims.text.signInTitle"/></h3>
+            <wicket:container wicket:id="signIn" />
 
         </div>
 
     </div><!-- /card -->
 </div>
+</wicket:extend>
 </body>
 </html>
 

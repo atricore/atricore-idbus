@@ -339,7 +339,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         // Send context back, updated
         if (rstCtxArtifact != null) {
             rstr.setContext(rstCtxArtifact.getContent());
-        } 
+        }
 
         JAXBElement<String> srcTokenType = (JAXBElement<String>) rst.getAny().get(0);
         tokenType = of.createTokenType(srcTokenType.getValue());
@@ -532,6 +532,11 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
                         if (mServer != null)
                             mServer.recordResponseTimeMetric(metricsPrefix + "/" + emitter.getId() + "/emitTime", endMilis - startMilis);
+
+                        ctx.getEmittedTokens().add(st);
+                    } else {
+                        logger.debug("Emission failed for token type [" + tokenType + "] using " +
+                                "[" + emitter.getId() + "] [MILIS] " + (endMilis - startMilis));
                     }
 
                     if (emitter.isTargetedEmitter(ctx, requestToken, tokenType)) {
@@ -545,7 +550,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                         }
                         securityToken = st;
                     }
-                    ctx.getEmittedTokens().add(st);
+
 
                 }
 
