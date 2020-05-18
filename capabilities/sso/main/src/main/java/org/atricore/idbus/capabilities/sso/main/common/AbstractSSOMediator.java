@@ -82,7 +82,7 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
 
     /**
      * This util will create an EndpointDescriptor based on the received channel and endpoint information.
-     * 
+     *
      * @param channel
      * @param endpoint
      * @return
@@ -151,7 +151,7 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
             // ---------------------------------------------
             // Resolve Endpoint type
             // ---------------------------------------------
-            // If no ':' is present, lastIndexOf should resturn -1 and the entire type is used.
+            // If no ':' is present, lastIndexOf should return -1 and the entire type is used.
             // Remove qualifier, format can be :
             // 1 - {qualifier}type
             // 2 - qualifier:type
@@ -180,7 +180,7 @@ public abstract class AbstractSSOMediator extends AbstractCamelMediator {
             location = endpoint.getLocation();
             if (location == null)
                 throw new IdentityMediationException("Endpoint location cannot be null.  " + endpoint);
-            
+
             if (location.startsWith("/"))
                 location = channel.getLocation() + location;
 

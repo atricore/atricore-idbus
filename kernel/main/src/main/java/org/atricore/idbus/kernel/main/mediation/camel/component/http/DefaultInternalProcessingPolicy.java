@@ -205,6 +205,10 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         if (req.getPathInfo().contains("/SPNEGO/NEGOTIATE"))
             return false;
 
+        // Exclude HttpError servlet (must match web.xml)
+        if (req.getServletPath().equals("/ERR"))
+            return false;
+
         StringBuffer reqUrl = req.getRequestURL();
         String requestUrl = reqUrl.toString();
 
