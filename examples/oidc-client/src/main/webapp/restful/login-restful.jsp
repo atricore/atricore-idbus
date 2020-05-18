@@ -110,12 +110,8 @@
             JWTClaimsSet claimsSet = new JWTClaimsSet();
 
             // TODO : Take from a login form
-//            claimsSet.setSubject("admin");
-//            claimsSet.setClaim("cred", "atricore");
-
-            claimsSet.setSubject("TennisAustralia@vernal.is");
-            claimsSet.setClaim("cred", "MyTennis12!@");
-
+            claimsSet.setSubject("admin");
+            claimsSet.setClaim("cred", "atricore");
 
             claimsSet.setIssuer(props.getProperty("oidc.client.id"));
             claimsSet.setAudience(Arrays.asList(props.getProperty("oidc.client.audience")));

@@ -16,6 +16,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMedi
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediator;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -63,8 +64,26 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        // TODO : Use localhost actually!
+
         EndpointDescriptor tokenEndpoint = lookupTokenEndpoint(authnCtx);
+
+
+        // Use localhost actually!
+        String localHost = "localhost";
+        int localPort = 8081;
+
+        IdentityMediator mediator = channel.getIdentityMediator();
+
+        // Build token URI
+        URI tokenUri = new URI(tokenEndpoint.getLocation());
+        tokenUri = new URI("http",
+                tokenUri.getUserInfo(),
+                localHost,
+                localPort,
+                tokenUri.getPath(),
+                tokenUri.getRawQuery(),
+                tokenUri.getFragment());
+
 
         // Create a new TOKEN request w/new IDP TOKEN ENDPOINT
 

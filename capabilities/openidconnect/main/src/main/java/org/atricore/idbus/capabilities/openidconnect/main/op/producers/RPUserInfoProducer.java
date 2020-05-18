@@ -65,12 +65,11 @@ public class RPUserInfoProducer extends AbstractOpenIDProducer {
             userInfo.getSubject();
         } else {
             UserInfoErrorResponse err = proxyUserInfoResponse.toErrorResponse();
-            authnCtx.setTokens(null);
             ErrorObject error = err.getErrorObject();
-
             if (logger.isDebugEnabled())
                 logger.error("Error obtaining AccessToken : " + error.getCode() + ". " + error.getDescription());
-
+            if (authnCtx != null)
+                authnCtx.setTokens(null);
         }
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),

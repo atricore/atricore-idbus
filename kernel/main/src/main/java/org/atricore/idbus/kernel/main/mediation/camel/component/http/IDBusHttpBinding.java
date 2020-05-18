@@ -195,7 +195,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
                     // We don't have the Location header, set up the expected header, but tell the page to use
                     // The original location value.
                     out.setHeader("http.responseCode", 200);
-                    response.setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_LOCATION, "<USE-Location>");
+                    response.setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_LOCATION, "{USE-Location}");
                 }
             }
         }

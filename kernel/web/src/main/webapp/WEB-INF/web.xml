@@ -46,6 +46,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>HttpErrServlet</servlet-name>
+        <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.HttpErrServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>OsgiIDBusDumpServlet</servlet-name>
         <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusDumpServlet</servlet-class>
     </servlet>
@@ -68,6 +73,13 @@
     <servlet-mapping>
         <servlet-name>OsgiIDBusDumpServlet</servlet-name>
         <url-pattern>/DUMP</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- /ERR  is actually used in DefaultInternalProcessingPolicy -->
+    <servlet-mapping>
+        <servlet-name>HttpErrServlet</servlet-name>
+        <url-pattern>/ERR/*</url-pattern>
     </servlet-mapping>
 
     <filter-mapping>
