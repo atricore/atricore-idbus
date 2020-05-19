@@ -67,34 +67,22 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
 
         EndpointDescriptor tokenEndpoint = lookupTokenEndpoint(authnCtx);
 
-
         // Use localhost actually!
-        String localHost = "localhost";
-        int localPort = 8081;
-
-        IdentityMediator mediator = channel.getIdentityMediator();
+        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
+        String targetBaseUrl = mediator.getKernelConfigCtx().getProperty("binding.http.localTargetBaseUrl", "http://localhost:8081");
 
         // Build token URI
         URI tokenUri = new URI(tokenEndpoint.getLocation());
-        tokenUri = new URI("http",
-                tokenUri.getUserInfo(),
-                localHost,
-                localPort,
-                tokenUri.getPath(),
-                tokenUri.getRawQuery(),
-                tokenUri.getFragment());
-
+        String internalTokenEndpoint = targetBaseUrl + tokenUri.getPath();
 
         // Create a new TOKEN request w/new IDP TOKEN ENDPOINT
-
-
         TokenRequest proxyTokenRequest = null;
 
         if (tokenRequest.getClientAuthentication() != null)
-            proxyTokenRequest = new TokenRequest(new URI(tokenEndpoint.getLocation()),
+            proxyTokenRequest = new TokenRequest(new URI(internalTokenEndpoint),
                 tokenRequest.getClientAuthentication(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
         else
-            proxyTokenRequest = new TokenRequest(new URI(tokenEndpoint.getLocation()),
+            proxyTokenRequest = new TokenRequest(new URI(internalTokenEndpoint),
                     tokenRequest.getClientID(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
 
         // Send request/process response
