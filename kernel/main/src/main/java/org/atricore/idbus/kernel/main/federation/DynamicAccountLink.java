@@ -27,4 +27,5 @@ package org.atricore.idbus.kernel.main.federation;
  * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
  */
 public interface DynamicAccountLink {
+
 }

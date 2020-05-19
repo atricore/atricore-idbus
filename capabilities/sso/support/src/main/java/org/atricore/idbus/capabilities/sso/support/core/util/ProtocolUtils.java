@@ -1,5 +1,9 @@
 package org.atricore.idbus.capabilities.sso.support.core.util;
 
+import oasis.names.tc.saml._2_0.idbus.ExtAttributeListType;
+import oasis.names.tc.saml._2_0.idbus.ExtendedAttributeType;
+import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
+import oasis.names.tc.saml._2_0.protocol.ExtensionsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
@@ -9,6 +13,7 @@ import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 import org.atricore.idbus.kernel.main.federation.SubjectRole;
 
 import javax.security.auth.Subject;
+import javax.xml.bind.JAXBElement;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
@@ -112,5 +117,28 @@ public class ProtocolUtils {
 
         return new Subject(true, principals, new HashSet(), new HashSet());
     }
+
+    public static final String getRequestExtAttribute(AuthnRequestType authnRequest, String name) {
+        ExtensionsType extensions = authnRequest.getExtensions();
+        if (extensions == null)
+            return null;
+
+        for (Object o : extensions.getAny()) {
+
+            if (o instanceof JAXBElement) {
+
+                JAXBElement e = (JAXBElement) o;
+                if (e.getValue() instanceof ExtAttributeListType) {
+                    ExtAttributeListType attrs = (ExtAttributeListType) e.getValue();
+                    for (ExtendedAttributeType attr : attrs.getExtendedAttribute()) {
+                        if (attr.getName().equals(name))
+                            return attr.getValue();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 
 }

@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -17,6 +18,8 @@ public class DriverManagerDataSource implements DataSource
 {
     /** Name of the database driver. */
     private final String driverName;
+
+    private final Collection<String> driverClassPath;
 
     /** URL for the database. */
     private final String url;
@@ -28,7 +31,10 @@ public class DriverManagerDataSource implements DataSource
     private final String userName;
 
     /** the password **/
-    private final String password;
+    private final String password ;
+
+    /** connection properties **/
+    private final Properties props;
 
     /**
      * Constructor.
@@ -38,11 +44,45 @@ public class DriverManagerDataSource implements DataSource
      **/
     public DriverManagerDataSource(String driverName, String url, String userName, String password, JDBCDriverManager mgr)
     {
+        this.driverClassPath = null;
+        this.props = null;
         this.driverName = driverName;
         this.url = url;
         this.mgr = mgr;
         this.userName = userName;
         this.password = password;
+
+        if (driverName != null)
+        {
+            try
+            {
+                //preferable to use ClassLoaderResolver
+                //because the driver may be loaded by another loader
+                //then the loader used by Class.forName (callerClassloader)
+                DriverDescriptor dd = mgr.getConfiguredDriver(driverName);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Constructor.
+     * @param driverName Class name of the JDBC driver.
+     * @param url URL of the data source.
+     * @param mgr JDBCDriverManager to use for loading issues
+     **/
+    public DriverManagerDataSource(String driverName, String url, Properties props, Collection<String> driverClassPath, JDBCDriverManager mgr)
+    {
+        this.driverClassPath = driverClassPath;
+        this.driverName = driverName;
+        this.url = url;
+        this.mgr = mgr;
+        this.props = props;
+        this.userName = null;
+        this.password = null;
 
         if (driverName != null)
         {
@@ -72,6 +112,14 @@ public class DriverManagerDataSource implements DataSource
     public Connection getConnection()
     throws SQLException
     {
+        if (props != null) {
+            try {
+                return mgr.getConnection(driverName, url, props, driverClassPath);
+            } catch (Exception e) {
+                throw new SQLException(e);
+            }
+        }
+
         return getConnection(this.userName, this.password);
     }
 
@@ -87,7 +135,7 @@ public class DriverManagerDataSource implements DataSource
     {
         try
         {
-            Properties info = new Properties();
+            Properties info = props != null ? props : new Properties();
             if( userName != null && !"".equals(userName))
             {
                 info.put("user", this.userName);
@@ -97,7 +145,7 @@ public class DriverManagerDataSource implements DataSource
                 info.put("password", this.password);
             }
 
-            return mgr.getConnection(driverName, url, info, null);
+            return mgr.getConnection(driverName, url, info, driverClassPath);
 
         } catch (Exception e) {
             throw new SQLException(e);

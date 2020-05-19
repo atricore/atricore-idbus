@@ -53,7 +53,7 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
     private static final Log logger = LogFactory.getLog(AccountLinkLifecycleImpl.class);
 
     private IdentityStore identityStore;
-    
+
 	//private EntityManager entityManager;
 
     public PersistentAccountLink establishPersistent(Subject idpSubject, String localSubjectNameIdentifier) {
@@ -97,11 +97,11 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
     		List result = entityManager.createQuery("select distinct pal from PersistentAccountLinkImpl pal inner join pal.idpSubject.principals pr " +
       			"where pr IN (from SubjectNameID snID where snID.name=:name) and pal.deleted=:del")
       			.setParameter("name", subjectNameID.getName()).setParameter("del", new Boolean(false)).getResultList();
-      
+
 	        if(result != null && result.size() != 0){
 	        	accountLink = (AccountLink)result.get(0);
 	        }
-    	} 
+    	}
         return accountLink;
         */
     }
@@ -120,11 +120,11 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
     		List result = entityManager.createQuery("select distinct pal from PersistentAccountLinkImpl pal inner join pal.idpSubject.principals pr " +
       			"where pr IN (from SubjectNameID snID where snID.localName=:name) and pal.deleted=:del")
       			.setParameter("name", subjectNameID.getName()).setParameter("del", new Boolean(false)).getResultList();
-      
+
 	        if(result != null && result.size() != 0){
 	        	accountLink = (AccountLink)result.get(0);
 	        }
-    	} 
+    	}
         return accountLink;
         */
     }
@@ -149,7 +149,7 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
             return resolvedSubject;
         }
 
-        UserKey uid = new SimpleUserKey(accountLink.getLocalAccountNameIdentifier());
+        UserKey uid = accountLink.getUserKey();
 
         try {
             logger.debug("Resolving account link : " + accountLink.getLocalAccountNameIdentifier());
@@ -169,7 +169,7 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
                 for ( SSONameValuePair ssoUserProperty : ssoUserProperties ) {
                     resolvedSubject.getPrincipals().add(
                             new SubjectAttribute(ssoUserProperty.getName(), ssoUserProperty.getValue())
-                    );    
+                    );
                 }
 
                 BaseRole[] roles = identityStore.findRolesByUserKey(uid);
@@ -205,7 +205,7 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
     	}
     	return accountLink;
 
-    	
+
     }
 
     public AccountLink enable(AccountLink accountLink) {
@@ -235,12 +235,12 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
     		}
     		*/
     	}
-    	return accountLink;    	
+    	return accountLink;
     }
-    
+
     /**
      *
-     * @org.apache.xbean.Property alias="identity-store"    
+     * @org.apache.xbean.Property alias="identity-store"
      */
     public IdentityStore getIdentityStore() {
         return identityStore;
@@ -256,5 +256,5 @@ public class AccountLinkLifecycleImpl implements AccountLinkLifecycle {
 		this.entityManager = entityManager;
 	} */
 
-    
+
 }

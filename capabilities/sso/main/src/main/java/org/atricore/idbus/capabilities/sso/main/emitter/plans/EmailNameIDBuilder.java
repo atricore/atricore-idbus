@@ -15,7 +15,7 @@ import javax.security.auth.Subject;
  */
 public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
 
-    private static final Log logger = LogFactory.getLog(UnspecifiedNameIDBuiler.class);
+    private static final Log logger = LogFactory.getLog(EmailNameIDBuilder.class);
 
     private String[] emailPropNames = {"email", "mail", "mailAddress", "emailAddress"};
 

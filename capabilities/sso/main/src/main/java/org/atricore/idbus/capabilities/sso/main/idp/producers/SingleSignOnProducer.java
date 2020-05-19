@@ -64,6 +64,7 @@ import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypt
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureValidationException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
@@ -114,6 +115,8 @@ import javax.xml.namespace.QName;
 import java.math.BigInteger;
 import java.security.Principal;
 import java.util.*;
+
+import static org.atricore.idbus.capabilities.sts.main.WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -513,6 +516,12 @@ public class SingleSignOnProducer extends SSOProducer {
         authnState.setResponseFormat(responseFormat);
         authnState.setLocale(locale);
 
+        in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+        in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
+
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state", authnState);
 
         if (!isSsoSessionValid) {
 
@@ -634,6 +643,7 @@ public class SingleSignOnProducer extends SSOProducer {
                             (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp"));
                     in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
                     in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
+
 
                     out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                             authnProxyRequest,
@@ -796,6 +806,11 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setMember(resolveProviderDescriptor(authnRequest.getIssuer()));
             // TODO !!! : securityTokenEmissionCtx.setRoleMetadata(null);
             authnState.setAuthnRequest(authnRequest);
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
+
             securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(secCtx.getSessionIndex());
             securityTokenEmissionCtx.setSsoSession(sessionMgr.getSession(secCtx.getSessionIndex()));
@@ -1175,6 +1190,10 @@ public class SingleSignOnProducer extends SSOProducer {
             // Update authentication state
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
             authnState.setAuthnRequest(authnRequest);
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
 
             // Set SP information
             if (authnRequest.getIssuer() != null)
@@ -1284,6 +1303,10 @@ public class SingleSignOnProducer extends SSOProducer {
 
             authnState.setResponseMode("unsolicited");
             authnState.setAuthnRequest(authnRequest);
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
 
 
         } else {
@@ -1410,15 +1433,13 @@ public class SingleSignOnProducer extends SSOProducer {
 
                     if (next instanceof SubjectNameIDType) {
 
-                        // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
                         SubjectNameIDType nameId = (SubjectNameIDType) next;
 
                         AttributedString usernameString = new AttributedString();
                         usernameString.setValue(nameId.getName());
                         usernameToken.setUsername(usernameString);
                         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), nameId.getName());
-                        // TODO : This is not accurate
-                        // TODO : We should honor the provided authn. context if any
+
                         usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
                         usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
                         // Also update authentication state
@@ -1917,7 +1938,13 @@ public class SingleSignOnProducer extends SSOProducer {
 
         AssertionType assertion = securityTokenEmissionCtx.getAssertion();
 
-        //Subject authnSubject = securityTokenEmissionCtx.getSubject();
+        String authzCode = getAssertionValue(assertion, WST_OIDC_AUTHZ_CODE_TYPE + "_ID");
+        if (authzCode != null) {
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+            MediationState state = in.getMessage().getState();
+            state.getLocalState().addAlternativeId("code", authzCode);
+        }
+
 
         logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                 (authnRequest != null ? authnRequest.getID() : "<NULL>"));
@@ -1973,6 +2000,7 @@ public class SingleSignOnProducer extends SSOProducer {
         securityTokenEmissionCtx.setAssertion(assertion);
         securityTokenEmissionCtx.setSubject(subject);
 
+        /*
         SSOUser ssoUser = null;
         Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
         if (p != null && p.size() > 0) {
@@ -1988,6 +2016,15 @@ public class SingleSignOnProducer extends SSOProducer {
                 // We already have an SSOUser instance
                 ssoUser = ssoUsers.iterator().next();
             }
+        }
+        */
+
+        String authzCode = getAssertionValue(assertion, WST_OIDC_AUTHZ_CODE_TYPE + "_ID");
+
+        if (authzCode != null) {
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+            MediationState state = in.getMessage().getState();
+            state.getLocalState().addAlternativeId("code", authzCode);
         }
 
         // Return context with Assertion and Subject
@@ -2095,22 +2132,7 @@ public class SingleSignOnProducer extends SSOProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Creating remember-me security context information");
 
-            String preAuthnTokenId = null;
-
-            for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
-                if (stmt instanceof AttributeStatementType) {
-                    AttributeStatementType attrStmt = (AttributeStatementType) stmt;
-                    for (Object o : attrStmt.getAttributeOrEncryptedAttribute()) {
-                        if (o instanceof AttributeType) {
-                            AttributeType attr = (AttributeType) o;
-                            // The order is important!
-                            if (attr.getName().startsWith(WSTConstants.WST_OAUTH2_RM_TOKEN_TYPE + "_ID")) {
-                                preAuthnTokenId = (String) attr.getAttributeValue().get(0);
-                            }
-                        }
-                    }
-                }
-            }
+            String preAuthnTokenId = getAssertionValue(assertion, WSTConstants.WST_OAUTH2_RM_TOKEN_TYPE + "_ID");
 
             if (preAuthnTokenId != null) {
                 String varName = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
@@ -3353,6 +3375,25 @@ public class SingleSignOnProducer extends SSOProducer {
             throw new SSOException(e.getMessage(), e);
         }
 
+    }
+
+    protected String getAssertionValue(AssertionType assertion, String attribute) {
+
+        for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
+            if (stmt instanceof AttributeStatementType) {
+                AttributeStatementType attrStmt = (AttributeStatementType) stmt;
+                for (Object o : attrStmt.getAttributeOrEncryptedAttribute()) {
+                    if (o instanceof AttributeType) {
+                        AttributeType attr = (AttributeType) o;
+                        // The order is important!
+                        if (attr.getName().startsWith(attribute)) {
+                            return (String) attr.getAttributeValue().get(0);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
 

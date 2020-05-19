@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
   ~ Atricore IDBus
   ~
   ~ Copyright 2009, Atricore Inc.
@@ -33,88 +33,6 @@
     <name>Atricore IDBus :: All : POM</name>
     <inceptionYear>2009</inceptionYear>
 
-    <modules>
-        <module>kernel</module>
-
-        <module>bundles/josso-ws-v1_2</module>
-        <module>bundles/apache-tiles-jsp-v2_0_6</module>
-        <module>bundles/apache-tiles-jsp-v2_2_2</module>
-        <module>bundles/javax-jdo2-v2_3-eb</module>
-        <module>bundles/javax-jdo2-v2_3-ec</module>
-        <module>bundles/javax-jdo-v3_0</module>
-        <module>bundles/javax-jstl-v1_2</module>
-        <module>bundles/datanucleus-v2_0_3</module>
-        <module>bundles/datanucleus-v2_1_2</module>
-        <module>bundles/apache-derby-network-v10_5_3_0_1</module>
-        <module>bundles/apache-derby-client-v10_5_3_0_1</module>
-        <module>bundles/apache-ds-v1_5_7</module>
-        <module>bundles/apache-maven-v3_0</module>
-        <module>bundles/ehcache-v2_1_0</module>
-        <module>bundles/ehcache-v2_8_1</module>
-        <module>bundles/nimbus-jose-jwt-v3_10</module>
-        <module>bundles/oauth2-oidc-sdk-v4_14_1</module>
-        <module>bundles/nimbus-jose-jwt-v7_4</module>
-        <module>bundles/oauth2-oidc-sdk-v6_13</module>
-        <module>bundles/pax-web-runtime-v0_7_2</module>
-        <module>bundles/pax-web-jetty-v0_7_2</module>
-        <module>bundles/pax-web-jetty-v0_7_3</module>
-        <module>bundles/wadi-v2_1_2</module>
-        <module>bundles/ini4j-v0_5_1</module>
-        <!--<module>bundles/scala-library-v2_9_1</module>-->
-        <!--<module>bundles/scala-compiler-v2_9_1</module>-->
-        <!--<module>bundles/scala-library-v2_11_8</module>-->
-        <module>bundles/jasypt-v1_9_2</module>
-        <module>bundles/jasypt-spring31-v1_9_2</module>
-        <module>capabilities/spmlr2</module>
-        <module>capabilities/oath</module>
-        <module>capabilities/sso</module>
-        <module>capabilities/josso</module>
-        <module>capabilities/sts</module>
-        <module>capabilities/spnego</module>
-        <module>capabilities/preauthn</module>
-        <module>capabilities/openid</module>
-        <module>capabilities/openidconnect</module>
-        <module>capabilities/oauth2</module>
-        <module>capabilities/atricoreid</module>
-
-        <module>capabilities/csca</module>
-        <module>capabilities/idconfirmation</module>
-
-        <module>idojos/idbus-db-identitystore</module>
-        <module>idojos/idbus-db-sessionstore</module>
-        <module>idojos/idbus-ldap-identitystore</module>
-        <module>idojos/idbus-memory-identitystore</module>
-        <module>idojos/idbus-memory-sessionstore</module>
-        <module>idojos/idbus-serialized-sessionstore</module>
-        <module>idojos/idbus-ehcache-sessionstore</module>
-        <!--module>idojos/idbus-strong-authscheme</module-->
-        <module>idojos/idbus-impersonateusr-authscheme</module>
-        <module>idojos/idbus-gatein-identitystore</module>
-        <module>idojos/idbus-virtual-identitystore</module>
-
-        <module>connectors/idbus-jdo-identityvault</module>
-        <module>connectors/jit-scim-provisioning</module>
-
-        <module>applications/idbus-server</module>
-        <module>examples/simple-federation</module>
-        <module>examples/simple-provisioning</module>
-        <module>examples/salesforce</module>
-        <module>examples/oauth2-preauthn-app</module>
-        <module>examples/simple-iwa</module>
-        <module>examples/simple-openid</module>
-        <module>examples/custom-identity-mapper</module>
-        <module>examples/custom-identity-vault</module>
-        <module>examples/custom-accountlink-emitter</module>
-        <module>examples/custom-audit-handler</module>
-        <module>examples/custom-session-manager-factory</module>
-        <module>examples/custom-subject-authn-policies</module>
-        <module>examples/custom-ui</module>
-        <module>examples/oidc-client</module>
-        <module>examples/spring-boot-partnerapp</module>
-
-        <module>distributions</module>
-    </modules>
-
     <prerequisites>
         <maven>2.0.9</maven>
     </prerequisites>
@@ -145,13 +63,15 @@
         <repository>
             <id>atricore-m2-deploy-repo</id>
             <name>Atricore Release Distribution Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
+            <url>file:///tmp/maven/repository.atricore.org/m2-release-repository</url>
+            <!--url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url-->
         </repository>
 
         <snapshotRepository>
             <id>atricore-m2-snapshot-deploy-repo</id>
             <name>Atricore Development Snapshot Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
+            <url>file:///tmp/maven/repository.atricore.org/m2-snapshot-repository</url>
+            <!--url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url-->
         </snapshotRepository>
 
     </distributionManagement>
@@ -541,7 +461,7 @@
 
         </pluginRepository>
 
-        <!-- Apache releases 
+        <!-- Apache releases
         <pluginRepository>
             <id>apache-releases</id>
             <name>Apache Releases repository</name>
@@ -761,35 +681,132 @@
     </build>
     <profiles>
         <profile>
-            <id>setup.eclipse</id>
+            <id>dev-fast</id>
             <modules>
-                <module>assembly</module>
+                <module>kernel</module>
+
+                <module>capabilities/spmlr2</module>
+                <module>capabilities/oath</module>
+                <module>capabilities/sso</module>
+                <module>capabilities/josso</module>
+                <module>capabilities/sts</module>
+                <module>capabilities/spnego</module>
+                <module>capabilities/preauthn</module>
+                <module>capabilities/openid</module>
+                <module>capabilities/openidconnect</module>
+                <module>capabilities/oauth2</module>
+                <module>capabilities/atricoreid</module>
+
+                <module>capabilities/csca</module>
+                <module>capabilities/idconfirmation</module>
+
+                <module>idojos/idbus-db-identitystore</module>
+                <module>idojos/idbus-db-sessionstore</module>
+                <module>idojos/idbus-ldap-identitystore</module>
+                <module>idojos/idbus-memory-identitystore</module>
+                <module>idojos/idbus-memory-sessionstore</module>
+                <module>idojos/idbus-serialized-sessionstore</module>
+                <module>idojos/idbus-ehcache-sessionstore</module>
+                <!--module>idojos/idbus-strong-authscheme</module-->
+                <module>idojos/idbus-impersonateusr-authscheme</module>
+                <module>idojos/idbus-gatein-identitystore</module>
+                <module>idojos/idbus-virtual-identitystore</module>
+
+                <module>connectors/idbus-jdo-identityvault</module>
+                <module>connectors/jit-scim-provisioning</module>
+
+                <module>applications/idbus-server</module>
             </modules>
-            <properties>
-                <eclipse.workspace.dir>${basedir}/../workspace</eclipse.workspace.dir>
-            </properties>
-            <build>
-                <defaultGoal>eclipse:eclipse</defaultGoal>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-eclipse-plugin</artifactId>
-                        <inherited>false</inherited>
-                        <executions>
-                            <execution>
-                                <id>setup.eclipse.workspace</id>
-                                <phase>process-test-sources</phase>
-                                <goals>
-                                    <goal>add-maven-repo</goal>
-                                </goals>
-                                <configuration>
-                                    <workspace>${eclipse.workspace.dir}</workspace>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+
+        </profile>
+
+        <profile>
+            <id>all</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>kernel</module>
+
+                <module>bundles/josso-ws-v1_2</module>
+                <module>bundles/apache-tiles-jsp-v2_0_6</module>
+                <module>bundles/apache-tiles-jsp-v2_2_2</module>
+                <module>bundles/javax-jdo2-v2_3-eb</module>
+                <module>bundles/javax-jdo2-v2_3-ec</module>
+                <module>bundles/javax-jdo-v3_0</module>
+                <module>bundles/javax-jstl-v1_2</module>
+                <module>bundles/datanucleus-v2_0_3</module>
+                <module>bundles/datanucleus-v2_1_2</module>
+                <module>bundles/apache-derby-network-v10_5_3_0_1</module>
+                <module>bundles/apache-derby-client-v10_5_3_0_1</module>
+                <module>bundles/apache-ds-v1_5_7</module>
+                <module>bundles/apache-maven-v3_0</module>
+                <module>bundles/ehcache-v2_1_0</module>
+                <module>bundles/ehcache-v2_8_1</module>
+                <module>bundles/nimbus-jose-jwt-v3_10</module>
+                <module>bundles/oauth2-oidc-sdk-v4_14_1</module>
+                <module>bundles/nimbus-jose-jwt-v7_4</module>
+                <module>bundles/oauth2-oidc-sdk-v6_13</module>
+                <module>bundles/pax-web-runtime-v0_7_2</module>
+                <module>bundles/pax-web-jetty-v0_7_2</module>
+                <module>bundles/pax-web-jetty-v0_7_3</module>
+                <module>bundles/wadi-v2_1_2</module>
+                <module>bundles/ini4j-v0_5_1</module>
+                <!--<module>bundles/scala-library-v2_9_1</module>-->
+                <!--<module>bundles/scala-compiler-v2_9_1</module>-->
+                <!--<module>bundles/scala-library-v2_11_8</module>-->
+                <module>bundles/jasypt-v1_9_2</module>
+                <module>bundles/jasypt-spring31-v1_9_2</module>
+                <module>capabilities/spmlr2</module>
+                <module>capabilities/oath</module>
+                <module>capabilities/sso</module>
+                <module>capabilities/josso</module>
+                <module>capabilities/sts</module>
+                <module>capabilities/spnego</module>
+                <module>capabilities/preauthn</module>
+                <module>capabilities/openid</module>
+                <module>capabilities/openidconnect</module>
+                <module>capabilities/oauth2</module>
+                <module>capabilities/atricoreid</module>
+
+                <module>capabilities/csca</module>
+                <module>capabilities/idconfirmation</module>
+
+                <module>idojos/idbus-db-identitystore</module>
+                <module>idojos/idbus-db-sessionstore</module>
+                <module>idojos/idbus-ldap-identitystore</module>
+                <module>idojos/idbus-memory-identitystore</module>
+                <module>idojos/idbus-memory-sessionstore</module>
+                <module>idojos/idbus-serialized-sessionstore</module>
+                <module>idojos/idbus-ehcache-sessionstore</module>
+                <!--module>idojos/idbus-strong-authscheme</module-->
+                <module>idojos/idbus-impersonateusr-authscheme</module>
+                <module>idojos/idbus-gatein-identitystore</module>
+                <module>idojos/idbus-virtual-identitystore</module>
+
+                <module>connectors/idbus-jdo-identityvault</module>
+                <module>connectors/jit-scim-provisioning</module>
+
+                <module>applications/idbus-server</module>
+                <module>examples/simple-federation</module>
+                <module>examples/simple-provisioning</module>
+                <module>examples/salesforce</module>
+                <module>examples/oauth2-preauthn-app</module>
+                <module>examples/simple-iwa</module>
+                <module>examples/simple-openid</module>
+                <module>examples/custom-identity-mapper</module>
+                <module>examples/custom-identity-vault</module>
+                <module>examples/custom-accountlink-emitter</module>
+                <module>examples/custom-audit-handler</module>
+                <module>examples/custom-session-manager-factory</module>
+                <module>examples/custom-subject-authn-policies</module>
+                <module>examples/custom-ui</module>
+                <module>examples/oidc-client</module>
+                <module>examples/spring-boot-partnerapp</module>
+
+                <module>distributions</module>
+            </modules>
+
         </profile>
     </profiles>
 

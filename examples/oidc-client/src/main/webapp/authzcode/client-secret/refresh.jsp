@@ -1,8 +1,6 @@
 <%@ page import="java.net.URI" %>
 <%@ page import="java.util.Properties" %>
 <%@ page import="java.io.InputStream" %>
-<%@ page import="java.net.HttpURLConnection" %>
-<%@ page import="java.io.ByteArrayOutputStream" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.ClientSecretJWT" %>
 <%@ page import="com.nimbusds.oauth2.sdk.*" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.ClientAuthentication" %>
@@ -11,23 +9,18 @@
 <%@ page import="java.util.Arrays" %>
 <%@ page import="javax.crypto.spec.SecretKeySpec" %>
 <%@ page import="java.security.MessageDigest" %>
-<%@ page import="com.nimbusds.jose.crypto.DirectEncrypter" %>
 <%@ page import="com.nimbusds.jose.*" %>
-<%@ page import="com.nimbusds.jose.crypto.AESEncrypter" %>
 <%@ page import="org.apache.commons.codec.binary.Base64" %>
 <%@ page import="java.security.SecureRandom" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.AccessToken" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.RefreshToken" %>
-<%@ page import="java.net.URLEncoder" %>
 <%@ page import="java.net.URLDecoder" %>
 <%@ page import="com.nimbusds.oauth2.sdk.token.BearerAccessToken" %>
-<%@ page import="com.nimbusds.oauth2.sdk.token.TokenPair" %>
-<%@ page import="com.nimbusds.openid.connect.sdk.OIDCAccessTokenResponse" %>
-<%@ page import="com.nimbusds.jose.crypto.RSASSAVerifier" %>
 <%@ page import="com.nimbusds.jwt.*" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.ClientSecretBasic" %>
 <%@ page import="com.nimbusds.oauth2.sdk.id.ClientID" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.Secret" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.OIDCTokenResponse" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -37,9 +30,9 @@
     AccessToken accessToken = null;
     RefreshToken refreshToken = null;
     BearerAccessToken bearerAccessToken = null;
-    TokenPair tokenPair = null;
+    //TokenPair tokenPair = null;
     JWT idToken = null;
-    ReadOnlyJWTClaimsSet claims = null;
+    JWTClaimsSet claims = null;
     String sloUrl = null;
 
     try {
@@ -74,13 +67,13 @@
             JWSSigner signer = new MACSigner(secretKey.getEncoded());
 
             // Prepare JWT with claims set
-            JWTClaimsSet claimsSet = new JWTClaimsSet();
-            claimsSet.setSubject(props.getProperty("oidc.client.id"));
-            claimsSet.setIssuer(props.getProperty("oidc.client.id"));
-            claimsSet.setIssueTime(new Date());
-            claimsSet.setExpirationTime(new Date(System.currentTimeMillis() + (5L * 60L * 1000L)));
-            claimsSet.setJWTID(jid);
-            claimsSet.setAudience(Arrays.asList(props.getProperty("oidc.client.audience")));
+            // Prepare JWT with claims set
+            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+            JWTClaimsSet claimsSet = builder.subject(props.getProperty("oidc.client.id")).
+                    issuer(props.getProperty("oidc.client.id")).
+                    issueTime(new Date()).
+                    expirationTime(new Date(System.currentTimeMillis() + (5L * 60L * 1000L))).
+                    jwtID(jid).audience(Arrays.asList(props.getProperty("oidc.client.audience"))).build();
 
             SignedJWT clientAssertion = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
             clientAssertion.sign(signer);
@@ -110,7 +103,7 @@
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, authzGrant, scope);
 
         try {
-            TokenResponse tokenRespose = OIDCAccessTokenResponse.parse(tokenRequest.toHTTPRequest().send());
+            TokenResponse tokenRespose = OIDCTokenResponse.parse(tokenRequest.toHTTPRequest().send());
             if (! tokenRespose.indicatesSuccess()) {
                 // We got an error response...
                 TokenErrorResponse errorResponse = (TokenErrorResponse) tokenRespose;
@@ -118,14 +111,13 @@
 
             } else {
 
-                OIDCAccessTokenResponse successResponse = (OIDCAccessTokenResponse) tokenRespose;
+                OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenRespose;
 
                 // Get the access token, the server may also return a refresh token
-                accessToken = successResponse.getAccessToken();
-                refreshToken = successResponse.getRefreshToken();
-                bearerAccessToken = successResponse.getBearerAccessToken();
-                tokenPair = successResponse.getTokenPair();
-                idToken = successResponse.getIDToken();
+                accessToken = successResponse.getOIDCTokens().getAccessToken();
+                refreshToken = successResponse.getOIDCTokens().getRefreshToken();
+                bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
+                idToken = successResponse.getOIDCTokens().getIDToken();
 
                 SignedJWT signedIdToken = (SignedJWT) idToken;
                 // TODO : JWSVerifier verifier = new RSASSAVerifier(publicKey);

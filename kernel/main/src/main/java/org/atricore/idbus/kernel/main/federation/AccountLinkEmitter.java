@@ -36,6 +36,10 @@ public interface AccountLinkEmitter {
 
     String LAST_UNLINKED_IDP= "lastUnlinkedIdP";
 
+    String REMOTE_ADDRESS =  "remoteAddress";
+
+    String IDP = "identyProvider";
+
     AccountLink emit(Subject subject) throws AccountLinkageException;
 
     AccountLink emit(Subject subject, Object ctx) throws AccountLinkageException;

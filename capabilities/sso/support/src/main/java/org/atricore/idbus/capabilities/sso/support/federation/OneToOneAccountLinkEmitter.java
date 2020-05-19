@@ -30,6 +30,7 @@ import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
 
 import javax.security.auth.Subject;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -38,7 +39,7 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
+public class OneToOneAccountLinkEmitter extends AbstractAccountLinkEmitter {
 
     private static final Log logger = LogFactory.getLog( OneToOneAccountLinkEmitter.class );
 
@@ -60,34 +61,35 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
                 logger.debug( "Principal Name: " + subjectNameID.getName() );
                 logger.debug( "Principal Format: " + subjectNameID.getFormat() );
             }
-            
+
+            String accountFormat = NameIDFormat.UNSPECIFIED.getValue();
+
             if ( subjectNameID.getFormat() != null ) {
                 NameIDFormat fmt = NameIDFormat.asEnum( subjectNameID.getFormat() );
                 switch ( fmt ) {
                     case UNSPECIFIED:
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.UNSPECIFIED.getValue());
+                        accountFormat = NameIDFormat.UNSPECIFIED.getValue();
 
                     case EMAIL:
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.EMAIL.getValue());
+                        accountFormat = NameIDFormat.EMAIL.getValue();
 
                     case TRANSIENT:
                         // TODO : Implement better TRANSIENT NameID support
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.TRANSIENT.getValue() );
+                        accountFormat = NameIDFormat.TRANSIENT.getValue();
 
                     case PERSISTENT:
                         // TODO : Implement PERSISTENT NameID support
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.PERSISTENT.getValue() );
-                    
-                    default:
+                        accountFormat = NameIDFormat.PERSISTENT.getValue();
 
+                    default:
                         logger.warn("Unrecognized Name ID Format : " + fmt);
-                        return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.UNSPECIFIED.getValue());
+                        accountFormat = NameIDFormat.UNSPECIFIED.getValue();
 
                 }
-            } else {
-                // If no format is specified, take it as it is
-                return new DynamicAccountLinkImpl( subject, subjectNameID.getName(), NameIDFormat.UNSPECIFIED.getValue());
             }
+
+            return newBuilder(subject, subjectNameID.getName(), accountFormat, ctx).build();
+
 
         }
 
@@ -96,7 +98,7 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
 
         for (SubjectAttribute idpAttr : idpAttrs) {
             if (idpAttr.getName().equals( DCEPACAttributeDefinition.PRINCIPAL.getValue() )) {
-                return new DynamicAccountLinkImpl(subject, idpAttr.getValue() );
+                return newAccountLink(subject, idpAttr.getValue() );
             }
         }
         */
@@ -105,4 +107,5 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
         return null;
 
     }
+
 }

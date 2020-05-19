@@ -30,9 +30,6 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.service.importer.ServiceProxyDestroyedException;
 import org.springframework.util.StopWatch;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -73,9 +70,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
     private boolean followRedirects;
 
-    private boolean secureCookies = false;
+    private boolean processingUIenabled;
 
-    private boolean reuseHttpClient = false;
+    private boolean secureCookies = false;
 
     private String localTargetBaseUrl;
 
@@ -107,7 +104,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
             // Lazy load kernel config
 
-            kernelConfig = lookupKernelConfig();
+            kernelConfig = HttpUtils.lookupKernelConfig(servletConfig.getServletContext());
 
             if (kernelConfig == null) {
                 logger.error("No Kernel Configuration Context found!");
@@ -116,17 +113,16 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
 
             secureCookies = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.secureCookies", "false"));
             followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "true"));
-            reuseHttpClient = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.reuseHttpClient", "false"));
+            processingUIenabled = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.processingUIenabled", "false"));
 
             socketTimeoutMillis = Integer.parseInt(kernelConfig.getProperty("binding.http.socketTimeoutMillis", "300000"));
             connectionTimeoutMillis = Integer.parseInt(kernelConfig.getProperty("binding.http.connectionTimeoutMillis", "5000"));
+
 
             localTargetBaseUrl = kernelConfig.getProperty("binding.http.localTargetBaseUrl");
 
             logger.info("Following Redirects internally : " + followRedirects);
 
-            if (reuseHttpClient)
-                logger.warn("Reuse HTTP client option is ON (EXPERIMENTAL !!!!)");
 
         }
 
@@ -452,6 +448,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                         instream = entity.getContent();
 
                         if (!followTargetUrl) {
+                            // This is a response that will go to the browser, not handled internally.  It may be a 302 or
+                            // some other code ...
+
                             // If we're not following the target URL, send all to the browser
 
                             if (logger.isTraceEnabled())
@@ -460,11 +459,17 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                             // Previously stored headers
                             prepareResponse(req, res, headers, storedHeaders);
 
-                            res.setStatus(proxyRes.getStatusLine().getStatusCode());
-
+                            if (processingUIenabled && proxyRes.getStatusLine().getStatusCode() == 302) {
+                                // When working with processing UI page, do NOT return 302, instead 200 and a custom location header: X-IdBusLocation ...
+                                res.setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_LOCATION, targetUrl);
+                                res.setStatus(200);
+                            } else {
+                                res.setStatus(proxyRes.getStatusLine().getStatusCode());
+                            }
                             // Send content to browser
                             IOUtils.copy(instream, res.getOutputStream());
                             res.getOutputStream().flush();
+
 
                         } else {
 
@@ -525,8 +530,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                             if (logger.isTraceEnabled())
                                 logger.trace("Sending response to the browser, HTTP Status " + proxyRes.getStatusLine().getReasonPhrase());
 
-                            // Send received HTTP STATUS (200, 403, 500, etc)
-                            res.setStatus(proxyRes.getStatusLine().getStatusCode());
+                            if (processingUIenabled && proxyRes.getStatusLine().getStatusCode() == 302) {
+                                res.setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_LOCATION, targetUrl);
+                                res.setStatus(200);
+                            } else {
+                                // Send received HTTP STATUS (200, 302, 401, 403, 500, etc)
+                                res.setStatus(proxyRes.getStatusLine().getStatusCode());
+                            }
+
 
                             prepareResponse(req, res, headers, storedHeaders);
 
@@ -597,25 +608,14 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         proxyReq.addHeader(HTTP_HEADER_IDBUS_PROXIED_REQUEST, "TRUE");
         if (req.isSecure())
             proxyReq.addHeader(HTTP_HEADER_IDBUS_SECURE, "TRUE");
+        proxyReq.addHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROCESS_UI, "TRUE");
 
         return proxyReq;
     }
 
     protected HttpClient getHttpClient() {
-
-        if (!reuseHttpClient) {
-            logger.trace("Building HTTP client instance");
-            return buildHttpClient(false);
-        }
-
-        if (logger.isTraceEnabled())
-            logger.trace("Reusing HTTP client instance (experimental)");
-
-        if (httpClient == null)
-            httpClient = buildHttpClient(true);
-
-        return httpClient;
-
+        logger.trace("Building HTTP client instance");
+        return buildHttpClient(false);
     }
 
     protected HttpClient buildHttpClient(boolean multiThreaded) {
@@ -721,7 +721,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
             throws ServletException, IOException {
 
         // FIX For a bug in CXF!
-        HttpServletResponse res = new WHttpServletResponse(r);
+        WHttpServletResponse res = new WHttpServletResponse(r);
 
         // Lazy  identity mediation registry
         if (registry == null)
@@ -836,71 +836,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         return targetConsumer;
     }
 
-    protected ConfigurationContext lookupKernelConfig() throws ServletException {
 
-        org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
-                (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
-                        WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-
-        if (wac == null) {
-            logger.error("Spring application context not found in servlet context");
-            throw new ServletException("Spring application context not found in servlet context");
-        }
-
-        BundleContext bc = wac.getBundleContext();
-
-        for (Bundle b : bc.getBundles()) {
-            if (b.getRegisteredServices() != null) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("(" + b.getBundleId() + ") " + b.getSymbolicName() + " serviceReferences:" + b.getRegisteredServices().length);
-
-                for (ServiceReference r : b.getRegisteredServices()) {
-
-                    String props = "";
-                    for (String key : r.getPropertyKeys()) {
-                        props += "\n\t\t" + key + "=" + r.getProperty(key);
-
-                        if (r.getProperty(key) instanceof String[]) {
-                            String[] v = (String[]) r.getProperty(key);
-                            props += "[";
-                            String prefix = "";
-                            for (String aV : v) {
-                                props += prefix + aV;
-                                prefix = ",";
-                            }
-                            props += "]";
-                        }
-                    }
-
-                    if (logger.isTraceEnabled())
-                        logger.trace("ServiceReference:<<" + r + ">> [" + r.getProperty("service.id") + "]" + props);
-                }
-
-            } else {
-                if (logger.isTraceEnabled())
-                    logger.trace("(" + b.getBundleId() + ") " + b.getSymbolicName() + "services:<null>");
-            }
-        }
-
-
-        Map<String, ConfigurationContext> kernelCfgsMap = wac.getBeansOfType(ConfigurationContext.class);
-        if (kernelCfgsMap == null) {
-            logger.warn("No kernel configuration context configured");
-            return null;
-        }
-
-        if (kernelCfgsMap.size() > 1) {
-            logger.warn("More than one kernel configuration context configured");
-            return null;
-        }
-
-        ConfigurationContext kCfg = kernelCfgsMap.values().iterator().next();
-        if (logger.isDebugEnabled())
-            logger.debug("Found kernel configuration context " + kCfg);
-        return kCfg;
-
-    }
 
     protected IdentityMediationUnitRegistry lookupIdentityMediationUnitRegistry() throws ServletException {
 
@@ -982,7 +918,11 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         return (MonitoringServer)wac.getBean("monitoring");
     }
 
-    protected class WHttpServletResponse extends HttpServletResponseWrapper {
+    public class WHttpServletResponse extends HttpServletResponseWrapper {
+
+        private int status;
+
+        private String location;
 
         public WHttpServletResponse(HttpServletResponse response) {
             super(response);
@@ -994,6 +934,9 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 super.addHeader("Content-Type", value);
             else
                 super.addHeader(name, value);
+
+            if (name.equalsIgnoreCase("location"))
+                this.location = value;
         }
 
         @Override
@@ -1002,6 +945,30 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 super.setHeader("Content-Type", value);
             else
                 super.setHeader(name, value);
+
+            if (name.equalsIgnoreCase("location"))
+                this.location = value;
+
+        }
+
+        @Override
+        public void setStatus(int sc) {
+            this.status = status;
+            super.setStatus(sc);
+        }
+
+        @Override
+        public void setStatus(int sc, String sm) {
+            this.status = status;
+            super.setStatus(sc, sm);
+        }
+
+        public int getStatus() {
+            return status;
+        }
+
+        public String getLocation() {
+            return location;
         }
     }
 

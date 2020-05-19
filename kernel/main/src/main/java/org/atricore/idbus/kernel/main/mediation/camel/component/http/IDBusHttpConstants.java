@@ -21,4 +21,8 @@ public interface IDBusHttpConstants {
 
     public static final String HTTP_HEADER_CONTENT_SECURITY_POLICY = "Content-Security-Policy";
 
+    public static final String HTTP_HEADER_IDBUS_PROCESS_UI = "X-IdBusProcessUI";
+
+    public static final String HTTP_HEADER_IDBUS_LOCATION = "X-IdBusLocation";
+
 }

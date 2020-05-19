@@ -22,29 +22,49 @@
 package org.atricore.idbus.kernel.main.federation;
 
 import javax.security.auth.Subject;
+import java.util.Map;
 
 
 public class PersistentAccountLinkImpl extends AbstractAccountLink implements PersistentAccountLink {
-	
-	private Long persistanceId;	
-    
+
+	private Long persistanceId;
+
 	protected PersistentAccountLinkImpl(){
 		this.setEnabled(true);
 		this.setDeleted(false);
 	}
 
-	public PersistentAccountLinkImpl(Subject idpSubject, String localAccountNameIdentifier, String localAccountNameFormat) {
-        super(idpSubject, localAccountNameIdentifier, localAccountNameFormat);
+	public PersistentAccountLinkImpl(Subject idpSubject, String localAccountNameIdentifier, String localAccountNameFormat,
+                                     Map<String, String> context) {
+        super(idpSubject, localAccountNameIdentifier, localAccountNameFormat, context);
         this.setEnabled(true);
         this.setDeleted(false);
     }
-	
-	
+
+
 	public Long getPersistanceId() {
 		return persistanceId;
 	}
 
 	private void setPersistanceId(Long persistanceId) {
 		this.persistanceId = persistanceId;
-	}	
+	}
+
+	public class Builder extends BaseAccountLinkBuilder {
+
+	    protected Long persisenceId;
+
+        public void setPersisenceId(Long persisenceId) {
+            this.persisenceId = persisenceId;
+        }
+
+        @Override
+        public AccountLink build() {
+            PersistentAccountLinkImpl p = new PersistentAccountLinkImpl(this.idpSubject, this.localAccount, this.accountFormat, this.props);
+            p.setPersistanceId(this.persisenceId);
+            p.setDeleted(this.isDeleted);
+            p.setEnabled(this.isEnabled);
+            return p;
+        }
+    }
 }

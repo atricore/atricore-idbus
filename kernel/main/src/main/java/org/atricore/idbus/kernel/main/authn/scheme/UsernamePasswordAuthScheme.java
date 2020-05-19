@@ -191,17 +191,15 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         _knowCredentials = getKnownCredentials();
         String knownUserId = getUserId(_knowCredentials);
         String knownUserName = getUserName(_knowCredentials);
+
+        // Get user and known user
+        String user = userid != null ? userid : username;
+        String knownUser = knownUserId != null ? knownUserId : knownUserName;
         String expectedPassword = getPassword(_knowCredentials);
 
         // Validate user identity ...
-        if (userid != null) {
-            if (!validateUser(userid, knownUserId)) {
-                _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
-                return false;
-            }
-
-        } else {
-            if (!validateUser(username, knownUserName)) {
+        if (user != null) {
+            if (!validateUser(user, knownUser)) {
                 _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
                 return false;
             }

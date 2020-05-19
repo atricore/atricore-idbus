@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
@@ -47,14 +48,22 @@ public class RPUserInfoProducer extends AbstractOpenIDProducer {
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        // TODO : Use localhost actually!
+        // Use localhost actually!
         EndpointDescriptor userInfoEndpoint = lookupUserInfoEndpoint(authnCtx);
 
+        // Use localhost actually!
+        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
+        String targetBaseUrl = mediator.getKernelConfigCtx().getProperty("binding.http.localTargetBaseUrl", "http://localhost:8081");
+
+        // Build token URI
+        URI userInfoUri = new URI(userInfoEndpoint.getLocation());
+        String internalUserInfoEndpoint = targetBaseUrl + userInfoUri.getPath();
+
+
         // Create a new USERINFO request w/new IDP TOKEN USERINFO
-        UserInfoRequest proxyUserInfoRequest = new UserInfoRequest(new URI(userInfoEndpoint.getLocation()), (BearerAccessToken) userInfoRequest.getAccessToken());
+        UserInfoRequest proxyUserInfoRequest = new UserInfoRequest(new URI(internalUserInfoEndpoint), (BearerAccessToken) userInfoRequest.getAccessToken());
 
         // Send request/process response
-        // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
         HTTPResponse proxyResponse = proxyUserInfoRequest.toHTTPRequest().send();
 
         UserInfoResponse proxyUserInfoResponse = UserInfoResponse.parse(proxyResponse);
@@ -65,12 +74,11 @@ public class RPUserInfoProducer extends AbstractOpenIDProducer {
             userInfo.getSubject();
         } else {
             UserInfoErrorResponse err = proxyUserInfoResponse.toErrorResponse();
-            authnCtx.setTokens(null);
             ErrorObject error = err.getErrorObject();
-
             if (logger.isDebugEnabled())
                 logger.error("Error obtaining AccessToken : " + error.getCode() + ". " + error.getDescription());
-
+            if (authnCtx != null)
+                authnCtx.setTokens(null);
         }
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),

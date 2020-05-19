@@ -14,10 +14,14 @@ import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.JWTID;
+import com.nimbusds.oauth2.sdk.pkce.CodeChallenge;
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.oauth2.sdk.token.Token;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
@@ -43,6 +47,7 @@ import org.atricore.idbus.kernel.main.util.IdRegistry;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
+import org.w3._1999.xhtml.Code;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
@@ -60,8 +65,8 @@ import java.util.Set;
 /**
  * This creates an OIDC token based on different grant types (CODE, JWT BEARER, etc).
  *
- * The producer actually runs as part of the SSO/SAML Produces because it access the STS.  Since JOSSO
- * is SAML enabled, the STS will issue the token based on a previous authentication that craeted a SAML assertion
+ * The producer actually runs as part of the SSO/SAML Producers because it access the STS.  Since JOSSO
+ * is SAML enabled, the STS will issue the token based on a previous authentication that created a SAML assertion
  * and an AUTHZ CODE as part of the SAML statements.
  */
 public class TokenProducer extends AbstractOpenIDProducer {
@@ -69,7 +74,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
     private static final Log logger = LogFactory.getLog(TokenProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
-    
+
     // Ten seconds (TODO : Get from mediator/console)
     private long timeToleranceInMillis = 5L * 60L * 1000L;
 
@@ -315,6 +320,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
             OIDCClientMetadata md = (OIDCClientMetadata) clientInfo.getMetadata();
 
             OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
+
+
 
             JWTClaimsSet claims = null;
             if (md.getRequestObjectJWEEnc() != null) {
@@ -604,58 +611,67 @@ public class TokenProducer extends AbstractOpenIDProducer {
     protected OIDCClientInformation validateRequest(CamelMediationExchange exchange, TokenRequest tokenRequest)
             throws OpenIDConnectException {
 
-        // Authenticate Client:
-        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-        MediationState state = in.getMessage().getState();
+        try {
+            // Authenticate Client:
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+            MediationState state = in.getMessage().getState();
 
-        long now = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
 
-        // ----------------------------------------------
-        // Client ID (also taken from request parameter)
-        // ----------------------------------------------
-        ClientID clientID = tokenRequest.getClientAuthentication() != null ?
-                tokenRequest.getClientAuthentication().getClientID() : tokenRequest.getClientID();
+            // ----------------------------------------------
+            // Client ID (also taken from request parameter)
+            // ----------------------------------------------
+            ClientID clientID = tokenRequest.getClientAuthentication() != null ?
+                    tokenRequest.getClientAuthentication().getClientID() : tokenRequest.getClientID();
 
-        if (clientID == null)
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST, "client_id:n/a");
+            if (clientID == null)
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST, "client_id:n/a");
 
-        if (logger.isDebugEnabled())
-            logger.debug("Processing TokenRequest for " + clientID.getValue());
-
-        OIDCClientInformation clientInfo  = resolveClient(clientID);
-        if (clientInfo == null) {
-            throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "client_id:" + clientID.getValue());
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Processing TokenRequest for " + clientID.getValue());
-        ClientID expectedClientId = clientInfo.getID();
-
-        // ----------------------------------------------
-        // Authenticate Client
-        // ----------------------------------------------
-        authenticateClient(clientInfo, tokenRequest);
-
-        // ----------------------------------------------
-        // Verify that the Client support the Authorization Grant
-        // ----------------------------------------------
-        AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
-        if (grant == null)
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:n/a");
-        if (!clientInfo.getOIDCMetadata().getGrantTypes().contains(grant.getType())) {
             if (logger.isDebugEnabled())
-                logger.debug("Invalid Authorization Grant ["+tokenRequest.getAuthorizationGrant()+"] for Client " + expectedClientId.getValue());
+                logger.debug("Processing TokenRequest for " + clientID.getValue());
 
-            throw new OpenIDConnectProviderException(OAuth2Error.UNSUPPORTED_GRANT_TYPE, "grant_type:" + grant.getType().getValue());
+            OIDCClientInformation clientInfo = resolveClient(clientID);
+            if (clientInfo == null) {
+                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "client_id:" + clientID.getValue());
+            }
+
+            if (logger.isDebugEnabled())
+                logger.debug("Processing TokenRequest for " + clientID.getValue());
+            ClientID expectedClientId = clientInfo.getID();
+
+            // ----------------------------------------------
+            // Authenticate Client
+            // ----------------------------------------------
+            authenticateClient(state, clientInfo, tokenRequest);
+
+            // ----------------------------------------------
+            // Verify that the Client support the Authorization Grant
+            // ----------------------------------------------
+            AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
+            if (grant == null)
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "grant_type:n/a");
+            if (!clientInfo.getOIDCMetadata().getGrantTypes().contains(grant.getType())) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Invalid Authorization Grant [" + tokenRequest.getAuthorizationGrant() + "] for Client " + expectedClientId.getValue());
+
+                throw new OpenIDConnectProviderException(OAuth2Error.UNSUPPORTED_GRANT_TYPE, "grant_type:" + grant.getType().getValue());
+            }
+
+
+            return clientInfo;
+        } finally {
+            // Code cannot be used again!
+            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+            MediationState state = in.getMessage().getState();
+            state.getLocalState().removeAlternativeId("code");
+            state.removeLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge");
+            state.removeLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method");
         }
-
-
-        return clientInfo;
 
     }
 
-    protected void authenticateClient(ClientInformation clientInfo, TokenRequest tokenRequest) throws OpenIDConnectProviderException {
+    protected void authenticateClient(MediationState state, ClientInformation clientInfo, TokenRequest tokenRequest) throws OpenIDConnectProviderException {
 
         try {
 
@@ -665,6 +681,56 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             ClientAuthenticationMethod enabledAuthnMethod = clientInfo.getMetadata().getTokenEndpointAuthMethod();
             ClientAuthentication clientAuthn = tokenRequest.getClientAuthentication();
+            AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
+            // No authn method means code challenge!
+            if (authzGrant instanceof AuthorizationCodeGrant && enabledAuthnMethod == null) {
+
+                AuthorizationCodeGrant authzCodeGrant = (AuthorizationCodeGrant) authzGrant;
+                if (authzCodeGrant.getCodeVerifier() != null) {
+
+                    CodeVerifier cv = authzCodeGrant.getCodeVerifier();
+                    if (cv != null) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Received code_verifier " + cv.getValue());
+
+                        String expectedCodeChallengeStr = (String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge");
+
+                        CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.getDefault();
+                        CodeChallenge expectedCodeChallenge = null;
+
+                        if (expectedCodeChallengeStr != null) {
+                            try {
+                                expectedCodeChallenge = CodeChallenge.parse(expectedCodeChallengeStr);
+                            } catch (ParseException e) {
+                                logger.error("Invalid code challenge " + expectedCodeChallengeStr);
+                                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_challenge");
+                            }
+
+                            if (state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method") != null) {
+                                codeChallengeMethod = CodeChallengeMethod.parse((String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method"));
+                            }
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Attempting code_challenge authentication ["+codeChallengeMethod.getValue()+"] " + codeChallengeMethod.getValue());
+
+                            CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, cv);
+                            if (codeChallenge.equals(expectedCodeChallenge)) {
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Authenticated client with code_challenge " + expectedCodeChallenge.getValue());
+                                return;
+                            } else {
+
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Failed client authentication, expeted code_challenge " + expectedCodeChallenge.getValue());
+
+                                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
+
+                            }
+                        }
+                    }
+                }
+            }
 
             if (enabledAuthnMethod == null) {
                 if (logger.isDebugEnabled())
@@ -672,8 +738,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 return;
             }
 
-            if (!clientAuthn.getMethod().equals(enabledAuthnMethod)) {
-                logger.error("The authentiation method used by the client is not enabled: " + clientAuthn.getMethod());
+            if (clientAuthn.getMethod() == null || !clientAuthn.getMethod().equals(enabledAuthnMethod)) {
+                logger.error("The authentication method used by the client is not enabled: " + clientAuthn.getMethod());
                 throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, clientAuthn.getMethod().getValue());
             }
 

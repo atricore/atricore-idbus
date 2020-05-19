@@ -21,9 +21,13 @@
 
 package org.atricore.idbus.kernel.main.federation;
 
+import org.atricore.idbus.kernel.main.store.SimpleUserKey;
+import org.atricore.idbus.kernel.main.store.UserKey;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.security.auth.Subject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -41,15 +45,23 @@ public abstract class AbstractAccountLink implements AccountLink {
 
     private boolean enabled;
     private boolean deleted;
-    
-    
+    private Map<String, String> context;
+
     protected AbstractAccountLink(){}
 
-    protected AbstractAccountLink(Subject idpSubject, String localAccountNameIdentifier, String format) {
+    protected AbstractAccountLink(Subject idpSubject, String localAccountNameIdentifier, String format,
+                                  Map<String, String> context) {
         this.id = new UUIDGenerator().generateId();
         this.idpSubject = idpSubject;
         this.localAccountNameIdentifier = localAccountNameIdentifier;
         this.localAccountNameFormat = format;
+        this.context = context == null ? new HashMap<String, String>() : context;
+
+    }
+
+    @Override
+    public UserKey getUserKey() {
+        return new SimpleUserKey(localAccountNameIdentifier);
     }
 
     public String getId() {
@@ -95,6 +107,10 @@ public abstract class AbstractAccountLink implements AccountLink {
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
+
+	public String getContextProperty(String key) {
+        return context.get(key);
+    }
 
 
     @Override

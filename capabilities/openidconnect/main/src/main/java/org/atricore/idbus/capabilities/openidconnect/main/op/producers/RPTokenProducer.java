@@ -16,6 +16,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectBPMedi
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediator;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -66,12 +67,27 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         if (authnCtx == null)
             authnCtx = new OpenIDConnectAuthnContext();
 
-        // TODO : Use localhost actually!
+        // Use localhost actually!
+
         EndpointDescriptor tokenEndpoint = lookupTokenEndpoint(authnCtx);
 
+        // Use localhost actually!
+        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
+        String targetBaseUrl = mediator.getKernelConfigCtx().getProperty("binding.http.localTargetBaseUrl", "http://localhost:8081");
+
+        // Build token URI
+        URI tokenUri = new URI(tokenEndpoint.getLocation());
+        String internalTokenEndpoint = targetBaseUrl + tokenUri.getPath();
+
         // Create a new TOKEN request w/new IDP TOKEN ENDPOINT
-        TokenRequest proxyTokenRequest = new TokenRequest(new URI(tokenEndpoint.getLocation()),
+        TokenRequest proxyTokenRequest = null;
+
+        if (tokenRequest.getClientAuthentication() != null)
+            proxyTokenRequest = new TokenRequest(new URI(internalTokenEndpoint),
                 tokenRequest.getClientAuthentication(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
+        else
+            proxyTokenRequest = new TokenRequest(new URI(internalTokenEndpoint),
+                    tokenRequest.getClientID(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
 
         // Send request/process response
         // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
