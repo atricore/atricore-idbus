@@ -48,7 +48,7 @@ public class RPUserInfoProducer extends AbstractOpenIDProducer {
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        // TODO : Use localhost actually!
+        // Use localhost actually!
         EndpointDescriptor userInfoEndpoint = lookupUserInfoEndpoint(authnCtx);
 
         // Use localhost actually!
@@ -64,7 +64,6 @@ public class RPUserInfoProducer extends AbstractOpenIDProducer {
         UserInfoRequest proxyUserInfoRequest = new UserInfoRequest(new URI(internalUserInfoEndpoint), (BearerAccessToken) userInfoRequest.getAccessToken());
 
         // Send request/process response
-        // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
         HTTPResponse proxyResponse = proxyUserInfoRequest.toHTTPRequest().send();
 
         UserInfoResponse proxyUserInfoResponse = UserInfoResponse.parse(proxyResponse);
