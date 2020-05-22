@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.oauth2.sdk.TokenRequest;
@@ -17,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectOPMediator;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -64,7 +66,6 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
             return;
         }
 
-
         AccessToken at = authnCtx.getTokens().getAccessToken();
         if (at == null || !at.getValue().equals(userInfoRequest.getAccessToken().getValue())) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);
@@ -79,8 +80,8 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
             return;
         }
 
-        long lifetime = authnCtx.getTokens().getAccessToken().getLifetime();
         // TODO : Validate lifetime
+        long lifetime = authnCtx.getTokens().getAccessToken().getLifetime();
 
         JWT idToken = authnCtx.getTokens().toOIDCTokens().getIDToken();
         JWTClaimsSet claims = idToken.getJWTClaimsSet();

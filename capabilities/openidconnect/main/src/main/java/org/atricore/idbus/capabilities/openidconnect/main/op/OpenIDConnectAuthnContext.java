@@ -40,11 +40,10 @@ public class OpenIDConnectAuthnContext implements Serializable {
     private transient LogoutRequest logoutRequest;
     private Map<String, List<String>> logoutRequestAsParams;
 
-
     // Current emitted Authorization code
     private AuthorizationCode authorizationCode;
 
-    private long authorizationCodeNotOnOrAfter;
+    private long accessTokenNotOnOrAfter;
 
     // Selected IDP Alias
     private String idpAlias;
@@ -82,12 +81,12 @@ public class OpenIDConnectAuthnContext implements Serializable {
         this.authorizationCode = authorizationCode;
     }
 
-    public long getAuthorizationCodeNotOnOrAfter() {
-        return authorizationCodeNotOnOrAfter;
+    public long getAccessTokenNotOnOrAfter() {
+        return accessTokenNotOnOrAfter;
     }
 
-    public void setAuthorizationCodeNotOnOrAfter(long authorizationCodeNotOnOrAfter) {
-        this.authorizationCodeNotOnOrAfter = authorizationCodeNotOnOrAfter;
+    public void setAccessTokenNotOnOrAfter(long accessTokenNotOnOrAfter) {
+        this.accessTokenNotOnOrAfter = accessTokenNotOnOrAfter;
     }
 
     public AuthenticationRequest getAuthnRequest() {

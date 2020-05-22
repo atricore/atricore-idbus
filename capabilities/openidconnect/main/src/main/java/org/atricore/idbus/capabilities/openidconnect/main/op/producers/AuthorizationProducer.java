@@ -199,19 +199,23 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
 
         // Authz Grant
         CodeChallengeMethod ccm = authnReq.getCodeChallengeMethod();
-        boolean ccmSupported = true; // TODO :
-        if (idpMetadata.getCodeChallengeMethods() != null) {
-            for (CodeChallengeMethod supportedMethod : idpMetadata.getCodeChallengeMethods()) {
-                if (ccm.equals(supportedMethod)) {
-                    ccmSupported = true;
-                    break;
+        if (ccm != null) {
+
+            // We received a code challenge method in the request.
+            boolean ccmSupported = false;
+            if (idpMetadata.getCodeChallengeMethods() != null) {
+                for (CodeChallengeMethod supportedMethod : idpMetadata.getCodeChallengeMethods()) {
+                    if (ccm.equals(supportedMethod)) {
+                        ccmSupported = true;
+                        break;
+                    }
                 }
-
             }
-        }
 
-        if (!ccmSupported)
-            throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED.setURI(authnReq.getRedirectionURI()), "code_challenge_method not supported " + ccm);
+            if (!ccmSupported)
+                throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED.setURI(authnReq.getRedirectionURI()), "code_challenge_method not supported " + ccm);
+
+        }
 
         // ClientID
         ClientID receivedClientID = authnReq.getClientID();

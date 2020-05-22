@@ -60,42 +60,7 @@
 
         URI tokenEndpoint = op.getTokenEndpointURI();
 
-        // Client Authentication (client_secret_jwt)
-        ClientAuthentication clientAuth = null;
-        {
 
-            byte[] n = new byte[64];
-            SecureRandom secureRandom = new SecureRandom();
-            secureRandom.nextBytes(n);
-            String jid = Base64.encodeBase64URLSafeString(n);
-
-            JWSSigner signer = new MACSigner(secretKey.getEncoded());
-
-            // Prepare JWT with claims set
-            // Prepare JWT with claims set
-            JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
-            JWTClaimsSet claimsSet = builder.subject(props.getProperty("oidc.client.id")).
-                    issuer(props.getProperty("oidc.client.id")).
-                    issueTime(new Date()).
-                    expirationTime(new Date(System.currentTimeMillis() + (5L * 60L * 1000L))).
-                    jwtID(jid).audience(Arrays.asList(props.getProperty("oidc.client.audience"))).build();
-
-            SignedJWT clientAssertion = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
-            clientAssertion.sign(signer);
-
-            clientAuth = new ClientSecretJWT(clientAssertion);
-        }
-
-        // Client Authentication (client_secret_basic)
-        {
-
-            byte[] n = new byte[64];
-
-            ClientID clientId = new ClientID(props.getProperty("oidc.client.id"));
-            Secret secret = new Secret(props.getProperty("oidc.client.secret"));
-
-            clientAuth = new ClientSecretBasic(clientId, secret);
-        }
 
 
         // Authorization Grant
@@ -105,7 +70,8 @@
         // Scopes
         Scope scope = Scope.parse(props.getProperty("oidc.client.scopes"));
 
-        TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, authzGrant, scope);
+        ClientID clientId = new ClientID(props.getProperty("oidc.client.id"));
+        TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientId, authzGrant, scope, null, refreshToken, null);
 
         try {
             TokenResponse tokenRespose = OIDCTokenResponse.parse(tokenRequest.toHTTPRequest().send());

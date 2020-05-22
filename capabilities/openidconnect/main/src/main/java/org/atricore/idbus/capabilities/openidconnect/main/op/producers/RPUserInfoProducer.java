@@ -63,6 +63,7 @@ public class RPUserInfoProducer extends AbstractOpenIDProducer {
         // Create a new USERINFO request w/new IDP TOKEN USERINFO
         UserInfoRequest proxyUserInfoRequest = new UserInfoRequest(new URI(internalUserInfoEndpoint), (BearerAccessToken) userInfoRequest.getAccessToken());
 
+
         // Send request/process response
         HTTPResponse proxyResponse = proxyUserInfoRequest.toHTTPRequest().send();
 

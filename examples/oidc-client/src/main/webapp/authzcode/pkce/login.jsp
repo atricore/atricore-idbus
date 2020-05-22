@@ -13,6 +13,8 @@
 <%@ page import="java.util.UUID" %>
 <%@ page import="java.util.Random" %>
 <%@ page import="java.nio.charset.Charset" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -23,10 +25,12 @@
         Properties props = new Properties();
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
+        // This is the OpenID Connect Identity Provider ID (in JOSSO is the base URI for the OP services)
+        Issuer issuer = new Issuer(props.getProperty("oidc.idp.id"));
+        OIDCProviderMetadata op = OIDCProviderMetadata.resolve(issuer);
+        URI authnEndpoint = op.getAuthorizationEndpointURI();
 
-        URI authnEndpoint = new URI(props.getProperty("oidc.authn.endpoint"));
-        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUriBase") + request.getContextPath() + "/authzcode/pkce/process.jsp");
-
+        URI redirectUri = new URI(props.getProperty("oidc.client.redirectUriBase") + request.getContextPath() + "/authzcode/pkce/process.jsp");
         Scope scope = Scope.parse(props.getProperty("oidc.client.scopes"));
 
         ResponseType rt = new ResponseType();
@@ -50,6 +54,8 @@
 
         //} catch (Exception e) {
         //error = e.getClass().getName();
+    } catch (Exception e) {
+        error = e.getMessage() + " ["+e.getClass()+"]";
     } finally {
         //
     }
@@ -59,7 +65,7 @@
 
 <html>
 <head>
-    <title>ODIC Client Test - Authorization code flow</title>
+    <title>ODIC Client Test - Login</title>
 </head>
 
 <h3>Errors:</h3>
