@@ -1,15 +1,19 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
-import org.apache.commons.io.IOUtils;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Servlet filter that renders a UI while the HTTP request is being processed.
@@ -18,14 +22,18 @@ public class ProcessingUIServletFilter implements Filter {
 
     private static final Log logger = LogFactory.getLog(ProcessingUIServletFilter.class);
 
+    public static final String DEFAULT_BRANDING = "josso25";
+
     private ConfigurationContext kernelConfig;
     private ServletContext servletContext;
     private InternalProcessingPolicy internalProcessingPolicy;
+    private VelocityEngine velocityEngine;
 
     private boolean processingUIenabled;
     private boolean followRedirects;
 
-    private String pageTemplate;
+
+    private Map<String, String> pageTemplates = new HashMap<String, String>();
 
     public ProcessingUIServletFilter() {
     }
@@ -37,7 +45,7 @@ public class ProcessingUIServletFilter implements Filter {
 
         try {
             servletContext = filterConfig.getServletContext();
-            prepareUiPageTemplate();
+            // TODO : pre-cache already existing brands: prepareUiPageTemplates();
 
             if (kernelConfig == null) {
                 // Lazy load kernel config
@@ -55,23 +63,16 @@ public class ProcessingUIServletFilter implements Filter {
                 followRedirects = Boolean.parseBoolean(kernelConfig.getProperty("binding.http.followRedirects", "false"));
                 logger.info("Processing UI Filter initialized: followRedirects=" + followRedirects);
             }
+
+            velocityEngine = HttpUtils.getVelocityEngine();
+
         } catch (Exception e) {
             logger.error("Processing UI Filter disabled due to error: " + e.getMessage(), e);
             this.processingUIenabled = false;
         }
     }
 
-    private void prepareUiPageTemplate() throws ServletException {
-        try {
-            String html = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/processing-ui/josso-25/page.html"));
-            String jquery = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/processing-ui/jquery.js"));
 
-            pageTemplate = String.format(html, jquery);
-        } catch (IOException e) {
-            logger.error("Cannot load resource : " + e.getMessage(), e);
-            throw new ServletException("Couldn't generate HTML page for Processing UI");
-        }
-    }
 
     /**
      * This will render an HTTP page that will actually trigger the processing of the original request.
@@ -115,14 +116,59 @@ public class ProcessingUIServletFilter implements Filter {
             chain.doFilter(req, res);
         } else {
             logger.trace("Request must be processed by the UI : " + requestUrl);
-
             String page = prepareUiPage(hReq);
             hRes.getWriter().print(page);
         }
     }
 
-    private String prepareUiPage(HttpServletRequest request) {
-        return pageTemplate.replace("#METHOD#", request.getMethod());
+    private String prepareUiPage(HttpServletRequest request) throws ServletException {
+
+        // This should be the servlet context and the first level in the path (appliance ID)
+        String pathInfo = request.getPathInfo();
+        WebBranding branding = HttpUtils.resolveWebBranding(servletContext, request);
+
+        String pageContent = pageTemplates.get(branding.getWebBrandingId());
+        if (pageContent == null)  {
+            pageContent = prepareUiPageTemplate(branding);
+            pageTemplates.put(branding.getWebBrandingId(), pageContent);
+        }
+
+        return pageContent;
+    }
+
+    protected String prepareUiPageTemplate(WebBranding branding) throws ServletException {
+        try {
+
+            String pageTemplate = "/WEB-INF/processing-ui/" + branding.getWebBrandingId() + "/page.html";
+
+            if (logger.isDebugEnabled())
+                logger.debug("Resolving template [" + pageTemplate + "]");
+
+            InputStream pageIs = servletContext.getResourceAsStream(pageTemplate);
+            if (pageIs == null)
+                pageIs = servletContext.getResourceAsStream("/WEB-INF/processing-ui/" + DEFAULT_BRANDING + "/page.html");
+
+            Reader in = new InputStreamReader(pageIs);
+
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            Writer out = new OutputStreamWriter(os);
+
+            VelocityContext veCtx = new VelocityContext();
+            // TODO : Variables : veCtx.put("")
+
+            if (velocityEngine.evaluate(veCtx, out, branding.getWebBrandingId(), in)) {
+                out.flush();
+                return new String(os.toByteArray());
+            }
+
+            logger.error("No page found for branding: " + branding.getWebBrandingId());
+
+            return null;
+
+        } catch (IOException e) {
+            logger.error("Couldn't generate HTML page for Processing UI: " + e.getMessage(), e);
+            throw new ServletException("Couldn't generate HTML page for Processing UI");
+        }
     }
 
     @Override
