@@ -1,4 +1,4 @@
-package org.atricore.idbus.kernel.main.mediation.camel.component.http;
+package org.atricore.idbus.kernel.main.mediation.camel.component.http.ui;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -6,8 +6,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.HttpUtils;
 import org.mortbay.jetty.Request;
-import org.mortbay.util.MultiMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -16,11 +16,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URI;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Serlvet to handle HTTP error status, like 404 or 500. It will render a page based on the status value.
+ */
 public class HttpErrServlet  extends HttpServlet {
 
     private static final Log logger = LogFactory.getLog(HttpErrServlet.class);

@@ -1,10 +1,14 @@
-package org.atricore.idbus.kernel.main.mediation.camel.component.http;
+package org.atricore.idbus.kernel.main.mediation.camel.component.http.ui;
 
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.HttpUtils;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.InternalProcessingPolicy;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -12,11 +16,14 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Servlet filter that renders a UI while the HTTP request is being processed.
+ * Servlet filter that renders a UI while the HTTP request is being processed. This improves user experience.
+ *
+ *
  */
 public class ProcessingUIServletFilter implements Filter {
 
@@ -34,6 +41,7 @@ public class ProcessingUIServletFilter implements Filter {
 
 
     private Map<String, String> pageTemplates = new HashMap<String, String>();
+    private Map<String, String> jProc = new HashMap<String, String>();
 
     public ProcessingUIServletFilter() {
     }
@@ -115,13 +123,42 @@ public class ProcessingUIServletFilter implements Filter {
 
             chain.doFilter(req, res);
         } else {
+
             logger.trace("Request must be processed by the UI : " + requestUrl);
-            String page = prepareUiPage(hReq);
-            hRes.getWriter().print(page);
+
+            String method = hReq.getMethod().toUpperCase();
+
+            // We need to embed our JS code, and dynamically replace the #METHOD# reference.
+            String ajaxScript = jProc.get(method);
+            if (ajaxScript == null) {
+                ajaxScript = IOUtils.toString(servletContext.getResourceAsStream("/WEB-INF/processing-ui/jproc.js"));
+                ajaxScript = ajaxScript.replace("#METHOD#", method);
+                jProc.put(method, ajaxScript);
+            }
+
+
+            VelocityContext veCtx = new VelocityContext();
+
+            // TODO : Take properties from branding!
+            WebBranding branding = HttpUtils.resolveWebBranding(servletContext, hReq);
+
+            veCtx.put("HTTP_METHOD", hReq.getMethod().toUpperCase());
+            veCtx.put("MAIN_FOOTER",
+                    "Copyright © 2007 - " +
+                            Calendar.getInstance().get(Calendar.YEAR) +
+                            " Atricore, Inc. - <a href=\"http://www.atricore.com/\" target=\"_blank\">www.atricore.com</a>");
+            veCtx.put("MAIN_AJAX_SCRIPT", ajaxScript);
+
+
+
+            Reader in = resolveTemplate(hReq);
+            velocityEngine.evaluate(veCtx, hRes.getWriter(), "processing.html", in);
+
+
         }
     }
 
-    private String prepareUiPage(HttpServletRequest request) throws ServletException {
+    private Reader resolveTemplate(HttpServletRequest request) throws ServletException {
 
         // This should be the servlet context and the first level in the path (appliance ID)
         String pathInfo = request.getPathInfo();
@@ -133,7 +170,7 @@ public class ProcessingUIServletFilter implements Filter {
             pageTemplates.put(branding.getWebBrandingId(), pageContent);
         }
 
-        return pageContent;
+        return new StringReader(pageContent);
     }
 
     protected String prepareUiPageTemplate(WebBranding branding) throws ServletException {

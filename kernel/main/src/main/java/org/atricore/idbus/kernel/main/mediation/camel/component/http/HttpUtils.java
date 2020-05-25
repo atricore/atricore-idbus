@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.ui.WebBranding;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;

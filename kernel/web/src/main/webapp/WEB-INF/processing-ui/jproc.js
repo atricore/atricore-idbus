@@ -38,8 +38,8 @@ function onError(jqXHR, textStatus, errorThrown){
 }
 
 $(window).on('load', function() {
-    const METHOD = '#METHOD#';
 
+    const METHOD = '#METHOD#';
     lastLocation = window.location.pathname + window.location.search;
 
     $.ajax({

@@ -4,9 +4,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd http://www.ops4j.org/schema/wicket http://www.ops4j.org/schema/wicket/wicket.xsd ">
 
-    <bean id="josso-25-builtin-branding" class="org.atricore.idbus.capabilities.sso.ui.WebBranding">
-        <property name="id" value="josso-25-builtin-branding"/>
-        <property name="skin" value="josso-25"/>
+    <bean id="josso25-builtin-branding" class="org.atricore.idbus.capabilities.sso.ui.WebBranding">
+        <property name="id" value="josso25-branding"/>
+        <property name="skin" value="josso25"/>
+        <property name="allowedResourcePatterns">
+            <set>
+                <value>+*.eot</value>
+                <value>+*.ttf</value>
+                <value>+*.woff</value>
+                <value>+*.woff2</value>
+            </set>
+        </property>
         <property name="resources">
 
             <!--

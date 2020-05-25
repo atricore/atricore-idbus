@@ -1,7 +1,8 @@
-package org.atricore.idbus.kernel.main.mediation.camel.component.http;
+package org.atricore.idbus.kernel.main.mediation.camel.component.http.ui;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.OsgiIDBusServlet2;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -13,6 +14,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * Servlet used to resolve resources needed by UI pages.
+ */
 public class ResourceUIServlet extends HttpServlet {
 
     private static final Log logger = LogFactory.getLog(OsgiIDBusServlet2.class);
