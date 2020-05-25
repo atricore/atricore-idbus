@@ -587,5 +587,10 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     }
 
 
-
+    @Override
+    public String getMimeType(String fileName) {
+        if (fileName.endsWith(".svg"))
+            return "image/svg+xml";
+        return super.getMimeType(fileName);
+    }
 }

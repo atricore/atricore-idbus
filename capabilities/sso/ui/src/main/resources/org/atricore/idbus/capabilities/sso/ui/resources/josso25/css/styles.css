@@ -466,6 +466,11 @@ table.table--zebra tr:nth-child(even) {
     cursor: pointer;
 }
 
+/* Remove border from span elements (used by wikid) */
+span.feedbackPanelERROR {
+    border: none;
+}
+
 .feedbackPanelERROR,
 .feedbackPanelSUCCESS,
 .feedbackPanelWARNING,

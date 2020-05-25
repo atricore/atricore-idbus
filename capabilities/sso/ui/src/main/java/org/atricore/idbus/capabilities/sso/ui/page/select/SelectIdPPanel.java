@@ -2,6 +2,8 @@ package org.atricore.idbus.capabilities.sso.ui.page.select;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -14,6 +16,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.model.IdPModel;
 
 import java.util.*;
@@ -41,23 +44,31 @@ public class SelectIdPPanel extends Panel {
         List<IColumn<IdPModel, String>> columns = new ArrayList<IColumn<IdPModel, String>>();
 
         // First column contains the IdP logo
-        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>(getString("idpTypeColumn", null, " ")), "displayName") {
+        columns.add(
+                new PropertyColumn<IdPModel, String>(
+                        new Model<String>(getString("idpTypeColumn", null, " ")), "displayName") {
 
-            @Override
-            public String getCssClass() {
-                return "gt-avatar";
-            }
+                    @Override
+                    public String getCssClass() {
+                        BaseWebApplication app = (BaseWebApplication) getApplication();
+                        if (app.getBranding() != null && app.getBranding().getId().equals("josso25-branding")) {
+                            return "pr-0";
+                        }
 
-            @Override
-            public void populateItem(Item<ICellPopulator<IdPModel>> cellItem, String componentId,
-                                     IModel<IdPModel> model) {
+                        return "gt-avatar";
+                    }
 
-                cellItem.add(new IdPLogoPanel(componentId, model, mediator));
-            }
-        }
+                    @Override
+                    public void populateItem(Item<ICellPopulator<IdPModel>> cellItem, String componentId,
+                                             IModel<IdPModel> model) {
+
+                        cellItem.add(new IdPLogoPanel(componentId, model, mediator));
+
+                    }
+                }
         );
 
-        // Second column contains IdP description and sign-in link
+        // Second column contains IdP description and sign-in links
         columns.add(new PropertyColumn<IdPModel, String>(new Model<String>(getString("idpDetailsColumn", null, " ")), "displayName") {
 
             @Override
@@ -69,21 +80,7 @@ public class SelectIdPPanel extends Panel {
 
         });
 
-
-        // Third column contains IdP additional information (i.e. ID and Type)
-        columns.add(new PropertyColumn<IdPModel, String>(new Model<String>(getString("idpInformationColumn", null, " ")), "displayName") {
-            @Override
-            public void populateItem(Item<ICellPopulator<IdPModel>> cellItem, String componentId,
-                                     IModel<IdPModel> model) {
-
-                cellItem.add(new IdPInformationPanel(componentId, model, mediator));
-            }
-
-        });
-
         DataTable dataTable = new DefaultDataTable<IdPModel, String>("ssoIdPs", columns, new IdPDataProvider(mediator.getIdpModels()), 8);
-
-        //dataTable.addBottomToolbar(new ExportToolbar(dataTable).addDataExporter(new CSVDataExporter()));
         add(dataTable);
 
     }

@@ -44,42 +44,42 @@
                 <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
                     <property name="id" value="SAML2IDPLocal"/>
                     <property name="type" value="IMAGE"/>
-                    <property name="path" value="josso25/img/logo/ipi-josso.svg"/>
+                    <property name="path" value="josso25/img/icons/ipi-josso.svg"/>
                     <property name="shared" value="true"/>
                 </bean>
 
                 <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
                     <property name="id" value="SAML2IDPRemote"/>
                     <property name="type" value="IMAGE"/>
-                    <property name="path" value="josso25/img/logo/ip-saml.svg"/>
+                    <property name="path" value="josso25/img/icons/ip-saml.svg"/>
                     <property name="shared" value="true"/>
                 </bean>
 
                 <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
                     <property name="id" value="GoogleIDP"/>
                     <property name="type" value="IMAGE"/>
-                    <property name="path" value="josso25/img/logo/ip-google.svg"/>
+                    <property name="path" value="josso25/img/icons/ip-google.svg"/>
                     <property name="shared" value="true"/>
                 </bean>
 
                 <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
                     <property name="id" value="FacebookIDPRemote"/>
                     <property name="type" value="IMAGE"/>
-                    <property name="path" value="josso25/img/logo/ip-facebook.svg"/>
+                    <property name="path" value="josso25/img/icons/ip-facebook.svg"/>
                     <property name="shared" value="true"/>
                 </bean>
 
                 <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
                     <property name="id" value="LinkedInIDP"/>
                     <property name="type" value="IMAGE"/>
-                    <property name="path" value="josso25/img/logo/ip-linkedin.svg"/>
+                    <property name="path" value="josso25/img/icons/ip-linkedin.svg"/>
                     <property name="shared" value="true"/>
                 </bean>
 
                 <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
                     <property name="id" value="TwitterIDP"/>
                     <property name="type" value="IMAGE"/>
-                    <property name="path" value="josso25/img/logo/ip-twitter.svg"/>
+                    <property name="path" value="josso25/img/icons/ip-twitter.svg"/>
                     <property name="shared" value="true"/>
                 </bean>
 

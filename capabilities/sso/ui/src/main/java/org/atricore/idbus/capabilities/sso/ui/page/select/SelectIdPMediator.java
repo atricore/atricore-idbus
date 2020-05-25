@@ -257,7 +257,7 @@ public class SelectIdPMediator implements Serializable {
 
 
                             } else {
-                                logger.error("Uknown Identity Provider type " + p.getClass().getName());
+                                logger.error("Unknown Identity Provider type " + p.getClass().getName());
                                 continue;
                             }
 
