@@ -626,56 +626,85 @@ public class TokenProducer extends AbstractOpenIDProducer {
             ClientAuthenticationMethod enabledAuthnMethod = clientInfo.getMetadata().getTokenEndpointAuthMethod();
             ClientAuthentication clientAuthn = tokenRequest.getClientAuthentication();
             AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
+            CodeVerifier cv = null;
+
             // No authn method means code challenge!
             if (authzGrant instanceof AuthorizationCodeGrant && enabledAuthnMethod == null) {
 
                 AuthorizationCodeGrant authzCodeGrant = (AuthorizationCodeGrant) authzGrant;
-                if (authzCodeGrant.getCodeVerifier() != null) {
-
-                    CodeVerifier cv = authzCodeGrant.getCodeVerifier();
-                    if (cv != null) {
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Received code_verifier " + cv.getValue());
-
-                        String expectedCodeChallengeStr = (String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge");
-
-                        CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.getDefault();
-                        CodeChallenge expectedCodeChallenge = null;
-
-                        if (expectedCodeChallengeStr != null) {
-                            try {
-                                expectedCodeChallenge = CodeChallenge.parse(expectedCodeChallengeStr);
-                            } catch (ParseException e) {
-                                logger.error("Invalid code challenge " + expectedCodeChallengeStr);
-                                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_challenge");
-                            }
-
-                            if (state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method") != null) {
-                                codeChallengeMethod = CodeChallengeMethod.parse((String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method"));
-                            }
-
-                            if (logger.isTraceEnabled())
-                                logger.trace("Attempting code_challenge authentication ["+codeChallengeMethod.getValue()+"] " + codeChallengeMethod.getValue());
-
-                            CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, cv);
-                            if (codeChallenge.equals(expectedCodeChallenge)) {
-                                if (logger.isTraceEnabled())
-                                    logger.trace("Authenticated client with code_challenge " + expectedCodeChallenge.getValue());
-                                return;
-                            } else {
-
-                                if (logger.isTraceEnabled())
-                                    logger.trace("Failed client authentication, expeted code_challenge " + expectedCodeChallenge.getValue());
-
-                                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
-
-                            }
-                        }
-                    }
+                cv = authzCodeGrant.getCodeVerifier();
+                if (cv == null) {
+                    logger.trace("No code_verifier received, and client authentication method is set to NONE");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
                 }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Received code_verifier " + cv.getValue());
+
+                String expectedCodeChallengeStr = (String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge");
+
+                CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.getDefault();
+                if (expectedCodeChallengeStr == null) {
+                    logger.trace("No code_verifier received, and client authentication method is set to NONE");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_challenge_not_found");
+                }
+
+                CodeChallenge expectedCodeChallenge = null;
+                try {
+                    expectedCodeChallenge = CodeChallenge.parse(expectedCodeChallengeStr);
+                } catch (ParseException e) {
+                    logger.error("Invalid code challenge " + expectedCodeChallengeStr);
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_code_challenge");
+                }
+
+                if (state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method") != null) {
+                    codeChallengeMethod = CodeChallengeMethod.parse((String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method"));
+                }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Attempting code_challenge authentication ["+codeChallengeMethod.getValue()+"] " + codeChallengeMethod.getValue());
+
+                CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, cv);
+                if (codeChallenge.equals(expectedCodeChallenge)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Authenticated client with code_challenge " + expectedCodeChallenge.getValue());
+                    return;
+                }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Failed client authentication, expected/received code_challenge " + expectedCodeChallenge.getValue() + "/" + codeChallenge.getValue());
+
+                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
+
+            } else if (authzGrant instanceof RefreshTokenGrant) {
+                // This is a token refresh request
+
+                // Validate the received refresh token
+                RefreshToken rt = tokenRequest.getExistingGrant();
+
+                if (rt == null || rt.getValue() == null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Failed client authentication, previous refresh_token ");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
+                }
+
+                OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+
+                if (authnCtx == null || authnCtx.getTokens() == null || authnCtx.getTokens().getRefreshToken() == null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Failed client authentication, previous refresh_token ");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
+                }
+
+                if (!rt.getValue().equals(authnCtx.getTokens().getRefreshToken().getValue())) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Failed client authentication, previous refresh_token ");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_refresh_token");
+                }
+
             }
 
+            // No authentication method MUST use CODE CHALLENGE/VERIFIER or REFRESH_TOKEN grant!
             if (enabledAuthnMethod == null) {
                 if (logger.isDebugEnabled())
                     logger.debug("Client Authentication not required for " + clientInfo.getID().getValue());
@@ -869,15 +898,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     protected TokenResponse buildAccessTokenResponse(OIDCClientInformation clientInfo, OIDCTokens tokens) {
         return new OIDCTokenResponse(tokens);
-    }
-
-    protected void validateRequest(TokenRequest tokenRequest, OpenIDConnectAuthnContext authnCtx) throws OpenIDConnectException {
-        // TODO : Validate received code w/authnCtx authz code
-
-        // TODO : Validate grant_type
-
-        // TODO : Validate request_uri (wiht the one requested, not configured!)
-
     }
 
     /**

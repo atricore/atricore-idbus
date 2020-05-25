@@ -56,8 +56,6 @@ public class UserInfoRequestRestfulBinding extends AbstractOpenIDHttpBinding {
                 throw new IllegalArgumentException("Unknown message, no valid HTTP Method header found!");
             }
 
-
-
             // Build request object
             java.net.URI uri = null;
 

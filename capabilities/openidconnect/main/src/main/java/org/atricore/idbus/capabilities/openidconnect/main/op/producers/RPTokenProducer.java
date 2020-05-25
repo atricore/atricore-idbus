@@ -79,11 +79,26 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         TokenRequest proxyTokenRequest = null;
 
         if (tokenRequest.getClientAuthentication() != null)
-            proxyTokenRequest = new TokenRequest(new URI(internalTokenEndpoint),
-                tokenRequest.getClientAuthentication(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
+            proxyTokenRequest = new TokenRequest(
+                    new URI(internalTokenEndpoint),
+                    tokenRequest.getClientAuthentication(),
+                    tokenRequest.getAuthorizationGrant(),
+                    tokenRequest.getScope());
+        else if (tokenRequest.getExistingGrant() != null)
+            proxyTokenRequest = new TokenRequest(
+                    new URI(internalTokenEndpoint),
+                    tokenRequest.getClientID(),
+                    tokenRequest.getAuthorizationGrant(),
+                    tokenRequest.getScope(),
+                    tokenRequest.getResources(),
+                    tokenRequest.getExistingGrant(),
+                    tokenRequest.getCustomParameters());
         else
-            proxyTokenRequest = new TokenRequest(new URI(internalTokenEndpoint),
-                    tokenRequest.getClientID(), tokenRequest.getAuthorizationGrant(), tokenRequest.getScope());
+            proxyTokenRequest = new TokenRequest(
+                    new URI(internalTokenEndpoint),
+                    tokenRequest.getClientID(),
+                    tokenRequest.getAuthorizationGrant(),
+                    tokenRequest.getScope());
 
         // Send request/process response
         // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
@@ -101,7 +116,7 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
             ErrorObject error = err.getErrorObject();
 
             if (logger.isDebugEnabled())
-                logger.error("Error obtaining AccessToken : " + error.getCode() + ". " + error.getDescription());
+                logger.debug("Error obtaining Token : " + error.getCode() + ". " + error.getDescription());
 
         }
 

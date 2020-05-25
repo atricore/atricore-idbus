@@ -7,6 +7,10 @@
 <%@ page import="java.io.InputStream" %>
 <%@ page import="java.net.URI" %>
 <%@ page import="java.util.Properties" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.SubjectType" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -18,8 +22,13 @@
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
 
-        URI authnEndpoint = new URI(props.getProperty("oidc.authn.endpoint"));
-        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUriBase") + request.getContextPath() + "/authzcode/client-secret/process.jsp");
+        // This is the OpenID Connect Identity Provider ID (in JOSSO is the base URI for the OP services)
+        Issuer issuer = new Issuer(props.getProperty("oidc.idp.id"));
+        OIDCProviderMetadata op = OIDCProviderMetadata.resolve(issuer);
+        URI authnEndpoint = op.getAuthorizationEndpointURI();
+
+        // Redirect URI.  Where to redirect after authentication
+        URI redirectUri = new URI(props.getProperty("oidc.client.redirectUriBase") + request.getContextPath() + "/authzcode/client-secret/process.jsp");
 
         Scope scope = Scope.parse(props.getProperty("oidc.client.scopes"));
 
@@ -38,6 +47,8 @@
 
         //} catch (Exception e) {
         //error = e.getClass().getName();
+    } catch (Exception e) {
+        error = e.getMessage() + " ["+e.getClass()+"]";
     } finally {
         //
     }
@@ -47,7 +58,7 @@
 
 <html>
 <head>
-    <title>ODIC Client Test - Authorization code flow</title>
+    <title>ODIC Client Test - Login</title>
 </head>
 
 <h3>Errors:</h3>

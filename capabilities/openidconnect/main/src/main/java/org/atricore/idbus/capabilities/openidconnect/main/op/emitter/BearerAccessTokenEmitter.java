@@ -69,6 +69,7 @@ public class BearerAccessTokenEmitter extends OIDCTokenEmitter {
                 SecurityTokenImpl<AccessToken> st = new SecurityTokenImpl<AccessToken>(at.getValue(),
                         WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE,
                         at);
+                st.setExpiresOn(System.currentTimeMillis() + (timeToLive * 1000L));
 
                 if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
                     // We're issuing an access token for OpenID, and not in the context of another protocol

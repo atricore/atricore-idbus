@@ -6,6 +6,8 @@ import com.nimbusds.oauth2.sdk.auth.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
+import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import net.minidev.json.JSONObject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
@@ -67,8 +69,8 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             ClientID clientID = state.getTransientVariable("client_id") != null ?
                     new ClientID(state.getTransientVariable("client_id")) : null;
 
-            // Client Authentication mechanism: // TODO PKI, etc.
-            // TODO : Verify that the mechanism is enabled for the requesting RP
+            // Client Authentication mechanism:
+
             ClientAuthentication clientAuthn = null;
             CodeVerifier codeVerifier = null;
             if (state.getTransientVariable("client_assertion") != null) {
@@ -89,30 +91,30 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
                 codeVerifier = new CodeVerifier(state.getTransientVariable("code_verifier"));
             }
 
-            if (clientAuthn == null && codeVerifier == null) {
-                logger.error("Client Authentication/Code Verifier is required");
-                throw new RuntimeException(OAuth2Error.UNAUTHORIZED_CLIENT.getCode());
-            }
-
             // Authorization Grant
             // Create map with all transient vars (includes http params).
+
+            String refreshToken = null;
+            Scope scope = null;
+
             Map<String, List<String>> params = new HashMap<String, List<String>>();
             for (String var : state.getTransientVarNames()) {
-
                 List<String> values = new ArrayList<String>();
                 values.add(state.getTransientVariable(var));
                 params.put(var, values);
+                if (var.equals("refresh_token"))
+                    refreshToken = state.getTransientVariable(var);
+                if (var.equals("scope"))
+                    scope = Scope.parse(state.getTransientVariable("scope"));
             }
-            AuthorizationGrant authzGrant = AuthorizationGrant.parse(params);
 
-            // Scope
-            Scope scope = null;
-            if (state.getTransientVariable("scope") != null)
-                scope = Scope.parse(state.getTransientVariable("scope"));
+            AuthorizationGrant authzGrant = AuthorizationGrant.parse(params);
 
             TokenRequest tokenRequest = null;
             if (clientAuthn != null)
                 tokenRequest = new TokenRequest(uri, clientAuthn, authzGrant, scope);
+            else if (refreshToken != null)
+                tokenRequest = new TokenRequest(uri, clientID, authzGrant, scope, null, new RefreshToken(refreshToken), null);
             else
                 tokenRequest = new TokenRequest(uri, clientID, authzGrant, scope);
 
@@ -251,28 +253,38 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             if (exchange.getIn().getHeader("http.requestMethod").equals("POST"))
                 params.putAll(getParameters((InputStream) exchange.getIn().getBody()));
 
-            String code = params.get("code");
-            if (code == null) {
-                if (logger.isDebugEnabled())
-                    logger.debug("No code received, creating new state ");
-                state = createMediationState(exchange, params);
-                return state;
-            }
-
             LocalState lState = null;
             ProviderStateContext ctx = createProviderStateContext();
 
             // Add retries just in case we're in a cluster (they are disabled in non HA setups)
+            String code = params.get("code");
+            String refreshToken = params.get("refresh_token");
+            String accessToken = params.get("access_token");
             int retryCount = getRetryCount();
-            if (retryCount > 0) {
-                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code, retryCount, getRetryDelay());
-            } else {
-                lState = ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code);
-            }
+            if (code != null) {
+                lState = retryCount > 0 ?
+                        ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code, retryCount, getRetryDelay()) :
+                        ctx.retrieve(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code);
+                if (logger.isDebugEnabled())
+                    logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for code " + code);
+            } else if (refreshToken != null) {
+                lState = retryCount > 0 ?
+                        ctx.retrieve(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, refreshToken, retryCount, getRetryDelay()) :
+                        ctx.retrieve(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, refreshToken);
+                if (logger.isDebugEnabled())
+                    logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for refresh_token " + code);
 
-            // Add retries just in case we're in a cluster (they are disabled in non HA setups)
-            if (logger.isDebugEnabled())
-                logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for authz_code " + code);
+            } else if (accessToken != null) {
+                lState = retryCount > 0 ?
+                        ctx.retrieve(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, accessToken, retryCount, getRetryDelay()) :
+                        ctx.retrieve(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, accessToken);
+                if (logger.isDebugEnabled())
+                    logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for access_token " + code);
+
+            } else  {
+                if (logger.isDebugEnabled())
+                    logger.debug("No code/access_token/refresh_token received, creating new state ");
+            }
 
             if (lState == null) {
                 // Create a new local state instance ?

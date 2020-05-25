@@ -36,6 +36,8 @@
 <%@ page import="java.security.cert.CertificateFactory" %>
 <%@ page import="java.io.ByteArrayInputStream" %>
 <%@ page import="sun.security.provider.X509Factory" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -48,7 +50,7 @@
 
     JWT idToken = null;
     JWTClaimsSet claims = null;
-    String sloUrl = null;
+    URI sloUrl = null;
 
     CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");;
 
@@ -59,7 +61,10 @@
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
 
-        sloUrl = props.getProperty("oidc.logout.endpoint");
+        // This is the OpenID Connect Identity Provider ID (in JOSSO is the base URI for the OP services)
+        Issuer issuer = new Issuer(props.getProperty("oidc.idp.id"));
+        OIDCProviderMetadata op = OIDCProviderMetadata.resolve(issuer);
+        sloUrl = op.getEndSessionEndpointURI();
 
         // -------------------------------------------------
         // Load shared secret
@@ -88,14 +93,14 @@
 
         // -------------------------------------------------
         // Token endpoint
-        URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));
+        URI tokenEndpoint = op.getTokenEndpointURI();
 
         // -------------------------------------------------
         // Process response.
 
         // Get authorization code
         AuthorizationCode code = new AuthorizationCode(request.getParameter("code"));
-        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUriBase"));
+        URI redirectUri = new URI(props.getProperty("oidc.client.redirectUriBase"));
 
         // Build an authorization grant using CODE VERIFIER
         AuthorizationGrant authzGrant = new AuthorizationCodeGrant(code, redirectUri, codeVerifier);
@@ -142,6 +147,10 @@
                 signedIdToken.verify(verifier);
                 claims = signedIdToken.getJWTClaimsSet();
 
+                request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
+                request.getSession().setAttribute("refresh_token", refreshToken);
+
+
             }
 
         } catch (ParseException e) {
@@ -175,17 +184,17 @@
 %>
 
 <% if (error == null && exception == null) {
-    out.println("Claims: " + claims + "</br></br>");
+    out.println("<p>Claims: " + claims + "</br></br></p>");
 
-    out.println("IDToken: " + idToken.getParsedString() + "</br>");
-    out.println("AccessToken: " + accessToken + "</br>");
-    //out.println("TokenPair: " + tokenPair + "</br>");
-    out.println("RefreshToken: " + refreshToken + "</br>");
-    out.println("BearerAccessToken: " + bearerAccessToken + "</br>");
+    out.println("<p>IDToken: " + idToken.getParsedString() + "</br></p>");
+    out.println("<p>AccessToken: " + accessToken + "</br></p>");
+
+    out.println("<p>RefreshToken: " + refreshToken + "</br></p>");
+    out.println("<p>BearerAccessToken: " + bearerAccessToken + "</br></p>");
 
     out.println("<br><br>");
 
-    out.println("<a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString() + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a>");
+    out.println("<p><a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString()  + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a></p>");
 }
 %>
 
