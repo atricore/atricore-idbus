@@ -1,6 +1,7 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.oauth2.sdk.OAuth2Error;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
@@ -65,9 +66,9 @@ public class SSOSingleLogoutProducer extends AbstractOpenIDProducer {
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
         if (authnCtx != null) {
-            Tokens t = authnCtx.getTokens();
+            AccessToken at = authnCtx.getAccessToken();
             if (logger.isDebugEnabled())
-                logger.debug("Invalidating " + t.getAccessToken());
+                logger.debug("Invalidating  access token: " + at.toJSONString());
         }
 
         // Clear state.

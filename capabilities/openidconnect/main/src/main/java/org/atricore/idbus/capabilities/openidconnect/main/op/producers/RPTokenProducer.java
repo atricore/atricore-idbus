@@ -100,6 +100,8 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
                     tokenRequest.getAuthorizationGrant(),
                     tokenRequest.getScope());
 
+
+
         // Send request/process response
         // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
         HTTPResponse proxyResponse = proxyTokenRequest.toHTTPRequest().send();
@@ -112,7 +114,9 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
 
         } else {
             TokenErrorResponse err = proxyTokenResponse.toErrorResponse();
-            authnCtx.setTokens(null);
+            authnCtx.setAccessToken(null);
+            authnCtx.setRefreshToken(null);
+            authnCtx.setIdToken(null);
             ErrorObject error = err.getErrorObject();
 
             if (logger.isDebugEnabled())

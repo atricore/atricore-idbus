@@ -95,7 +95,7 @@ public class RPInitLogoutProducer extends AbstractOpenIDProducer {
 
         // TODO : ID Token HINT : We need to get the token from the OP.
         // TODO : Get session from tokens ?!
-        Tokens tokens = authnCtx.getTokens();
+        authnCtx.getIdToken();
 
         JWT receivedIdToken = logoutRequest.getIDTokenHint();
         String receivedIdTokenStr = receivedIdToken.getParsedString();

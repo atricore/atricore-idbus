@@ -328,7 +328,6 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             throw new SecurityTokenAuthenticationFailure(e.getMessage(), e);
         }
 
-        // TODO : Use planning infrastructure to transfor RST to RSTR
         // Transform RST in RSTR
 
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of =

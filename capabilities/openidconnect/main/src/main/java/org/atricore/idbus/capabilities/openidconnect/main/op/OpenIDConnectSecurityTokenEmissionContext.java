@@ -24,6 +24,8 @@ public class OpenIDConnectSecurityTokenEmissionContext extends AbstractSecurityT
 
         private String issuer;
 
+        private String previousIdToken;
+
         public void setAccessToken(AccessToken accessToken) {
                 this.accessToken = accessToken;
         }
@@ -55,4 +57,12 @@ public class OpenIDConnectSecurityTokenEmissionContext extends AbstractSecurityT
         public void setIssuer(String issuer) {
                 this.issuer = issuer;
         }
+
+    public String getPreviousIdToken() {
+        return previousIdToken;
+    }
+
+    public void setPreviousIdToken(String previousIdToken) {
+        this.previousIdToken = previousIdToken;
+    }
 }

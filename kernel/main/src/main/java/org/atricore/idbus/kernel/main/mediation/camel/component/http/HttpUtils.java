@@ -92,7 +92,7 @@ public class HttpUtils {
                 (OsgiBundleXmlWebApplicationContext) WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
 
         // TODO : Resolve the branding based on the current request and connect it with console branding
-        return new WebBranding("JOSSO 2.5", "en_US", "josso25") {
+        return new WebBranding("JOSSO 2.5", "en_US", "josso25", null) {
 
         };
 

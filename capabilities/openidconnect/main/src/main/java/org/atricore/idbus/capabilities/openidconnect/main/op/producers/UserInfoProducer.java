@@ -53,7 +53,7 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        if (authnCtx == null || authnCtx.getTokens() == null) {
+        if (authnCtx == null || authnCtx.getIdToken() == null) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     userInfoErrorResponse,
@@ -66,7 +66,7 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
             return;
         }
 
-        AccessToken at = authnCtx.getTokens().getAccessToken();
+        AccessToken at = authnCtx.getAccessToken();
         if (at == null || !at.getValue().equals(userInfoRequest.getAccessToken().getValue())) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
@@ -81,9 +81,9 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         }
 
         // TODO : Validate lifetime
-        long lifetime = authnCtx.getTokens().getAccessToken().getLifetime();
+        long lifetime = authnCtx.getAccessToken().getLifetime();
 
-        JWT idToken = authnCtx.getTokens().toOIDCTokens().getIDToken();
+        JWT idToken = authnCtx.getIdToken();
         JWTClaimsSet claims = idToken.getJWTClaimsSet();
         UserInfo claimSet = new UserInfo(claims);
         UserInfoSuccessResponse userInfoSuccessResponse = new UserInfoSuccessResponse(claimSet);

@@ -1,5 +1,7 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op;
 
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
@@ -47,7 +49,13 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     // Selected IDP Alias
     private String idpAlias;
-    private JSONObject tokens;
+
+    private String idToken;
+
+    private RefreshToken refreshToken;
+
+    private AccessToken accessToken;
+
 
     public String getIdpAlias() {
         return idpAlias;
@@ -142,17 +150,38 @@ public class OpenIDConnectAuthnContext implements Serializable {
         return logoutRequest;
     }
 
-    public void setTokens(OIDCTokens tokens) {
-
-        this.tokens = (tokens != null ? tokens.toJSONObject() : null);
+    public String getIdTokenStr() {
+        return idToken;
+    }
+    public JWT getIdToken() {
+        try {
+            return idToken != null ? JWTParser.parse(idToken) : null;
+        } catch (java.text.ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Tokens getTokens() {
-        try {
-            return tokens != null ? OIDCTokens.parse(tokens) : null;
-        } catch (ParseException e) {
-            logger.error("CANNOT UNMARSHAL JSONOBJECT : " + e.getMessage(), e);
-            return null;
-        }
+    public void setIdTokenStr(String idTokenStr) {
+        this.idToken = idToken;
+    }
+
+    public void setIdToken(JWT idToken) {
+        this.idToken = idToken != null ? idToken.getParsedString() : null;
+    }
+
+    public RefreshToken getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public AccessToken getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(AccessToken accessToken) {
+        this.accessToken = accessToken;
     }
 }

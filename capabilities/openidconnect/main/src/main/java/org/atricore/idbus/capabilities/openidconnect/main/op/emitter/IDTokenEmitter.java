@@ -4,6 +4,8 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.Issuer;
@@ -18,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectSecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
@@ -26,6 +29,7 @@ import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.session.SSOSession;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 
 import javax.security.auth.Subject;
@@ -101,8 +105,16 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
 
             ExtAttributeListType samlExtAttrs = resolveAuthnReqExtAttrs(rstCtx);
 
+            SSOSession session = null;
 
-            IDTokenClaimsSet claimsSet = buildClaimSet(context, subject, null, samlExtAttrs, opMetadata, client);
+            if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
+                // We are emitting in the context of our SAML IDP/VP. We have an SSO Session object.
+                SamlR2SecurityTokenEmissionContext emissionContext = (SamlR2SecurityTokenEmissionContext) rstCtx;
+                session = emissionContext.getSsoSession();
+
+            }
+
+            IDTokenClaimsSet claimsSet = buildClaimSet(context, subject, null, session, samlExtAttrs, opMetadata, client);
             if (claimsSet == null) {
                 logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
                 return null;
@@ -152,6 +164,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
 
     protected IDTokenClaimsSet buildClaimSet(SecurityTokenProcessingContext context, Subject subject,
                                              List<AbstractPrincipalType> proxyPrincipals,
+                                             SSOSession session,
                                              ExtAttributeListType extAttributes,
                                              OIDCProviderMetadata provider,
                                              OIDCClientInformation client) throws ParseException {
@@ -161,8 +174,24 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
             logger.error("Can't build ID Token for SimplePrincipal.  Try attaching an ID vault to your IDP/VP");
             return null;
         }
-
         SSOUser user = ssoUsers.iterator().next();
+        Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
+
+        // This is normally an ID token issued previously from the front-channel! (contains additional iformation like groups, auth_time, etc)
+        // May not be present
+        JWT previousIdToken = null;
+        JWTClaimsSet previousClaims = null;
+        if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
+            OpenIDConnectSecurityTokenEmissionContext emissionContext = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
+            if (emissionContext.getPreviousIdToken() != null) {
+                try {
+                    previousIdToken = JWTParser.parse(emissionContext.getPreviousIdToken());
+                    previousClaims = previousIdToken.getJWTClaimsSet();
+                } catch (java.text.ParseException e) {
+                    logger.error("Cannot parse ID token, ignoring!" + e.getMessage());
+                }
+            }
+        }
 
         // sub : subject
         com.nimbusds.oauth2.sdk.id.Subject sub = new com.nimbusds.oauth2.sdk.id.Subject(user.getName());
@@ -177,12 +206,19 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         Date iat = new Date();
 
         // exp : expires
-        Date exp = new Date(System.currentTimeMillis() + timeToLive * 1000L); // TODO : Configure
+        Date exp = new Date(System.currentTimeMillis() + timeToLive * 1000L);
 
         // Prepare JWT with claims set
         IDTokenClaimsSet claimsSet = new IDTokenClaimsSet(iss, sub, aud, exp, iat);
 
-        // TODO : authn_time
+        // authn_time
+        if (session != null) {
+            claimsSet.setAuthenticationTime(new Date(session.getCreationTime()));
+        } else if (previousClaims != null) {
+            claimsSet.setClaim("auth_time", previousClaims.getClaim("auth_time"));
+        } else {
+            claimsSet.setAuthenticationTime(new Date());
+        }
 
         // nonce from TokenRequest/AuthnRequest
         if (extAttributes != null) {
@@ -230,7 +266,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
             }
         }
 
-        // roles
+        // Groups
         Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
         Set<String> usedRoles = new HashSet<String>();
 
@@ -260,11 +296,16 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
                         usedRoles.add(role.getName());
                     }
                 }
-
             }
         }
 
-        // TODO : Create role claim with used roles
+        if (usedRoles.size() < 1) {
+            if (previousClaims != null &&  previousClaims.getClaim("groups") != null)
+                claimsSet.setClaim("groups", previousClaims.getClaim("groups"));
+        } else {
+            // Create role claim with used roles
+            claimsSet.setClaim("groups", usedRoles);
+        }
 
         return claimsSet;
 
