@@ -41,6 +41,8 @@ public class UUIDGenerator extends AbstractIdGenerator {
 
     private boolean jdkIdGen = false;
 
+    private static UUIDGenerator jdkGen = new UUIDGenerator(true);
+
 
     //
     private String format = null;
@@ -73,6 +75,10 @@ public class UUIDGenerator extends AbstractIdGenerator {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public static final String generateJDKId() {
+        return jdkGen.generateId();
     }
 
     /**

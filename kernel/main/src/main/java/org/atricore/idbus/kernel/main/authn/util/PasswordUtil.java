@@ -66,6 +66,7 @@ public class PasswordUtil {
      * @param password
      * @param saltSuffix Salt value used as suffix
      * @param saltPrefix Salt value used as prefix
+     *
      * @param hashAlgorithm
      * @param hashEncoding
      * @param hashCharset

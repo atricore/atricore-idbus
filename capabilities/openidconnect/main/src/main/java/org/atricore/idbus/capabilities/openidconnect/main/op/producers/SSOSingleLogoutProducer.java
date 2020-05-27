@@ -68,12 +68,11 @@ public class SSOSingleLogoutProducer extends AbstractOpenIDProducer {
         if (authnCtx != null) {
             AccessToken at = authnCtx.getAccessToken();
             if (logger.isDebugEnabled())
-                logger.debug("Invalidating  access token: " + at.toJSONString());
+                logger.debug("Invalidating  access token: " + (at != null ? at.toJSONString() : "NULL"));
         }
 
         // Clear state.
         state.removeLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
-
 
         // Send SSOResponse back to requesting party
         IDPPRoxyInitiatedLogoutResponseType ssoProxyResponse = new IDPPRoxyInitiatedLogoutResponseType();

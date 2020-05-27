@@ -93,7 +93,10 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
         SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias, authnReq);
 
         // Create context information
-        authnCtx = new OpenIDConnectAuthnContext();
+        authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+        if (authnCtx == null)
+            authnCtx = new OpenIDConnectAuthnContext();
+
         authnCtx.setIdpAlias(idpAlias);
         authnCtx.setSsoAuthnRequest(request);
         authnCtx.setAuthnRequest(authnReq);
@@ -110,7 +113,6 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
                 in.getMessage().getState()));
 
         exchange.setOut(out);
-
 
     }
 

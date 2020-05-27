@@ -29,6 +29,8 @@ public enum OpenIDConnectService {
 
     RPInitLogoutService(OpenIDConnectConstants.RPInitLogoutService_QNAME),
 
+    RPCheckSessionIFrameService(OpenIDConnectConstants.RPCheckSessionIFrameService_QNAME),
+
     MetadataService(OpenIDConnectConstants.MetadataService_QNAME),
 
     JWKService(OpenIDConnectConstants.JWKService_QNAME),

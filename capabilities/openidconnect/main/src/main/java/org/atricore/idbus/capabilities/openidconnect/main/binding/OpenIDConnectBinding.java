@@ -20,6 +20,7 @@ public enum OpenIDConnectBinding {
     OPENID_PROVIDER_TOKEN_RESTFUL("urn:net:openidconnect:1.0:op:bindings:token:restful", false),
     OPENID_PROVIDER_INFO_RESTFUL("urn:net:openidconnect:1.0:op:bindings:provider-info:restful", false),
     OPENID_PROVIDER_USERINFO_RESTFUL("urn:net:openidconnect:1.0:op:bindings:user-info:restful", false),
+    OPENID_PROVIDER_CHKSESSION_IFRAME_RESTFUL("urn:net:openidconnect:1.0:op:bindings:user-info:restful", false),
     OPENID_PROVIDER_JWK_RESTFUL("urn:net:openidconnect:1.0:op:bindings:jwk:restful", false),
 
     // Binding URIs for non-native openid endpoints used to communicate with other capabilities

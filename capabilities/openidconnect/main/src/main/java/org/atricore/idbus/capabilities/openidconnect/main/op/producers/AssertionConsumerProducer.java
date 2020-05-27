@@ -3,16 +3,12 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.*;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
-import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
 import com.nimbusds.openid.connect.sdk.OIDCScopeValue;
-import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +18,7 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectEx
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectTokenType;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
@@ -29,10 +26,10 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
-import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.Iterator;
 
@@ -78,10 +75,54 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             validateSolicitedAuthnResponse(exchange, ssoAuthnRequest, response);
         }
 
-        // Resolve OpenID client
-
 
         // Build an OpenIDConnect authentication response based on the original request
+        String currentIdPSession = authnCtx.getIdPSession();
+        String newIdPSession = response.getSessionIndex();
+
+        // This is a new IDP session
+        if (currentIdPSession == null || !currentIdPSession.equals(newIdPSession)) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Generating new RP Session ID, previous IDP session " + (currentIdPSession != null ? currentIdPSession : "null"));
+
+            if (logger.isDebugEnabled())
+                logger.debug("Generating new RP Session ID, new IDP Session " + newIdPSession);
+
+            String newRpSessionId = UUIDGenerator.generateJDKId();
+
+            // Calculate session state according to specs
+            // http://openid.net/specs/openid-connect-session-1_0.html#CreatingUpdatingSessions
+            State newSessionState = null;
+            try {
+                // TODO : Verify origin
+                // TODO : Use a different sessionId (local to RP)
+                String salt = CipherUtil.getNextSalt(8);
+                String ss = CipherUtil.createHash(
+                        oidcAuthnRequest.getClientID() + " " +
+                                oidcAuthnRequest.getRedirectionURI() + " " +
+                                newRpSessionId + " " +
+                                salt, "SHA256") +
+                        "." + salt;
+
+                newSessionState = new State(ss);
+
+            } catch (NoSuchAlgorithmException e) {
+                throw new OpenIDConnectException(e);
+            }
+
+            authnCtx.setRPSession(newRpSessionId);
+            authnCtx.setRpSessionState(newSessionState);
+            authnCtx.setIdPSession(newIdPSession);
+
+            //state.setRemoteVariable(, rpSessionId);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Generated new RP Session STATE " + newSessionState);
+
+
+        }
+
         AuthenticationResponse authnResponse = buildAuthenticationResponse(exchange, authnCtx, oidcAuthnRequest, response);
 
         // Resolve response ED
@@ -89,6 +130,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
 
         if (authnResponse instanceof AuthenticationSuccessResponse) {
+
             AuthenticationSuccessResponse sr = (AuthenticationSuccessResponse) authnResponse;
             AuthorizationCode code = sr.getAuthorizationCode();
 
@@ -213,16 +255,12 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
 
         }
 
-        // TODO : Calculate session state according to ?
-        // http://openid.net/specs/openid-connect-session-1_0.html#CreatingUpdatingSessions
-
-        State sessionState = new State(response.getSessionIndex());
         AuthenticationResponse authnResponse = new AuthenticationSuccessResponse(authnRequest.getRedirectionURI(),
                 code,
                 idToken,
                 accessToken,
                 authnRequest.getState(),
-                sessionState,
+                authnCtx.getRPSessionState(),
                 authnRequest.getResponseMode());
 
         return authnResponse;

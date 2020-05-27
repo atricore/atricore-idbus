@@ -53,6 +53,10 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new RPInitLogoutEndpoint(uri, this, parameters);
                 break;
 
+            case RPCheckSessionIFrameService:
+                endpoint = new RPCheckSessionIFrameEndpoint(uri, this, parameters);
+                break;
+
             case MetadataService:
                 endpoint = new MetadataEndpoint(uri, this, parameters);
                 break;

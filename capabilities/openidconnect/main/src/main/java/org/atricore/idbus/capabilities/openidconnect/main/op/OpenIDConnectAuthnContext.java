@@ -5,13 +5,11 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
+import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
-import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
-import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
-import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
@@ -56,6 +54,9 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     private AccessToken accessToken;
 
+    private String rpSession;
+    private State rpSessionState;
+    private String idPSession;
 
     public String getIdpAlias() {
         return idpAlias;
@@ -183,5 +184,29 @@ public class OpenIDConnectAuthnContext implements Serializable {
 
     public void setAccessToken(AccessToken accessToken) {
         this.accessToken = accessToken;
+    }
+
+    public String getRPSession() {
+        return rpSession;
+    }
+
+    public void setRPSession(String rpSession) {
+        this.rpSession = rpSession;
+    }
+
+    public void setIdPSession(String idPSession) {
+        this.idPSession = idPSession;
+    }
+
+    public String getIdPSession() {
+        return idPSession;
+    }
+
+    public State getRPSessionState() {
+        return rpSessionState;
+    }
+
+    public void setRpSessionState(State rpSessionState) {
+        this.rpSessionState = rpSessionState;
     }
 }

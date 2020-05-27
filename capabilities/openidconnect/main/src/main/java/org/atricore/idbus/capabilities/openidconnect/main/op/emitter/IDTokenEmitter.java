@@ -255,8 +255,6 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
 
         // TODO : azp
 
-        // TODO : Attribute Profile to filter properties
-
         // Additional claims
         Set<String> usedProps = new HashSet<String>();
         if (user.getProperties() != null) {
