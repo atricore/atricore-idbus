@@ -111,68 +111,40 @@ public class TokenProducer extends AbstractOpenIDProducer {
         String idTokenStr = null;
 
         // Prepare emission context
-        OpenIDConnectSecurityTokenEmissionContext ctx = new OpenIDConnectSecurityTokenEmissionContext();
-        ctx.setIssuer(fChannel.getMember().getAlias());
+        OpenIDConnectSecurityTokenEmissionContext emissionContext = new OpenIDConnectSecurityTokenEmissionContext();
+        emissionContext.setIssuer(fChannel.getMember().getAlias());
 
         // We should have one if the user was authenticated using the UI, and the authz code is correct.
         if (previousIdTokenStr != null) {
-            ctx.setPreviousIdToken(previousIdTokenStr); // Send ID Token as reference
+            emissionContext.setPreviousIdToken(previousIdTokenStr); // Send ID Token as reference
         }
 
+        // ----------------------------------------------
         // Make Grant specific validations
         // ----------------------------------------------
         if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
-
-            at = (AccessToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
-            rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
-            idTokenStr = ctx.getIDToken();
-
-            // Add refresh token as alternative state ID
-            if (rt != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-            if (at != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
-
+            rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
         } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
                 grant.getType().equals(JWT_BEARER_PWD)) {
-
-            at = (AccessToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
-            rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
-            idTokenStr = ctx.getIDToken();
-
-            // Add refresh token as alternative state ID
-            if (rt != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-            if (at != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
-
-
+            rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
         } else if (grant.getType().equals(GrantType.REFRESH_TOKEN)) {
-
-            at = (AccessToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
-            rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
-            idTokenStr = ctx.getIDToken();
-
-            // Add refresh token as alternative state ID
-            if (rt != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-            if (at != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
-
-
+            rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
         } else {
             logger.warn("Unsupported grant_type : " + grant.getType().getValue());
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
         }
 
+        // This will generate an AccessToken AND a new RefreshToken
+        RefreshTokenGrant rtg = new RefreshTokenGrant(rt);
+        at = (AccessToken) emitTokenFromRefreshToken(state, clientInfo, rtg, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, emissionContext);
+        idTokenStr = emissionContext.getIDToken();
+        rt = emissionContext.getRefreshToken();
+
         idToken = JWTParser.parse(idTokenStr);
-
         OIDCTokens tokens  = new OIDCTokens(idToken, at, rt);
-        TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
 
-        ctx.setAccessToken(at);
-        ctx.setRefreshToken(rt);
-        ctx.setIDToken(idTokenStr);
+        // Add refresh token as alternative state ID
+        TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
 
         // Store tokens in state
         OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(AUTHN_CTX_KEY);
@@ -186,13 +158,16 @@ public class TokenProducer extends AbstractOpenIDProducer {
         state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
         state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idTokenStr);
 
+        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
+
         // Send response back (this is a back-channel request)
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 tokenResponse,
                 "AccessTokenResponse",
                 "application/json",
                 null, // TODO
-                in.getMessage().getState()));
+                state));
 
         exchange.setOut(out);
 
@@ -428,7 +403,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             JAXBElement<RequestedSecurityTokenType> jaxbElementToken = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
             Token token = (Token) jaxbElementToken.getValue().getAny();
             if (logger.isDebugEnabled())
-                logger.debug("Generated OIDC Access Token [" + token.getValue() + "]");
+                logger.debug("Generated OIDC Token [" + token.getValue() + "]");
 
             return token;
 
@@ -687,6 +662,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
 
             } else if (authzGrant instanceof RefreshTokenGrant) {
+
                 // This is a token refresh request
 
                 // Validate the received refresh token
@@ -710,6 +686,11 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     if (logger.isTraceEnabled())
                         logger.trace("Failed client authentication, previous refresh_token ");
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_refresh_token");
+                }
+
+                if (clientAuthn == null) {
+                    // We don't have client authentication, but it is OK.
+                    return;
                 }
 
             }

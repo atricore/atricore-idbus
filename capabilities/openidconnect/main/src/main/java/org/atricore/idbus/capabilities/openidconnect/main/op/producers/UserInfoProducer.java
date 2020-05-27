@@ -47,13 +47,11 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         UserInfoRequest userInfoRequest = (UserInfoRequest) in.getMessage().getContent();
         MediationState state = in.getMessage().getState();
 
-        OpenIDConnectBinding binding = OpenIDConnectBinding.asEnum(endpoint.getBinding());
-
         // Validate accessToken
         OpenIDConnectAuthnContext authnCtx =
                 (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        if (authnCtx == null || authnCtx.getIdToken() == null) {
+        if (authnCtx == null || authnCtx.getAccessToken() == null) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     userInfoErrorResponse,

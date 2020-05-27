@@ -134,10 +134,18 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             AuthenticationSuccessResponse sr = (AuthenticationSuccessResponse) authnResponse;
             AuthorizationCode code = sr.getAuthorizationCode();
 
-            // Ad alternate state key, to be used by back-channel.
-            // If "code" is requested, we need an alternative key
+            // Ad alternate state keys, to be used by back-channel.
             if (code != null)
                 state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY, code.getValue());
+
+            if (sr.getAccessToken() != null) {
+                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, sr.getAccessToken().getValue());
+                authnCtx.setAccessToken(sr.getAccessToken());
+            }
+
+            // Store tokens in state
+            if (sr.getIDToken() != null)
+                authnCtx.setIdToken(sr.getIDToken());
 
             try {
                 // The IDP always emits an ID token, and includes it in the assertion, regardles of the OIDC flow.
@@ -146,13 +154,6 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
             } catch (OpenIDConnectException e) {
                 logger.trace("No ID Token found in response: " + response.getID());
             }
-
-            // Store tokens in state
-            if (sr.getIDToken() != null)
-                authnCtx.setIdToken(sr.getIDToken());
-
-            if (sr.getAccessToken() != null)
-                authnCtx.setAccessToken(sr.getAccessToken());
 
         }
 

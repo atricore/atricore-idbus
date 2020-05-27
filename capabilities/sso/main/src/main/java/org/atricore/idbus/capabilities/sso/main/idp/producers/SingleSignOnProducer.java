@@ -3402,6 +3402,8 @@ public class SingleSignOnProducer extends SSOProducer {
     /**
      * This will create state alternative keys based on OIDC tokens found in the assertion
      *
+     * We need to update state for producers running in the IDP channel
+     *
      * This could be part of the SAML binding ...
      *
      * @param in

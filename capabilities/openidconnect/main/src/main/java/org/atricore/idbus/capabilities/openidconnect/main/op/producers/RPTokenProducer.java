@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.token.Tokens;
@@ -111,6 +112,14 @@ public class RPTokenProducer extends AbstractOpenIDProducer {
         if (proxyTokenResponse.indicatesSuccess()) {
             OIDCTokenResponse at = proxyTokenResponse.toSuccessResponse();
             OIDCTokens tokens = at.getTokens().toOIDCTokens();
+
+            JWT idToken = tokens.getIDToken();
+            authnCtx.setIdToken(idToken);
+            authnCtx.setAccessToken(tokens.getAccessToken());
+            authnCtx.setRefreshToken(tokens.getRefreshToken());
+
+            state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, tokens.getRefreshToken().getValue());
+            state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, tokens.getAccessToken().getValue());
 
         } else {
             TokenErrorResponse err = proxyTokenResponse.toErrorResponse();

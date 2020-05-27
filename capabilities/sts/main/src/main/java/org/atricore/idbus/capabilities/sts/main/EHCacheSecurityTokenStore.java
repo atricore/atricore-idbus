@@ -157,6 +157,25 @@ public class EHCacheSecurityTokenStore implements
         }
     }
 
+    public boolean remove(String tokenId) {
+        // Use the thread classloader (appliance classloader) instead of STS bundle classloader
+        ClassLoader orig = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
+            boolean removed = cache.remove(tokenId);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Removed token  id [" + tokenId + "] : " + removed);
+
+            return removed;
+
+
+        } finally {
+            Thread.currentThread().setContextClassLoader(orig);
+        }
+
+    }
+
     public String getCacheName() {
         return cacheName;
     }

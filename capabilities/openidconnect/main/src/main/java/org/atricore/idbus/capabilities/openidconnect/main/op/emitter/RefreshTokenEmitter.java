@@ -40,7 +40,9 @@ public class RefreshTokenEmitter extends OIDCTokenEmitter {
     public boolean canEmit(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         // We can emit for any context with a valid subject when Token Type is OIDC_ACCESS!
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
-                (WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE.equals(tokenType) || WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType));
+                (WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE.equals(tokenType) ||
+                        WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE.equals(tokenType) ||
+                        WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType));
     }
 
     @Override

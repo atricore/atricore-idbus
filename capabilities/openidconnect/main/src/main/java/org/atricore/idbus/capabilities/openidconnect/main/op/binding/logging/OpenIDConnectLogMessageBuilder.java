@@ -16,7 +16,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.LogMessageBuilder;
 import java.net.URI;
 
 /**
- * 
+ *
  */
 public class OpenIDConnectLogMessageBuilder implements LogMessageBuilder {
 
@@ -138,7 +138,7 @@ public class OpenIDConnectLogMessageBuilder implements LogMessageBuilder {
                     OIDCTokenResponse oidc = (OIDCTokenResponse) r;
 
                     JWT jwt = oidc.getOIDCTokens().getIDToken();
-                    String idTokenStr = oidc.getOIDCTokens().getIDTokenString();
+                    String idTokenStr = oidc.getOIDCTokens().getIDToken().serialize();
                     AccessToken at = oidc.getOIDCTokens().getAccessToken();
 
                     logMsg.append("oidc-msg=\"OIDCAccessTokenResponse\" " +

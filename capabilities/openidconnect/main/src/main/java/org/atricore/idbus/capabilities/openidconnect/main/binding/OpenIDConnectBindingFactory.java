@@ -81,6 +81,10 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
                 mb = new OIDCProviderJWKRestfulBinding(channel);
                 break;
 
+            case OPENID_PROVIDER_CHKSESSION_IFRAME_RESTFUL:
+                mb = new RPCheckSessionIFrameRestfulBinding(channel);
+                break;
+
 
         }
 

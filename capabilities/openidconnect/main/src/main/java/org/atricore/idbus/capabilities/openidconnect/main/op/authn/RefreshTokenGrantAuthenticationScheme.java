@@ -49,7 +49,7 @@ public class RefreshTokenGrantAuthenticationScheme extends AbstractAuthenticatio
         RefreshToken expectedToken = expectedCredential.getRefreshToken().getRefreshToken();
 
         RefreshTokenGrantCredential receivedCredential = (RefreshTokenGrantCredential) _inputCredentials[0];
-        RefreshToken receivedToken = (RefreshToken) receivedCredential.getRefreshToken().getRefreshToken();
+        RefreshToken receivedToken = receivedCredential.getRefreshToken().getRefreshToken();
 
         if (!expectedToken.getValue().equals(receivedToken.getValue())) {
             logger.debug("Invalid authorization code rcv: " + receivedToken.getValue());
@@ -65,6 +65,16 @@ public class RefreshTokenGrantAuthenticationScheme extends AbstractAuthenticatio
         setAuthenticated(true);
 
         return true;
+    }
+
+    @Override
+    public void confirm() {
+        super.confirm();
+
+        RefreshTokenGrantCredential receviedCredential = (RefreshTokenGrantCredential) this._inputCredentials[0];
+        com.nimbusds.oauth2.sdk.RefreshTokenGrant receivedAuthzGrant = (com.nimbusds.oauth2.sdk.RefreshTokenGrant) receviedCredential.getValue();
+        tokenStore.remove(receivedAuthzGrant.getRefreshToken().getValue());
+
     }
 
     @Override

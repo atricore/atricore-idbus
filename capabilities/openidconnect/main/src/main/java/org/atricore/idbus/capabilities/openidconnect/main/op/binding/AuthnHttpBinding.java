@@ -30,7 +30,7 @@ public class AuthnHttpBinding extends AbstractOpenIDHttpBinding {
     }
 
     /**
-     * Build an OAuth 2.0 Authentication Request
+     * Build an OIDC Authentication Request
      * @param message
      * @return
      */

@@ -14,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +26,12 @@ import java.util.Map;
 public class OpenIDConnectAuthnContext implements Serializable {
 
     private static final Log logger = LogFactory.getLog(OpenIDConnectAuthnContext.class);
+
+    public OpenIDConnectAuthnContext() {
+        uuid = UUIDGenerator.generateJDKId();
+    }
+
+    private String uuid;
 
     // Request sent to SSO endpoint
     private SPInitiatedAuthnRequestType ssoAuthnRequest;
@@ -154,6 +161,7 @@ public class OpenIDConnectAuthnContext implements Serializable {
     public String getIdTokenStr() {
         return idToken;
     }
+
     public JWT getIdToken() {
         try {
             return idToken != null ? JWTParser.parse(idToken) : null;
@@ -163,7 +171,7 @@ public class OpenIDConnectAuthnContext implements Serializable {
     }
 
     public void setIdTokenStr(String idTokenStr) {
-        this.idToken = idToken;
+        this.idToken = idTokenStr;
     }
 
     public void setIdToken(JWT idToken) {

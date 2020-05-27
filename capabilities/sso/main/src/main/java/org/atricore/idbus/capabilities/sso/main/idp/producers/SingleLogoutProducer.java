@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
+import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
@@ -79,6 +80,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.security.Principal;
 import java.util.Properties;
+
+import static org.atricore.idbus.capabilities.sts.main.WSTConstants.*;
+import static org.atricore.idbus.capabilities.sts.main.WSTConstants.WST_OIDC_ID_TOKEN_TYPE;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -502,6 +506,7 @@ public class SingleLogoutProducer extends SSOProducer {
         state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORequest");
         state.removeLocalVariable("urn:org:atricore:idbus:sso:idp:proxySLORelayState");
 
+        updateOIDCState(in, sloResposne);
 
         // TODO : sloRequest is instanceof IDPProxyInitiatedLogoutRequestType
 
@@ -1414,5 +1419,25 @@ public class SingleLogoutProducer extends SSOProducer {
         }
 
         return null;
+    }
+
+    /**
+     * This will remove state alternative keys based on OIDC tokens found in the assertion
+     *
+     * We need to update state for producers running in the IDP channel
+     *
+     * This could be part of the SAML binding ...
+     *
+     * @param in
+     * @param ssoResponse
+     */
+    protected void updateOIDCState(CamelMediationMessage in, SSOResponseType ssoResponse) {
+        MediationState state = in.getMessage().getState();
+        state.getLocalState().removeAlternativeId("code");
+        state.removeLocalVariable(WST_OIDC_ACCESS_TOKEN_TYPE);
+        state.getLocalState().removeAlternativeId("access_token");
+        state.removeLocalVariable(WST_OIDC_REFRESH_TOKEN_TYPE);
+        state.getLocalState().removeAlternativeId("refresh_token");
+        state.removeLocalVariable(WST_OIDC_ID_TOKEN_TYPE);
     }
 }
