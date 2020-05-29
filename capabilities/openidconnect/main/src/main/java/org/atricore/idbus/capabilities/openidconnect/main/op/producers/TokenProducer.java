@@ -18,17 +18,18 @@ import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.oauth2.sdk.token.Token;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
-import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.openidconnect.main.common.producers.AbstractOpenIDProducer;
 import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.Util;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.OpenIDConnectBPMediator;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
@@ -44,7 +45,6 @@ import org.atricore.idbus.kernel.main.util.IdRegistry;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
-import org.w3._1999.xhtml.Code;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
@@ -147,9 +147,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
         TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
 
         // Store tokens in state
-        OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(AUTHN_CTX_KEY);
+        AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(AUTHN_CTX_KEY);
         if (authnCtx == null)
-            authnCtx = new OpenIDConnectAuthnContext();
+            authnCtx = new AuthnContext();
 
         authnCtx.setIdTokenStr(idTokenStr);
         authnCtx.setRefreshToken(rt);
@@ -674,7 +674,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
                 }
 
-                OpenIDConnectAuthnContext authnCtx = (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+                AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
                 if (authnCtx == null || authnCtx.getRefreshToken() == null) {
                     if (logger.isTraceEnabled())

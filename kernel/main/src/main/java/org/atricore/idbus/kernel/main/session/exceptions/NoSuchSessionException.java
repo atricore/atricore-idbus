@@ -37,7 +37,7 @@ public class NoSuchSessionException extends SSOSessionException {
     }
 
     public String getMessage() {
-        return "JOSSO Session not found : " + super.getMessage();
+        return "SSO Session not found : " + super.getMessage();
     }
 
 }

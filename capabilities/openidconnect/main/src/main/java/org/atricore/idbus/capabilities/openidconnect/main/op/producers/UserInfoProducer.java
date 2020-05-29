@@ -1,24 +1,18 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
-import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.BearerTokenError;
 import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoRequest;
-import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
-import com.nimbusds.openid.connect.sdk.claims.ClaimsSet;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
-import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.producers.AbstractOpenIDProducer;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectOPMediator;
+import org.atricore.idbus.capabilities.openidconnect.main.op.AuthnContext;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -48,8 +42,8 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         MediationState state = in.getMessage().getState();
 
         // Validate accessToken
-        OpenIDConnectAuthnContext authnCtx =
-                (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+        AuthnContext authnCtx =
+                (AuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
         if (authnCtx == null || authnCtx.getAccessToken() == null) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);

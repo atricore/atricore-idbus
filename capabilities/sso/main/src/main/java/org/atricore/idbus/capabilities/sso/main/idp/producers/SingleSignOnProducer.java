@@ -478,7 +478,17 @@ public class SingleSignOnProducer extends SSOProducer {
                     EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
                     if (ed != null) {
                         SPSessionHeartBeatResponseType resp = performIdPProxySessionHeartBeat(exchange, secCtx);
-                        isSsoSessionValid = resp.isValid();
+                        if (resp.isValid()) {
+                            if(!isSsoSessionValid) {
+                                // Our session expired, but the remote one did not.
+                                logger.debug("Local session expired, but remote one did not");
+                                isSsoSessionValid = false;
+                            }
+                        } else {
+                            // Set local session to invalid!
+                            logger.debug("Remote session expired, invalidate current session");
+                            isSsoSessionValid = false;
+                        }
                     }
                 } catch (SSOException e) {
                     logger.error(e.getMessage(), e);

@@ -3,8 +3,15 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 public enum XFrameOptions {
 
     DISABLED("DISABLED"),
+
     SAME_ORIGIN("SAMEORIGIN"),
+
+    /**
+     * Most browsers do not support it any more
+     */
+    @Deprecated
     ALLOW_FROM("ALLOW-FROM"),
+
     DENY("DENY");
 
     private String value;
