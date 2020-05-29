@@ -7,11 +7,11 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.producers.Abstr
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
-public class RPCheckSessionIFrameProducer extends AbstractOpenIDProducer {
+public class CheckSessionIFrameProducer extends AbstractOpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(RPUserInfoProducer.class);
+    private static final Log logger = LogFactory.getLog(UserInfoProducer.class);
 
-    public RPCheckSessionIFrameProducer(Endpoint endpoint) {
+    public CheckSessionIFrameProducer(Endpoint endpoint) {
         super(endpoint);
     }
 

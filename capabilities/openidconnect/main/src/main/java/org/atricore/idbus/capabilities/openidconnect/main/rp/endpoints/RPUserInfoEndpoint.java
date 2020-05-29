@@ -2,7 +2,7 @@ package org.atricore.idbus.capabilities.openidconnect.main.rp.endpoints;
 
 import org.apache.camel.Component;
 import org.apache.camel.Producer;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.producer.RPUserInfoProducer;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.producer.UserInfoProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 
@@ -15,6 +15,6 @@ public class RPUserInfoEndpoint extends AbstractCamelEndpoint<CamelMediationExch
     }
 
     public Producer createProducer () throws Exception {
-        return new RPUserInfoProducer( this );
+        return new UserInfoProducer( this );
     }
 }

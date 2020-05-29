@@ -29,13 +29,13 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.net.URI;
 
-public class RPInitLogoutProducer extends AbstractOpenIDProducer {
+public class InitLogoutProducer extends AbstractOpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(RPInitLogoutProducer.class);
+    private static final Log logger = LogFactory.getLog(InitLogoutProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public RPInitLogoutProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
+    public InitLogoutProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
         super(endpoint);
     }
 

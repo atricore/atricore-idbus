@@ -12,7 +12,6 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectCo
 import org.atricore.idbus.capabilities.openidconnect.main.rp.RPAuthnContext;
 import org.atricore.idbus.capabilities.openidconnect.main.rp.OpenIDConnectBPMediator;
 import org.atricore.idbus.capabilities.openidconnect.main.common.producers.AbstractOpenIDProducer;
-import org.atricore.idbus.capabilities.openidconnect.main.op.producers.TokenProducer;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
@@ -29,16 +28,16 @@ import java.net.URI;
  * running in the SSO/SAML IDP Provider.  Since we need the token as part of the RP Proxy state, we create a proxy
  * to call the actual token endpoint!
  *
- * @see TokenProducer
+ * @see org.atricore.idbus.capabilities.openidconnect.main.op.producers.TokenProducer
  *
  */
-public class RPTokenProducer extends AbstractOpenIDProducer {
+public class TokenProducer extends AbstractOpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(RPTokenProducer.class);
+    private static final Log logger = LogFactory.getLog(TokenProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public RPTokenProducer(Endpoint endpoint) {
+    public TokenProducer(Endpoint endpoint) {
         super(endpoint);
     }
 

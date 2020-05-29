@@ -24,13 +24,13 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.net.URI;
 
-public class RPUserInfoProducer extends AbstractOpenIDProducer {
+public class UserInfoProducer extends AbstractOpenIDProducer {
 
-    private static final Log logger = LogFactory.getLog(RPUserInfoProducer.class);
+    private static final Log logger = LogFactory.getLog(UserInfoProducer.class);
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    public RPUserInfoProducer(Endpoint endpoint) {
+    public UserInfoProducer(Endpoint endpoint) {
         super(endpoint);
     }
 
