@@ -437,11 +437,20 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         return buildHttpTargetLocation(httpData, ed, false);
     }
 
-
     /**
      * This will add the necessary CORS headers to the HTTP response when CORS is requested.
      */
     protected void handleCrossOriginResourceSharing(Exchange exchange) {
+        IdentityMediationUnit unit = this.channel.getUnitContainer().getUnit();
+        // TODO : Populate this from the console, at the moment the list is always empty!
+        Set<String> allowedOrigins = (Set<String>) unit.getMediationProperty("binding.http.cors.origins");
+        handleCrossOriginResourceSharing(exchange, allowedOrigins);
+    }
+
+        /**
+         * This will add the necessary CORS headers to the HTTP response when CORS is requested.
+         */
+    protected void handleCrossOriginResourceSharing(Exchange exchange, Set<String> allowedOrigins) {
         Message httpOut = exchange.getOut();
         Message httpIn = exchange.getIn();
 
@@ -458,9 +467,6 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                 logger.trace("User-Agent requesting cross origin support for " + origin);
 
             boolean allow = false;
-            IdentityMediationUnit unit = this.channel.getUnitContainer().getUnit();
-            // TODO : Populate this from the console, at the moment the list is always empty!
-            Set<String> allowedOrigins = (Set<String>) unit.getMediationProperty("binding.http.cors.origins");
 
             if (allowedOrigins != null && allowedOrigins.size() > 0 && allowedOrigins.contains(origin)) {
                 if (logger.isTraceEnabled())

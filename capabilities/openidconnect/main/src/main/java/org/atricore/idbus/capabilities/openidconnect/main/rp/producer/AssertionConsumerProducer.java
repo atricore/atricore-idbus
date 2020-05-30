@@ -12,7 +12,7 @@ import com.nimbusds.openid.connect.sdk.OIDCScopeValue;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectTokenType;

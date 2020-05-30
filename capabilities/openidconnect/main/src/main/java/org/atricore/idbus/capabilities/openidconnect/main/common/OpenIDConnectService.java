@@ -31,6 +31,8 @@ public enum OpenIDConnectService {
 
     RPCheckSessionIFrameService(OpenIDConnectConstants.RPCheckSessionIFrameService_QNAME),
 
+    OPStateService(OpenIDConnectConstants.OPStateService_QNAME),
+
     MetadataService(OpenIDConnectConstants.MetadataService_QNAME),
 
     JWKService(OpenIDConnectConstants.JWKService_QNAME),

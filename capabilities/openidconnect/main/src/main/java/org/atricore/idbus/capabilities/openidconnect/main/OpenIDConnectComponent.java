@@ -58,6 +58,10 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new RPCheckSessionIFrameEndpoint(uri, this, parameters);
                 break;
 
+            case OPStateService:
+                endpoint = new OPStateEndpoint(uri, this, parameters);
+                break;
+
             case MetadataService:
                 endpoint = new MetadataEndpoint(uri, this, parameters);
                 break;

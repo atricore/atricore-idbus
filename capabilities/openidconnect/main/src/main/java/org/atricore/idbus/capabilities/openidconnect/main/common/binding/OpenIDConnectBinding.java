@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.openidconnect.main.binding;
+package org.atricore.idbus.capabilities.openidconnect.main.common.binding;
 
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 
@@ -20,7 +20,8 @@ public enum OpenIDConnectBinding {
     OPENID_PROVIDER_TOKEN_RESTFUL("urn:net:openidconnect:1.0:op:bindings:token:restful", false),
     OPENID_PROVIDER_INFO_RESTFUL("urn:net:openidconnect:1.0:op:bindings:provider-info:restful", false),
     OPENID_PROVIDER_USERINFO_RESTFUL("urn:net:openidconnect:1.0:op:bindings:user-info:restful", false),
-    OPENID_PROVIDER_CHKSESSION_IFRAME_RESTFUL("urn:net:openidconnect:1.0:op:bindings:user-info:restful", false),
+    OPENID_PROVIDER_CHKSESSION_IFRAME_RESTFUL("urn:net:openidconnect:1.0:op:bindings:chk-session-iframe:restful", false),
+    OPENID_PROVIDER_STATE_RESTFUL("urn:net:openidconnect:1.0:op:bindings:op-state:restful", false),
     OPENID_PROVIDER_JWK_RESTFUL("urn:net:openidconnect:1.0:op:bindings:jwk:restful", false),
 
     // Binding URIs for non-native openid endpoints used to communicate with other capabilities
@@ -28,6 +29,7 @@ public enum OpenIDConnectBinding {
     SSO_ARTIFACT(SSOBinding.SSO_ARTIFACT.getValue(), SSOBinding.SSO_ARTIFACT.isFrontChannel()),
     SSO_LOCAL(SSOBinding.SSO_LOCAL.getValue(), SSOBinding.SSO_LOCAL.isFrontChannel()),
     ;
+
 
     private String binding;
     boolean frontChannel;

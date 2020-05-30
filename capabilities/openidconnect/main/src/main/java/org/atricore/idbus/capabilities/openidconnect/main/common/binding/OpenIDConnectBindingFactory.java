@@ -2,11 +2,11 @@ package org.atricore.idbus.capabilities.openidconnect.main.common.binding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.op.binding.AuthnHttpBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.OIDCProviderConfigurationRestfulBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.OIDCProviderJWKRestfulBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.RPCheckSessionIFrameRestfulBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.OPStateRestfulBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.ProviderConfigurationRestfulBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.JWKRestfulBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.CheckSessionIFrameRestfulBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -20,9 +20,9 @@ import org.springframework.context.ApplicationContextAware;
 /**
  *
  */
-public class OpenIDConnectOPBindingFactory extends MediationBindingFactory implements ApplicationContextAware {
+public class OpenIDConnectBindingFactory extends MediationBindingFactory implements ApplicationContextAware {
 
-    private static final Log logger = LogFactory.getLog(OpenIDConnectOPBindingFactory.class);
+    private static final Log logger = LogFactory.getLog(OpenIDConnectBindingFactory.class);
 
     protected ApplicationContext applicationContext;
 
@@ -63,13 +63,16 @@ public class OpenIDConnectOPBindingFactory extends MediationBindingFactory imple
                 mb = new UserInfoRequestRestfulBinding(channel);
                 break;
             case OPENID_PROVIDER_CHKSESSION_IFRAME_RESTFUL:
-                mb = new RPCheckSessionIFrameRestfulBinding(channel);
+                mb = new CheckSessionIFrameRestfulBinding(channel);
+                break;
+            case OPENID_PROVIDER_STATE_RESTFUL:
+                mb = new OPStateRestfulBinding(channel);
                 break;
             case OPENID_PROVIDER_JWK_RESTFUL:
-                mb = new OIDCProviderJWKRestfulBinding(channel);
+                mb = new JWKRestfulBinding(channel);
                 break;
             case OPENID_PROVIDER_INFO_RESTFUL:
-                mb = new OIDCProviderConfigurationRestfulBinding(channel);
+                mb = new ProviderConfigurationRestfulBinding(channel);
                 break;
 
             default:

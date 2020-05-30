@@ -5,7 +5,7 @@ import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -75,6 +75,8 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
                         case OPENID_PROVIDER_USERINFO_RESTFUL:
                         case OPENID_PROVIDER_INFO_RESTFUL:
                         case OPENID_PROVIDER_JWK_RESTFUL:
+                        case OPENID_PROVIDER_CHKSESSION_IFRAME_RESTFUL:
+                        case OPENID_PROVIDER_STATE_RESTFUL:
 
                             // FROM idbus-http TO idbus-bind (through direct component)
                             from("idbus-http:" + ed.getLocation()).
@@ -119,7 +121,7 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
-                            // ==> josso-http ==> josso-bind ==> josso11-bind
+                            // ==> josso-http ==> josso-bind ==> openidc-idp
                             // ----------------------------------------------------------
 
                             // FROM josso-http TO samlr2-binding (through direct component)

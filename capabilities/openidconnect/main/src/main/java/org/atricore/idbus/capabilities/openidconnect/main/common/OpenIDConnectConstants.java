@@ -31,7 +31,9 @@ public interface OpenIDConnectConstants {
 
     QName RPInitLogoutService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "LogoutService");
 
-    QName RPCheckSessionIFrameService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "sessionIFrame");
+    QName RPCheckSessionIFrameService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "RPCheckSessionIFrame");
+
+    QName OPStateService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "OPState");
 
     QName MetadataService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "MetadataService");
 

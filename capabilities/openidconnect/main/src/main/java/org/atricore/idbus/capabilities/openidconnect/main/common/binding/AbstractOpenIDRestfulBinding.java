@@ -42,12 +42,18 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
     @Override
     public MediationMessage createMessage(CamelMediationMessage message) {
 
+        // The nested exchange contains HTTP information
+        Exchange exchange = message.getExchange().getExchange();
+        Message httpMsg = exchange.getIn();
+
+        MediationState state = getState(exchange);
+
         return new MediationMessageImpl(message.getMessageId(),
                 null,
                 null,
                 null,
                 null,
-                null);
+                state);
     }
 
 

@@ -10,7 +10,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
@@ -48,7 +47,6 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
             }
 
             MediationState state = getState(exchange);
-
 
             // Build request object
             java.net.URI uri = null;

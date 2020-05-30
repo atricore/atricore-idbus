@@ -7,7 +7,7 @@ import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.producers.AbstractOpenIDProducer;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.rp.RPAuthnContext;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;

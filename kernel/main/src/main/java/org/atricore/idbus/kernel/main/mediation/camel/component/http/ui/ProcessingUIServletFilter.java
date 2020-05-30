@@ -136,7 +136,6 @@ public class ProcessingUIServletFilter implements Filter {
                 jProc.put(method, ajaxScript);
             }
 
-
             VelocityContext veCtx = new VelocityContext();
 
             // TODO : Take properties from branding!
@@ -148,8 +147,6 @@ public class ProcessingUIServletFilter implements Filter {
                             Calendar.getInstance().get(Calendar.YEAR) +
                             " Atricore, Inc. - <a href=\"http://www.atricore.com/\" target=\"_blank\">www.atricore.com</a>");
             veCtx.put("MAIN_AJAX_SCRIPT", ajaxScript);
-
-
 
             Reader in = resolveTemplate(hReq);
             velocityEngine.evaluate(veCtx, hRes.getWriter(), "processing.html", in);

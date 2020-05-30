@@ -6,18 +6,18 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.binding.AbstractOpenIDRestfulBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
-public class OIDCProviderConfigurationRestfulBinding extends AbstractOpenIDRestfulBinding {
+public class ProviderConfigurationRestfulBinding extends AbstractOpenIDRestfulBinding {
 
-    private static final Log logger = LogFactory.getLog(OIDCProviderConfigurationRestfulBinding.class);
+    private static final Log logger = LogFactory.getLog(ProviderConfigurationRestfulBinding.class);
 
-    public OIDCProviderConfigurationRestfulBinding(Channel channel) {
+    public ProviderConfigurationRestfulBinding(Channel channel) {
         super(OpenIDConnectBinding.OPENID_PROVIDER_INFO_RESTFUL.getValue(), channel);
     }
 

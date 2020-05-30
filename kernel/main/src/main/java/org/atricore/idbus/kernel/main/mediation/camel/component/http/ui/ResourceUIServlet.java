@@ -52,6 +52,9 @@ public class ResourceUIServlet extends HttpServlet {
             if (uri.endsWith(".svg"))
                 resp.setContentType("image/svg+xml");
 
+            if (uri.endsWith(".js"))
+                resp.setContentType("application/javascript");
+
             int bytesRead;
             byte[] buffer = new byte[bufferSize];
             while( (bytesRead = resourceStream.read(buffer, 0, bufferSize)) > 0 ) {
