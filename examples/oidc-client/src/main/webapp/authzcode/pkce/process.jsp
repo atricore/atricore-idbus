@@ -47,6 +47,7 @@
     AccessToken accessToken = null;
     RefreshToken refreshToken = null;
     BearerAccessToken bearerAccessToken = null;
+    String sessionState = null;
 
     JWT idToken = null;
     JWTClaimsSet claims = null;
@@ -131,6 +132,7 @@
                 refreshToken = successResponse.getOIDCTokens().getRefreshToken();
                 bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
                 idToken = successResponse.getOIDCTokens().getIDToken();
+                sessionState = request.getParameter("session_state");
 
                 SignedJWT signedIdToken = (SignedJWT) idToken;
 
@@ -147,6 +149,9 @@
                 signedIdToken.verify(verifier);
                 claims = signedIdToken.getJWTClaimsSet();
 
+
+
+                request.getSession().setAttribute("session_state", sessionState);
                 request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
                 request.getSession().setAttribute("refresh_token", refreshToken);
 
