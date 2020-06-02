@@ -33,7 +33,15 @@ function onError(jqXHR, textStatus, errorThrown){
 
     let pathArray = window.location.pathname.split('/');
     let errorLocation = "/" + pathArray[1] + "/ERR/" + jqXHR.status + "?location=" + btoa(lastLocation);
+
+    let errorText = jqXHR.responseText;
+    if (errorText != null) {
+        errorText = errorText.split('\n')[0];
+        errorLocation += '&error=' + btoa(errorText);
+    }
+
     console.log(textStatus + ": " + jqXHR.status + " " + errorThrown + ":" + errorLocation + " lastLocation ["+lastLocation+"]");
+    console.log(errorText);
     window.location.replace(errorLocation);
 }
 

@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,19 +78,36 @@ public class HttpErrServlet  extends HttpServlet {
 
             // We need to get the Jetty request to get parameters (bug?)
             Request r = (Request) req.getAttribute("org.ops4j.pax.web.service.internal.jettyRequest");
+
+            // Location
             String location = r.getParameter("location");
             String shortLocation = "";
             if (location != null) {
-                location = new String(Base64.decodeBase64(location.getBytes()));
+                location = new String(Base64.decodeBase64(location.getBytes())).
+                        replace("<", "&lt;").
+                        replace(">", "&gt;");
                 int  args = location.indexOf("?");
                 shortLocation = args > 0 ? location.substring(0, args) : location;
             } else {
                 location = "";
             }
 
+            // Error
+            String error = r.getParameter("error");
+            if (error != null) {
+                error = new String(Base64.decodeBase64(error.getBytes())).
+                        replace("<", "&lt;").
+                        replace(">", "&gt;");
+            } else {
+                error = "";
+            }
+
             // Velocity
             VelocityContext veCtx = new VelocityContext();
-            veCtx.put("location", shortLocation != null ? shortLocation : location);
+
+            veCtx.put("location", URLEncoder.encode(shortLocation, "UTF-8"));
+            veCtx.put("error", error);
+
             Reader in = resolveTemplate(templateLocation);
 
             // Write to response
