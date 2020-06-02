@@ -42,25 +42,14 @@ public class CheckSessionIFrameRestfulBinding extends AbstractOpenIDRestfulBindi
             copyBackState(out.getState(), exchange);
 
             // Cross origin support
-            Set<String> allowedOrigins = null;
-            String xFrameOptoinsURLs = "";
-            if (oidcOut.getHeader("OIDC-Origins") != null) {
-                allowedOrigins = (Set<String>) oidcOut.getHeader("OIDC-Origins");
-
-                for (String allowedOrigin : allowedOrigins) {
-                    xFrameOptoinsURLs += " " + allowedOrigin;
-                }
-
-                // X-FrameOptions
-                httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, XFrameOptions.ALLOW_FROM + xFrameOptoinsURLs);
-                httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors" + xFrameOptoinsURLs);
-            }
+            Set<String> allowedOrigins = getAllowedOrigins();
 
             httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
             httpOut.getHeaders().put("Pragma", "no-cache");
             httpOut.getHeaders().put("http.responseCode", 200);
             httpOut.getHeaders().put("Content-Type", "text/html");
             handleCrossOriginResourceSharing(exchange, allowedOrigins);
+            handleXFrameOptions(exchange, allowedOrigins);
 
             httpOut.setBody(out.getRawContent());
 

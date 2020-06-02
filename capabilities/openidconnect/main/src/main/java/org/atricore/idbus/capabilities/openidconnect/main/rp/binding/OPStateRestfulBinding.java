@@ -28,6 +28,7 @@ public class OPStateRestfulBinding extends AbstractOpenIDRestfulBinding {
 
             MediationMessage out = oidcOut.getMessage();
             Message httpOut = exchange.getOut();
+            Set<String> allowedOrigins = getAllowedOrigins();
 
             // ------------------------------------------------------------
             // Prepare HTTP Response
@@ -39,6 +40,7 @@ public class OPStateRestfulBinding extends AbstractOpenIDRestfulBinding {
             httpOut.getHeaders().put("http.responseCode", 200);
             httpOut.getHeaders().put("Content-Type", "application/octet-stream");
             handleCrossOriginResourceSharing(exchange);
+            handleXFrameOptions(exchange, allowedOrigins);
 
             httpOut.setBody(out.getRawContent());
 

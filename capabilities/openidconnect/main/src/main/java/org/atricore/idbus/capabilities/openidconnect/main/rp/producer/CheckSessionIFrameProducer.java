@@ -42,12 +42,6 @@ public class CheckSessionIFrameProducer extends AbstractOpenIDProducer {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
-        Set<String> allowedOrigens = getAllowedOrigins();
-
-        // Configure the allowed origens for iFrames and JS
-        out.getHeaders().put("OIDC-Origins", allowedOrigens);
-
         String iFrameContent = getIFrameContent();
 
         out.setMessage(new MediationMessageImpl(UUIDGenerator.generateJDKId(),
@@ -112,18 +106,5 @@ public class CheckSessionIFrameProducer extends AbstractOpenIDProducer {
         }
 
         throw new OpenIDConnectException("No endpoint found for service/binding " + service + "/" + binding);
-    }
-
-    protected Set<String> getAllowedOrigins() {
-        if (this.allowedOrigins == null) {
-            allowedOrigins = new HashSet<String>();
-            OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
-            for (URI uri : mediator.getClient().getOIDCMetadata().getRedirectionURIs()) {
-                allowedOrigins.add(
-                        uri.getScheme() + "://" + uri.getHost() + (uri.getPort() != 443 && uri.getPort() != 80 ? ":" + uri.getPort() : ""));
-            }
-        }
-
-        return allowedOrigins;
     }
 }

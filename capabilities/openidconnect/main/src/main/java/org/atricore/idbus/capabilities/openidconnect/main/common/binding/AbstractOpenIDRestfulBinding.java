@@ -11,10 +11,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.OpenIDConnectBPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.XFrameOptions;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 
@@ -22,10 +25,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Front-channel restful binding
@@ -34,6 +37,8 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
 
 
     private static final Log logger = LogFactory.getLog(AbstractOpenIDRestfulBinding.class);
+
+    private Set<String> allowedOrigins;
 
     public AbstractOpenIDRestfulBinding(String binding, Channel channel) {
         super(binding, channel);
@@ -112,11 +117,14 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
             // TODO : CORS
             // TODO : FRAME OPTIONS
 
+            Set<String> allowedOrigins = getAllowedOrigins();
+
             httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
             httpOut.getHeaders().put("Pragma", "no-cache");
             httpOut.getHeaders().put("http.responseCode", error != null ? error.getHTTPStatusCode() : 200);
             httpOut.getHeaders().put("Content-Type", "application/json");
             handleCrossOriginResourceSharing(exchange);
+            handleXFrameOptions(exchange, allowedOrigins);
 
             if (marshalledHttpResponseBody != null) {
                 ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
@@ -341,5 +349,43 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
         }
 
         return accessTokenValue;
+    }
+
+
+    /**
+     * Only works for binding channels that are directly related to the RP.
+     * @return
+     */
+    protected Set<String> getAllowedOrigins() {
+
+        if (channel.getIdentityMediator() instanceof OpenIDConnectBPMediator) {
+            OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
+            if (this.allowedOrigins == null) {
+                allowedOrigins = new HashSet<String>();
+                for (URI uri : mediator.getClient().getOIDCMetadata().getRedirectionURIs()) {
+                    allowedOrigins.add(
+                            uri.getScheme() + "://" + uri.getHost() + (uri.getPort() != 443 && uri.getPort() != 80 ? ":" + uri.getPort() : ""));
+                }
+            }
+            return allowedOrigins;
+        }
+
+        return Collections.emptySet();
+
+    }
+
+    protected void handleXFrameOptions(Exchange exchange, Set<String> allowedOrigins) {
+        Message httpOut = exchange.getOut();
+        String xFrameOptoinsURLs = "";
+        for (String allowedOrigin : allowedOrigins) {
+            xFrameOptoinsURLs += " " + allowedOrigin;
+        }
+
+        // X-FrameOptions
+        if (!xFrameOptoinsURLs.equals("")) {
+            httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_FRAME_OPTIONS, XFrameOptions.ALLOW_FROM + xFrameOptoinsURLs);
+            httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_CONTENT_SECURITY_POLICY, "frame-ancestors" + xFrameOptoinsURLs);
+        }
+
     }
 }
