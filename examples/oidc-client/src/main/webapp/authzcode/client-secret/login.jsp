@@ -57,11 +57,25 @@
 %>
 
 <html>
-<head>
-    <title>ODIC Client Test - Login</title>
-</head>
 
-<h3>Errors:</h3>
-<% if (error != null) out.println(error); %>
-<br>
+<jsp:include page="../inc/header.jsp" />
+
+<body class="gt-fixed">
+
+<jsp:include page="../inc/top-bar.jsp" />
+
+<div id="idbus-error" class="gt-bd clearfix">
+    <div class="gt-content">
+        <div>
+            <h2 class="gt-table-head">Login (Client Secret)</h2>
+        </div>
+        <div>
+            <% if (error != null) {
+                out.println("<ul><li>");
+                out.println(error);
+                out.println("</li></lu>");
+            } %>
+        </div>
+    </div>
+</div>
 </html>

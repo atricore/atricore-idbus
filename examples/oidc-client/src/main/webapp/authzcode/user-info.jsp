@@ -9,6 +9,7 @@
 <%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.claims.UserInfo" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.*" %>
+<%@ page import="java.util.Map" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -59,35 +60,51 @@
 %>
 
 <html>
-<head>
-    <title>ODIC Client Test - User Info</title>
-</head>
-<body>
-<h2>Outcome</h2>
 
-<% if (error == null && exception == null) {
-    out.println("<p>UserInfo: " + userInfo.toJSONObject() + "</br></br></p>");
+<jsp:include page="inc/header.jsp" />
 
-    out.println("<p>UserInfo JWT: " + userInfoJWT + "</br></p>");
+<body class="gt-fixed">
 
-    out.println("<br><br>");
-}
-%>
+<jsp:include page="inc/top-bar.jsp" />
 
+<div id="idbus-error" class="gt-bd clearfix">
+    <div class="gt-content">
+        <div>
+            <h2 class="gt-table-head">User Claims</h2>
+        </div>
 
-<h3>Errors:</h3>
-<% if (error != null) {
-    out.println(error.getCode() + ":" + URLDecoder.decode(error.getDescription()));
-}
+        <div>
+            <% if (error == null && exception == null) {
 
-    if (exception != null) {
-        out.println(exception.getMessage());
-    }%>
-<br>
+                JWTClaimsSet cs = userInfo.toJWTClaimsSet();
+                Map<String, Object> c = cs.getClaims();
+                out.println("<ul>");
+                for (String cName  : c.keySet()) {
+                    out.println("<li>" + cName + ": " + c.get(cName).toString() + "</li>");
+                }
+                out.println("</ul>");
+            }
+            if (error != null) {
+                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+            }
+            if (exception != null) {
+                out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
+            }%>
+        </div>
+    </div>
+</div>
+
+<!-- footer -->
+<div class="gt-footer"><div class="gt-footer-inner">
+    <p>Copyright &copy; 2007 - 2020 Atricore, Inc. - <a href="http://www.atricore.com" target="_blank">www.atricore.com</a></p>
+</div>
+<!-- /footer -->
+
 <% if (iFrameEndpoint != null) { %>
 <iframe id="op-iframe" src="<%=iFrameEndpoint.toString()%>" style="display: none;" >OP CheckSession iFrame</iframe>
 <% } %>
 <iframe src="<%=request.getContextPath()%>/authzcode/chk-session.jsp" style="display: none;">RP CheckSession iFrame</iframe>
+
 </body>
 </html>
 

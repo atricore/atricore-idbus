@@ -150,10 +150,11 @@
                 claims = signedIdToken.getJWTClaimsSet();
 
 
-
+                request.getSession().setAttribute("username" , claims.getSubject());
                 request.getSession().setAttribute("session_state", sessionState);
                 request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
                 request.getSession().setAttribute("refresh_token", refreshToken);
+                request.getSession().setAttribute("id_token", idToken);
 
 
             }
@@ -161,9 +162,11 @@
         } catch (ParseException e) {
             error = e.getErrorObject();
             exception = e;
+            request.getSession().removeAttribute("username");
         } catch (SerializeException e) {
             //error = e.getErrorObject();
             exception = e;
+            request.getSession().removeAttribute("username");
         } catch (JOSEException e) {
             exception = e;
         }
@@ -177,40 +180,43 @@
 %>
 
 <html>
-<head>
-    <title>ODIC Client Test - JWT Bearer with Authorization Code </title>
-</head>
+<jsp:include page="../inc/header.jsp" />
 
-<h2>Outcome</h2>
+<body class="gt-fixed">
 
-<%
-    out.println("CodeVerifier: " + (codeVerifier != null ? codeVerifier.getValue() : "NA"));
-    out.println("<br><br>");
-%>
+<jsp:include page="../inc/top-bar.jsp" />
 
-<% if (error == null && exception == null) {
-    out.println("<p>Claims: " + claims + "</br></br></p>");
+<div id="idbus-error" class="gt-bd clearfix">
+    <div class="gt-content">
+        <div>
+            <h2 class="gt-table-head">Received Tokens</h2>
+        </div>
 
-    out.println("<p>IDToken: " + idToken.getParsedString() + "</br></p>");
-    out.println("<p>AccessToken: " + accessToken + "</br></p>");
+        <div>
 
-    out.println("<p>RefreshToken: " + refreshToken + "</br></p>");
-    out.println("<p>BearerAccessToken: " + bearerAccessToken + "</br></p>");
+            <% if (error == null && exception == null) {
 
-    out.println("<br><br>");
+                out.println("<ul>");
+                out.println("<li><b>IDToken:</b> " + idToken.getParsedString() + "</li>");
+                out.println("<li><b>AccessToken:</b> " + accessToken + "</li>");
+                out.println("<li><b>RefreshToken:</b> " + refreshToken + "</li>");
+                out.println("<li><b>BearerAccessToken:</b> " + bearerAccessToken + "</li>");
+                out.println("<li><b>SessionState:</b> " + sessionState + "</li>");
+                out.println("</ul>");
 
-    out.println("<p><a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString()  + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a></p>");
-}
-%>
+            }
+
+                if (error != null) {
+                    out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+                }
+
+                if (exception != null) {
+                    out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
+                }%>
+        </div>
+    </div>
+</div>
 
 
-<h3>Errors:</h3>
-<% if (error != null) {
-    out.println(error.getCode() + ":" + URLDecoder.decode(error.getDescription()));
-}
-
-    if (exception != null) {
-        out.println(exception.getMessage());
-    }%>
 <br>
 </html>

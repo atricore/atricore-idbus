@@ -53,7 +53,7 @@ function receiveMessage(e)
     if (!targetOrigin.startsWith(e.origin) ) {return;}
     if (e.data == "changed") {
         // Go to main page
-        window.parent.location.href = "<%=request.getContextPath()%>" + "/authzcode/index.jsp"
+        window.parent.location.href = "<%=request.getContextPath()%>" + "/authzcode/logout.jsp?action=detected"
     }
 }
 </script>

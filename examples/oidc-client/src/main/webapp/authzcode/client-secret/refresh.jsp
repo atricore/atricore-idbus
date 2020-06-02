@@ -147,37 +147,35 @@
 %>
 
 <html>
-<head>
-    <title>ODIC Client Test - Refresh Token </title>
-</head>
+<jsp:include page="../inc/header.jsp" />
 
-<h2>Outcome</h2>
+<body class="gt-fixed">
 
-<% if (error == null && exception == null) {
-    out.println("<p>Claims: " + claims + "</br></br></p>");
+<jsp:include page="../inc/top-bar.jsp" />
 
-    out.println("<p>IDToken: " + idToken.getParsedString() + "</br></p>");
-    out.println("<p>AccessToken: " + accessToken + "</br></p>");
-
-    out.println("<p>RefreshToken: " + refreshToken + "</br></p>");
-    out.println("<p>BearerAccessToken: " + bearerAccessToken + "</br></p>");
-
-    out.println("<br><br>");
-
-    out.println("<p><a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString()  + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a></p>");
-    }
-%>
-
-
-<h3>Errors:</h3>
-<% if (error != null) {
-    out.println(error.getCode() + ":" + URLDecoder.decode(error.getDescription()));
-}
-
-if (exception != null) {
-    out.println(exception.getMessage());
-}%>
-<br>
+<div id="idbus-error" class="gt-bd clearfix">
+    <div class="gt-content">
+        <div>
+            <h2 class="gt-table-head">Received Tokens</h2>
+        </div>
+        <div>
+            <% if (error == null && exception == null) {
+                out.println("<ul>");
+                out.println("<li>IDToken: " + idToken.getParsedString() + "</li>");
+                out.println("<li>AccessToken: " + accessToken + "</li>");
+                out.println("<li>RefreshToken: " + refreshToken + "</li>");
+                out.println("<li>BearerAccessToken: " + bearerAccessToken + "</li>");
+                out.println("</ul>");
+            }
+            if (error != null) {
+                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+            }
+            if (exception != null) {
+                out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
+            }%>
+        </div>
+    </div>
+</div>
 </html>
 
 
