@@ -58,31 +58,16 @@ public class PartnerAppModel implements Serializable {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getSsoEndpoint() {
         return ssoEndpoint;
     }
 
-    public void setSsoEndpoint(String ssoEndpoint) {
-        this.ssoEndpoint = ssoEndpoint;
-    }
-
     public String getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
-    }
 }

@@ -35,4 +35,6 @@ public interface BindingChannel extends StatefulChannel {
 
     FederatedLocalProvider getFederatedProvider();
 
+    String getDefaultServiceURL();
+
 }

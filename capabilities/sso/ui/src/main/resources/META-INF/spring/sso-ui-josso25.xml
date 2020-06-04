@@ -39,6 +39,7 @@
     SAML2_IDP_LOCAL("SAML2IDPLocal", "images/sso/identity_provider.png"),
     SAML2_IDP_REMOTE("SAML2IDPRemote", "images/sso/external_saml_identity_provider.png"),
     GOOGLE_IDP_REMOTE("GoogleIDPRemote", "images/sso/google_external_identity_provider.png"),
+
     -->
             <list>
                 <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
@@ -83,6 +84,128 @@
                     <property name="shared" value="true"/>
                 </bean>
 
+                <!-- Service Providers -->
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="SugarCRM"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/sp-sugarcrm.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="GoogleApps"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/sp-google.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="SalesForce"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/sp-salesforce.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="AlfrescorResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="ColdfusionResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="DominoResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-lotusnotes.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="JBossEPPResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="JBossPortalResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="JOSSO1Resource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="JOSSO2Resource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="LiferayResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="MicroStrategyResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="BlackBoardResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="SASResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="SelfServicesResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-josso.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="SharepointResource"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/r-msoffice.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="SAML2SP"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/sp-saml.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="UNKNONW"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/sp-saml.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="SAMLSPProxy"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/sp-saml.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
+
+                <bean class="org.atricore.idbus.capabilities.sso.ui.BrandingResource">
+                    <property name="id" value="OIDCRP"/>
+                    <property name="type" value="IMAGE"/>
+                    <property name="path" value="josso25/img/icons/sp-openID.svg"/>
+                    <property name="shared" value="true"/>
+                </bean>
             </list>
         </property>
 

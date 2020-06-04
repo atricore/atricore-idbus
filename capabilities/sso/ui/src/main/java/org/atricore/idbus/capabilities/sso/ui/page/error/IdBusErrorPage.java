@@ -50,18 +50,26 @@ public class IdBusErrorPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(IdBusErrorPage.class);
 
+    private String artifactId;
+
     public IdBusErrorPage() throws Exception {
         this(null);
     }
 
     public IdBusErrorPage(PageParameters parameters) throws Exception {
+        if (parameters != null)
+            artifactId = parameters.get("IDBusErrArt").toString();
+
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
         SSOCredentialClaimsRequest credentialClaimsRequest = null;
         getSession().bind();
 
-        if (parameters != null) {
-
-            String artifactId = parameters.get("IDBusErrArt").toString();
+        if (artifactId != null) {
 
             try {
                 MediationMessage fault = artifactId != null ? getFault(artifactId) : null;
@@ -100,6 +108,7 @@ public class IdBusErrorPage extends BasePage {
             }
 
         }
+
     }
 
     protected MediationMessage getFault(String artifactId) throws Exception {

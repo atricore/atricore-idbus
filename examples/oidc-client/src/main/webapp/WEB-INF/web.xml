@@ -4,4 +4,11 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
      http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
+
+    <welcome-file-list id="WelcomeFileList">
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+
+
 </web-app>

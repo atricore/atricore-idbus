@@ -1,7 +1,6 @@
 package org.atricore.idbus.capabilities.sso.ui.page.select;
 
 import org.apache.wicket.markup.html.image.Image;
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -11,7 +10,7 @@ import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.model.IdPModel;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.AppResource;
+import org.atricore.idbus.capabilities.sso.main.AppResource;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 
 /**

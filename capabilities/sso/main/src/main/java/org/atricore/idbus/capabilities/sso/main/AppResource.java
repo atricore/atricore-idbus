@@ -1,4 +1,4 @@
-package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard;
+package org.atricore.idbus.capabilities.sso.main;
 
 /**
  * @author: sgonzalez@atriocore.com
@@ -23,10 +23,12 @@ public enum AppResource {
     SELFSERVICES("SelfServicesResource", "images/sso/selfservices_resource.png"),
     SHAREPOINT("SharepointResource", "images/sso/sharepoint_resource.png"),
     SAML2_SP("SAML2SP", "images/sso/external_saml_service_provider.png"),
+    SAML2_SP_PROXY("SAMLSPProxy", "images/sso/external_saml_service_provider.png"), // TODO : Override in josso25
     UNKNOWN("UNKNONW", "images/sso/josso2_resource.png"),
     SAML2_IDP_LOCAL("SAML2IDPLocal", "images/sso/identity_provider.png"),
     SAML2_IDP_REMOTE("SAML2IDPRemote", "images/sso/external_saml_identity_provider.png"),
     GOOGLE_IDP_REMOTE("GoogleIDPRemote", "images/sso/google_external_identity_provider.png"),
+    OIDC_RP("OIDCRP", "images/sso/josso1_resource.png.png"),
     ;
 
     private String resourceType;

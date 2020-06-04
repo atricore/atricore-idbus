@@ -1,11 +1,13 @@
 package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.sidebar;
 
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.model.PartnerAppModel;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
@@ -56,6 +58,8 @@ public class SideBarPanel extends Panel {
 
         add(appsList);
 
+        add(new BookmarkablePageLink<Void>("profileLink", resolvePage("SS/PROFILE")));
+
     }
 
     public List<PartnerAppModel> getApps() {
@@ -72,6 +76,11 @@ public class SideBarPanel extends Panel {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Class resolvePage(String path) {
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        return app.resolvePage(path);
     }
 }
 

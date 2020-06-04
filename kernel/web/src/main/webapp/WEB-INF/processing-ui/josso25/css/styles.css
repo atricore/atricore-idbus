@@ -466,6 +466,14 @@ table.table--zebra tr:nth-child(even) {
     cursor: pointer;
 }
 
+span.feedbackPanelERROR ,
+span.feedbackPanelINFO,
+span.feedbackPanelWARNING,
+span.feedbackPanelSUCCESS {
+    border: none;
+}
+
+
 .feedbackPanelERROR,
 .feedbackPanelSUCCESS,
 .feedbackPanelWARNING,

@@ -50,11 +50,13 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
             AuthnRequestType authnReq = saml2Ctx.getAuthnState().getAuthnRequest();
             if (authnReq != null) {
                 ExtensionsType exts = authnReq.getExtensions();
-                for (Object ext : exts.getAny()) {
-                    if (ext instanceof JAXBElement) {
-                        JAXBElement jaxbExt = (JAXBElement) ext;
-                        if (jaxbExt.getValue() instanceof ExtAttributeListType)
-                            extAttrs = (ExtAttributeListType) jaxbExt.getValue();
+                if (exts != null) {
+                    for (Object ext : exts.getAny()) {
+                        if (ext instanceof JAXBElement) {
+                            JAXBElement jaxbExt = (JAXBElement) ext;
+                            if (jaxbExt.getValue() instanceof ExtAttributeListType)
+                                extAttrs = (ExtAttributeListType) jaxbExt.getValue();
+                        }
                     }
                 }
             }

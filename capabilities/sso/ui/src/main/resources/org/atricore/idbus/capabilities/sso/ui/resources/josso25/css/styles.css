@@ -467,7 +467,10 @@ table.table--zebra tr:nth-child(even) {
 }
 
 /* Remove border from span elements (used by wikid) */
-span.feedbackPanelERROR {
+span.feedbackPanelERROR ,
+span.feedbackPanelINFO,
+span.feedbackPanelWARNING,
+span.feedbackPanelSUCCESS {
     border: none;
 }
 

@@ -103,7 +103,7 @@
 <% if (iFrameEndpoint != null) { %>
 <iframe id="op-iframe" src="<%=iFrameEndpoint.toString()%>" style="display: none;" >OP CheckSession iFrame</iframe>
 <% } %>
-<iframe src="<%=request.getContextPath()%>/authzcode/chk-session.jsp" style="display: none;">RP CheckSession iFrame</iframe>
+<iframe src="<%=request.getContextPath()%>/authzcode/chk-session-iframe.jsp" style="display: none;">RP CheckSession iFrame</iframe>
 
 </body>
 </html>

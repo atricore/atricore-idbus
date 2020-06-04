@@ -22,7 +22,11 @@ package org.atricore.idbus.capabilities.sso.ui.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -34,6 +38,7 @@ import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.SelfServicesPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdchange.PwdChangePage;
@@ -78,6 +83,9 @@ public class BasePage extends WebPage implements IHeaderContributor {
     @PaxWicketBean(name = "kernelConfig", injectionSource = "spring")
     protected ConfigurationContext kernelConfig;
 
+    private WebMarkupContainer pageBody;
+
+    private WebMarkupContainer mainPanel;
 
     private IPageHeaderContributor headerContributors;
 
@@ -90,7 +98,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
     @SuppressWarnings("serial")
     public BasePage(PageParameters parameters) throws Exception {
-        
+
         // -------------------------------------------------------------------
         // The very first thing to do is set the application ready if it's not
         //                                WebMarkupContainer
@@ -110,7 +118,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
             if (defaultLocale != null)
                 getSession().setLocale(StringUtils.parseLocaleString(defaultLocale));
         }
-        
+
         // Handle internationalization
         if (parameters != null) {
             String lang = parameters.get("lang").toString();
@@ -134,7 +142,31 @@ public class BasePage extends WebPage implements IHeaderContributor {
         String variation = resolveVariation(branding);
         setVariation(variation);
 
+        // These were added after the initial branding was created
         final SSOWebSession session = (SSOWebSession)getSession();
+        pageBody = new WebMarkupContainer("body") {
+        };
+        mainPanel = new WebMarkupContainer("main-panel") {
+        };
+
+        if (this instanceof SelfServicesPage) {
+            /*
+            <body class="has-clouds light-bg">
+            <div class="wrapper p-0">
+             */
+            pageBody.add(new AttributeAppender("class", "has-clouds light-bg"));
+            mainPanel.add(new AttributeAppender("class", "wrapper p-0"));
+        } else {
+            pageBody.add(new AttributeAppender("class", "has-clouds -light-bg"));
+            mainPanel.add(new AttributeAppender("class", "wrapper"));
+        }
+
+
+
+
+
+        super.add(pageBody);
+        pageBody.add(mainPanel);
 
         // ---------------------------------------------------------------------
         // Utility box (current user, logout)
@@ -145,6 +177,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
                 return (session).isAuthenticated();
             };
         };
+
 
         if (session.isAuthenticated()) {
             utilityBox.add(new Label("username", session.getPrincipal()));
@@ -169,25 +202,15 @@ public class BasePage extends WebPage implements IHeaderContributor {
             // Select the proper section on the navbar (alter css class)
 
             // Dashboard
-            if (this instanceof DashboardPage)
-                navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")).add(new AttributeAppender("class", "gt-active")));
-            else
-                navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")));
+            navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")));
 
             // Profile
-            if (this instanceof  ProfilePage)
-                navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")).add(new AttributeAppender("class", "gt-active")));
-            else
-                navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")));
-
+            navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")));
 
             // Change Password
-            if (this  instanceof PwdChangePage)
-                navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")).add(new AttributeAppender("class", "gt-active")));
-            else
-                navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")));
+            navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")));
 
-            // Logout 1
+            // Logout
             navBar.add(new BookmarkablePageLink<Void>("logout", resolvePage("AGENT/LOGOUT")));
 
             // Logout 2
@@ -202,9 +225,9 @@ public class BasePage extends WebPage implements IHeaderContributor {
             return;
 
         BaseWebApplication app = (BaseWebApplication) getApplication();
-        
+
         WebBranding branding = app.getBranding();
-        
+
         if (branding == null)
             return;
 
@@ -255,6 +278,26 @@ public class BasePage extends WebPage implements IHeaderContributor {
     public Class resolvePage(String path) {
         BaseWebApplication app = (BaseWebApplication) getApplication();
         return app.resolvePage(path);
+    }
+
+    /**
+     * We added new components in the heararchy, so we add childrent to the new tree.
+     * @param behaviors
+     * @return
+     */
+    @Override
+    public Component add(Behavior... behaviors) {
+        return mainPanel.add(behaviors);
+    }
+
+    /**
+     * We added new components in the heararchy, so we add childrent to the new tree.
+     * @param childs
+     * @return
+     */
+    @Override
+    public MarkupContainer add(Component... childs) {
+        return mainPanel.add(childs);
     }
 
 }
