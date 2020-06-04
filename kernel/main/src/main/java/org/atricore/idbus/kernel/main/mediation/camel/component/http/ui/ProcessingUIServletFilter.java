@@ -120,7 +120,6 @@ public class ProcessingUIServletFilter implements Filter {
         if (hReq.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROCESS_UI) != null) {
             // This request was issued by the IDBUS Processing UI page, let the servlet handle it
             logger.trace("Request has already being processed by the UI : " + requestUrl);
-
             chain.doFilter(req, res);
         } else {
 

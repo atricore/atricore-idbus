@@ -62,7 +62,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
-        
+
         // Create routes based on endpoints!
 
         return new RouteBuilder() {
@@ -91,6 +91,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
                         case SAMLR2_POST:
                         case SAMLR2_REDIRECT:
                         case SSO_ARTIFACT:
+                        case SSO_PAYLOAD:
                         case SSO_REDIRECT:
                         case SSO_JSON_FRONT_CHANNEL:
                         case SSO_IDP_INITIATED_SSO_HTTP_SAML2:
@@ -240,7 +241,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + spChannel.getName()).
-                                        process(new LoggerProcessor(getLogger())).  
+                                        process(new LoggerProcessor(getLogger())).
                                         to("sso-idp:" + ed.getType() +
                                                 "?channelRef=" + spChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
@@ -344,8 +345,8 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
             }
         };
-        
-        
+
+
     }
 
     public String getPreferredSpAlias() {

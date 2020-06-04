@@ -65,6 +65,8 @@ public class HttpErrServlet  extends HttpServlet {
         if (pathInfo != null) {
             try {
                 status = Integer.parseInt(statusStr);
+                if (status < 100)
+                    status = 500;
                 pageName = status +  ".html";
             } catch (NumberFormatException e) {
                 logger.trace("Illegal status " + statusStr + ", forcing 404");
@@ -72,9 +74,16 @@ public class HttpErrServlet  extends HttpServlet {
                 logger.trace("Illegal status NULL, forcing 404");
             }
 
+            String internalError = null;
             // Lookup for branding
             WebBranding branding = HttpUtils.resolveWebBranding(servletContext, req);
             String templateLocation = "/WEB-INF/err/" + branding.getWebBrandingId() + "/" + pageName;
+            Reader in = resolveTemplate(templateLocation);
+            if (in == null) {
+                logger.warn("Unsupported HTTP Status code: " + statusStr);
+                in = resolveTemplate("/WEB-INF/err/" + branding.getWebBrandingId() + "/" + "404.html");
+                internalError = "Illegal status : " + statusStr;
+            }
 
             // We need to get the Jetty request to get parameters (bug?)
             Request r = (Request) req.getAttribute("org.ops4j.pax.web.service.internal.jettyRequest");
@@ -98,6 +107,8 @@ public class HttpErrServlet  extends HttpServlet {
                 error = new String(Base64.decodeBase64(error.getBytes())).
                         replace("<", "&lt;").
                         replace(">", "&gt;");
+            } else if (internalError != null) {
+                error = internalError;
             } else {
                 error = "";
             }
@@ -107,8 +118,6 @@ public class HttpErrServlet  extends HttpServlet {
 
             veCtx.put("location", URLEncoder.encode(shortLocation, "UTF-8"));
             veCtx.put("error", error);
-
-            Reader in = resolveTemplate(templateLocation);
 
             // Write to response
             resp.setStatus(status);
@@ -124,6 +133,9 @@ public class HttpErrServlet  extends HttpServlet {
             if (logger.isDebugEnabled())
                 logger.debug("Resolving pate template ["+templateLocation+"]");
             InputStream pageIs = servletContext.getResourceAsStream(templateLocation);
+            if (pageIs == null)
+                return null;
+
             content = IOUtils.toString(pageIs, "UTF-8");
             templates.put(templateLocation, content);
         }

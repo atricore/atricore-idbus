@@ -26,16 +26,16 @@ package org.atricore.idbus.capabilities.sso.support.binding;
  * @version $Id: SSOBinding.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
 public enum SSOBinding {
-    
+
     /** URI for SAML 2 Artifact binding. [SAMLBinding 3.6]*/
     SAMLR2_ARTIFACT("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact", true, true),
-    
+
     /** URI for SAML 2 POST binding. [SAMLBinding 3.5]*/
     SAMLR2_POST("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", true, true),
-    
+
     /** URI for SAML 2 HTTP redirect binding. [SAMLBinding 3.4]*/
     SAMLR2_REDIRECT("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect", true, true),
-    
+
     /** URI for SAML 2 SOAP binding. [SAMLBinding 3.2]*/
     SAMLR2_SOAP("urn:oasis:names:tc:SAML:2.0:bindings:SOAP", false, true),
 
@@ -53,6 +53,9 @@ public enum SSOBinding {
 
 
     // Extended SAMLR2 Bindings, because SAMLR2 is a core capability, we call this extensions IDBUS
+
+    /** URI for SAML 2 POST binding PAYLOAD resolution. */
+    SSO_PAYLOAD("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Payload", true, false),
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
     SSO_ARTIFACT("urn:org:atricore:idbus:sso:bindings:HTTP-Artifact", true, false),

@@ -33,6 +33,8 @@ public enum SSOService {
 
     MetadataService(SSOMetadataConstants.MetadataService_QNAME),
 
+    PayloadResolutionService(SSOMetadataConstants.PayloadResolutionService_QNAME),
+
     SingleSignOnService(SSOMetadataConstants.SingleSignOnService_QNAME),
 
     SingleLogoutService(SSOMetadataConstants.SingleLogoutService_QNAME),

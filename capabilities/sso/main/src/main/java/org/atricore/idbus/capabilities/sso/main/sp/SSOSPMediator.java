@@ -278,6 +278,7 @@ public class SSOSPMediator extends AbstractSSOMediator {
                             break;
 
                         case SSO_ARTIFACT:
+                        case SSO_PAYLOAD:
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
@@ -371,6 +372,7 @@ public class SSOSPMediator extends AbstractSSOMediator {
                     switch (binding) {
                         // All HTTP Endpoint routes are created the same way
                         case SSO_ARTIFACT:
+                        case SSO_PAYLOAD:
                         case SSO_REDIRECT:
 
                             // ----------------------------------------------------------
