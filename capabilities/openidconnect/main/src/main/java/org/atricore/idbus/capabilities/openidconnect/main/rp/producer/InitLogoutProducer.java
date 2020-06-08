@@ -90,12 +90,16 @@ public class InitLogoutProducer extends AbstractOpenIDProducer {
         OIDCClientInformation client = mediator.getClient();
         OIDCClientMetadata metadata = client.getOIDCMetadata();
 
-        // TODO : ID Token HINT : We need to get the token from the OP.
-        // TODO : Get session from tokens ?!
-        authnCtx.getIdToken();
+        String idTokenStr = null;
+        if (authnCtx != null) {
+            idTokenStr = authnCtx.getIdTokenStr();
+        }
 
         JWT receivedIdToken = logoutRequest.getIDTokenHint();
         String receivedIdTokenStr = receivedIdToken.getParsedString();
+
+        // TODO : ID Token HINT : compare received value with stored value!
+        // TODO : Get session from tokens ?!
 
         URI postLogoutURI = logoutRequest.getPostLogoutRedirectionURI();
 
