@@ -472,6 +472,7 @@ span.feedbackPanelINFO,
 span.feedbackPanelWARNING,
 span.feedbackPanelSUCCESS {
     border: none;
+    padding: 0;
 }
 
 .feedbackPanelERROR,
@@ -836,6 +837,12 @@ body.light-bg .panel > .card {
 .btn:hover {
     text-decoration: none;
     box-shadow: 0 0 150px inset rgba(0, 0, 0, .1)
+}
+
+.btn--primary:disabled {
+    border-color: var(--color-light);
+    color: #fff;
+    background: var(--color-light);
 }
 
 .btn--primary {

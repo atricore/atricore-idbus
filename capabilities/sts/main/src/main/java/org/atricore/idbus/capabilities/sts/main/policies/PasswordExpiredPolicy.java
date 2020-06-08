@@ -6,20 +6,16 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailu
 import org.atricore.idbus.kernel.main.authn.*;
 
 import javax.security.auth.Subject;
-import java.security.Principal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * TODO : Make claim name configurable
- */
-public class AccountLockedAuthnPolicy extends AbstractAuthenticationPolicy {
+public class PasswordExpiredPolicy extends AbstractAuthenticationPolicy {
 
     private static final Log logger = LogFactory.getLog(AccountLockedAuthnPolicy.class);
 
-    public AccountLockedAuthnPolicy() {
-        super("idbus-account-locked", "Account Locked Policy");
+    public PasswordExpiredPolicy() {
+        super("idbus-password-expired", "Password Expired Policy");
     }
 
     @Override
@@ -30,24 +26,22 @@ public class AccountLockedAuthnPolicy extends AbstractAuthenticationPolicy {
         for (SSOUser ssoUser : subject.getPrincipals(SSOUser.class)) {
 
             // Look for subject claims that may indicate the acccount is locked.
-            boolean accountExpires = false;
-            Date accountExpirationDate = null;
+            boolean passwordExpires = false;
+            Date passwordExpirationDate = null;
             boolean accountDisabled = false;
 
             for (SSONameValuePair property : ssoUser.getProperties()) {
-                if ("accountDisabled".equals(property.getName()) && Boolean.parseBoolean(property.getValue())) {
-                    accountDisabled = Boolean.parseBoolean(property.getValue());
-                } else if ("accountExpirationDate".equals(property.getName())) {
+                if ("passwordExpirationDate".equals(property.getName())) {
                     if (property.getValue() != null && !"".equals(property.getValue())) {
                         try {
-                            accountExpirationDate = new Date(Long.parseLong(property.getValue()));
+                            passwordExpirationDate = new Date(Long.parseLong(property.getValue()));
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
                         }
                     }
 
                 } else if ("accountExpires".equals(property.getName()) && property.getValue() != null) {
-                    accountExpires = Boolean.parseBoolean(property.getValue());
+                    passwordExpires = Boolean.parseBoolean(property.getValue());
                 }
             }
 
@@ -55,10 +49,10 @@ public class AccountLockedAuthnPolicy extends AbstractAuthenticationPolicy {
             if (accountDisabled) {
                 AccountLockedAuthnStatement policyEnforcement = new AccountLockedAuthnStatement();
                 policyEnforcements.add(policyEnforcement);
-            } else if (accountExpires &&
-                    accountExpirationDate != null &&
-                    accountExpirationDate.getTime() < System.currentTimeMillis()) {
-                AccountLockedAuthnStatement policyEnforcement = new AccountLockedAuthnStatement();
+            } else if (passwordExpires &&
+                    passwordExpirationDate != null &&
+                    passwordExpirationDate.getTime() < System.currentTimeMillis()) {
+                PasswordPolicyEnforcementError policyEnforcement = new PasswordPolicyEnforcementError(PasswordPolicyErrorType.PASSWORD_EXPIRED);
                 policyEnforcements.add(policyEnforcement);
             }
 
@@ -67,11 +61,11 @@ public class AccountLockedAuthnPolicy extends AbstractAuthenticationPolicy {
         // Check for policies provided by LDAP or any Identity Store
         for (PolicyEnforcementStatement pwdPolicy : subject.getPrincipals(PolicyEnforcementStatement.class)) {
             // Any errors received from stores ?!
-            if (pwdPolicy instanceof  PasswordPolicyEnforcementError) {
+            if (pwdPolicy instanceof PasswordPolicyEnforcementError) {
                 PasswordPolicyEnforcementError pwdError = (PasswordPolicyEnforcementError) pwdPolicy;
-                if (pwdError.getType().equals(PasswordPolicyErrorType.ACCOUNT_LOCKED)) {
-                    AccountLockedAuthnStatement policyEnforcement = new AccountLockedAuthnStatement();
-                    policyEnforcements.add(policyEnforcement);
+                if (pwdError.getType().equals(PasswordPolicyErrorType.PASSWORD_EXPIRED) ||
+                        pwdError.getType().equals(PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED)) {
+                    policyEnforcements.add(pwdPolicy);
                 }
             }
         }

@@ -20,9 +20,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.handler.render.PageRenderer;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationStartedPage;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
@@ -62,7 +60,6 @@ public class ReqPwdResetPanel extends Panel {
             public void onSubmit() {
                 try {
                     reqPwdReset();
-
                 } catch (UserNotFoundException e) {
                     // Hide the fact that the user does not exist
                     onReqPwdResetSucceeded();
@@ -72,7 +69,9 @@ public class ReqPwdResetPanel extends Panel {
                     onReqPwdResetFailed();
                     return;
                 }
-                onReqPwdResetSucceeded();
+
+
+
             }
         };
 
@@ -80,13 +79,14 @@ public class ReqPwdResetPanel extends Panel {
 
         add(form);
 
-        // Create feedback panel and add it to page
-        final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
-        add(feedbackBox);
-
         final FeedbackPanel feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
+
+        // Create feedback panel and add it to page
+        final WebMarkupContainer feedbackBox = new WebMarkupContainer("feedbackBox");
         feedbackBox.add(feedback);
+
+        add(feedbackBox);
 
     }
 
@@ -108,18 +108,18 @@ public class ReqPwdResetPanel extends Panel {
         FindUserByUsernameResponse userResp = app.getProvisioningTarget().findUserByUsername(userReq);
         user = userResp.getUser();
 
-
         // Start request process
         ResetPasswordRequest req = new ResetPasswordRequest(user);
         PrepareResetPasswordResponse resp = app.getProvisioningTarget().prepareResetPassword(req);
 
         // Create and send email using transaction ID
         String t = resp.getTransactionId();
-        String c = resp.getCode();
+        // TODO : Improve
+        String from = getLocalizer().getString("email.sender", this, "josso@atricore.com");
 
-        String from = getLocalizer().getString("email.sender", this, "josso@swirebev.com");
+        onReqPwdResetSucceeded();
 
-        app.getMailService().send(from,
+        app.getMailService().sendAsync(from,
                 user.getEmail(),
                 "Password Reset", buildEMailText(user, t).toString(),
                 "text/html");
@@ -128,16 +128,15 @@ public class ReqPwdResetPanel extends Panel {
 
     protected void onReqPwdResetSucceeded() {
         submit.setEnabled(false);
-        error(getLocalizer().getString("reqPwdResetSucceeded", this, "Operation succeeded"));
-
-        //PageParameters params = new PageParameters();
-        //params.add("username", user.getUserName());
-        //throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/VFYPWDRESET"), params);
-
+        submit.setVisible(false);
+        form.get("username").setEnabled(false);
+        success(getLocalizer().getString("reqPwdResetSucceeded", this, "Operation succeeded"));
     }
 
     protected void onReqPwdResetFailed() {
         submit.setEnabled(false);
+        submit.setVisible(false);
+        form.get("username").setEnabled(false);
         error(getLocalizer().getString("app.error", this, "Operation failed"));
     }
 

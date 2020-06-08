@@ -126,6 +126,12 @@ public class BasePage extends WebPage implements IHeaderContributor {
                 getSession().setLocale(StringUtils.parseLocaleString(lang));
             }
         }
+
+        pageBody = new WebMarkupContainer("body") {
+        };
+        mainPanel = new WebMarkupContainer("main-panel") {
+        };
+
     }
 
     @Override
@@ -144,10 +150,6 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
         // These were added after the initial branding was created
         final SSOWebSession session = (SSOWebSession)getSession();
-        pageBody = new WebMarkupContainer("body") {
-        };
-        mainPanel = new WebMarkupContainer("main-panel") {
-        };
 
         if (this instanceof SelfServicesPage) {
             /*
@@ -161,10 +163,6 @@ public class BasePage extends WebPage implements IHeaderContributor {
             mainPanel.add(new AttributeAppender("class", "wrapper"));
         }
 
-
-
-
-
         super.add(pageBody);
         pageBody.add(mainPanel);
 
@@ -177,7 +175,6 @@ public class BasePage extends WebPage implements IHeaderContributor {
                 return (session).isAuthenticated();
             };
         };
-
 
         if (session.isAuthenticated()) {
             utilityBox.add(new Label("username", session.getPrincipal()));
@@ -297,6 +294,8 @@ public class BasePage extends WebPage implements IHeaderContributor {
      */
     @Override
     public MarkupContainer add(Component... childs) {
+        if (mainPanel == null)
+            throw new RuntimeException("Do NOT add components to the page before constructor is done! ");
         return mainPanel.add(childs);
     }
 

@@ -251,6 +251,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
             startMilis = System.currentTimeMillis();
 
+            // These are warning statements
             Set<PolicyEnforcementStatement> ssoPolicies = verify(processingContext, requestToken.getValue(), tokenType.getValue());
 
             endMilis = System.currentTimeMillis();
@@ -495,7 +496,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
         if (errorStmts.size() > 0)
-            throw new SecurityTokenAuthenticationFailure("Policy Enforcement", errorStmts, null);
+            throw new SecurityTokenAuthenticationFailure("[Policy Enforcement]", errorStmts, null);
 
         return warnStmts;
     }

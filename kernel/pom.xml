@@ -50,7 +50,7 @@
         <idbus.bundle.pax-web-jetty-v0_7_2.version>1.4.4-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
         <idbus.bundle.wadi-v2_1_2.version>1.4.4-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
         <idbus.bundle.javax-jdo-v3_0.version>1.4.4-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
-        
+
         <activemq.version>5.3.2</activemq.version>
 
         <camel.version>1.6.1</camel.version>
@@ -97,28 +97,10 @@
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <xbean.version>3.7</xbean.version>
     </properties>
-    
 
-    <modules>				
-        <module>common</module>
-        <module>fragments</module>
-        <module>planning</module>
-        <module>main</module>
-        <module>ha</module>
-        <module>web</module>
-        <module>authz</module>
-        <!--
-        <module>proxy</module>
-        -->
-        <module>monitoring</module>
-        <module>auditing</module>
-        <!--
-        <module>agent</module>
-        -->
-    </modules>				
 
     <dependencyManagement>
-        
+
         <dependencies>
 
             <dependency>
@@ -152,7 +134,7 @@
                 <version>${project.version}</version>
                 <type>war</type>
             </dependency>
-            
+
 
             <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
@@ -183,7 +165,7 @@
                 <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_2</artifactId>
                 <version>${idbus.bundle.pax-web-jetty-v0_7_2.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.wadi-v2_1_2</artifactId>
@@ -253,7 +235,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            
+
             <dependency>
                 <groupId>net.sf.ehcache</groupId>
                 <artifactId>ehcache-core</artifactId>
@@ -350,7 +332,7 @@
                         <groupId>org.springframework</groupId>
                         <artifactId>org.springframework.aop</artifactId>
                     </exclusion>
-                    
+
                 </exclusions>
             </dependency>
 
@@ -487,7 +469,7 @@
                 <artifactId>commons-dbcp</artifactId>
                 <version>${commons-dbcp.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.xbean</groupId>
                 <artifactId>xbean-spring</artifactId>
@@ -586,7 +568,7 @@
                     <artifactId>maven-jaxb-plugin</artifactId>
                     <version>1.1</version>
                 </plugin>
-                
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -698,7 +680,7 @@
                     <source>1.6</source>
                     <!--
                     FIXME: This worked in m1, but m2 complains about it being an invalid flag
-                    
+
                     <additionalparam>-J-Djava.awt.headless=true</additionalparam>
                     -->
                     <linksource>true</linksource>
@@ -744,4 +726,42 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <profiles>
+        <profile>
+            <id>full</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
+            <modules>
+                <module>common</module>
+                <module>fragments</module>
+                <module>planning</module>
+                <module>main</module>
+                <module>ha</module>
+                <module>web</module>
+                <module>authz</module>
+                <module>monitoring</module>
+                <module>auditing</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>dev</id>
+
+            <modules>
+                <module>common</module>
+                <module>fragments</module>
+                <module>planning</module>
+                <module>main</module>
+                <module>ha</module>
+                <module>web</module>
+                <module>authz</module>
+                <module>monitoring</module>
+                <module>auditing</module>
+            </modules>
+        </profile>
+
+    </profiles>
 </project>

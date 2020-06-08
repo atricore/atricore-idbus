@@ -92,6 +92,7 @@ public class HttpErrServlet  extends HttpServlet {
             String location = r.getParameter("location");
             String shortLocation = "";
             if (location != null) {
+                // Prevent HTML injection
                 location = new String(Base64.decodeBase64(location.getBytes())).
                         replace("<", "&lt;").
                         replace(">", "&gt;");
@@ -104,6 +105,7 @@ public class HttpErrServlet  extends HttpServlet {
             // Error
             String error = r.getParameter("error");
             if (error != null) {
+                // Prevent HTML injection
                 error = new String(Base64.decodeBase64(error.getBytes())).
                         replace("<", "&lt;").
                         replace(">", "&gt;");
@@ -116,7 +118,7 @@ public class HttpErrServlet  extends HttpServlet {
             // Velocity
             VelocityContext veCtx = new VelocityContext();
 
-            veCtx.put("location", URLEncoder.encode(shortLocation, "UTF-8"));
+            veCtx.put("location", shortLocation);
             veCtx.put("error", error);
 
             // Write to response

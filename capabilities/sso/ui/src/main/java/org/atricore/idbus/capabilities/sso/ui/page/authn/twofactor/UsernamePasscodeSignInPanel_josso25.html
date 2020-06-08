@@ -11,21 +11,18 @@
         <span wicket:id="feedback"/>
     </div>
 
-    <form class="form" id="idb" method="post" wicket:id="signInForm">
-        <div style="width:0px;height:0px;position:absolute;left:-100px;top:-100px;overflow:hidden"><input
-                type="hidden" name="idb_hf_0" id="idb_hf_0"></div>
+    <form class="form" method="post" wicket:id="signInForm">
 
         <hr class="spacer"/>
 
         <div class="form-input">
             <label for="username"><wicket:message key="claims.label.username"/></label>
-            <input  wicket:id="username" type="text" class="form-text" path="username" tabindex="10" name="username" id="idc" required="true">
+            <input  wicket:id="username" type="text" class="form-text" path="username" tabindex="10" name="username" id="username" required="true">
         </div>
 
         <div class="form-input">
             <label for="password"><wicket:message key="claims.label.passcode"/></label>
-            <input  wicket:id="passcode" type="password" class="form-text" path="passcode" tabindex="20" value="" name="password"
-                    required="true">
+            <input  wicket:id="passcode" type="password" class="form-text" path="passcode" tabindex="20" value="" name="password" required="true" id="password">
         </div>
 
         <hr class="spacer"/>

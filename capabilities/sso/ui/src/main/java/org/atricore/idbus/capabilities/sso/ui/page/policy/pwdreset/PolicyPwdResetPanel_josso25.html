@@ -13,11 +13,17 @@
 
     <p class="mb-5"><wicket:message key="app.section.intro"/></p>
 
-    <form wicket:id="pwdResetForm" class="form">
+
+    <form class="form" method="post" wicket:id="pwdResetForm">
 
         <hr class="spacer"/>
 
-        <div class="form-input mb-0">
+        <div class="form-input">
+            <label for="currentPassword"><wicket:message key="claims.label.currentPassword"/></label>
+            <input wicket:id="currentPassword" type="password" class="form-text" path="currentPassword" id="currentPassword"/>
+        </div>
+
+        <div class="form-input">
             <label for="newPassword"><wicket:message key="claims.label.newPassword"/></label>
             <input wicket:id="newPassword" type="password" class="form-text" path="newPassword" id="newPassword"/>
         </div>
@@ -28,17 +34,16 @@
             <div class="pwForm__pw-meter__message" id="pwMeterMessage" aria-live="assertive"></div>
         </figure>
 
-        <div class="form-input mb-0">
+        <div class="form-input">
             <label for="retypedPassword"><wicket:message key="claims.label.retypedPassword"/></label>
             <input wicket:id="retypedPassword" type="password" class="form-text" path="retypedPassword" id="retypedPassword"/>
         </div>
 
         <hr class="spacer">
 
-        <input class="btn btn--primary" type="submit" value="Continue" wicket:id="doSave" id="doSave" />
+        <input class="btn btn--primary mb-2" type="submit" value="Submit" wicket:id="doPwdReset" id="doPwdReset"/>
 
     </form>
-
 
     <script>
         /*
@@ -113,7 +118,7 @@
             const $pwMeterBar = document.querySelector("#pwMeterBar");
             const $pwMeterMessage = document.querySelector("#pwMeterMessage");
             const $pwNew = document.querySelector("#newPassword");
-            const $pwSave = document.querySelector("#doSave");
+            const $pwSave = document.querySelector("#doPwdReset");
             let pwStrengthColor = config.pwStatus.critical.color;
             let pwValidators = [];
             let pwMatchChart = [];
@@ -185,6 +190,7 @@
         passwordStrengthCheck();
 
     </script>
+
 
 </wicket:panel>
 </body>

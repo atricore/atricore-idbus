@@ -14,6 +14,7 @@ import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsReques
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
 import org.atricore.idbus.kernel.auditing.core.Action;
@@ -21,8 +22,16 @@ import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Artifact;
 import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.ResetPasswordRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.SetPasswordRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.ResetPasswordResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.SetPasswordResponse;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.CredentialsPolicyVerificationException;
 import org.atricore.idbus.kernel.main.store.exceptions.InvalidCredentialsException;
@@ -38,14 +47,15 @@ public class PolicyPwdResetPanel extends BaseSignInPanel {
 
     private String username;
 
-    private IdentityStore identityStore;
-
-    public PolicyPwdResetPanel(String id, String username, MessageQueueManager artifactQueueManager, IdentityStore identityStore) {
+    public PolicyPwdResetPanel(String id, String username, MessageQueueManager artifactQueueManager) {
         super(id);
+
+        SSOIdPApplication app = (SSOIdPApplication) getApplication();
+        IdentityStore identityStore = ((SPChannel) app.getIdentityProvider().getDefaultFederationService().getChannel()).getIdentityManager().getIdentityStore();
+        ProvisioningTarget pt = app.getProvisioningTarget();
 
         this.username = username;
         this.artifactQueueManager = artifactQueueManager;
-        this.identityStore = identityStore;
 
         form = new Form<PolicyPwdResetModel>("pwdResetForm", new CompoundPropertyModel<PolicyPwdResetModel>(new PolicyPwdResetModel()));
 
@@ -126,14 +136,38 @@ public class PolicyPwdResetPanel extends BaseSignInPanel {
 
     protected void pwdReset() throws ProvisioningException, PolicyPwdResetException {
         PolicyPwdResetModel pwdReset = getPwdResetModel();
-
         if (!pwdReset.getNewPassword().equals(pwdReset.getRetypedPassword())) {
             throw new PolicyPwdResetException(new String[] {"error.password.doNotMatch"});
         }
 
+
         try {
-            identityStore.updatePassword(new SimpleUserKey(username), pwdReset.getCurrentPassword(), pwdReset.getNewPassword());
-            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.SUCCESS, username);
+            SSOIdPApplication app = (SSOIdPApplication) getApplication();
+            IdentityStore identityStore = ((SPChannel) app.getIdentityProvider().getDefaultFederationService().getChannel()).getIdentityManager().getIdentityStore();
+            ProvisioningTarget pt = app.getProvisioningTarget();
+
+            if (pt != null) {
+                // Use provisioning-target
+                FindUserByUsernameRequest userReq = new FindUserByUsernameRequest(username);
+                FindUserByUsernameResponse userResp = pt.findUserByUsername(userReq);
+
+                // Start request process
+                SetPasswordRequest req = new SetPasswordRequest ();
+
+                req.setUserId(userResp.getUser().getId());
+                req.setCurrentPassword(pwdReset.getCurrentPassword());
+                req.setNewPassword(pwdReset.getNewPassword());
+
+                SetPasswordResponse resp = ((SSOIdPApplication)getApplication()).getProvisioningTarget().setPassword(req);
+                recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.SUCCESS, username);
+                return ;
+
+            } else if (identityStore != null && identityStore.isUpdatePasswordEnabled()) {
+                identityStore.updatePassword(new SimpleUserKey(username), pwdReset.getCurrentPassword(), pwdReset.getNewPassword());
+                recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.SUCCESS, username);
+                return;
+            }
+
         } catch (InvalidCredentialsException e) {
             logger.error("Error updating user password: " + e.getMessage(), e);
             recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
@@ -150,7 +184,14 @@ public class PolicyPwdResetPanel extends BaseSignInPanel {
             logger.error("Error updating user password: " + e.getMessage(), e);
             recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
             throw new PolicyPwdResetException(new String[] {"app.error"});
+        } catch (Exception e) {
+            logger.error("Error updating user password: " + e.getMessage(), e);
+            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, username);
+            throw new PolicyPwdResetException(new String[] {"app.error"});
         }
+
+        logger.error( "Identity Store cannot handle credential update and provisioning target is not available");
+        throw new PolicyPwdResetException(new String[] {"app.error"});
     }
 
     /**
