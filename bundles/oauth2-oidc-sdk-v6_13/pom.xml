@@ -155,7 +155,6 @@
                             org.opensaml.security.credential; resolution:=optional,
                             org.opensaml.xmlsec.signature; resolution:=optional,
                             org.opensaml.xmlsec.signature.support; resolution:=optional,
-
                             *
                         </Import-Package>
                         <Embed-Transitive>true</Embed-Transitive>

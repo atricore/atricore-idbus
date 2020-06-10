@@ -1550,7 +1550,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>lang-tag</artifactId>
-            <version>1.4.4</version>
+            <version>1.5</version>
         </dependency>
 
         <dependency>
@@ -2158,7 +2158,7 @@
         <!-- =============================== -->
         <!-- Other dependencies              -->
         <!-- =============================== -->
-        
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
