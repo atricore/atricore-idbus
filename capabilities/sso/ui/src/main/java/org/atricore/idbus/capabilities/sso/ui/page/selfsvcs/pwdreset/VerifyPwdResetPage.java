@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.StringValue;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
@@ -29,8 +30,12 @@ public class VerifyPwdResetPage extends BasePage {
 
     public VerifyPwdResetPage(PageParameters parameters) throws Exception {
         super(parameters);
-        String transactionId = parameters.get("transactionId").toString();
-        state = new PwdResetState(transactionId);
+        StringValue t = parameters.get("transactionId");
+        if (t == null) {
+            throw new RestartResponseAtInterceptPageException(resolvePage("ERROR/SESSION"));
+        }
+        state = new PwdResetState(t.toString());
+
     }
 
     @Override

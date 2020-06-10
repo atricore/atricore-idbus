@@ -13,17 +13,17 @@
             </h1>
         </header>
 
-
         <div class="card-body">
-            <h2><wicket:message key="claims.text.signInTitle"/></h2>
-            <wicket:container wicket:id="signIn" />
+
+            <h2><wicket:message key="general.oops"/><em>&nbsp;<wicket:message key="general.somethingWrong"/></em></h2>
+            <div class="feedbackPanelERROR p-1">
+                <p><wicket:message key="error.access.denied"/></p>
+            </div>
+
         </div>
 
     </div><!-- /card -->
 
-
 </wicket:extend>
 </body>
 </html>
-
-

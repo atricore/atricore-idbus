@@ -29,6 +29,8 @@ public enum AppResource {
     SAML2_IDP_REMOTE("SAML2IDPRemote", "images/sso/external_saml_identity_provider.png"),
     GOOGLE_IDP_REMOTE("GoogleIDPRemote", "images/sso/google_external_identity_provider.png"),
     OIDC_RP("OIDCRP", "images/sso/josso1_resource.png.png"),
+    APP_PAGE_LOGO("app-page-logo", "josso25/img/josso-logo-alt.svg"),
+    APP_CARD_LOGO("app-card-logo", "josso25/img/josso-logo-alt.svg"),
     ;
 
     private String resourceType;

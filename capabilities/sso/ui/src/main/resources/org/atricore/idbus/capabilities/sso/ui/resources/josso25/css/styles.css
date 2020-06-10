@@ -756,6 +756,14 @@ body.light-bg .panel > .card {
     color: var(--color-dark);
 }
 
+.form-input > select {
+    background: none;
+    border: 0;
+    width: 100%;
+    margin: 5px;
+    padding: 5px;
+}
+
 @media all and (min-width: 768px) {
     .form-input {
         padding-top: 0;

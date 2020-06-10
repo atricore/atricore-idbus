@@ -300,7 +300,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             if (issuerURI.getPort() != targetURI.getPort() ||
                     !issuerURI.getHost().equals(targetURI.getHost()) ||
                     !issuerURI.getScheme().equals(targetURI.getScheme()))
-                return false;
+                return true;
 
             return !targetURI.getPath().startsWith("/IDBUS");
 

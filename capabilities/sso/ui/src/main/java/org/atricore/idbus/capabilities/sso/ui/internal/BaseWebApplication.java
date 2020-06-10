@@ -5,8 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.IRequestCycleProvider;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
-import org.apache.wicket.markup.html.pages.AccessDeniedPage;
-import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -17,6 +15,9 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.IRequestCycleSettings;
 import org.atricore.idbus.capabilities.sso.ui.*;
 import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
+import org.atricore.idbus.capabilities.sso.ui.page.error.AccessDeniedPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
@@ -208,8 +209,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
     protected void setupSettingPages() {
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
-        getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
-        //getApplicationSettings().setInternalErrorPage(ApplicationErrorPage.class);
+        getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
+        getApplicationSettings().setInternalErrorPage(AppErrorPage.class);
     }
 
     protected void mountPages() {
@@ -261,6 +262,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         // Avoid redirects on UI pages
         getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
+
 
     }
 
@@ -343,7 +345,12 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         return appResources;
     }
 
-    public final synchronized void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService, IdentityMediationUnitRegistry idsuRegistry, ConfigurationContext kernelConfig, MailService mailService) {
+    public final synchronized void config(BundleContext bundleContext,
+                                          ApplicationRegistry appConfigRegistry,
+                                          WebBrandingService brandingService,
+                                          IdentityMediationUnitRegistry idsuRegistry,
+                                          ConfigurationContext kernelConfig,
+                                          MailService mailService) {
 
         // We're ready
         this.ready = true;
