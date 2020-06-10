@@ -49,7 +49,7 @@
         <idbus.kernel.version>1.4.3-SNAPSHOT</idbus.kernel.version>
 
         <commons-codec.version>1.3</commons-codec.version>
-        <commons-beautils.version>1.8.0</commons-beautils.version>
+        <commons-beautils.version>1.9.2</commons-beautils.version>
         <commons-lang.version>2.0</commons-lang.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
