@@ -96,7 +96,7 @@ public class InitLogoutProducer extends AbstractOpenIDProducer {
         }
 
         JWT receivedIdToken = logoutRequest.getIDTokenHint();
-        String receivedIdTokenStr = receivedIdToken.getParsedString();
+        String receivedIdTokenStr = receivedIdToken != null ? receivedIdToken.getParsedString() : null;
 
         // TODO : ID Token HINT : compare received value with stored value!
         // TODO : Get session from tokens ?!
