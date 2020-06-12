@@ -22,7 +22,7 @@
         sloUrl = request.getContextPath() + "/authzcode/login.jsp";
     } else {
         sloUrl = op.getEndSessionEndpointURI().toString();
-        sloUrl = sloUrl + "?id_token_hint=" + idToken.getParsedString()  + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/authzcode/login.jsp";
+        sloUrl = sloUrl + "?id_token_hint=" + idToken.getParsedString()  + "&post_logout_redirect_uri=http://localhost:8080"+request.getContextPath()+"/authzcode/login.jsp";
     }
 
     request.getSession().removeAttribute("username");

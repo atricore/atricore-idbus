@@ -38,6 +38,8 @@
 <%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
 <%@ page import="com.nimbusds.jose.jwk.source.JWKSource" %>
 <%@ page import="com.nimbusds.jose.jwk.source.RemoteJWKSet" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.Nonce" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.State" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -151,6 +153,9 @@
 
             } else {
 
+                Nonce nonce = (Nonce) session.getAttribute("nonce");
+                State state = (State) session.getAttribute("state");
+
                 OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenRespose;
 
                 // Get the access token, the server may also return a refresh token
@@ -159,6 +164,13 @@
                 bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
                 idToken = successResponse.getOIDCTokens().getIDToken();
                 sessionState = request.getParameter("session_state");
+
+                String nonceStr = (String) idToken.getJWTClaimsSet().getClaim("nonce");
+                if (nonce != null)
+                    if (nonceStr == null || !nonce.getValue().equals(nonceStr)) {
+                        throw new RuntimeException("Invalid NONCE : " + nonceStr);
+                }
+                // TODO Validate State
 
                 SignedJWT signedIdToken = (SignedJWT) idToken;
 
@@ -190,6 +202,9 @@
             request.getSession().removeAttribute("username");
         } catch (SerializeException e) {
             //error = e.getErrorObject();
+            exception = e;
+            request.getSession().removeAttribute("username");
+        } catch (Exception e) {
             exception = e;
             request.getSession().removeAttribute("username");
         }
@@ -230,7 +245,7 @@
             }
 
             if (error != null) {
-                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription() != null ? error.getDescription() : "") + "</p>");
             }
 
             if (exception != null) {

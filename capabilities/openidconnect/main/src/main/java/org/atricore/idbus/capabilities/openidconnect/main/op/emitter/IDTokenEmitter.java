@@ -213,12 +213,17 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         }
 
         // nonce from TokenRequest/AuthnRequest
+        String nonce = null;
         if (extAttributes != null) {
-            String nonce = resolveExtAttributeValue(extAttributes, "nonce");
-            if (nonce != null) {
-                claimsSet.setNonce(new Nonce(nonce));
-            }
+            nonce = resolveExtAttributeValue(extAttributes, "nonce");
         }
+
+        if (nonce == null && previousClaims != null && previousClaims.getClaim("nonce") != null) {
+            claimsSet.setNonce(new Nonce((String) previousClaims.getClaim("nonce")));
+        }
+
+        if (nonce != null)
+            claimsSet.setNonce(new Nonce(nonce));
 
         for (SecurityToken st : context.getEmittedTokens()) {
 

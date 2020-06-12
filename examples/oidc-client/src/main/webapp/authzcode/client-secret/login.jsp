@@ -43,6 +43,9 @@
         AuthenticationRequest authnRequest = new AuthenticationRequest.Builder(rt, scope, clientId, redirectUri).
                 endpointURI(authnEndpoint).state(state).nonce(nonce).build();
 
+        session.setAttribute("nonce", nonce);
+        session.setAttribute("state", state);
+
         response.sendRedirect(authnRequest.toURI().toString());
 
         //} catch (Exception e) {

@@ -146,8 +146,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Add refresh token as alternative state ID
         TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
 
-        // Store tokens in state
-        AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(AUTHN_CTX_KEY);
+
+        String authnCtxId = authnCtxId(at);
+        AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId);
         if (authnCtx == null)
             authnCtx = new AuthnContext();
 
@@ -155,7 +156,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         authnCtx.setRefreshToken(rt);
         authnCtx.setAccessToken(at);
 
-        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
+        state.setLocalVariable(authnCtxId, authnCtx);
         state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idTokenStr);
 
         state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
@@ -605,12 +606,13 @@ public class TokenProducer extends AbstractOpenIDProducer {
         try {
 
             Secret secret = null;
-            ClientID clientId = null;
+
             long now = System.currentTimeMillis();
 
             ClientAuthenticationMethod enabledAuthnMethod = clientInfo.getMetadata().getTokenEndpointAuthMethod();
             ClientAuthentication clientAuthn = tokenRequest.getClientAuthentication();
             AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
+            ClientID clientId  = tokenRequest.getClientID();
             CodeVerifier cv = null;
 
             // No authn method means code challenge!
@@ -674,7 +676,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
                 }
 
-                AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+                AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId(clientId));
 
                 if (authnCtx == null || authnCtx.getRefreshToken() == null) {
                     if (logger.isTraceEnabled())

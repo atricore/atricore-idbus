@@ -1,5 +1,9 @@
 package org.atricore.idbus.capabilities.openidconnect.main.common.producers;
 
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +26,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.provider.*;
 
 import java.net.URI;
+import java.text.ParseException;
 import java.util.Set;
 
 /**
@@ -281,5 +286,21 @@ public abstract class AbstractOpenIDProducer extends AbstractCamelProducer<Camel
                 return true;
         }
         return false;
+    }
+
+    protected String authnCtxId(AccessToken at) {
+        try {
+            JWT jwtAt = JWTParser.parse(at.getValue());
+            return  (AUTHN_CTX_KEY + ":" + jwtAt.getJWTClaimsSet().getAudience().get(0).hashCode()) + "";
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    protected String authnCtxId(ClientID cd) {
+        if (cd == null)
+            return null;
+
+        return  (AUTHN_CTX_KEY + ":" + cd.hashCode()) + "";
     }
 }

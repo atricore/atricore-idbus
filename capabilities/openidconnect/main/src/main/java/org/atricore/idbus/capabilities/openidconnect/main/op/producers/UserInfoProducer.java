@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.BearerTokenError;
 import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
@@ -41,9 +42,10 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         UserInfoRequest userInfoRequest = (UserInfoRequest) in.getMessage().getContent();
         MediationState state = in.getMessage().getState();
 
-        // Validate accessToken
-        AuthnContext authnCtx =
-                (AuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+        AccessToken receivedAt = userInfoRequest.getAccessToken();
+
+        String authnCtxId = authnCtxId(receivedAt);
+        AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId);
 
         if (authnCtx == null || authnCtx.getAccessToken() == null) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);

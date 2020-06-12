@@ -185,7 +185,7 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
                 }
             }
         }
-        
+
         return claimsSet;
 
     }
