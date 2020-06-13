@@ -15,6 +15,8 @@ import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
+import org.atricore.idbus.kernel.main.provisioning.exception.IllegalPasswordException;
+import org.atricore.idbus.kernel.main.provisioning.exception.InvalidPasswordException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.ResetPasswordRequest;
@@ -71,6 +73,10 @@ public class VerifyPwdResetPanel extends Panel {
                 try {
                     pwdReset(state);
                     onPwdResetSucceeded();
+                } catch (InvalidPasswordException e) {
+                    onIllegalPassword();
+                } catch (IllegalPasswordException e) {
+                    onIllegalPassword();
                 } catch (Exception e) {
                     logger.error("Fatal error during password reset : " + e.getMessage(), e);
                     onPwdResetFailed();
@@ -122,6 +128,11 @@ public class VerifyPwdResetPanel extends Panel {
 
         ResetPasswordResponse resp = app.getProvisioningTarget().resetPassword(req);
 
+    }
+
+    protected void onIllegalPassword() {
+        success = false;
+        error(getLocalizer().getString("error.password.illegal", this, "Illegal Password"));
     }
 
     protected void onPwdResetSucceeded() {

@@ -17,7 +17,13 @@ public class AppDetailsPanel extends Panel {
         super(id, model);
 
         //add(new Label("displayName", model.getObject().getDisplayName()));
-        add(new Label("description", model.getObject().getDescription())); // TODO : Use description as i18n key, defaulted to description.
+
+        // App ID as i18n key, defaulted to description.
+        String appName = getLocalizer().getString("app.description." + model.getObject().getName(),
+                this,
+                model.getObject().getDescription());
+
+        add(new Label("description", appName));
         add(new ExternalLink("login", model.getObject().getSsoEndpoint()));
 
         add(new Label("spId", model.getObject().getId()).setVisible(false));

@@ -105,7 +105,7 @@ public class PwdChangePanel extends Panel {
     }
 
     protected void onInvalidPassword() {
-        error(getLocalizer().getString("error.password.invalid", this, "Operation failed"));
+        error(getLocalizer().getString("error.password.invalid", this, "Invalid Password"));
     }
 
     protected void onIllegalPassword() {
