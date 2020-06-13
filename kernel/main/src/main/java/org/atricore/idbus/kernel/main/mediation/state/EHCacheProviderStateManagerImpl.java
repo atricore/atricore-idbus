@@ -213,13 +213,13 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
                 for (String alternativeKeyName : state.getAlternativeIdNames()) {
 
-                    String alternativeKey = ctx.getProvider().getName() + ":" +
-                            state.getAlternativeKey(alternativeKeyName);
-
-                    Element alternativeElement = new Element(alternativeKey, key);
-                    cache.put(alternativeElement);
-                    if (logger.isTraceEnabled())
-                        logger.trace("LocalState instance stored for alternative key " + alternativeElement.getKey());
+                    for (String altKey : state.getAlternativeKeys(alternativeKeyName)) {
+                        String nsAltKey = ctx.getProvider().getName() + ":" + altKey;
+                        Element alternativeElement = new Element(nsAltKey, key);
+                        cache.put(alternativeElement);
+                        if (logger.isTraceEnabled())
+                            logger.trace("LocalState instance stored for alternative key " + alternativeElement.getKey());
+                    }
                 }
 
                 for (String removedKey : state.getRemovedKeys()) {
@@ -327,11 +327,13 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
      */
     protected void refreshState(ProviderStateContext ctx, EHCacheLocalStateImpl state) {
         for (String alternativeIdName : state.getAlternativeIdNames()) {
-            String alternativeKey = ctx.getProvider().getName() + ":" + state.getAlternativeKey(alternativeIdName);
-            // Just to refresh the access time ...
-            cache.get(alternativeKey);
-            if (logger.isTraceEnabled())
-                logger.trace("Accessed LocalState alternative key " + alternativeKey);
+            for (String altKey : state.getAlternativeKeys(alternativeIdName)) {
+                String nsAltKey = ctx.getProvider().getName() + ":" + altKey;
+                // Just to refresh the access time ...
+                cache.get(nsAltKey);
+                if (logger.isTraceEnabled())
+                    logger.trace("Accessed LocalState alternative key " + nsAltKey);
+            }
         }
     }
 
@@ -350,10 +352,12 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     logger.trace("Removed LocalState instance for key " + key);
 
                 for (String alternativeIdName : state.getAlternativeIdNames()) {
-                    String alternativeKey = ctx.getProvider().getName() + ":" + state.getAlternativeKey(alternativeIdName);
-                    cache.remove(alternativeKey);
-                    if (logger.isTraceEnabled())
-                        logger.trace("Removed LocalState instance for alternative key " + alternativeKey);
+                    for (String altKey : state.getAlternativeKeys(alternativeIdName)) {
+                        String nsAltKey = ctx.getProvider().getName() + ":" + altKey;
+                        cache.remove(nsAltKey);
+                        if (logger.isTraceEnabled())
+                            logger.trace("Removed LocalState instance for alternative key " + nsAltKey);
+                    }
                 }
 
             } else {

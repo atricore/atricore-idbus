@@ -83,96 +83,117 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
-        TokenRequest tokenRequest = (TokenRequest) in.getMessage().getContent();
         MediationState state = in.getMessage().getState();
 
-        OpenIDConnectBinding binding = OpenIDConnectBinding.asEnum(endpoint.getBinding());
+        try {
 
-        // If we have an authorization_code , the state MUST have the proper alternate key.
-        AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
+            TokenRequest tokenRequest = (TokenRequest) in.getMessage().getContent();
 
-        // Validate the incoming request
-        OIDCClientInformation clientInfo = validateRequest(exchange, tokenRequest);
+            // If we have an authorization_code , the state MUST have the proper alternate key.
+            AuthorizationGrant grant = tokenRequest.getAuthorizationGrant();
 
-        FederationChannel fChannel = (FederationChannel) channel;
+            // Validate the incoming request, this will also authenticate the client
+            OIDCClientInformation clientInfo = validateRequest(exchange, tokenRequest);
 
-        // ----------------------------------------------
-        // Emit tokens from Grant
-        // ----------------------------------------------
-        ClientID clientID = clientInfo.getID();
-        long now = System.currentTimeMillis();
-        AccessToken at = null;
-        RefreshToken rt = null;
-        JWT idToken = null;
-        String previousIdTokenStr = (String) state.getLocalVariable(WST_OIDC_ID_TOKEN_TYPE);
-        String idTokenStr = null;
+            FederationChannel fChannel = (FederationChannel) channel;
 
-        // Prepare emission context
-        OpenIDConnectSecurityTokenEmissionContext emissionContext = new OpenIDConnectSecurityTokenEmissionContext();
-        emissionContext.setIssuer(fChannel.getMember().getAlias());
+            // ----------------------------------------------
+            // Emit tokens from Grant
+            // ----------------------------------------------
+            ClientID clientID = clientInfo.getID();
+            long now = System.currentTimeMillis();
+            AccessToken at = null;
+            RefreshToken rt = null;
+            JWT idToken = null;
+            String previousIdTokenStr = (String) state.getLocalVariable(WST_OIDC_ID_TOKEN_TYPE);
+            String idTokenStr = null;
 
-        // We should have one if the user was authenticated using the UI, and the authz code is correct.
-        if (previousIdTokenStr != null) {
-            emissionContext.setPreviousIdToken(previousIdTokenStr); // Send ID Token as reference
+            // Prepare emission context
+            OpenIDConnectSecurityTokenEmissionContext emissionContext = new OpenIDConnectSecurityTokenEmissionContext();
+            emissionContext.setIssuer(fChannel.getMember().getAlias());
+
+            // We should have one if the user was authenticated using the UI, and the authz code is correct.
+            if (previousIdTokenStr != null) {
+                emissionContext.setPreviousIdToken(previousIdTokenStr); // Send ID Token as reference
+            }
+
+            // ----------------------------------------------
+            // Emit a refresh token depending on the GrantType
+            // We use this to authenticate the received grant
+            // ----------------------------------------------
+            if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
+                rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
+            } else if (grant.getType().equals(GrantType.JWT_BEARER) || grant.getType().equals(JWT_BEARER_PWD)) {
+                rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
+            } else if (grant.getType().equals(GrantType.REFRESH_TOKEN)) {
+                rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
+            } else {
+                logger.warn("Unsupported grant_type : " + grant.getType().getValue());
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
+            }
+
+            // ----------------------------------------------
+            // This will generate an AccessToken AND a new RefreshToken
+            // Since RTs can be used once, we need to get the new one.
+            // Emitting an AT will also emit an IDT in the same transaction
+            // ----------------------------------------------
+            RefreshTokenGrant rtg = new RefreshTokenGrant(rt);
+            at = (AccessToken) emitTokenFromRefreshToken(state, clientInfo, rtg, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, emissionContext);
+            idTokenStr = emissionContext.getIDToken();
+            rt = emissionContext.getRefreshToken();
+            idToken = JWTParser.parse(idTokenStr);
+            OIDCTokens tokens = new OIDCTokens(idToken, at, rt);
+
+            //-----------------------------------------------------
+            // Build the token response, with all tokens and update
+            // authentication context in state
+            //-----------------------------------------------------
+            TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
+
+            String authnCtxId = authnCtxId(at);
+            AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId);
+            if (authnCtx == null)
+                authnCtx = new AuthnContext();
+
+            authnCtx.setIdTokenStr(idTokenStr);
+            authnCtx.setRefreshToken(rt);
+            authnCtx.setAccessToken(at);
+
+            state.setLocalVariable(authnCtxId, authnCtx);
+            state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idTokenStr);
+
+            // Both RT and AT can be used by resful (back) channels to keep track of current state
+            state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+            state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
+
+            // Send response back (this is a back-channel request)
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    tokenResponse,
+                    "AccessTokenResponse",
+                    "application/json",
+                    null, // TODO
+                    state));
+
+            exchange.setOut(out);
+
+        } catch (OpenIDConnectProviderException e) {
+
+            ErrorObject error = e.getProtocolError();
+            TokenErrorResponse errorResponse = new TokenErrorResponse(error);
+
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    errorResponse,
+                    "TokenErrorResponse",
+                    "application/json",
+                    null, // TODO
+                    state));
+
+            exchange.setOut(out);
         }
-
-        // ----------------------------------------------
-        // Make Grant specific validations
-        // ----------------------------------------------
-        if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
-            rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
-        } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
-                grant.getType().equals(JWT_BEARER_PWD)) {
-            rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
-        } else if (grant.getType().equals(GrantType.REFRESH_TOKEN)) {
-            rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
-        } else {
-            logger.warn("Unsupported grant_type : " + grant.getType().getValue());
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
-        }
-
-        // This will generate an AccessToken AND a new RefreshToken
-        RefreshTokenGrant rtg = new RefreshTokenGrant(rt);
-        at = (AccessToken) emitTokenFromRefreshToken(state, clientInfo, rtg, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, emissionContext);
-        idTokenStr = emissionContext.getIDToken();
-        rt = emissionContext.getRefreshToken();
-
-        idToken = JWTParser.parse(idTokenStr);
-        OIDCTokens tokens  = new OIDCTokens(idToken, at, rt);
-
-        // Add refresh token as alternative state ID
-        TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
-
-
-        String authnCtxId = authnCtxId(at);
-        AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId);
-        if (authnCtx == null)
-            authnCtx = new AuthnContext();
-
-        authnCtx.setIdTokenStr(idTokenStr);
-        authnCtx.setRefreshToken(rt);
-        authnCtx.setAccessToken(at);
-
-        state.setLocalVariable(authnCtxId, authnCtx);
-        state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idTokenStr);
-
-        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
-
-        // Send response back (this is a back-channel request)
-        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                tokenResponse,
-                "AccessTokenResponse",
-                "application/json",
-                null, // TODO
-                state));
-
-        exchange.setOut(out);
-
-
     }
 
     /**
@@ -409,7 +430,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             return token;
 
         } catch (SecurityTokenAuthenticationFailure e) {
-            logger.error(e.getMessage());
+            logger.debug(e.getMessage(), e);
             throw new OpenIDConnectProviderException(OAuth2Error.ACCESS_DENIED, "authn_failure");
         }
 
@@ -541,13 +562,23 @@ public class TokenProducer extends AbstractOpenIDProducer {
     protected OIDCClientInformation validateRequest(CamelMediationExchange exchange, TokenRequest tokenRequest)
             throws OpenIDConnectException {
 
+
+        String code = null;
         try {
+
             // Authenticate Client:
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
             MediationState state = in.getMessage().getState();
 
-            long now = System.currentTimeMillis();
+            AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
+            if (authzGrant instanceof AuthorizationCodeGrant) {
+                AuthorizationCodeGrant codeGrant = (AuthorizationCodeGrant) authzGrant;
+                if (codeGrant.getAuthorizationCode() != null) {
+                    code = codeGrant.getAuthorizationCode().getValue();
+                }
+            }
+
 
             // ----------------------------------------------
             // Client ID (also taken from request parameter)
@@ -588,13 +619,13 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 throw new OpenIDConnectProviderException(OAuth2Error.UNSUPPORTED_GRANT_TYPE, "grant_type:" + grant.getType().getValue());
             }
 
-
             return clientInfo;
         } finally {
-            // Code cannot be used again!
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
             MediationState state = in.getMessage().getState();
-            state.getLocalState().removeAlternativeId("code");
+
+            // Code cannot be used again
+            if (code != null) state.getLocalState().removeAlternativeId("code", code);
             state.removeLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge");
             state.removeLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method");
         }

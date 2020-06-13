@@ -38,6 +38,10 @@
 <%@ page import="sun.security.provider.X509Factory" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
 <%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.Nonce" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.State" %>
+<%@ page import="net.minidev.json.JSONObject" %>
+<%@ page import="com.nimbusds.oauth2.sdk.http.HTTPResponse" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -53,7 +57,7 @@
     JWTClaimsSet claims = null;
     URI sloUrl = null;
 
-    CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");;
+    CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
 
     try {
 
@@ -76,7 +80,7 @@
         // -------------------------------------------------
         // Load IDP RSA Public key from a dert file
         String publicKeyContent = props.getProperty("oidc.idp.certificateRSA");
-        byte [] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
+        byte[] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         Certificate cert = cf.generateCertificate(new ByteArrayInputStream(publicKeyContentBytes));
@@ -114,77 +118,81 @@
 
         // Build a token request
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientId, authzGrant, scope);
-        TokenResponse tokenRespose = null;
-        try {
-            tokenRespose = OIDCTokenResponse.parse(tokenRequest.toHTTPRequest().send());
+        HTTPResponse httpTokenResponse = tokenRequest.toHTTPRequest().send();
+        JSONObject jsonObject = httpTokenResponse.getContentAsJSONObject();
 
-            if (! tokenRespose.indicatesSuccess()) {
-                // We got an error response...
-                TokenErrorResponse errorResponse = (TokenErrorResponse) tokenRespose;
-                error = errorResponse.getErrorObject();
+        if (httpTokenResponse.getStatusCode() != HTTPResponse.SC_OK) {
+            // We got an error response...
+            TokenErrorResponse errorResponse = TokenErrorResponse.parse(jsonObject);
+            error = errorResponse.getErrorObject();
 
-            } else {
+        } else {
+            OIDCTokenResponse successResponse = OIDCTokenResponse.parse(jsonObject);
+            Nonce nonce = (Nonce) session.getAttribute("nonce");
+            State state = (State) session.getAttribute("state");
 
-                OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenRespose;
+            // Get the access token, the server may also return a refresh token
+            accessToken = successResponse.getOIDCTokens().getAccessToken();
+            refreshToken = successResponse.getOIDCTokens().getRefreshToken();
+            bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
+            idToken = successResponse.getOIDCTokens().getIDToken();
+            sessionState = request.getParameter("session_state");
 
-                // Get the access token, the server may also return a refresh token
-                accessToken = successResponse.getOIDCTokens().getAccessToken();
-                refreshToken = successResponse.getOIDCTokens().getRefreshToken();
-                bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
-                idToken = successResponse.getOIDCTokens().getIDToken();
-                sessionState = request.getParameter("session_state");
-
-                SignedJWT signedIdToken = (SignedJWT) idToken;
-
-                // RSA Signature check
-                // JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
-
-                // EC (ES256,etc. ) Signature check
-                // JWSVerifier verifier = new ECDSAVerifier(pubKey);
-
-                // HMAC
-                JWSVerifier verifier = new MACVerifier(secretKey);
-
-                // Verify signature
-                signedIdToken.verify(verifier);
-                claims = signedIdToken.getJWTClaimsSet();
-
-
-                request.getSession().setAttribute("username" , claims.getSubject());
-                request.getSession().setAttribute("session_state", sessionState);
-                request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
-                request.getSession().setAttribute("refresh_token", refreshToken);
-                request.getSession().setAttribute("id_token", idToken);
-
-
+            String nonceStr = (String) idToken.getJWTClaimsSet().getClaim("nonce");
+            if (nonce != null) {
+                if (nonceStr == null || !nonce.getValue().equals(nonceStr)) {
+                    throw new RuntimeException("Invalid NONCE : [" + nonceStr + "] != [" + nonce + "]");
+                }
             }
 
-        } catch (ParseException e) {
-            error = e.getErrorObject();
-            exception = e;
-            request.getSession().removeAttribute("username");
-        } catch (SerializeException e) {
-            //error = e.getErrorObject();
-            exception = e;
-            request.getSession().removeAttribute("username");
-        } catch (JOSEException e) {
-            exception = e;
+            // TODO Validate State
+
+            SignedJWT signedIdToken = (SignedJWT) idToken;
+
+            // RSA Signature check
+            // JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
+
+            // EC (ES256,etc. ) Signature check
+            // JWSVerifier verifier = new ECDSAVerifier(pubKey);
+
+            // HMAC
+            JWSVerifier verifier = new MACVerifier(secretKey);
+
+            // Verify signature
+            signedIdToken.verify(verifier);
+            claims = signedIdToken.getJWTClaimsSet();
+
+            request.getSession().setAttribute("username", claims.getSubject());
+            request.getSession().setAttribute("session_state", sessionState);
+            request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
+            request.getSession().setAttribute("refresh_token", refreshToken);
+            request.getSession().setAttribute("id_token", idToken);
+
         }
 
-
+    } catch (ParseException e) {
+        error = e.getErrorObject();
+        exception = e;
+        request.getSession().removeAttribute("username");
+    } catch (SerializeException e) {
+        //error = e.getErrorObject();
+        exception = e;
+        request.getSession().removeAttribute("username");
+    } catch (Exception e) {
+        exception = e;
+        request.getSession().removeAttribute("username");
     } finally {
         //
     }
 
-
 %>
 
 <html>
-<jsp:include page="../inc/header.jsp" />
+<jsp:include page="../inc/header.jsp"/>
 
 <body class="gt-fixed">
 
-<jsp:include page="../inc/top-bar.jsp" />
+<jsp:include page="../inc/top-bar.jsp"/>
 
 <div id="idbus-error" class="gt-bd clearfix">
     <div class="gt-content">
@@ -194,24 +202,163 @@
 
         <div>
 
-            <% if (error == null && exception == null) {
+            <% if
+                (
+                error
+                ==
+                null
+                &&
+                exception
+                ==
+                null
+                )
+                {
 
-                out.println("<ul>");
-                out.println("<li><b>IDToken:</b> " + idToken.getParsedString() + "</li>");
-                out.println("<li><b>AccessToken:</b> " + accessToken + "</li>");
-                out.println("<li><b>RefreshToken:</b> " + refreshToken + "</li>");
-                out.println("<li><b>BearerAccessToken:</b> " + bearerAccessToken + "</li>");
-                out.println("<li><b>SessionState:</b> " + sessionState + "</li>");
-                out.println("</ul>");
+                out
+                .
+                println
+                (
+                "<ul>"
+                )
+                ;
+                out
+                .
+                println
+                (
+                "<li><b>IDToken:</b> "
+                +
+                idToken
+                .
+                getParsedString
+                (
+                )
+                +
+                "</li>"
+                )
+                ;
+                out
+                .
+                println
+                (
+                "<li><b>AccessToken:</b> "
+                +
+                accessToken
+                +
+                "</li>"
+                )
+                ;
+                out
+                .
+                println
+                (
+                "<li><b>RefreshToken:</b> "
+                +
+                refreshToken
+                +
+                "</li>"
+                )
+                ;
+                out
+                .
+                println
+                (
+                "<li><b>BearerAccessToken:</b> "
+                +
+                bearerAccessToken
+                +
+                "</li>"
+                )
+                ;
+                out
+                .
+                println
+                (
+                "<li><b>SessionState:</b> "
+                +
+                sessionState
+                +
+                "</li>"
+                )
+                ;
+                out
+                .
+                println
+                (
+                "</ul>"
+                )
+                ;
 
-            }
-
-                if (error != null) {
-                    out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription() != null ? error.getDescription() : "") + "</p>");
                 }
 
-                if (exception != null) {
-                    out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
+                if
+                (
+                error
+                !=
+                null
+                )
+                {
+                out
+                .
+                println
+                (
+                "<h3>Error:</h3><p>"
+                +
+                error
+                .
+                getCode
+                (
+                )
+                +
+                ":"
+                +
+                URLDecoder
+                .
+                decode
+                (
+                error
+                .
+                getDescription
+                (
+                )
+                !=
+                null
+                ?
+                error
+                .
+                getDescription
+                (
+                )
+                :
+                ""
+                )
+                +
+                "</p>"
+                )
+                ;
+                }
+
+                if
+                (
+                exception
+                !=
+                null
+                )
+                {
+                out
+                .
+                println
+                (
+                "<h3>Exception:</h3><p>"
+                +
+                exception
+                .
+                getMessage
+                (
+                )
+                +
+                "</p>"
+                )
+                ;
                 }%>
         </div>
     </div>

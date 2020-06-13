@@ -5,6 +5,7 @@ import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
+import net.minidev.json.JSONObject;
 import org.apache.camel.Endpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,10 +98,11 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Send request/process response
         // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
         HTTPResponse proxyResponse = proxyTokenRequest.toHTTPRequest().send();
+        JSONObject jsonObject = proxyResponse.getContentAsJSONObject();
 
-        OIDCTokenResponse proxyTokenResponse = OIDCTokenResponse.parse(proxyResponse);
 
-        if (proxyTokenResponse.indicatesSuccess()) {
+        if (proxyResponse.getStatusCode() == HTTPResponse.SC_OK) {
+            OIDCTokenResponse proxyTokenResponse = OIDCTokenResponse.parse(jsonObject);
             OIDCTokenResponse at = proxyTokenResponse.toSuccessResponse();
             OIDCTokens tokens = at.getTokens().toOIDCTokens();
 
@@ -112,8 +114,14 @@ public class TokenProducer extends AbstractOpenIDProducer {
             state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, tokens.getRefreshToken().getValue());
             state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, tokens.getAccessToken().getValue());
 
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    proxyTokenResponse,
+                    "AccessTokenResponse",
+                    "application/json",
+                    null, // TODO
+                    state));
         } else {
-            TokenErrorResponse err = proxyTokenResponse.toErrorResponse();
+            TokenErrorResponse err = TokenErrorResponse.parse(jsonObject);
             authnCtx.setAccessToken(null);
             authnCtx.setRefreshToken(null);
             authnCtx.setIdToken(null);
@@ -122,17 +130,16 @@ public class TokenProducer extends AbstractOpenIDProducer {
             if (logger.isDebugEnabled())
                 logger.debug("Error obtaining Token : " + error.getCode() + ". " + error.getDescription());
 
+            out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                    err,
+                    "TokenErrorResponse",
+                    "application/json",
+                    null, // TODO
+                    state));
         }
 
         // Store context
         state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
-
-        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                proxyTokenResponse,
-                "AccessTokenResponse",
-                "application/json",
-                null, // TODO
-                in.getMessage().getState()));
 
         exchange.setOut(out);
     }

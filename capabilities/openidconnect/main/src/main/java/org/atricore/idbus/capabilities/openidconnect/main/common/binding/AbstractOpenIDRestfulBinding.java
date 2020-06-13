@@ -342,9 +342,8 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
     protected String getAccessToken(Message httpMsg) {
         String accessTokenValue = (String) httpMsg.getHeader("Authorization"); // Bearer SlAV32hkKG Get value
         if (accessTokenValue == null || "".equals(accessTokenValue))
-            logger.error("No Authorization header found in HTTP GET");
-
-        if (accessTokenValue != null && accessTokenValue.startsWith("Bearer ")) {
+            return null;
+        if (accessTokenValue.startsWith("Bearer ")) {
             accessTokenValue = accessTokenValue.substring("Bearer ".length());
         }
 

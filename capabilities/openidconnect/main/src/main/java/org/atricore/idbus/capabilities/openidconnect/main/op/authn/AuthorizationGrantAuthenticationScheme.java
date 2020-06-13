@@ -60,8 +60,6 @@ public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticati
             return false;
         }
 
-        String nonce = expectedAuthzGrant.getAuthzGrant().getNonce();
-
         _subject.getPrincipals();
 
         setAuthenticated(true);
@@ -90,6 +88,9 @@ public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticati
 
     @Override
     public Principal getPrincipal() {
+        if (securityToken == null)
+            return null;
+
         AuthorizationGrant authzGrant = (AuthorizationGrant) securityToken.getContent();
 
         // We should have an SSOUser here:

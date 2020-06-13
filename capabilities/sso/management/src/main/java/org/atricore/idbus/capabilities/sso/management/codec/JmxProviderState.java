@@ -11,11 +11,11 @@ import java.util.Collection;
  * @version $Id$
  */
 public class JmxProviderState {
-    
+
     public final static TabularType PROVIDER_STATE_TABLE;
-    
+
     public final static CompositeType PROVIDER_STATE;
-    
+
     static {
         PROVIDER_STATE = createProviderStateType();
         PROVIDER_STATE_TABLE = createProviderStateEntryTableType();
@@ -36,7 +36,7 @@ public class JmxProviderState {
             String altKeys = "";
 
             for (String altKey : state.getAlternativeIdNames()) {
-                altKeys += altKey + "=" + state.getAlternativeId(altKey) + ",";
+                altKeys += altKey + "=" + state.getAlternativeIds(altKey) + ",";
             }
             itemValues[1] = altKeys;
 
@@ -88,5 +88,5 @@ public class JmxProviderState {
             throw new IllegalStateException("Unable to build SSOSession table type", e);
         }
     }
-    
+
 }

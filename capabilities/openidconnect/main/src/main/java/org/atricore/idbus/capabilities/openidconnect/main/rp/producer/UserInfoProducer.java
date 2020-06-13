@@ -34,6 +34,9 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         super(endpoint);
     }
 
+    /**
+     * Forward Token request to destination endpoint
+     */
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
@@ -41,14 +44,8 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
         UserInfoRequest userInfoRequest = (UserInfoRequest) in.getMessage().getContent();
-        MediationState state = in.getMessage().getState();
-
-        // Forward Token request to destination endpoint
 
         // Resolve IDP TOKEN endpoint, it supports multiple IDPs configured!
-        RPAuthnContext authnCtx =
-                (RPAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
-
         // Use localhost actually!
         EndpointDescriptor userInfoEndpoint = lookupUserInfoEndpoint();
 
@@ -60,10 +57,8 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         URI userInfoUri = new URI(userInfoEndpoint.getLocation());
         String internalUserInfoEndpoint = targetBaseUrl + userInfoUri.getPath();
 
-
         // Create a new USERINFO request w/new IDP TOKEN USERINFO
         UserInfoRequest proxyUserInfoRequest = new UserInfoRequest(new URI(internalUserInfoEndpoint), (BearerAccessToken) userInfoRequest.getAccessToken());
-
 
         // Send request/process response
         HTTPResponse proxyResponse = proxyUserInfoRequest.toHTTPRequest().send();
