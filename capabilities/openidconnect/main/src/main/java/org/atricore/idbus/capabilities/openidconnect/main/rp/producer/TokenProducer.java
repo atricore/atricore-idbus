@@ -45,8 +45,12 @@ public class TokenProducer extends AbstractOpenIDProducer {
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
+        if (handleOptionsRequest(exchange)) { return; }
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+
 
         TokenRequest tokenRequest = (TokenRequest) in.getMessage().getContent();
         MediationState state = in.getMessage().getState();

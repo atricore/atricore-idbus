@@ -101,6 +101,8 @@ public class MetadataProducer  extends AbstractOpenIDProducer {
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
+        if (handleOptionsRequest(exchange)) { return; }
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 

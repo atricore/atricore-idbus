@@ -2,9 +2,12 @@ package org.atricore.idbus.capabilities.openidconnect.main.common.producers;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.oauth2.sdk.OAuth2Error;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import org.apache.camel.Endpoint;
+import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
@@ -16,17 +19,21 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
+import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.*;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.net.URI;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -37,8 +44,68 @@ public abstract class AbstractOpenIDProducer extends AbstractCamelProducer<Camel
 
     private static final Log logger = LogFactory.getLog(AbstractOpenIDProducer.class);
 
+    private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
+
     public AbstractOpenIDProducer(Endpoint endpoint) {
         super(endpoint);
+    }
+
+    /**
+     * If this is an options request, we can send the propper response back.
+     * @param exchange
+     * @return
+     */
+    protected boolean handleOptionsRequest(CamelMediationExchange exchange) {
+        // is this an options request ?
+        Exchange httpExchange = exchange.getExchange();
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+        Message httpMsg = httpExchange.getIn();
+
+        // Only for binding channels
+        if (!(channel.getIdentityMediator() instanceof OpenIDConnectBPMediator))
+            return false;
+
+        if (httpMsg.getHeader("http.requestMethod") == null ||
+                !httpMsg.getHeader("http.requestMethod").equals("OPTIONS"))
+            return false;
+
+        OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
+
+        String origin = (String) httpMsg.getHeader("Origin");
+        String requestMethod = (String) httpMsg.getHeader("Access-Control-Request-Method");
+        String requestHeaders = (String) httpMsg.getHeader("Access-Control-Request-Headers");
+
+        OptionsResponse resp = null;
+
+        Set<String> origins = mediator.getAllowedOrigins();
+
+        if (!origins.contains(origin) ||
+            !requestMethod.contains("GET") ||
+            (!requestHeaders.contains("Authorization") && !requestHeaders.contains("authorization"))) {
+            resp = new OptionsResponse(OAuth2Error.ACCESS_DENIED);
+
+        } else {
+            Set<String> allowedMethods = new HashSet<String>();
+            allowedMethods.add("GET");
+
+            Set<String> allowedHeaders = new HashSet<String>();
+            allowedHeaders.add("Authorization");
+
+            resp = new OptionsResponse(origin, allowedMethods, allowedHeaders);
+
+
+        }
+
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                resp,
+                "OptionsResponse",
+                "text/html",
+                null,
+                in.getMessage() != null ? in.getMessage().getState() : null));
+
+        return true;
     }
 
     protected FederatedLocalProvider getFederatedProvider() {
