@@ -147,13 +147,15 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
 
         // Add constants and expressions!
         for (AttributeMapping attributeMapping : attributeMaps.values()) {
-            if (attributeMapping.getAttrName().startsWith("\"") && attributeMapping.getAttrName().endsWith("\"") &&
+
+            String attrName = attributeMapping.getAttrName().trim();
+            if (attrName.startsWith("\"") && attrName.endsWith("\"") &&
                     attributeMapping.getReportedAttrName() != null && !attributeMapping.getReportedAttrName().equals("")) {
 
                 String name = attributeMapping.getReportedAttrName();
-                String value = attributeMapping.getAttrName().substring(1, attributeMapping.getAttrName().length() - 1);
+                String value = attrName.substring(1, attrName.length() - 2);
                 claimsSet.setClaim(name, value);
-            } else if (attributeMapping.getAttrName().startsWith("vt:")) {
+            } else if (attrName.startsWith("vt:")) {
                 String vtExpr = attributeMapping.getAttrName().substring("vt:".length());
                 OutputStream baos = new ByteArrayOutputStream();
                 OutputStreamWriter out = new OutputStreamWriter(baos);
@@ -166,17 +168,8 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
                     if (velocityEngine.evaluate(veCtx, out, attributeMapping.getReportedAttrName(), in)) {
                         out.flush();
                         String name = attributeMapping.getReportedAttrName();
-                        // Support multiple values
                         String tokens = baos.toString().trim();
-                        StringTokenizer st = new StringTokenizer(tokens);
-                        List<String> values = new ArrayList<String>();
-                        while(st.hasMoreTokens())
-                            values.add(st.nextToken());
-                        if (values.size() == 1)
-                            claimsSet.setClaim(name, values.get(0));
-                        else {
-                            claimsSet.setClaim(name, values);
-                        }
+                        claimsSet.setClaim(name, tokens); // TODO : Support multiple values
                     } else {
                         logger.error("Invalid expression ["+vtExpr+"] for " + attributeMapping.getReportedAttrName());
                     }

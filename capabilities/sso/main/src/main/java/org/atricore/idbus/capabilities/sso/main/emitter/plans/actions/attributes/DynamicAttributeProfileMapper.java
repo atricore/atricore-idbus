@@ -155,16 +155,17 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
         // Add constants and expressions!
         for (AttributeMapping attributeMapping : attributeMaps.values()) {
-            if (attributeMapping.getAttrName().startsWith("\"") && attributeMapping.getAttrName().endsWith("\"") &&
+            String attrName = attributeMapping.getAttrName().trim();
+            if (attrName.startsWith("\"") && attrName.endsWith("\"") &&
                     attributeMapping.getReportedAttrName() != null && !attributeMapping.getReportedAttrName().equals("")) {
                 AttributeType attrProp = new AttributeType();
                 attrProp.setName(attributeMapping.getReportedAttrName());
                 attrProp.setFriendlyName(attrProp.getName());
                 attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
-                attrProp.getAttributeValue().add(attributeMapping.getAttrName().substring(1, attributeMapping.getAttrName().length() - 1));
+                attrProp.getAttributeValue().add(attrName.substring(1, attrName.length() - 2));
                 userAttrs.add(attrProp);
 
-            } else if (attributeMapping.getAttrName().startsWith("vt:")) {
+            } else if (attrName.startsWith("vt:")) {
 
                 String vtExpr = attributeMapping.getAttrName().substring("vt:".length());
                 OutputStream baos = new ByteArrayOutputStream();
@@ -185,10 +186,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                         attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
                         String tokens = baos.toString().trim();
 
-                        // Support multiple values
-                        StringTokenizer st = new StringTokenizer(tokens);
-                        while(st.hasMoreTokens())
-                            attrProp.getAttributeValue().add(st.nextToken());
+                        attrProp.getAttributeValue().add(tokens); // TODO : Support multiple values
 
                         userAttrs.add(attrProp);
                     } else {

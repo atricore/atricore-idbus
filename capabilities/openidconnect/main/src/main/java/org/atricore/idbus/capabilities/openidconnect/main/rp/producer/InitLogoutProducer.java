@@ -108,11 +108,12 @@ public class InitLogoutProducer extends AbstractOpenIDProducer {
 
         // POST LOGOUT URI
         if (metadata.getPostLogoutRedirectionURIs() != null &&
-                metadata.getPostLogoutRedirectionURIs().size() > 0 &&
-                !validateURI(metadata.getPostLogoutRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI()))
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+                metadata.getPostLogoutRedirectionURIs().size() > 0) {
 
-         if (!validateURI(metadata.getRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI())) {
+            if (!validateURI(metadata.getPostLogoutRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI()))
+                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+
+        } else if (!validateURI(metadata.getRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI())) {
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
         }
     }
