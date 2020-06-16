@@ -116,7 +116,7 @@ import java.math.BigInteger;
 import java.security.Principal;
 import java.util.*;
 
-import static org.atricore.idbus.capabilities.sts.main.WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE;
+import static org.atricore.idbus.capabilities.sts.main.WSTConstants.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -478,7 +478,17 @@ public class SingleSignOnProducer extends SSOProducer {
                     EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
                     if (ed != null) {
                         SPSessionHeartBeatResponseType resp = performIdPProxySessionHeartBeat(exchange, secCtx);
-                        isSsoSessionValid = resp.isValid();
+                        if (resp.isValid()) {
+                            if(!isSsoSessionValid) {
+                                // Our session expired, but the remote one did not.
+                                logger.debug("Local session expired, but remote one did not");
+                                isSsoSessionValid = false;
+                            }
+                        } else {
+                            // Set local session to invalid!
+                            logger.debug("Remote session expired, invalidate current session");
+                            isSsoSessionValid = false;
+                        }
                     }
                 } catch (SSOException e) {
                     logger.error(e.getMessage(), e);
@@ -1938,13 +1948,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
         AssertionType assertion = securityTokenEmissionCtx.getAssertion();
 
-        String authzCode = getAssertionValue(assertion, WST_OIDC_AUTHZ_CODE_TYPE + "_ID");
-        if (authzCode != null) {
-            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-            MediationState state = in.getMessage().getState();
-            state.getLocalState().addAlternativeId("code", authzCode);
-        }
-
+        updateOIDCState((CamelMediationMessage) exchange.getIn(), assertion);
 
         logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                 (authnRequest != null ? authnRequest.getID() : "<NULL>"));
@@ -2019,13 +2023,7 @@ public class SingleSignOnProducer extends SSOProducer {
         }
         */
 
-        String authzCode = getAssertionValue(assertion, WST_OIDC_AUTHZ_CODE_TYPE + "_ID");
-
-        if (authzCode != null) {
-            CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-            MediationState state = in.getMessage().getState();
-            state.getLocalState().addAlternativeId("code", authzCode);
-        }
+        updateOIDCState((CamelMediationMessage) exchange.getIn(), assertion);
 
         // Return context with Assertion and Subject
         return securityTokenEmissionCtx;
@@ -3377,7 +3375,18 @@ public class SingleSignOnProducer extends SSOProducer {
 
     }
 
+    /**
+     * By default extact match is set to false.
+     *
+     * @param assertion
+     * @param attribute
+     * @return
+     */
     protected String getAssertionValue(AssertionType assertion, String attribute) {
+        return getAssertionValue(assertion, attribute, false);
+    }
+
+    protected String getAssertionValue(AssertionType assertion, String attribute, boolean exactMatch) {
 
         for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
             if (stmt instanceof AttributeStatementType) {
@@ -3386,8 +3395,12 @@ public class SingleSignOnProducer extends SSOProducer {
                     if (o instanceof AttributeType) {
                         AttributeType attr = (AttributeType) o;
                         // The order is important!
-                        if (attr.getName().startsWith(attribute)) {
-                            return (String) attr.getAttributeValue().get(0);
+                        if (exactMatch) {
+                            if (attr.getName().equals(attribute))
+                                return (String) attr.getAttributeValue().get(0);
+                        } else
+                            if (attr.getName().startsWith(attribute)) {
+                                return (String) attr.getAttributeValue().get(0);
                         }
                     }
                 }
@@ -3396,5 +3409,39 @@ public class SingleSignOnProducer extends SSOProducer {
         return null;
     }
 
+    /**
+     * This will create state alternative keys based on OIDC tokens found in the assertion
+     *
+     * We need to update state for producers running in the IDP channel
+     *
+     * This could be part of the SAML binding ...
+     *
+     * @param in
+     * @param assertion
+     */
+    protected void updateOIDCState(CamelMediationMessage in, AssertionType assertion) {
 
+        MediationState state = in.getMessage().getState();
+
+        String authzCode = getAssertionValue(assertion, WST_OIDC_AUTHZ_CODE_TYPE + "_ID", true);
+        if (authzCode != null) {
+            state.getLocalState().addAlternativeId("code", authzCode);
+        }
+
+        String accessToken = getAssertionValue(assertion, WST_OIDC_ACCESS_TOKEN_TYPE, true);
+        if (accessToken != null) {
+            state.setLocalVariable(WST_OIDC_ACCESS_TOKEN_TYPE, accessToken);
+            state.getLocalState().addAlternativeId("access_token", accessToken);
+        }
+
+        String refreshToken = getAssertionValue(assertion, WST_OIDC_REFRESH_TOKEN_TYPE, true);
+        if (refreshToken != null) {
+            state.setLocalVariable(WST_OIDC_REFRESH_TOKEN_TYPE, refreshToken);
+            state.getLocalState().addAlternativeId("refresh_token", refreshToken);
+        }
+
+        String idToken = getAssertionValue(assertion, WST_OIDC_ID_TOKEN_TYPE, true);
+        if (idToken != null)
+            state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idToken);
+    }
 }

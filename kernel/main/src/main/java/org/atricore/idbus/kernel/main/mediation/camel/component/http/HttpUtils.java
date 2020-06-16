@@ -2,14 +2,17 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.ui.WebBranding;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 public class HttpUtils {
@@ -83,4 +86,38 @@ public class HttpUtils {
     }
 
 
+    public static WebBranding resolveWebBranding(ServletContext servletContext, HttpServletRequest req) {
+
+        OsgiBundleXmlWebApplicationContext wac =
+                (OsgiBundleXmlWebApplicationContext) WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+
+        // TODO : Resolve the branding based on the current request and connect it with console branding
+        return new WebBranding("JOSSO 2.5", "en_US", "josso25", null) {
+
+        };
+
+    }
+
+    public static VelocityEngine getVelocityEngine() throws Exception {
+
+        VelocityEngine velocityEngine = new VelocityEngine();
+
+        // Setup classpath resource loader  (Actually not used!)
+        velocityEngine.setProperty(Velocity.RESOURCE_LOADER, "classpath");
+
+        velocityEngine.addProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".class",
+                "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+        velocityEngine.setProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".cache", "false");
+
+        velocityEngine.setProperty(
+                "classpath." + Velocity.RESOURCE_LOADER + ".modificationCheckInterval",
+                "2");
+
+        velocityEngine.init();
+
+        return velocityEngine;
+    }
 }

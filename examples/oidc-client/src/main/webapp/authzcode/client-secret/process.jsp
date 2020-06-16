@@ -34,6 +34,10 @@
 <%@ page import="java.security.cert.CertificateFactory" %>
 <%@ page import="sun.security.provider.X509Factory" %>
 <%@ page import="java.io.ByteArrayInputStream" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
+<%@ page import="com.nimbusds.jose.jwk.source.JWKSource" %>
+<%@ page import="com.nimbusds.jose.jwk.source.RemoteJWKSet" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -43,17 +47,22 @@
     AccessToken accessToken = null;
     RefreshToken refreshToken = null;
     BearerAccessToken bearerAccessToken = null;
+    String sessionState = null;
 
     JWT idToken = null;
     JWTClaimsSet claims = null;
-    String sloUrl = null;
+    URI sloUrl = null;
 
     try {
         Properties props = new Properties();
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
 
-        sloUrl = props.getProperty("oidc.logout.endpoint");
+
+        // This is the OpenID Connect Identity Provider ID (in JOSSO is the base URI for the OP services)
+        Issuer issuer = new Issuer(props.getProperty("oidc.idp.id"));
+        OIDCProviderMetadata op = OIDCProviderMetadata.resolve(issuer);
+        sloUrl = op.getEndSessionEndpointURI();
 
         // -------------------------------------------------
         // Load shared secret
@@ -80,7 +89,7 @@
         PublicKey pubKey = kf.generatePublic(keySpecX509);
         */
 
-        URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));
+        URI tokenEndpoint = op.getTokenEndpointURI();
 
         ClientAuthentication clientAuth = null;
 
@@ -122,7 +131,7 @@
         // -------------------------------------------------
         // Build Token request
         AuthorizationCode code = new AuthorizationCode(request.getParameter("code"));
-        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUriBase"));
+        URI redirectUri = new URI(props.getProperty("oidc.client.redirectUriBase"));
 
         // Authorization Grant
         AuthorizationGrant authzGrant = new AuthorizationCodeGrant(code, redirectUri);
@@ -149,11 +158,12 @@
                 refreshToken = successResponse.getOIDCTokens().getRefreshToken();
                 bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
                 idToken = successResponse.getOIDCTokens().getIDToken();
+                sessionState = request.getParameter("session_state");
 
                 SignedJWT signedIdToken = (SignedJWT) idToken;
 
                 // RSA Signature check
-                JWSVerifier verifier = new RSASSAVerifier(pubKeyRSA);
+                JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
 
                 // EC (ES256,etc. ) Signature check
                 // JWSVerifier verifier = new ECDSAVerifier(publicKey);
@@ -164,15 +174,24 @@
                 // Verify signature
                 signedIdToken.verify(verifier);
                 claims = signedIdToken.getJWTClaimsSet();
+                request.getSession().setAttribute("username" , claims.getSubject());
+
+                request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
+                request.getSession().setAttribute("refresh_token", refreshToken);
+                request.getSession().setAttribute("session_state", sessionState);
+                request.getSession().setAttribute("id_token", idToken);
+
 
             }
 
         } catch (ParseException e) {
             error = e.getErrorObject();
             exception = e;
+            request.getSession().removeAttribute("username");
         } catch (SerializeException e) {
             //error = e.getErrorObject();
             exception = e;
+            request.getSession().removeAttribute("username");
         }
 
 
@@ -184,36 +203,44 @@
 %>
 
 <html>
-<head>
-    <title>ODIC Client Test - JWT Bearer with Authorization Code </title>
-</head>
+<jsp:include page="../inc/header.jsp" />
 
-<h2>Outcome</h2>
+<body class="gt-fixed">
 
-<% if (error == null && exception == null) {
-    out.println("Claims: " + claims + "</br></br>");
+<jsp:include page="../inc/top-bar.jsp" />
 
-    out.println("IDToken: " + idToken.getParsedString() + "</br>");
-    out.println("AccessToken: " + accessToken + "</br>");
-    //out.println("TokenPair: " + tokenPair + "</br>");
-    out.println("RefreshToken: " + refreshToken + "</br>");
-    out.println("BearerAccessToken: " + bearerAccessToken + "</br>");
+<div id="idbus-error" class="gt-bd clearfix">
+    <div class="gt-content">
+        <div>
+            <h2 class="gt-table-head">Received Tokens</h2>
+        </div>
 
-    out.println("<br><br>");
+        <div>
 
-    out.println("<a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString() + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a>");
-}
-%>
+            <% if (error == null && exception == null) {
+
+                out.println("<ul>");
+                out.println("<li><b>IDToken:</b> " + idToken.getParsedString() + "</li>");
+                out.println("<li><b>AccessToken:</b> " + accessToken + "</li>");
+                out.println("<li><b>RefreshToken:</b> " + refreshToken + "</li>");
+                out.println("<li><b>BearerAccessToken:</b> " + bearerAccessToken + "</li>");
+                out.println("<li><b>SessionState:</b> " + sessionState + "</li>");
+                out.println("</ul>");
+
+            }
+
+            if (error != null) {
+                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+            }
+
+            if (exception != null) {
+                out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
+            }%>
+        </div>
+    </div>
+</div>
 
 
-<h3>Errors:</h3>
-<% if (error != null) {
-    out.println(error.getCode() + ":" + URLDecoder.decode(error.getDescription()));
-}
-
-if (exception != null) {
-    out.println(exception.getMessage());
-}%>
 <br>
 </html>
 

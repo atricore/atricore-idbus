@@ -188,21 +188,25 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
             return false;
 
         // Do not proxy SOAP requests
-        if (req.getPathInfo().contains("/SOAP"))
+        if (req.getPathInfo().endsWith("/SOAP"))
             return false;
 
-        // Do not proxy SOAP requests
-        if (req.getPathInfo().contains("/MD"))
+        // Do not proxy METADATA requests
+        if (req.getPathInfo().endsWith("/MD"))
             return false;
 
-        // Do not proxy SOAP requests
-        if (req.getPathInfo().contains("/REST"))
+        // Do not proxy METADATA requests
+        if (req.getPathInfo().endsWith(".well-known/openid-configuration"))
             return false;
 
-        if (req.getPathInfo().contains("/JWKS"))
+        // Do not proxy RESTFUL requests
+        if (req.getPathInfo().endsWith("/REST"))
             return false;
 
-        if (req.getPathInfo().contains("/SPNEGO/NEGOTIATE"))
+        if (req.getPathInfo().endsWith("/JWKS"))
+            return false;
+
+        if (req.getPathInfo().endsWith("/SPNEGO/NEGOTIATE"))
             return false;
 
         // Exclude HttpError servlet (must match web.xml)

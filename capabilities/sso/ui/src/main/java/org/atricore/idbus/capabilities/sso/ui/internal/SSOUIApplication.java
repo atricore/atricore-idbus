@@ -48,8 +48,7 @@ public class SSOUIApplication extends BaseWebApplication {
     }
 
     @Override
-    protected void preInit() {
-        super.preInit();
+    protected void preInit() { super.preInit();
     }
 
     @Override

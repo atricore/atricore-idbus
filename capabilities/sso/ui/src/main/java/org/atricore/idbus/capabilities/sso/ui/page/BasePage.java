@@ -22,21 +22,31 @@ package org.atricore.idbus.capabilities.sso.ui.page;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.atricore.idbus.capabilities.sso.main.AppResource;
+import org.atricore.idbus.capabilities.sso.ui.BrandingResource;
+import org.atricore.idbus.capabilities.sso.ui.BrandingResourceType;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdchange.PwdChangePage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.SelfServicesPage;
+import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
 import org.atricore.idbus.capabilities.sso.ui.spi.IPageHeaderContributor;
 import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
@@ -78,6 +88,9 @@ public class BasePage extends WebPage implements IHeaderContributor {
     @PaxWicketBean(name = "kernelConfig", injectionSource = "spring")
     protected ConfigurationContext kernelConfig;
 
+    private WebMarkupContainer pageBody;
+
+    private WebMarkupContainer mainPanel;
 
     private IPageHeaderContributor headerContributors;
 
@@ -90,7 +103,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
     @SuppressWarnings("serial")
     public BasePage(PageParameters parameters) throws Exception {
-        
+
         // -------------------------------------------------------------------
         // The very first thing to do is set the application ready if it's not
         //                                WebMarkupContainer
@@ -110,7 +123,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
             if (defaultLocale != null)
                 getSession().setLocale(StringUtils.parseLocaleString(defaultLocale));
         }
-        
+
         // Handle internationalization
         if (parameters != null) {
             String lang = parameters.get("lang").toString();
@@ -118,6 +131,12 @@ public class BasePage extends WebPage implements IHeaderContributor {
                 getSession().setLocale(StringUtils.parseLocaleString(lang));
             }
         }
+
+        pageBody = new WebMarkupContainer("body") {
+        };
+        mainPanel = new WebMarkupContainer("main-panel") {
+        };
+
     }
 
     @Override
@@ -134,7 +153,26 @@ public class BasePage extends WebPage implements IHeaderContributor {
         String variation = resolveVariation(branding);
         setVariation(variation);
 
+        // These were added after the initial branding was created
         final SSOWebSession session = (SSOWebSession)getSession();
+
+        addImage(app.getBranding(), AppResource.APP_PAGE_LOGO);
+        addImage(app.getBranding(), AppResource.APP_CARD_LOGO);
+
+        if (this instanceof SelfServicesPage) {
+            /*
+            <body class="has-clouds light-bg">
+            <div class="wrapper p-0">
+             */
+            pageBody.add(new AttributeAppender("class", "has-clouds light-bg"));
+            mainPanel.add(new AttributeAppender("class", "wrapper p-0"));
+        } else {
+            pageBody.add(new AttributeAppender("class", "has-clouds -light-bg"));
+            mainPanel.add(new AttributeAppender("class", "wrapper"));
+        }
+
+        super.add(pageBody);
+        pageBody.add(mainPanel);
 
         // ---------------------------------------------------------------------
         // Utility box (current user, logout)
@@ -169,25 +207,15 @@ public class BasePage extends WebPage implements IHeaderContributor {
             // Select the proper section on the navbar (alter css class)
 
             // Dashboard
-            if (this instanceof DashboardPage)
-                navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")).add(new AttributeAppender("class", "gt-active")));
-            else
-                navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")));
+            navBar.add(new BookmarkablePageLink<Void>("dashboard", resolvePage("SS/HOME")));
 
             // Profile
-            if (this instanceof  ProfilePage)
-                navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")).add(new AttributeAppender("class", "gt-active")));
-            else
-                navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")));
-
+            navBar.add(new BookmarkablePageLink<Void>("profile", resolvePage("SS/PROFILE")));
 
             // Change Password
-            if (this  instanceof PwdChangePage)
-                navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")).add(new AttributeAppender("class", "gt-active")));
-            else
-                navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")));
+            navBar.add(new BookmarkablePageLink<Void>("pwdChange", resolvePage("SS/PWDCHANGE")));
 
-            // Logout 1
+            // Logout
             navBar.add(new BookmarkablePageLink<Void>("logout", resolvePage("AGENT/LOGOUT")));
 
             // Logout 2
@@ -197,21 +225,22 @@ public class BasePage extends WebPage implements IHeaderContributor {
 
     }
 
-    public void render(HeaderItem item) {
+    @Override
+    public void renderHead(IHeaderResponse response) {
         if ( ((BaseWebApplication)getApplication()).getBranding() == null)
             return;
 
         BaseWebApplication app = (BaseWebApplication) getApplication();
-        
         WebBranding branding = app.getBranding();
-        
         if (branding == null)
             return;
 
-        for (IPageHeaderContributor c : branding.getPageHeaderContributors()) {
-            c.render(item, this);
-        }
+        PackageResourceReference cssFile =
+                new PackageResourceReference(AppResourceLocator.class, branding.getSkin() + "/css/styles-"+branding.getId()+".css");
 
+        CssHeaderItem cssItem = CssHeaderItem.forReference(cssFile);
+
+        response.render(cssItem);
 
     }
 
@@ -256,5 +285,54 @@ public class BasePage extends WebPage implements IHeaderContributor {
         BaseWebApplication app = (BaseWebApplication) getApplication();
         return app.resolvePage(path);
     }
+
+    /**
+     * We added new components in the heararchy, so we add childrent to the new tree.
+     * @param behaviors
+     * @return
+     */
+    @Override
+    public Component add(Behavior... behaviors) {
+        return mainPanel.add(behaviors);
+    }
+
+    /**
+     * We added new components in the heararchy, so we add childrent to the new tree.
+     * @param childs
+     * @return
+     */
+    @Override
+    public MarkupContainer add(Component... childs) {
+        if (mainPanel == null)
+            throw new RuntimeException("Do NOT add components to the page before constructor is done! ");
+        return mainPanel.add(childs);
+    }
+
+    /**
+     * Adds a logo to the page.  The resource type will be the img wicket ID.
+     *
+     * @param branding
+     * @param resource
+     */
+    protected void addImage(WebBranding branding, AppResource resource) {
+        addImage(branding, resource.getResourceType(), resource.getResourceType());
+    }
+
+    protected void addImage(WebBranding branding, String resourceType, String id) {
+        String imgResource = null;
+        if (branding != null) {
+            for (BrandingResource r  : branding.getResources()) {
+                if (r.getType().equals(BrandingResourceType.IMAGE) && r.getId().equals(resourceType)) {
+                    imgResource = r.getPath();
+                }
+            }
+        }
+
+        if (imgResource == null)
+            imgResource = AppResource.getForResource(resourceType).getImage();
+
+        add(new Image(id, new PackageResourceReference(AppResourceLocator.class, imgResource)));
+    }
+
 
 }

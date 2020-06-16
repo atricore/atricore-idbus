@@ -9,7 +9,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.select.selectors.UserSelectedIdPEntitySelector;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
-import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
@@ -19,8 +18,7 @@ import org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.model.IdPModel;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
-import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.AppResource;
+import org.atricore.idbus.capabilities.sso.main.AppResource;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -257,7 +255,7 @@ public class SelectIdPMediator implements Serializable {
 
 
                             } else {
-                                logger.error("Uknown Identity Provider type " + p.getClass().getName());
+                                logger.error("Unknown Identity Provider type " + p.getClass().getName());
                                 continue;
                             }
 

@@ -1,35 +1,23 @@
 package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
-import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
-import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
+import org.atricore.idbus.capabilities.sso.main.FederationUtils;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.model.PartnerAppModel;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
-import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.sidebar.SideBarPanel;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
-import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.*;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: sgonzalez@atriocore.com
@@ -88,127 +76,45 @@ public abstract class SelfServicesPage extends BasePage {
 
     protected List<PartnerAppModel> lookupSps() {
 
-        SSOWebSession ssoSession = (SSOWebSession) getSession();
         SSOIdPApplication app = ((SSOIdPApplication)getApplication());
-
         IdentityProvider idp = app.getIdentityProvider();
 
+        List<PartnerAppModel> apps = new ArrayList<PartnerAppModel>();
+        Set<FederationUtils.TrustedProviders> providers = new HashSet<FederationUtils.TrustedProviders>();
 
-        String defaultIdpInitiatedSsoLoation = "";
-        for (IdentityMediationEndpoint e : idp.getChannel().getEndpoints()) {
-            if (e.getType().equals(SSOService.SingleSignOnService.toString()) &&
-                    e.getBinding().equals(SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue())) {
-                defaultIdpInitiatedSsoLoation = idp.getChannel().getLocation() + e.getLocation();
-                break;
-            }
+        // Resolve trusted providers for our IDP
+        for (FederatedProvider p : app.getIdentityProvider().getCircleOfTrust().getProviders()) {
+            providers.addAll(FederationUtils.resolveTargetProviders(idp, p));
         }
 
-        List<PartnerAppModel> apps = new ArrayList<PartnerAppModel>();
+        // Create a partner app model
+        for (FederationUtils.TrustedProviders trustedProviders : providers) {
 
-        for (FederatedProvider p : app.getIdentityProvider().getCircleOfTrust().getProviders()) {
+            for (FederationUtils.ProviderResource providerResource : trustedProviders.getTrusted()) {
 
-            if (p instanceof ServiceProvider) {
-                // Here is an SP, get the SP initiated SSO url along with other details
-                ServiceProvider sp = (ServiceProvider) p;
-
-                boolean isTrusted = false;
-                for (FederatedProvider trusted : idp.getChannel().getTrustedProviders()) {
-                    if (trusted.getName().equals(sp.getName()))
-                        isTrusted = true;
-                }
-
-                for(FederationChannel fc : idp.getChannels()) {
-                    for (FederatedProvider trusted : fc.getTrustedProviders())
-                        if (trusted.getName().equals(sp.getName()))
-                            isTrusted = true;
-                }
-
-                if (!isTrusted)
-                    continue;
-
-                // Use default endpoint, but look for overwritten values
-                String idpInitiatedSsoEndpoint = defaultIdpInitiatedSsoLoation;
-
-                for (FederationChannel c : idp.getChannels()) {
-
-                    // Do we have a specific channel for this provider ?
-                    if (c.getTargetProvider() != null && c.getTargetProvider().getName().equals(sp.getName())) {
-                        for (IdentityMediationEndpoint e : idp.getChannel().getEndpoints()) {
-                            if (e.getType().equals(SSOService.SingleSignOnService.toString()) &&
-                                    e.getBinding().equals(SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue())) {
-                                idpInitiatedSsoEndpoint = c.getLocation() + e.getLocation();
-                                c.getLocation();
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-
-                // Look for the corresponding IdP channel
-                IdPChannel idpChannel = (IdPChannel) sp.getChannel();
-                for (FederationChannel c : sp.getChannels()) {
-                    if (c.getTargetProvider().getName().equals(idp.getName())) {
-                        idpChannel = (IdPChannel) c;
-                        break;
-                    }
-                }
-
-                String spAlias = idpChannel.getMember().getAlias();
-                spAlias = new String(Base64.encodeBase64(spAlias.getBytes()));
-                idpInitiatedSsoEndpoint += "?atricore_sp_alias=" + spAlias;
+                FederatedProvider p = providerResource.getProvider();
+                String idpInitiatedSsoEndpoint = providerResource.getSsoUrl();
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Found IDP initiated SSO Endpoint ["+idpInitiatedSsoEndpoint+"] for SP  : " + sp.getName());
+                    logger.debug("Found IDP initiated SSO Endpoint [" + idpInitiatedSsoEndpoint + "] for SP  : " + p.getName());
 
-                apps.add(new PartnerAppModel(sp.getName(),
-                        sp.getName(),
-                        sp.getDisplayName() != null ? sp.getDisplayName() : sp.getDescription(),
-                        sp.getDescription(),
+                apps.add(new PartnerAppModel(p.getName(),
+                        p.getName(),
+                        p.getDescription() != null ? p.getDescription() : p.getName(),
+                        p.getDescription(),
                         idpInitiatedSsoEndpoint,
-                        sp.getResourceType()));
+                        providerResource.getResourceType()));
 
-            } else if (p instanceof FederatedRemoteProvider) {
-
-                boolean isTrusted = false;
-                for (FederatedProvider trusted : idp.getChannel().getTrustedProviders()) {
-                    if (trusted.getName().equals(p.getName()))
-                        isTrusted = true;
-                }
-
-                for(FederationChannel fc : idp.getChannels()) {
-                    for (FederatedProvider trusted : fc.getTrustedProviders())
-                        if (trusted.getName().equals(p.getName()))
-                            isTrusted = true;
-                }
-
-                if (!isTrusted)
-                    continue;
-
-                String idpInitiatedSsoEndpoint = defaultIdpInitiatedSsoLoation;
-
-                FederatedRemoteProvider rp = (FederatedRemoteProvider) p;
-
-                if (rp.getRole() != null &&
-                        (rp.getRole().equals(SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +":"+
-                                SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()) ||
-                                rp.getRole().equals("{" + SSOMetadataConstants.SPSSODescriptor_QNAME.getNamespaceURI() +"}"+
-                                        SSOMetadataConstants.SPSSODescriptor_QNAME.getLocalPart()))) {
-
-                    // For remote providers, there's only one member !
-                    CircleOfTrustMemberDescriptor descr = rp.getMembers().iterator().next();
-                    String spAlias = new String(Base64.encodeBase64(descr.getAlias().getBytes()));
-                    idpInitiatedSsoEndpoint += "?atricore_sp_alias=" + spAlias;
-
-                    apps.add(new PartnerAppModel(rp.getName(),
-                            rp.getName(),
-                            rp.getDisplayName() != null ? rp.getDisplayName() : rp.getDescription(),
-                            rp.getDescription(),
-                            idpInitiatedSsoEndpoint,
-                            rp.getResourceType()));
-                }
             }
+
         }
+
+        Collections.sort(apps, new Comparator<PartnerAppModel>() {
+            @Override
+            public int compare(PartnerAppModel o1, PartnerAppModel o2) {
+                return o1.getDescription().compareTo(o2.getDescription());
+            }
+        });
 
         if (logger.isDebugEnabled())
             logger.debug("Found "  + apps.size() + " partner applications");
@@ -216,6 +122,5 @@ public abstract class SelfServicesPage extends BasePage {
         return apps;
 
     }
-
 
 }

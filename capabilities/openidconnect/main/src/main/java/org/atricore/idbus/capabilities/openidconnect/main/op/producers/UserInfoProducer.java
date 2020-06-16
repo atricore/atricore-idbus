@@ -2,21 +2,17 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.BearerTokenError;
 import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoRequest;
-import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
-import com.nimbusds.openid.connect.sdk.claims.ClaimsSet;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
-import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.producers.AbstractOpenIDProducer;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
-import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectAuthnContext;
+import org.atricore.idbus.capabilities.openidconnect.main.op.AuthnContext;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -45,13 +41,11 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
         UserInfoRequest userInfoRequest = (UserInfoRequest) in.getMessage().getContent();
         MediationState state = in.getMessage().getState();
 
-        OpenIDConnectBinding binding = OpenIDConnectBinding.asEnum(endpoint.getBinding());
-
         // Validate accessToken
-        OpenIDConnectAuthnContext authnCtx =
-                (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+        AuthnContext authnCtx =
+                (AuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        if (authnCtx == null || authnCtx.getTokens() == null) {
+        if (authnCtx == null || authnCtx.getAccessToken() == null) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     userInfoErrorResponse,
@@ -64,8 +58,7 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
             return;
         }
 
-
-        AccessToken at = authnCtx.getTokens().getAccessToken();
+        AccessToken at = authnCtx.getAccessToken();
         if (at == null || !at.getValue().equals(userInfoRequest.getAccessToken().getValue())) {
             UserInfoErrorResponse userInfoErrorResponse = new UserInfoErrorResponse(BearerTokenError.INVALID_TOKEN);
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
@@ -79,10 +72,10 @@ public class UserInfoProducer extends AbstractOpenIDProducer {
             return;
         }
 
-        long lifetime = authnCtx.getTokens().getAccessToken().getLifetime();
         // TODO : Validate lifetime
+        long lifetime = authnCtx.getAccessToken().getLifetime();
 
-        JWT idToken = authnCtx.getTokens().toOIDCTokens().getIDToken();
+        JWT idToken = authnCtx.getIdToken();
         JWTClaimsSet claims = idToken.getJWTClaimsSet();
         UserInfo claimSet = new UserInfo(claims);
         UserInfoSuccessResponse userInfoSuccessResponse = new UserInfoSuccessResponse(claimSet);

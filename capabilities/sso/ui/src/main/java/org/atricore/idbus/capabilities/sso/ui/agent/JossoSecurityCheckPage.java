@@ -14,6 +14,7 @@ import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 
 import java.util.Properties;
@@ -43,7 +44,8 @@ public class JossoSecurityCheckPage extends BasePage {
         try {
             SecurityContext ctx = createOAuth2SecurityContext();
             if (ctx == null) {
-                // Anonymous, go to home page
+                SSOWebSession session = (SSOWebSession) getSession();
+                if (session != null) session.setSecurityContext(null);
                 throw new RestartResponseAtInterceptPageException(ProfilePage.class);
             }
         } catch (OAuth2RServerException e) {
@@ -55,7 +57,7 @@ public class JossoSecurityCheckPage extends BasePage {
         if (!session.isAuthenticated()) {
             logger.warn("Session is NOT authenticated, but we have a security context!!! Session ID / Principal : "
                     + session.getId() + " / " + session.getPrincipal());
-            throw new RestartResponseAtInterceptPageException(ProfilePage.class);
+            throw new RestartResponseAtInterceptPageException(DashboardPage.class);
         }
 
     }

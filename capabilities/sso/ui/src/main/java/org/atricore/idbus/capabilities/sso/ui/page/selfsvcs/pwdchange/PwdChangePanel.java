@@ -132,6 +132,6 @@ public class PwdChangePanel extends Panel {
     }
 
     protected void onUpdateSucceeded() {
-        error(getLocalizer().getString("pwdChangeSucceeded", this, "Your password has been updated"));
+        success(getLocalizer().getString("pwdChangeSucceeded", this, "Your password has been updated"));
     }
 }

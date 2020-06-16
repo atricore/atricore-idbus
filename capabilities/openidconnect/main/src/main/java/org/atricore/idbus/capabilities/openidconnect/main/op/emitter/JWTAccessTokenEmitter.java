@@ -129,21 +129,28 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
                 audList.add(client.getID().getValue());
 
                 // exp
-                Date exp = new Date(System.currentTimeMillis() + 5L * 60L * 1000L);
+                Date exp = new Date(System.currentTimeMillis() + (timeToLive * 1000L));
 
                 // JTI
                 String jti = uuidGenerator.generateId();
 
                 // Claims
-                JWTClaimsSet claimSet = new JWTClaimsSet.Builder().issuer(iss.getValue()).expirationTime(exp).claim("aud", audList).jwtID(jti).build();
+                JWTClaimsSet claimSet = new JWTClaimsSet.Builder().
+                        issuer(iss.getValue()).
+                        expirationTime(exp).
+                        claim("aud", audList).
+                        jwtID(jti).
+                        build();
+
                 JWT token = signJWT(client, this.signer.getPrivateKey(), jwsAlgorithm, claimSet);
 
                 String jwtTokenStr = token.serialize();
-
                 AccessToken at = new BearerAccessToken(jwtTokenStr, timeToLive, scope);
+
                 SecurityTokenImpl<AccessToken> st = new SecurityTokenImpl<AccessToken>(jti,
                         WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE,
                         at);
+                st.setExpiresOn(exp.getTime());
 
                 if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
                     // We're issuing an access token for OpenID, and not in the context of another protocol

@@ -1,1 +1,1 @@
-class=org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectComponent
+class=org.atricore.idbus.capabilities.openidconnect.main.OpenIDConnectComponent

@@ -2,10 +2,7 @@ package org.atricore.idbus.capabilities.openidconnect.main.op.producers;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.*;
-import com.nimbusds.jwt.EncryptedJWT;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
+import com.nimbusds.jwt.*;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.AuthorizationGrant;
 import com.nimbusds.oauth2.sdk.auth.*;
@@ -21,17 +18,18 @@ import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.oauth2.sdk.token.Token;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
-import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.producers.AbstractOpenIDProducer;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.Util;
 import org.atricore.idbus.capabilities.openidconnect.main.op.*;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.OpenIDConnectBPMediator;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
@@ -47,7 +45,6 @@ import org.atricore.idbus.kernel.main.util.IdRegistry;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
-import org.w3._1999.xhtml.Code;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
@@ -61,6 +58,8 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static org.atricore.idbus.capabilities.sts.main.WSTConstants.WST_OIDC_ID_TOKEN_TYPE;
 
 /**
  * This creates an OIDC token based on different grant types (CODE, JWT BEARER, etc).
@@ -107,83 +106,60 @@ public class TokenProducer extends AbstractOpenIDProducer {
         long now = System.currentTimeMillis();
         AccessToken at = null;
         RefreshToken rt = null;
-        String idToken = null;
+        JWT idToken = null;
+        String previousIdTokenStr = (String) state.getLocalVariable(WST_OIDC_ID_TOKEN_TYPE);
+        String idTokenStr = null;
 
         // Prepare emission context
-        OpenIDConnectSecurityTokenEmissionContext ctx = new OpenIDConnectSecurityTokenEmissionContext();
-        ctx.setIssuer(fChannel.getMember().getAlias());
+        OpenIDConnectSecurityTokenEmissionContext emissionContext = new OpenIDConnectSecurityTokenEmissionContext();
+        emissionContext.setIssuer(fChannel.getMember().getAlias());
 
-        // TODO : Session information ?
+        // We should have one if the user was authenticated using the UI, and the authz code is correct.
+        if (previousIdTokenStr != null) {
+            emissionContext.setPreviousIdToken(previousIdTokenStr); // Send ID Token as reference
+        }
 
+        // ----------------------------------------------
         // Make Grant specific validations
         // ----------------------------------------------
         if (grant.getType().equals(GrantType.AUTHORIZATION_CODE)) {
-
-            at = (AccessToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
-            rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
-            idToken = ctx.getIDToken();
-
-            // Add refresh token as alternative state ID
-            if (rt != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-            if (at != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
-
+            rt = (RefreshToken) emitTokenFromAuthzCode(state, clientInfo, (AuthorizationCodeGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
         } else if (grant.getType().equals(GrantType.JWT_BEARER) ||
                 grant.getType().equals(JWT_BEARER_PWD)) {
-
-            at = (AccessToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
-            rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
-            idToken = ctx.getIDToken();
-
-            // Add refresh token as alternative state ID
-            if (rt != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-            if (at != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
-
-
+            rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
         } else if (grant.getType().equals(GrantType.REFRESH_TOKEN)) {
-
-            at = (AccessToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
-            rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
-            idToken = ctx.getIDToken();
-
-            // Add refresh token as alternative state ID
-            if (rt != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-            if (at != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
-
-        } else if (grant.getType().equals(GrantType.PASSWORD)) {
-            at = (AccessToken) emitTokenForPassword(state, clientInfo, (ResourceOwnerPasswordCredentialsGrant) grant, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, ctx);
-            rt = (RefreshToken) emitTokenForPassword(state, clientInfo, (ResourceOwnerPasswordCredentialsGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, ctx);
-            idToken = ctx.getIDToken();
-
-            // Add refresh token as alternative state ID
-            if (rt != null)
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
-
-
+            rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
         } else {
             logger.warn("Unsupported grant_type : " + grant.getType().getValue());
             throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
         }
 
+        // This will generate an AccessToken AND a new RefreshToken
+        RefreshTokenGrant rtg = new RefreshTokenGrant(rt);
+        at = (AccessToken) emitTokenFromRefreshToken(state, clientInfo, rtg, WSTConstants.WST_OIDC_ACCESS_TOKEN_TYPE, emissionContext);
+        idTokenStr = emissionContext.getIDToken();
+        rt = emissionContext.getRefreshToken();
+
+        idToken = JWTParser.parse(idTokenStr);
         OIDCTokens tokens  = new OIDCTokens(idToken, at, rt);
+
+        // Add refresh token as alternative state ID
         TokenResponse tokenResponse = buildAccessTokenResponse(clientInfo, tokens);
 
-        ctx.setAccessToken(at);
-        ctx.setRefreshToken(rt);
-        ctx.setIDToken(idToken);
-
         // Store tokens in state
-        OpenIDConnectAuthnContext authnCtx =
-                (OpenIDConnectAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+        AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(AUTHN_CTX_KEY);
         if (authnCtx == null)
-            authnCtx = new OpenIDConnectAuthnContext();
-        authnCtx.setTokens(tokens);
+            authnCtx = new AuthnContext();
+
+        authnCtx.setIdTokenStr(idTokenStr);
+        authnCtx.setRefreshToken(rt);
+        authnCtx.setAccessToken(at);
+
         state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
+        state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idTokenStr);
+
+        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_REFRESH_TOKEN_KEY, rt.getValue());
+        state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_ACCESS_TOKEN_KEY, at.getValue());
 
         // Send response back (this is a back-channel request)
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
@@ -191,7 +167,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 "AccessTokenResponse",
                 "application/json",
                 null, // TODO
-                in.getMessage().getState()));
+                state));
 
         exchange.setOut(out);
 
@@ -474,7 +450,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             JAXBElement<RequestedSecurityTokenType> jaxbElementToken = (JAXBElement<RequestedSecurityTokenType>) rstrt.getAny().get(1);
             Token token = (Token) jaxbElementToken.getValue().getAny();
             if (logger.isDebugEnabled())
-                logger.debug("Generated OIDC Access Token [" + token.getValue() + "]");
+                logger.debug("Generated OIDC Token [" + token.getValue() + "]");
 
             return token;
 
@@ -682,56 +658,91 @@ public class TokenProducer extends AbstractOpenIDProducer {
             ClientAuthenticationMethod enabledAuthnMethod = clientInfo.getMetadata().getTokenEndpointAuthMethod();
             ClientAuthentication clientAuthn = tokenRequest.getClientAuthentication();
             AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
+            CodeVerifier cv = null;
+
             // No authn method means code challenge!
             if (authzGrant instanceof AuthorizationCodeGrant && enabledAuthnMethod == null) {
 
                 AuthorizationCodeGrant authzCodeGrant = (AuthorizationCodeGrant) authzGrant;
-                if (authzCodeGrant.getCodeVerifier() != null) {
-
-                    CodeVerifier cv = authzCodeGrant.getCodeVerifier();
-                    if (cv != null) {
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Received code_verifier " + cv.getValue());
-
-                        String expectedCodeChallengeStr = (String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge");
-
-                        CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.getDefault();
-                        CodeChallenge expectedCodeChallenge = null;
-
-                        if (expectedCodeChallengeStr != null) {
-                            try {
-                                expectedCodeChallenge = CodeChallenge.parse(expectedCodeChallengeStr);
-                            } catch (ParseException e) {
-                                logger.error("Invalid code challenge " + expectedCodeChallengeStr);
-                                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_challenge");
-                            }
-
-                            if (state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method") != null) {
-                                codeChallengeMethod = CodeChallengeMethod.parse((String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method"));
-                            }
-
-                            if (logger.isTraceEnabled())
-                                logger.trace("Attempting code_challenge authentication ["+codeChallengeMethod.getValue()+"] " + codeChallengeMethod.getValue());
-
-                            CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, cv);
-                            if (codeChallenge.equals(expectedCodeChallenge)) {
-                                if (logger.isTraceEnabled())
-                                    logger.trace("Authenticated client with code_challenge " + expectedCodeChallenge.getValue());
-                                return;
-                            } else {
-
-                                if (logger.isTraceEnabled())
-                                    logger.trace("Failed client authentication, expeted code_challenge " + expectedCodeChallenge.getValue());
-
-                                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
-
-                            }
-                        }
-                    }
+                cv = authzCodeGrant.getCodeVerifier();
+                if (cv == null) {
+                    logger.trace("No code_verifier received, and client authentication method is set to NONE");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
                 }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Received code_verifier " + cv.getValue());
+
+                String expectedCodeChallengeStr = (String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge");
+
+                CodeChallengeMethod codeChallengeMethod = CodeChallengeMethod.getDefault();
+                if (expectedCodeChallengeStr == null) {
+                    logger.trace("No code_verifier received, and client authentication method is set to NONE");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_challenge_not_found");
+                }
+
+                CodeChallenge expectedCodeChallenge = null;
+                try {
+                    expectedCodeChallenge = CodeChallenge.parse(expectedCodeChallengeStr);
+                } catch (ParseException e) {
+                    logger.error("Invalid code challenge " + expectedCodeChallengeStr);
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_code_challenge");
+                }
+
+                if (state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method") != null) {
+                    codeChallengeMethod = CodeChallengeMethod.parse((String) state.getLocalVariable(OIDC_EXT_NAMESPACE + ":code_challenge_method"));
+                }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Attempting code_challenge authentication ["+codeChallengeMethod.getValue()+"] " + codeChallengeMethod.getValue());
+
+                CodeChallenge codeChallenge = CodeChallenge.compute(codeChallengeMethod, cv);
+                if (codeChallenge.equals(expectedCodeChallenge)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Authenticated client with code_challenge " + expectedCodeChallenge.getValue());
+                    return;
+                }
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Failed client authentication, expected/received code_challenge " + expectedCodeChallenge.getValue() + "/" + codeChallenge.getValue());
+
+                throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "code_verifier");
+
+            } else if (authzGrant instanceof RefreshTokenGrant) {
+
+                // This is a token refresh request
+
+                // Validate the received refresh token
+                RefreshToken rt = tokenRequest.getExistingGrant();
+
+                if (rt == null || rt.getValue() == null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Failed client authentication, previous refresh_token ");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
+                }
+
+                AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+
+                if (authnCtx == null || authnCtx.getRefreshToken() == null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Failed client authentication, previous refresh_token ");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
+                }
+
+                if (!rt.getValue().equals(authnCtx.getRefreshToken().getValue())) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Failed client authentication, previous refresh_token ");
+                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "invalid_refresh_token");
+                }
+
+                if (clientAuthn == null) {
+                    // We don't have client authentication, but it is OK.
+                    return;
+                }
+
             }
 
+            // No authentication method MUST use CODE CHALLENGE/VERIFIER or REFRESH_TOKEN grant!
             if (enabledAuthnMethod == null) {
                 if (logger.isDebugEnabled())
                     logger.debug("Client Authentication not required for " + clientInfo.getID().getValue());
@@ -925,15 +936,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
     protected TokenResponse buildAccessTokenResponse(OIDCClientInformation clientInfo, OIDCTokens tokens) {
         return new OIDCTokenResponse(tokens);
-    }
-
-    protected void validateRequest(TokenRequest tokenRequest, OpenIDConnectAuthnContext authnCtx) throws OpenIDConnectException {
-        // TODO : Validate received code w/authnCtx authz code
-
-        // TODO : Validate grant_type
-
-        // TODO : Validate request_uri (wiht the one requested, not configured!)
-
     }
 
     /**

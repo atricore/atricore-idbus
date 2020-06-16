@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<script>
+    window.addEventListener("message", receiveMessage, false);
+
+    function receiveMessage(e) {
+
+        var oReq = new XMLHttpRequest();
+        oReq.onreadystatechange = function () {
+
+            if (this.readyState == XMLHttpRequest.DONE) {
+
+                if (this.status == 200) {
+
+                    let data = e.data.split(' ');
+                    if (data.length != 2) {
+                        e.source.postMessage("error", e.origin);
+                    }
+
+                    let opSessionSate = this.responseText;
+                    let browserSessionState = data[1];
+
+                    var stat = '';
+                    if (opSessionSate == browserSessionState) {
+                        stat = 'unchanged';
+                    } else {
+                        stat = 'changed';
+                    }
+
+                    e.source.postMessage(stat, e.origin);
+                } else
+                    e.source.postMessage("error", e.origin);
+            }
+
+        }
+
+        oReq.open("GET", "##__OP_STATE__##");
+        oReq.send();
+    };
+</script>
+</body>
+</html>

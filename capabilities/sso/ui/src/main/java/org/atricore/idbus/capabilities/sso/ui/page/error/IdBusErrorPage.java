@@ -50,18 +50,26 @@ public class IdBusErrorPage extends BasePage {
 
     private static final Log logger = LogFactory.getLog(IdBusErrorPage.class);
 
+    private String artifactId;
+
     public IdBusErrorPage() throws Exception {
         this(null);
     }
 
     public IdBusErrorPage(PageParameters parameters) throws Exception {
+        if (parameters != null)
+            artifactId = parameters.get("IDBusErrArt").toString();
+
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
 
         SSOCredentialClaimsRequest credentialClaimsRequest = null;
         getSession().bind();
 
-        if (parameters != null) {
-
-            String artifactId = parameters.get("IDBusErrArt").toString();
+        if (artifactId != null) {
 
             try {
                 MediationMessage fault = artifactId != null ? getFault(artifactId) : null;
@@ -90,6 +98,8 @@ public class IdBusErrorPage extends BasePage {
                     add(new Label("status", "N/A"));
                     add(new Label("secStatus", ""));
                     add(new Label("details", "N/A"));
+
+                    fillCausesList(new CausesModel(null));
                 }
 
             } catch (Exception e) {
@@ -98,6 +108,7 @@ public class IdBusErrorPage extends BasePage {
             }
 
         }
+
     }
 
     protected MediationMessage getFault(String artifactId) throws Exception {
@@ -130,6 +141,8 @@ public class IdBusErrorPage extends BasePage {
 //            cause.printStackTrace(errorPrintWriter);
 //            causes.add(errorWriter.toString());
 
+            // causes.add(cause.getMessage());
+
             rootCause = cause;
             cause = cause.getCause();
         }
@@ -137,8 +150,11 @@ public class IdBusErrorPage extends BasePage {
         Writer errorWriter = new StringWriter();
         PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
 
-        rootCause.printStackTrace(errorPrintWriter);
-        causes.add(errorWriter.toString());
+        // do not provide a stack trace:
+        // rootCause.printStackTrace(errorPrintWriter);
+        // causes.add(errorWriter.toString());
+
+        causes.add(rootCause != null ? rootCause.getMessage() : "ERROR");
 
         return causes;
 

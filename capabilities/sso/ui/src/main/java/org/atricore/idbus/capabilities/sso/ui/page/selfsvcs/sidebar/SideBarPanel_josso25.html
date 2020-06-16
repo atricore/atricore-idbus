@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.3-strict.dtd">
+
+
+<wicket:panel>
+<div class="section-panel mb-3">
+    <header class="section-panel__header">
+        <div class="flex-row">
+            <h3><wicket:message key="account">Account</wicket:message></h3>
+            <em class="ml-auto"><a wicket:id="profileLink" href="" class="text-accent"><wicket:message key="app.edit.account"/></a></em>
+        </div>
+    </header>
+
+    <div class="flex-row">
+        <img class="mb-1 mr-2" src="josso25/img/user-icon.svg" alt="user icon">
+        <div>
+            <h4 class="mb-1"> <span wicket:id="fullName">fullName</span> </h4>
+            <p class="mb-0"> <b><wicket:message key="email">email:</wicket:message></b>  <spam wicket:id="email">my-email@example.com</spam> </p>
+        </div>
+    </div>
+
+</div>
+
+<div class="section-panel">
+    <header class="section-panel__header">
+        <h3><wicket:message key="app.sps.quicklink"/></h3>
+    </header>
+    <ul class="list-custom m-0">
+
+        <ul class="list-custom m-0">
+            <li wicket:id="apps"><em><a href="" wicket:id="ssoLink"><span wicket:id="name">My App</span></a></em></li>
+        </ul>
+    </ul>
+</div>
+</wicket:panel>
+</html>

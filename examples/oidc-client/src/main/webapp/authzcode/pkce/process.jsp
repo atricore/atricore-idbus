@@ -36,6 +36,8 @@
 <%@ page import="java.security.cert.CertificateFactory" %>
 <%@ page import="java.io.ByteArrayInputStream" %>
 <%@ page import="sun.security.provider.X509Factory" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -45,10 +47,11 @@
     AccessToken accessToken = null;
     RefreshToken refreshToken = null;
     BearerAccessToken bearerAccessToken = null;
+    String sessionState = null;
 
     JWT idToken = null;
     JWTClaimsSet claims = null;
-    String sloUrl = null;
+    URI sloUrl = null;
 
     CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");;
 
@@ -59,7 +62,10 @@
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
 
-        sloUrl = props.getProperty("oidc.logout.endpoint");
+        // This is the OpenID Connect Identity Provider ID (in JOSSO is the base URI for the OP services)
+        Issuer issuer = new Issuer(props.getProperty("oidc.idp.id"));
+        OIDCProviderMetadata op = OIDCProviderMetadata.resolve(issuer);
+        sloUrl = op.getEndSessionEndpointURI();
 
         // -------------------------------------------------
         // Load shared secret
@@ -88,14 +94,14 @@
 
         // -------------------------------------------------
         // Token endpoint
-        URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));
+        URI tokenEndpoint = op.getTokenEndpointURI();
 
         // -------------------------------------------------
         // Process response.
 
         // Get authorization code
         AuthorizationCode code = new AuthorizationCode(request.getParameter("code"));
-        URI redirectUri = new URI(props.getProperty("oidc.authn.redirectUriBase"));
+        URI redirectUri = new URI(props.getProperty("oidc.client.redirectUriBase"));
 
         // Build an authorization grant using CODE VERIFIER
         AuthorizationGrant authzGrant = new AuthorizationCodeGrant(code, redirectUri, codeVerifier);
@@ -126,6 +132,7 @@
                 refreshToken = successResponse.getOIDCTokens().getRefreshToken();
                 bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
                 idToken = successResponse.getOIDCTokens().getIDToken();
+                sessionState = request.getParameter("session_state");
 
                 SignedJWT signedIdToken = (SignedJWT) idToken;
 
@@ -142,14 +149,24 @@
                 signedIdToken.verify(verifier);
                 claims = signedIdToken.getJWTClaimsSet();
 
+
+                request.getSession().setAttribute("username" , claims.getSubject());
+                request.getSession().setAttribute("session_state", sessionState);
+                request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
+                request.getSession().setAttribute("refresh_token", refreshToken);
+                request.getSession().setAttribute("id_token", idToken);
+
+
             }
 
         } catch (ParseException e) {
             error = e.getErrorObject();
             exception = e;
+            request.getSession().removeAttribute("username");
         } catch (SerializeException e) {
             //error = e.getErrorObject();
             exception = e;
+            request.getSession().removeAttribute("username");
         } catch (JOSEException e) {
             exception = e;
         }
@@ -163,40 +180,43 @@
 %>
 
 <html>
-<head>
-    <title>ODIC Client Test - JWT Bearer with Authorization Code </title>
-</head>
+<jsp:include page="../inc/header.jsp" />
 
-<h2>Outcome</h2>
+<body class="gt-fixed">
 
-<%
-    out.println("CodeVerifier: " + (codeVerifier != null ? codeVerifier.getValue() : "NA"));
-    out.println("<br><br>");
-%>
+<jsp:include page="../inc/top-bar.jsp" />
 
-<% if (error == null && exception == null) {
-    out.println("Claims: " + claims + "</br></br>");
+<div id="idbus-error" class="gt-bd clearfix">
+    <div class="gt-content">
+        <div>
+            <h2 class="gt-table-head">Received Tokens</h2>
+        </div>
 
-    out.println("IDToken: " + idToken.getParsedString() + "</br>");
-    out.println("AccessToken: " + accessToken + "</br>");
-    //out.println("TokenPair: " + tokenPair + "</br>");
-    out.println("RefreshToken: " + refreshToken + "</br>");
-    out.println("BearerAccessToken: " + bearerAccessToken + "</br>");
+        <div>
 
-    out.println("<br><br>");
+            <% if (error == null && exception == null) {
 
-    out.println("<a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString() + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a>");
-}
-%>
+                out.println("<ul>");
+                out.println("<li><b>IDToken:</b> " + idToken.getParsedString() + "</li>");
+                out.println("<li><b>AccessToken:</b> " + accessToken + "</li>");
+                out.println("<li><b>RefreshToken:</b> " + refreshToken + "</li>");
+                out.println("<li><b>BearerAccessToken:</b> " + bearerAccessToken + "</li>");
+                out.println("<li><b>SessionState:</b> " + sessionState + "</li>");
+                out.println("</ul>");
+
+            }
+
+                if (error != null) {
+                    out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+                }
+
+                if (exception != null) {
+                    out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
+                }%>
+        </div>
+    </div>
+</div>
 
 
-<h3>Errors:</h3>
-<% if (error != null) {
-    out.println(error.getCode() + ":" + URLDecoder.decode(error.getDescription()));
-}
-
-    if (exception != null) {
-        out.println(exception.getMessage());
-    }%>
 <br>
 </html>

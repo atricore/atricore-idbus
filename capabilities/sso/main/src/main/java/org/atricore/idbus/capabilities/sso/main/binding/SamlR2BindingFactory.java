@@ -56,27 +56,27 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
     }
 
     public MediationBinding createBinding(String binding, Channel channel) {
-        
+
         SSOBinding b = null;
         try {
             b = SSOBinding.asEnum(binding);
         } catch (IllegalArgumentException e) {
                 return null;
         }
-        
-        
+
+
         MediationBinding mb = null;
         switch (b) {
             case SAMLR2_POST:
                 mb = new SamlR2HttpPostBinding(channel);
                 break;
-            case SAMLR2_REDIRECT: 
+            case SAMLR2_REDIRECT:
                 mb = new SamlR2HttpRedirectBinding(channel);
                 break;
             case SAMLR2_ARTIFACT:
                 mb = new SamlR2HttpArtifactBinding(channel);
                 break;
-            case SAMLR2_SOAP: 
+            case SAMLR2_SOAP:
                 mb = new SamlR2SoapBinding(channel);
                 break;
             case SAMLR2_LOCAL:
@@ -96,6 +96,9 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
                 break;
             case SSO_ARTIFACT:
                 mb = new SsoHttpArtifactBinding(channel);
+                break;
+            case SSO_PAYLOAD:
+                mb = new SsoPayloadResolutionBinding(channel);
                 break;
             case SSO_POST:
                 mb = new SsoHttpPostBinding(channel);
@@ -124,7 +127,7 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             default:
                 logger.warn("Unknown SAMLR2 Binding! " + binding);
         }
-        
+
         if (mb != null && mb instanceof AbstractMediationBinding) {
 
             Map<String, ConfigurationContext> cfgs  = applicationContext.getBeansOfType(ConfigurationContext.class);
@@ -135,8 +138,8 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
 
             ((AbstractMediationBinding)mb).setStateManagerClassLoader(this.applicationContext.getClassLoader());
         }
-        
+
         return mb;
-        
+
     }
 }

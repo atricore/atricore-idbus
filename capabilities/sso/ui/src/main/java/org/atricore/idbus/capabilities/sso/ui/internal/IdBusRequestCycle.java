@@ -27,19 +27,27 @@ public class IdBusRequestCycle extends RequestCycle {
         super(ctx);
 
         this.app = app;
-        
+
         String url = ctx.getRequest().getUrl().toString();
         if (url == null) return;
 
         int mid = url.lastIndexOf('.');
         if (mid < 0) return;
-        
+
         String type = url.substring(mid + 1, url.length());
         if (type.equalsIgnoreCase("css")) {
             ((HttpServletResponse)ctx.getResponse().getContainerResponse()).setContentType("text/css");
         }
 
+        if (type.equalsIgnoreCase("svg")) {
+            ((HttpServletResponse)ctx.getResponse().getContainerResponse()).setContentType("application/svg+xml");
+        }
+
     }
+
+
+
+
 
     @Override
     protected void onEndRequest() {

@@ -41,8 +41,13 @@
     </servlet>
 
     <servlet>
+        <servlet-name>ResourcesServlet</servlet-name>
+        <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.ui.ResourceUIServlet</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>HttpErrServlet</servlet-name>
-        <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.HttpErrServlet</servlet-class>
+        <servlet-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.ui.HttpErrServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -52,12 +57,17 @@
 
     <filter>
         <filter-name>idbus-http-process-ui</filter-name>
-        <filter-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.ProcessingUIServletFilter</filter-class>
+        <filter-class>org.atricore.idbus.kernel.main.mediation.camel.component.http.ui.ProcessingUIServletFilter</filter-class>
     </filter>
 
     <servlet-mapping>
         <servlet-name>OsgiIDBusServlet</servlet-name>
         <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ResourcesServlet</servlet-name>
+        <url-pattern>/processing-ui/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

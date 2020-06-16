@@ -325,7 +325,6 @@ public class OAuth2Client implements ConfigurationConstants {
         }
     }
 
-
     protected Properties loadConfig() throws IOException, OAuth2ClientException {
 
         if (configPath == null)

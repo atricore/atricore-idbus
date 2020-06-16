@@ -21,6 +21,8 @@
 <%@ page import="com.nimbusds.oauth2.sdk.id.ClientID" %>
 <%@ page import="com.nimbusds.oauth2.sdk.auth.Secret" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.OIDCTokenResponse" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -33,14 +35,17 @@
     //TokenPair tokenPair = null;
     JWT idToken = null;
     JWTClaimsSet claims = null;
-    String sloUrl = null;
+    URI sloUrl = null;
 
     try {
         Properties props = new Properties();
         InputStream is = getClass().getResourceAsStream("/oidc.properties");
         props.load(is);
 
-        sloUrl = props.getProperty("oidc.logout.endpoint");
+        // This is the OpenID Connect Identity Provider ID (in JOSSO is the base URI for the OP services)
+        Issuer issuer = new Issuer(props.getProperty("oidc.idp.id"));
+        OIDCProviderMetadata op = OIDCProviderMetadata.resolve(issuer);
+        sloUrl = op.getEndSessionEndpointURI();
 
         // use SHA-1 to generate a hash from your key and trim the result to 256 bit (32 bytes)
         byte[] key = props.getProperty("oidc.client.secret").getBytes("UTF-8");
@@ -53,7 +58,7 @@
         }
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
 
-        URI tokenEndpoint = new URI(props.getProperty("oidc.token.endpoint"));
+        URI tokenEndpoint = op.getTokenEndpointURI();
 
         // Client Authentication (client_secret_jwt)
         ClientAuthentication clientAuth = null;
@@ -94,7 +99,7 @@
 
 
         // Authorization Grant
-        RefreshToken currentRefreshToken = new RefreshToken(request.getParameter("refresh_token"));
+        RefreshToken currentRefreshToken = (RefreshToken) request.getSession().getAttribute("refresh_token");
         AuthorizationGrant authzGrant = new RefreshTokenGrant(currentRefreshToken);
 
         // Scopes
@@ -119,6 +124,9 @@
                 bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
                 idToken = successResponse.getOIDCTokens().getIDToken();
 
+                request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
+                request.getSession().setAttribute("refresh_token", refreshToken);
+
                 SignedJWT signedIdToken = (SignedJWT) idToken;
                 // TODO : JWSVerifier verifier = new RSASSAVerifier(publicKey);
                 // TODO : signedIdToken.verify(verifier);
@@ -139,37 +147,35 @@
 %>
 
 <html>
-<head>
-    <title>ODIC Client Test - JWT Bearer Refresh Token </title>
-</head>
+<jsp:include page="../inc/header.jsp" />
 
-<h2>Outcome</h2>
+<body class="gt-fixed">
 
-<% if (error == null && exception == null) {
-    out.println("Claims: " + claims + "</br></br>");
+<jsp:include page="../inc/top-bar.jsp" />
 
-    out.println("IDToken: " + idToken.getParsedString() + "</br>");
-    out.println("AccessToken: " + accessToken + "</br>");
-    out.println("TokenPair: " + tokenPair + "</br>");
-    out.println("RefreshToken: " + refreshToken + "</br>");
-    out.println("BearerAccessToken: " + bearerAccessToken + "</br>");
-
-    out.println("<br><br>");
-
-    out.println("<a href=\"" + sloUrl + "?id_token_hint=" + idToken.getParsedString()  + "&post_logout_redirect_uri=http://localhost:8080/oidc-client/login-authz-code.jsp\">logout</a>");
-    }
-%>
-
-
-<h3>Errors:</h3>
-<% if (error != null) {
-    out.println(error.getCode() + ":" + URLDecoder.decode(error.getDescription()));
-}
-
-if (exception != null) {
-    out.println(exception.getMessage());
-}%>
-<br>
+<div id="idbus-error" class="gt-bd clearfix">
+    <div class="gt-content">
+        <div>
+            <h2 class="gt-table-head">Received Tokens</h2>
+        </div>
+        <div>
+            <% if (error == null && exception == null) {
+                out.println("<ul>");
+                out.println("<li>IDToken: " + idToken.getParsedString() + "</li>");
+                out.println("<li>AccessToken: " + accessToken + "</li>");
+                out.println("<li>RefreshToken: " + refreshToken + "</li>");
+                out.println("<li>BearerAccessToken: " + bearerAccessToken + "</li>");
+                out.println("</ul>");
+            }
+            if (error != null) {
+                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+            }
+            if (exception != null) {
+                out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
+            }%>
+        </div>
+    </div>
+</div>
 </html>
 
 

@@ -70,6 +70,20 @@ public class AuthorizationGrantAuthenticationScheme extends AbstractAuthenticati
     }
 
     @Override
+    public void confirm() {
+        super.confirm();
+
+        Credential c = _inputCredentials[0];
+        if (c instanceof AuthorizationCodeGrantCredential) {
+            AuthorizationCodeGrantCredential code = (AuthorizationCodeGrantCredential) c;
+            String tokenId = code.getAuthzCodeGrant().getAuthorizationCode().getValue();
+            tokenStore.remove(tokenId);
+            if (logger.isDebugEnabled())
+                logger.debug("Removed authorization code from token store");
+        }
+    }
+
+    @Override
     public Principal getInputPrincipal() {
         return getPrincipal();
     }

@@ -45,6 +45,17 @@
     <osgi:service id="subjectAuthnPolicyRegistrySvc" ref="subjectAuthnPolicyRegistry"
                   interface="org.atricore.idbus.capabilities.sts.main.policies.SubjectAuthnPolicyRegistry"/>
 
+    <!-- Password expiration policy -->
+    <bean id="passwordExpiredPolicy" class="org.atricore.idbus.capabilities.sts.main.policies.PasswordExpiredPolicy" />
+
+    <osgi:service id="passwordExpiredPolicySvc" ref="passwordExpiredPolicy"
+                  interface="org.atricore.idbus.capabilities.sts.main.SubjectAuthenticationPolicy">
+        <service-properties>
+            <!-- This MUST match the SubjectAuthenticationPolicy property named 'name' -->
+            <entry key="policyName" value="idbus-password-expired"/>
+        </service-properties>
+    </osgi:service>
+
     <!-- Account locked authentication policy -->
     <bean id="accountLockedAuthnPolicy" class="org.atricore.idbus.capabilities.sts.main.policies.AccountLockedAuthnPolicy" />
 

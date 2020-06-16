@@ -14,39 +14,21 @@
             <span wicket:id="feedback"/>
         </div>
 
-        <form wicket:id="verifyPwdResetForm">
+        <form wicket:id="pwdResetForm">
             <fieldset>
 
-                <div class="clearfix">
-                    <div class="gt-form-row gt-width-99 clearfix">
-                        <label for="answer1"><span wicket:id="question1">Q1</span></label>
-                        <input wicket:id="answer1" type="text" class="gt-form-text" path="name" />
-                    </div>
+                <div class="gt-form-row gt-width-33">
+                    <label for="newPassword"><wicket:message key="claims.label.newPassword"/></label>
+                    <input wicket:id="newPassword" type="password" class="gt-form-text" path="newPassword" />
                 </div>
-
-                <div class="gt-hr"><hr/></div>
-
-                <div class="clearfix">
-                    <div class="gt-form-row gt-width-99 clearfix">
-                        <label for="answer2"><span wicket:id="question2">Q2</span></label>
-                        <input wicket:id="answer2" type="text" class="gt-form-text" path="name" />
-                    </div>
+                <div class="gt-form-row gt-width-33 clearfix">
+                    <label for="retypedPassword"><wicket:message key="claims.label.retypedPassword"/></label>
+                    <input wicket:id="retypedPassword" type="password" class="gt-form-text" path="retypedPassword" />
                 </div>
-
-                <div class="gt-hr"><hr/></div>
-
-                <div class="clearfix">
-                    <div class="gt-form-row gt-width-99 clearfix">
-                        <label for="answer3"><span wicket:id="question3">Q3</span></label>
-                        <input wicket:id="answer3" type="text" class="gt-form-text" path="name" />
-                    </div>
-                </div>
-
-                <div class="gt-hr"><hr/></div>
 
                 <!-- form row -->
                 <div class="gt-form-row">
-                    <input class="gt-btn-gray-medium" type="submit" value="Continue" wicket:id="doVerifyPwdReset" />
+                    <input class="gt-btn-gray-medium" type="submit" value="Submit" wicket:id="doSave" />
                 </div>
                 <!-- /form row -->
 

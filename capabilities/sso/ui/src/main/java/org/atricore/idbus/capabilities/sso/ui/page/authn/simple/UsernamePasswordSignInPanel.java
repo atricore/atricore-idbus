@@ -37,8 +37,10 @@ import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
+import org.atricore.idbus.capabilities.sts.main.policies.AccountLockedAuthnStatement;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyEnforcementError;
 import org.atricore.idbus.kernel.main.authn.PasswordPolicyErrorType;
 import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
@@ -280,18 +282,20 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                 if (stmt instanceof PasswordPolicyEnforcementError &&
                         PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED.equals(((PasswordPolicyEnforcementError) stmt).getType())) {
 
-                    BaseWebApplication app = (BaseWebApplication) getApplication();
+                    SSOIdPApplication app = (SSOIdPApplication) getApplication();
 
-                    // TODO : Improve
                     IdentityStore identityStore = ((SPChannel) app.getIdentityProvider().getDefaultFederationService().getChannel()).getIdentityManager().getIdentityStore();
-                    if (identityStore.isUpdatePasswordEnabled()) {
+                    if (identityStore.isUpdatePasswordEnabled() || app.getHomePage() != null) {
                         throw new RestartResponseAtInterceptPageException(app.resolvePage("POLICY/PWDRESET"));
                     }
-                }
 
+                    displayFeedbackMessage(getString("claims.text.passwordExpired", null, "Your password expired"));
+                } else if (stmt instanceof AccountLockedAuthnStatement) {
+                    displayFeedbackMessage(getString("claims.text.accountLocked", null, "Your account is locked"));
+                }
             }
         }
-        
+
         displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
 
     }

@@ -24,6 +24,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.atricore.idbus.capabilities.sso.ui.agent.SecurityContext;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset.PwdResetState;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationState;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
@@ -55,6 +56,7 @@ public class SSOWebSession extends WebSession {
     private RegistrationState  registrationState;
     private int retries;
     private String lastUsername;
+    private PwdResetState pwdResetState;
 
     public SSOWebSession(Request request) {
         super(request);
@@ -145,5 +147,13 @@ public class SSOWebSession extends WebSession {
 
     public void setPolicyEnforcementRequest(PolicyEnforcementRequest policyEnforcementRequest) {
         this.policyEnforcementRequest = policyEnforcementRequest;
+    }
+
+    public void setPwdResetState(PwdResetState state) {
+        this.pwdResetState = state;
+    }
+
+    public PwdResetState getPwdResetState() {
+        return pwdResetState;
     }
 }

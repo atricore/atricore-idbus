@@ -251,6 +251,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
             startMilis = System.currentTimeMillis();
 
+            // These are warning statements
             Set<PolicyEnforcementStatement> ssoPolicies = verify(processingContext, requestToken.getValue(), tokenType.getValue());
 
             endMilis = System.currentTimeMillis();
@@ -328,7 +329,6 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             throw new SecurityTokenAuthenticationFailure(e.getMessage(), e);
         }
 
-        // TODO : Use planning infrastructure to transfor RST to RSTR
         // Transform RST in RSTR
 
         org.xmlsoap.schemas.ws._2005._02.trust.ObjectFactory of =
@@ -339,7 +339,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         // Send context back, updated
         if (rstCtxArtifact != null) {
             rstr.setContext(rstCtxArtifact.getContent());
-        } 
+        }
 
         JAXBElement<String> srcTokenType = (JAXBElement<String>) rst.getAny().get(0);
         tokenType = of.createTokenType(srcTokenType.getValue());
@@ -496,7 +496,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         }
 
         if (errorStmts.size() > 0)
-            throw new SecurityTokenAuthenticationFailure("Policy Enforcement", errorStmts, null);
+            throw new SecurityTokenAuthenticationFailure("[Policy Enforcement]", errorStmts, null);
 
         return warnStmts;
     }
@@ -532,6 +532,11 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
 
                         if (mServer != null)
                             mServer.recordResponseTimeMetric(metricsPrefix + "/" + emitter.getId() + "/emitTime", endMilis - startMilis);
+
+                        ctx.getEmittedTokens().add(st);
+                    } else {
+                        logger.debug("Emission failed for token type [" + tokenType + "] using " +
+                                "[" + emitter.getId() + "] [MILIS] " + (endMilis - startMilis));
                     }
 
                     if (emitter.isTargetedEmitter(ctx, requestToken, tokenType)) {
@@ -545,7 +550,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                         }
                         securityToken = st;
                     }
-                    ctx.getEmittedTokens().add(st);
+
 
                 }
 

@@ -182,6 +182,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                 res.addHeader("X-IdBus-Node", nodeId);
 
             // Add additional headers
+            // TODO : Do not set the header if it is already there ?!
             switch(mode) {
                 case DISABLED:
                     // Nothing to do

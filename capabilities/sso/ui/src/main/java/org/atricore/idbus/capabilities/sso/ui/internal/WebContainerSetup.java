@@ -8,7 +8,7 @@ import org.ops4j.pax.web.service.WebContainer;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class WebContainerSetup {
-    
+
     private static Log logger = LogFactory.getLog(WebContainerSetup.class);
 
     private WebContainer webContainer;
@@ -22,10 +22,14 @@ public class WebContainerSetup {
     }
 
     public void init() {
-        CssResourceFilter f = new CssResourceFilter();
+        /*
+        CssResourceFilter cssf = new CssResourceFilter();
+        SVGResourceFilter svgf = new SVGResourceFilter();
 
         logger.debug("Registering filter for CSS resource handling ");
 
-        webContainer.registerFilter(f, new String[] { "/*" }, null, null, null);
+        webContainer.registerFilter(cssf, new String[] { "/*" }, null, null, null);
+        webContainer.registerFilter(svgf, new String[] { "*.svg" }, null, null, null);
+         */
     }
 }

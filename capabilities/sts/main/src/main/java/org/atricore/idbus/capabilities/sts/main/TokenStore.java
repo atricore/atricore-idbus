@@ -17,4 +17,7 @@ public interface TokenStore {
 
     void store(SecurityToken token);
 
+    boolean remove(String tokenId);
+
+
 }

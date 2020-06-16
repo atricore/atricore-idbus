@@ -212,7 +212,6 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
             return false;
         }
 
-
         if (logger.isDebugEnabled())
             logger.debug("[authenticate()], Principal authenticated [" + userid + "/" + knownUserName + "]");
 

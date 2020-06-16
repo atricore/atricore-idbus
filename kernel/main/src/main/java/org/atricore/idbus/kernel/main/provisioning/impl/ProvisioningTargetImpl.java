@@ -44,17 +44,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private String name;
 
     private String description;
-    
+
     private String hashEncoding;
-    
+
     private String hashAlgorithm;
-    
+
     private String hashCharset;
-    
+
     private int saltLength;
 
     private String saltValue;
-    
+
     private IdentityPartition identityPartition;
 
     private MediationPartition mediationPartition;
@@ -129,7 +129,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public String getDescription() {
         return description;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -221,7 +221,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws ProvisioningException {
 
         try {
@@ -236,7 +236,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public ListGroupsResponse listGroups(ListGroupsRequest groupRequest) throws ProvisioningException {
         try {
             Collection<Group> groups = identityPartition.findAllGroups();
@@ -250,17 +250,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningException {
         String name = groupRequest.getName();
         String descr = groupRequest.getDescription();
-        
+
         if (descr != null)
             throw new ProvisioningException("Group search by description not supported");
 
         if (name == null)
             throw new ProvisioningException("Name or description must be specified");
-        
+
         try {
 
             Group group =  identityPartition.findGroupByName(name);
@@ -303,13 +303,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         auditProps.setProperty("groupId", groupRequest.getId());
 
         try {
-            
+
             Group group = identityPartition.findGroupById(groupRequest.getId());
 
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
             group.setAttrs(groupRequest.getAttrs());
-            
+
             group = identityPartition.updateGroup(group);
 
             auditProps.setProperty("groupName", group.getName());
@@ -551,7 +551,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws ProvisioningException {
         try {
             User user = identityPartition.findUserByUserName(userRequest.getUsername());
@@ -565,7 +565,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public ListUsersResponse listUsers(ListUsersRequest userRequest) throws ProvisioningException {
         try {
             Collection<User> users = identityPartition.findAllUsers();
@@ -603,10 +603,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws ProvisioningException {
         try {
-            
+
             User user = userRequest.getUser();
             User oldUser = identityPartition.findUserById(user.getId());
 
@@ -683,7 +683,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             user.setLastPasswordChangeDate(System.currentTimeMillis());
             identityPartition.updateUser(user);
             SetPasswordResponse setPwdResponse = new SetPasswordResponse();
-            
+
             return setPwdResponse;
         } catch (ProvisioningException e) {
             throw e;
@@ -733,7 +733,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         String transactionId = uuid.generateId();
         String code = shortIdGen.generateId();
 
-        String pwd = RandomStringUtils.randomAlphanumeric(8);
+        String pwd = RandomStringUtils.randomAlphanumeric(8); // TODO : Make configurable!
 
         ResetPasswordResponse resetPwdResp = new ResetPasswordResponse();
         resetPwdResp.setNewPassword(pwd);
@@ -993,7 +993,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             UserAttributeDefinition oldUserAttribute = schemaManager.findUserAttributeById(userAttribute.getId());
 
             BeanUtils.copyProperties(userAttribute, oldUserAttribute, new String[] {"id"});
-            
+
             userAttribute = schemaManager.updateUserAttribute(oldUserAttribute);
 
             UpdateUserAttributeResponse userAttributeResponse = new UpdateUserAttributeResponse();
@@ -1293,7 +1293,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         throw new TransactionInvalidException(idOrCode);
     }
-    
+
     /**
      * Only invoke this if algorithm is set.
      *
