@@ -10,6 +10,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 
@@ -40,6 +41,12 @@ public class TokenRequestRestfulBinding extends AbstractOpenIDRestfulBinding {
 
             if (logger.isDebugEnabled())
                 logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
+
+            if (httpMsg.getHeader("http.requestMethod") == null &&
+                    httpMsg.getHeader("http.requestMethod").equals("OPTIONS")) {
+                return super.createMessage(message);
+            }
+
 
             if (httpMsg.getHeader("http.requestMethod") == null ||
                     !httpMsg.getHeader("http.requestMethod").equals("POST")) {

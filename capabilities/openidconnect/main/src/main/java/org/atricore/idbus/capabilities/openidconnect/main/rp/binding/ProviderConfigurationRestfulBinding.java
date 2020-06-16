@@ -32,6 +32,11 @@ public class ProviderConfigurationRestfulBinding extends AbstractOpenIDRestfulBi
             if (logger.isDebugEnabled())
                 logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 
+            if (httpMsg.getHeader("http.requestMethod") == null &&
+                    httpMsg.getHeader("http.requestMethod").equals("OPTIONS")) {
+                return super.createMessage(message);
+            }
+
             if (httpMsg.getHeader("http.requestMethod") == null ||
                     !httpMsg.getHeader("http.requestMethod").equals("GET")) {
                 throw new IllegalArgumentException("Unknown message, no valid HTTP Method header found!");

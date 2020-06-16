@@ -50,6 +50,9 @@
                 endpointURI(authnEndpoint).state(state).nonce(nonce).codeChallenge(codeVerifier, codeChallengeMethod).
                 build();
 
+        session.setAttribute("nonce", nonce);
+        session.setAttribute("state", state);
+
         response.sendRedirect(authnRequest.toURI().toString());
 
         //} catch (Exception e) {

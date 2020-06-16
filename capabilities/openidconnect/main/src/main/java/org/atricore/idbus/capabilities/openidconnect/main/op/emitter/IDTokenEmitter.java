@@ -20,14 +20,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectSecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.openidconnect.main.op.emitter.attribute.OIDCAttributeProfileMapper;
+import org.atricore.idbus.capabilities.openidconnect.main.op.emitter.attribute.OneToOneAttributeProfileMapper;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
-import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
-import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.session.SSOSession;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
@@ -45,6 +45,8 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
     private SSOKeyResolver signer;
 
     private SSOKeyResolver encrypter;
+
+    private Map<String, OIDCAttributeProfileMapper> attributeMappers;
 
     private long timeToLive = 300L;
 
@@ -175,23 +177,13 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
             return null;
         }
         SSOUser user = ssoUsers.iterator().next();
+
         Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
 
-        // This is normally an ID token issued previously from the front-channel! (contains additional iformation like groups, auth_time, etc)
+        // This is normally an ID token issued previously from the front-channel! (contains additional information like groups, auth_time, etc)
         // May not be present
-        JWT previousIdToken = null;
-        JWTClaimsSet previousClaims = null;
-        if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
-            OpenIDConnectSecurityTokenEmissionContext emissionContext = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
-            if (emissionContext.getPreviousIdToken() != null) {
-                try {
-                    previousIdToken = JWTParser.parse(emissionContext.getPreviousIdToken());
-                    previousClaims = previousIdToken.getJWTClaimsSet();
-                } catch (java.text.ParseException e) {
-                    logger.error("Cannot parse ID token, ignoring!" + e.getMessage());
-                }
-            }
-        }
+        JWT previousIdToken = getPreviousIdToken(rstCtx);
+        JWTClaimsSet previousClaims = getPreviousIdTokenClaims(previousIdToken);
 
         // sub : subject
         com.nimbusds.oauth2.sdk.id.Subject sub = new com.nimbusds.oauth2.sdk.id.Subject(user.getName());
@@ -221,12 +213,17 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         }
 
         // nonce from TokenRequest/AuthnRequest
+        String nonce = null;
         if (extAttributes != null) {
-            String nonce = resolveExtAttributeValue(extAttributes, "nonce");
-            if (nonce != null) {
-                claimsSet.setNonce(new Nonce(nonce));
-            }
+            nonce = resolveExtAttributeValue(extAttributes, "nonce");
         }
+
+        if (nonce == null && previousClaims != null && previousClaims.getClaim("nonce") != null) {
+            claimsSet.setNonce(new Nonce((String) previousClaims.getClaim("nonce")));
+        }
+
+        if (nonce != null)
+            claimsSet.setNonce(new Nonce(nonce));
 
         for (SecurityToken st : context.getEmittedTokens()) {
 
@@ -255,55 +252,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
 
         // TODO : azp
 
-        // Additional claims
-        Set<String> usedProps = new HashSet<String>();
-        if (user.getProperties() != null) {
-            for (SSONameValuePair property : user.getProperties()) {
-                usedProps.add(property.getName());
-                claimsSet.setClaim(property.getName(), property.getValue());
-            }
-        }
-
-        // Groups
-        Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
-        Set<String> usedRoles = new HashSet<String>();
-
-        for (SSORole ssoRole : ssoRoles) {
-            usedRoles.add(ssoRole.getName());
-        }
-
-        // Add proxy principals (principals received from a proxied provider), but only if we don't have such a principal yet.
-        if (proxyPrincipals != null) {
-            for (AbstractPrincipalType principal : proxyPrincipals) {
-                if (principal instanceof SubjectAttributeType) {
-                    SubjectAttributeType attr = (SubjectAttributeType) principal;
-                    String name = attr.getName();
-                    if (name != null) {
-                        int idx = name.lastIndexOf(':');
-                        if (idx >= 0) name = name.substring(idx + 1);
-                    }
-
-                    String value = attr.getValue();
-                    if (!usedProps.contains(name)) {
-                        claimsSet.setClaim(name, value);
-                        usedProps.add(name);
-                    }
-                } else if (principal instanceof SubjectRoleType) {
-                    SubjectRoleType role = (SubjectRoleType) principal;
-                    if (!usedRoles.contains(role.getName())) {
-                        usedRoles.add(role.getName());
-                    }
-                }
-            }
-        }
-
-        if (usedRoles.size() < 1) {
-            if (previousClaims != null &&  previousClaims.getClaim("groups") != null)
-                claimsSet.setClaim("groups", previousClaims.getClaim("groups"));
-        } else {
-            // Create role claim with used roles
-            claimsSet.setClaim("groups", usedRoles);
-        }
+        claimsSet = getMapper(client.getID().getValue()).toAttributes(rstCtx, subject, proxyPrincipals, claimsSet);
 
         return claimsSet;
 
@@ -333,4 +282,54 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
     public void setTimeToLive(long timeToLive) {
         this.timeToLive = timeToLive;
     }
+
+    public OIDCAttributeProfileMapper getMapper(String clientId) {
+        OIDCAttributeProfileMapper mapper = attributeMappers.get(clientId);
+        if (mapper == null) {
+            mapper = new OneToOneAttributeProfileMapper();
+            logger.error("No mapper defined for client: " + clientId + ".  Using one-to-one!");
+        }
+
+        return mapper;
+    }
+
+
+    public Map<String, OIDCAttributeProfileMapper> getAttributeMappers() {
+        return attributeMappers;
+    }
+
+    public void setAttributeMappers(Map<String, OIDCAttributeProfileMapper> attributeMappers) {
+        this.attributeMappers = attributeMappers;
+    }
+
+    public static JWT getPreviousIdToken(Object rstCtx) {
+        if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
+            OpenIDConnectSecurityTokenEmissionContext emissionContext = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
+            if (emissionContext.getPreviousIdToken() != null) {
+                try {
+                    return JWTParser.parse(emissionContext.getPreviousIdToken());
+                } catch (java.text.ParseException e) {
+                    logger.error("Cannot parse ID token, ignoring!" + e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
+
+    public static JWTClaimsSet getPreviousIdTokenClaims(Object rstCtx) {
+        return getPreviousIdTokenClaims(getPreviousIdToken(rstCtx));
+    }
+
+    public static JWTClaimsSet getPreviousIdTokenClaims(JWT previousIdToken) {
+        if (previousIdToken != null) {
+            try {
+                return previousIdToken.getJWTClaimsSet();
+            } catch (java.text.ParseException e) {
+                logger.error("Cannot parse ID token, ignoring!" + e.getMessage());
+            }
+        }
+        return null;
+    }
+
+
 }

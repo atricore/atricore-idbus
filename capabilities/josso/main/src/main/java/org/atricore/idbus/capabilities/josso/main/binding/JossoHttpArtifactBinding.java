@@ -26,15 +26,11 @@ import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoMediator;
-import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
-import org.w3._1999.xhtml.Html;
-
-import java.io.ByteArrayInputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -123,7 +119,8 @@ public class JossoHttpArtifactBinding extends AbstractMediationHttpBinding {
 
                 if (lState != null) {
 
-                    String key = lState.getAlternativeId("assertionId");
+                    // This should have a single assertion id!
+                    String key = lState.getAlternativeIds("assertionId").iterator().next();
                     String appId = (String) lState.getValue("appId");
 
                     artifactLocation = this.buildHttpTargetLocation(httpIn, ed);

@@ -193,6 +193,7 @@ trait BasicIdentityConfirmationDirectives extends Logging {
                 val recipient = email._1
                 val mediator = ctx.request.channel.getIdentityMediator.asInstanceOf[ {def getMailService: MailService}]
                 log.debug("Sending message [" + tam + "] to email address [" + recipient + "]")
+                // TODO : Cange from
                 mediator.getMailService.send("josso@atricore.com", recipient, "Identity Confirmation", tam, "text/html")
                 Pass
             }

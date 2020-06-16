@@ -23,6 +23,8 @@
 <%@ page import="com.nimbusds.openid.connect.sdk.OIDCTokenResponse" %>
 <%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
+<%@ page import="com.nimbusds.oauth2.sdk.http.HTTPResponse" %>
+<%@ page import="net.minidev.json.JSONObject" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -60,11 +62,13 @@
 
         URI tokenEndpoint = op.getTokenEndpointURI();
 
-
-
-
         // Authorization Grant
         RefreshToken currentRefreshToken = (RefreshToken) request.getSession().getAttribute("refresh_token");
+
+        String rtTokenArg = request.getParameter("refresh_token");
+        if (rtTokenArg != null) {
+            currentRefreshToken = new RefreshToken(rtTokenArg);
+        }
         AuthorizationGrant authzGrant = new RefreshTokenGrant(currentRefreshToken);
 
         // Scopes
@@ -72,39 +76,35 @@
 
         ClientID clientId = new ClientID(props.getProperty("oidc.client.id"));
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientId, authzGrant, scope, null, refreshToken, null);
+        HTTPResponse httpTokenResponse = tokenRequest.toHTTPRequest().send();
+        JSONObject jsonObject = httpTokenResponse.getContentAsJSONObject();
 
-        try {
-            TokenResponse tokenRespose = OIDCTokenResponse.parse(tokenRequest.toHTTPRequest().send());
-            if (! tokenRespose.indicatesSuccess()) {
-                // We got an error response...
-                TokenErrorResponse errorResponse = (TokenErrorResponse) tokenRespose;
-                error = errorResponse.getErrorObject();
+        if (httpTokenResponse.getStatusCode() != HTTPResponse.SC_OK) {
+            // We got an error response...
+            TokenErrorResponse errorResponse = TokenErrorResponse.parse(jsonObject);
+            error = errorResponse.getErrorObject();
 
-            } else {
+        } else {
+            OIDCTokenResponse successResponse = OIDCTokenResponse.parse(jsonObject);
 
-                OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenRespose;
+            // Get the access token, the server may also return a refresh token
+            accessToken = successResponse.getOIDCTokens().getAccessToken();
+            refreshToken = successResponse.getOIDCTokens().getRefreshToken();
+            bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
+            idToken = successResponse.getOIDCTokens().getIDToken();
 
-                // Get the access token, the server may also return a refresh token
-                accessToken = successResponse.getOIDCTokens().getAccessToken();
-                refreshToken = successResponse.getOIDCTokens().getRefreshToken();
-                bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
-                idToken = successResponse.getOIDCTokens().getIDToken();
+            request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
+            request.getSession().setAttribute("refresh_token", refreshToken);
 
-                request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
-                request.getSession().setAttribute("refresh_token", refreshToken);
+            SignedJWT signedIdToken = (SignedJWT) idToken;
+            // TODO : JWSVerifier verifier = new RSASSAVerifier(publicKey);
+            // TODO : signedIdToken.verify(verifier);
+            claims = signedIdToken.getJWTClaimsSet();
 
-                SignedJWT signedIdToken = (SignedJWT) idToken;
-                // TODO : JWSVerifier verifier = new RSASSAVerifier(publicKey);
-                // TODO : signedIdToken.verify(verifier);
-                claims = signedIdToken.getJWTClaimsSet();
-
-            }
-        } catch (ParseException e) {
-            error = e.getErrorObject();
-            exception = e;
         }
-
-
+    } catch (ParseException e) {
+        error = e.getErrorObject();
+        exception = e;
     } finally {
         //
     }
@@ -138,7 +138,7 @@
             }
 
                 if (error != null) {
-                    out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+                    out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription() != null ? error.getDescription() : "") + "</p>");
                 }
 
                 if (exception != null) {

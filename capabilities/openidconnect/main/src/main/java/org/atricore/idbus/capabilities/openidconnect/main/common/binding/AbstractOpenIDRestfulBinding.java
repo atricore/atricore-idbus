@@ -10,6 +10,7 @@ import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
+import org.atricore.idbus.capabilities.openidconnect.main.common.producers.OptionsResponse;
 import org.atricore.idbus.capabilities.openidconnect.main.op.OpenIDConnectProviderException;
 import org.atricore.idbus.capabilities.openidconnect.main.rp.OpenIDConnectBPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -20,6 +21,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpCo
 import org.atricore.idbus.kernel.main.mediation.camel.component.http.XFrameOptions;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
+import org.w3._1999.xhtml.Option;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -37,8 +39,6 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
 
 
     private static final Log logger = LogFactory.getLog(AbstractOpenIDRestfulBinding.class);
-
-    private Set<String> allowedOrigins;
 
     public AbstractOpenIDRestfulBinding(String binding, Channel channel) {
         super(binding, channel);
@@ -73,6 +73,10 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
 
         String marshalledHttpResponseBody = "";
         ErrorObject error = null;
+        Set<String> allowedMethods = null;
+        Set<String> allowedHeaders = null;
+        String contentType = "application/json";
+
         if (out.getContent() instanceof ErrorResponse) {
 
             ErrorResponse errorResponse = (ErrorResponse) out.getContent();
@@ -93,13 +97,22 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
 
                 marshalledHttpResponseBody = jsonMd.toString();
         } else if (out.getContent() instanceof OIDCProviderMetadata) {
-                OIDCProviderMetadata metadta = (OIDCProviderMetadata) out.getContent();
-                JSONObject jsonMd = metadta.toJSONObject();
+            OIDCProviderMetadata metadta = (OIDCProviderMetadata) out.getContent();
+            JSONObject jsonMd = metadta.toJSONObject();
 
-                marshalledHttpResponseBody = jsonMd.toString();
+            marshalledHttpResponseBody = jsonMd.toString();
+        } else if (out.getContent() instanceof OptionsResponse) {
+            OptionsResponse optionsResponse = (OptionsResponse) out.getContent();
+            if (optionsResponse.getError() != null) {
+                error = optionsResponse.getError();
+            } else {
+                contentType = "text/html";
+                allowedMethods = optionsResponse.getAllowedMethods();
+                allowedHeaders = optionsResponse.getGetAllowedHeaders();
+            }
 
         } else {
-            throw new IllegalStateException("Content type supported for OIDC HTTP Redirect binding " + out.getContentType() + " ["+out.getContent()+"]");
+            throw new IllegalStateException("Content type not supported for OIDC HTTP Redirect binding " + out.getContentType() + " ["+out.getContent()+"]");
         }
 
         Message httpOut = exchange.getOut();
@@ -114,16 +127,14 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
             // ------------------------------------------------------------
             copyBackState(out.getState(), exchange);
 
-            // TODO : CORS
-            // TODO : FRAME OPTIONS
-
+            // List of allowed origines for the associated RP
             Set<String> allowedOrigins = getAllowedOrigins();
 
             httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
             httpOut.getHeaders().put("Pragma", "no-cache");
             httpOut.getHeaders().put("http.responseCode", error != null ? error.getHTTPStatusCode() : 200);
-            httpOut.getHeaders().put("Content-Type", "application/json");
-            handleCrossOriginResourceSharing(exchange);
+            httpOut.getHeaders().put("Content-Type", contentType);
+            handleCrossOriginResourceSharing(exchange, allowedOrigins, allowedMethods, allowedHeaders);
             handleXFrameOptions(exchange, allowedOrigins);
 
             if (marshalledHttpResponseBody != null) {
@@ -342,9 +353,8 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
     protected String getAccessToken(Message httpMsg) {
         String accessTokenValue = (String) httpMsg.getHeader("Authorization"); // Bearer SlAV32hkKG Get value
         if (accessTokenValue == null || "".equals(accessTokenValue))
-            logger.error("No Authorization header found in HTTP GET");
-
-        if (accessTokenValue != null && accessTokenValue.startsWith("Bearer ")) {
+            return null;
+        if (accessTokenValue.startsWith("Bearer ")) {
             accessTokenValue = accessTokenValue.substring("Bearer ".length());
         }
 
@@ -357,21 +367,10 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
      * @return
      */
     protected Set<String> getAllowedOrigins() {
-
         if (channel.getIdentityMediator() instanceof OpenIDConnectBPMediator) {
-            OpenIDConnectBPMediator mediator = (OpenIDConnectBPMediator) channel.getIdentityMediator();
-            if (this.allowedOrigins == null) {
-                allowedOrigins = new HashSet<String>();
-                for (URI uri : mediator.getClient().getOIDCMetadata().getRedirectionURIs()) {
-                    allowedOrigins.add(
-                            uri.getScheme() + "://" + uri.getHost() + (uri.getPort() != 443 && uri.getPort() != 80 ? ":" + uri.getPort() : ""));
-                }
-            }
-            return allowedOrigins;
+            return ((OpenIDConnectBPMediator) channel.getIdentityMediator()).getAllowedOrigins();
         }
-
         return Collections.emptySet();
-
     }
 
     protected void handleXFrameOptions(Exchange exchange, Set<String> allowedOrigins) {

@@ -17,10 +17,11 @@ import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class RPAuthnContext {
+public class RPAuthnContext implements Serializable {
 
     private static final Log logger = LogFactory.getLog(RPAuthnContext.class);
 

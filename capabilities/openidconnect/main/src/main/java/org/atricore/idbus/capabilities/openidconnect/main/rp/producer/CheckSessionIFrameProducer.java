@@ -40,6 +40,8 @@ public class CheckSessionIFrameProducer extends AbstractOpenIDProducer {
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
+        if (handleOptionsRequest(exchange)) { return; }
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         String iFrameContent = getIFrameContent();

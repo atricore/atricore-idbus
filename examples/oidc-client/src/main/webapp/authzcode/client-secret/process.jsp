@@ -38,6 +38,10 @@
 <%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
 <%@ page import="com.nimbusds.jose.jwk.source.JWKSource" %>
 <%@ page import="com.nimbusds.jose.jwk.source.RemoteJWKSet" %>
+<%@ page import="com.nimbusds.openid.connect.sdk.Nonce" %>
+<%@ page import="com.nimbusds.oauth2.sdk.id.State" %>
+<%@ page import="com.nimbusds.oauth2.sdk.http.HTTPResponse" %>
+<%@ page import="net.minidev.json.JSONObject" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -73,7 +77,7 @@
         // -------------------------------------------------
         // Load IDP RSA Public key from a dert file
         String publicKeyContent = props.getProperty("oidc.idp.certificateRSA");
-        byte [] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
+        byte[] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
 
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         Certificate cert = cf.generateCertificate(new ByteArrayInputStream(publicKeyContentBytes));
@@ -141,65 +145,71 @@
 
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, authzGrant, scope);
         TokenResponse tokenRespose = null;
-        try {
-            tokenRespose = OIDCTokenResponse.parse(tokenRequest.toHTTPRequest().send());
 
-            if (! tokenRespose.indicatesSuccess()) {
-                // We got an error response...
-                TokenErrorResponse errorResponse = (TokenErrorResponse) tokenRespose;
-                error = errorResponse.getErrorObject();
+        HTTPResponse httpTokenResponse = tokenRequest.toHTTPRequest().send();
+        JSONObject jsonObject = httpTokenResponse.getContentAsJSONObject();
 
-            } else {
+        if (httpTokenResponse.getStatusCode() != HTTPResponse.SC_OK) {
+            // We got an error response...
+            TokenErrorResponse errorResponse = TokenErrorResponse.parse(jsonObject);
+            error = errorResponse.getErrorObject();
 
-                OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenRespose;
+        } else {
+            OIDCTokenResponse successResponse = OIDCTokenResponse.parse(jsonObject);
+            Nonce nonce = (Nonce) session.getAttribute("nonce");
+            State state = (State) session.getAttribute("state");
 
-                // Get the access token, the server may also return a refresh token
-                accessToken = successResponse.getOIDCTokens().getAccessToken();
-                refreshToken = successResponse.getOIDCTokens().getRefreshToken();
-                bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
-                idToken = successResponse.getOIDCTokens().getIDToken();
-                sessionState = request.getParameter("session_state");
+            // Get the access token, the server may also return a refresh token
+            accessToken = successResponse.getOIDCTokens().getAccessToken();
+            refreshToken = successResponse.getOIDCTokens().getRefreshToken();
+            bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
+            idToken = successResponse.getOIDCTokens().getIDToken();
+            sessionState = request.getParameter("session_state");
 
-                SignedJWT signedIdToken = (SignedJWT) idToken;
-
-                // RSA Signature check
-                JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
-
-                // EC (ES256,etc. ) Signature check
-                // JWSVerifier verifier = new ECDSAVerifier(publicKey);
-
-                // HMAC
-                //JWSVerifier verifier = new MACVerifier(secretKey);
-
-                // Verify signature
-                signedIdToken.verify(verifier);
-                claims = signedIdToken.getJWTClaimsSet();
-                request.getSession().setAttribute("username" , claims.getSubject());
-
-                request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
-                request.getSession().setAttribute("refresh_token", refreshToken);
-                request.getSession().setAttribute("session_state", sessionState);
-                request.getSession().setAttribute("id_token", idToken);
-
-
+            String nonceStr = (String) idToken.getJWTClaimsSet().getClaim("nonce");
+            if (nonce != null) {
+                if (nonceStr == null || !nonce.getValue().equals(nonceStr)) {
+                    throw new RuntimeException("Invalid NONCE : " + nonceStr);
+                }
             }
+            // TODO Validate State
 
-        } catch (ParseException e) {
-            error = e.getErrorObject();
-            exception = e;
-            request.getSession().removeAttribute("username");
-        } catch (SerializeException e) {
-            //error = e.getErrorObject();
-            exception = e;
-            request.getSession().removeAttribute("username");
+            SignedJWT signedIdToken = (SignedJWT) idToken;
+
+            // RSA Signature check
+            JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
+
+            // EC (ES256,etc. ) Signature check
+            // JWSVerifier verifier = new ECDSAVerifier(publicKey);
+
+            // HMAC
+            //JWSVerifier verifier = new MACVerifier(secretKey);
+
+            // Verify signature
+            signedIdToken.verify(verifier);
+            claims = signedIdToken.getJWTClaimsSet();
+            request.getSession().setAttribute("username", claims.getSubject());
+
+            request.getSession().setAttribute("bearer_access_token", bearerAccessToken);
+            request.getSession().setAttribute("refresh_token", refreshToken);
+            request.getSession().setAttribute("session_state", sessionState);
+            request.getSession().setAttribute("id_token", idToken);
         }
 
-
+    } catch (ParseException e) {
+        error = e.getErrorObject();
+        exception = e;
+        request.getSession().removeAttribute("username");
+    } catch (SerializeException e) {
+        //error = e.getErrorObject();
+        exception = e;
+        request.getSession().removeAttribute("username");
+    } catch (Exception e) {
+        exception = e;
+        request.getSession().removeAttribute("username");
     } finally {
         //
     }
-
-
 %>
 
 <html>
@@ -230,7 +240,7 @@
             }
 
             if (error != null) {
-                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription() != null ? error.getDescription() : "") + "</p>");
             }
 
             if (exception != null) {

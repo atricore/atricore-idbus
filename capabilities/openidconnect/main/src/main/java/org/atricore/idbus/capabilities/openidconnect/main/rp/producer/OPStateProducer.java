@@ -21,8 +21,17 @@ public class OPStateProducer extends AbstractOpenIDProducer {
         super(endpoint);
     }
 
+    /**
+     * This returns the session state value.
+     *
+     * @param exchange
+     * @throws Exception
+     */
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
+
+        if (handleOptionsRequest(exchange)) { return; }
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
@@ -31,8 +40,7 @@ public class OPStateProducer extends AbstractOpenIDProducer {
         String sessionStateStr = "NA";
         RPAuthnContext authnContext = (RPAuthnContext) state.getLocalVariable(AUTHN_CTX_KEY);
         if (authnContext != null) {
-
-            // TODO: Access session
+            // TODO: Access session ?
             State sessionState = authnContext.getRPSessionState();
             if (sessionState != null) {
                 sessionStateStr = sessionState.getValue();

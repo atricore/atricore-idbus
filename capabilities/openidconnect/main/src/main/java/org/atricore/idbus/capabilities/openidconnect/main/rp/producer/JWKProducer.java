@@ -34,8 +34,9 @@ public class JWKProducer extends AbstractOpenIDProducer {
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
-        // TODO : Return signing/encryption keys from mediator stores as JWKSet
+        if (handleOptionsRequest(exchange)) { return; }
 
+        // TODO : Return signing/encryption keys from mediator stores as JWKSet
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 

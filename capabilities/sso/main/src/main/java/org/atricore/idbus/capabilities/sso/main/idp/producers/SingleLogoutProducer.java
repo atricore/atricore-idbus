@@ -21,19 +21,16 @@
 
 package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
-import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
-import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
@@ -58,7 +55,6 @@ import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
-import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -1038,7 +1034,7 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // Remove the SSO security context from state
         state.removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-        state.getLocalState().removeAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
+        state.getLocalState().removeAlternativeIds(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
 
         // Remove pre-authn token
         in.getMessage().getState().setRemoteVariable(getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM",
@@ -1433,11 +1429,11 @@ public class SingleLogoutProducer extends SSOProducer {
      */
     protected void updateOIDCState(CamelMediationMessage in, SSOResponseType ssoResponse) {
         MediationState state = in.getMessage().getState();
-        state.getLocalState().removeAlternativeId("code");
+        state.getLocalState().removeAlternativeIds("code");
         state.removeLocalVariable(WST_OIDC_ACCESS_TOKEN_TYPE);
-        state.getLocalState().removeAlternativeId("access_token");
+        state.getLocalState().removeAlternativeIds("access_token");
         state.removeLocalVariable(WST_OIDC_REFRESH_TOKEN_TYPE);
-        state.getLocalState().removeAlternativeId("refresh_token");
+        state.getLocalState().removeAlternativeIds("refresh_token");
         state.removeLocalVariable(WST_OIDC_ID_TOKEN_TYPE);
     }
 }

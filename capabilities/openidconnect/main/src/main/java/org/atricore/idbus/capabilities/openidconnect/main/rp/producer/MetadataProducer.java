@@ -101,6 +101,8 @@ public class MetadataProducer  extends AbstractOpenIDProducer {
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
 
+        if (handleOptionsRequest(exchange)) { return; }
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
@@ -109,8 +111,6 @@ public class MetadataProducer  extends AbstractOpenIDProducer {
 
         // Metadata associated to the OP
         OIDCProviderMetadata metadata = mediator.getProvider();
-
-
 
         out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                 metadata,

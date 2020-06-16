@@ -15,7 +15,10 @@ import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Identity Mediator for OpenIDConnect Binding channels. These channels are adapters for OpenIDConnecto to SSO requests
@@ -33,9 +36,13 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
 
     private OIDCProviderMetadata provider;
 
+    private Set<String> allowedOrigins;
+
     public OIDCProviderMetadata getProvider() {
         return provider;
     }
+
+
 
     public void setProvider(OIDCProviderMetadata provider) {
         this.provider = provider;
@@ -252,6 +259,17 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
 
     public void setClient(OIDCClientInformation client) {
         this.client = client;
+    }
+
+    public Set<String> getAllowedOrigins() {
+        if (allowedOrigins == null) {
+            allowedOrigins = new HashSet<String>();
+            for (URI uri : getClient().getOIDCMetadata().getRedirectionURIs()) {
+                allowedOrigins.add(
+                        uri.getScheme() + "://" + uri.getHost() + (uri.getPort() != 443 && uri.getPort() != 80 ? ":" + uri.getPort() : ""));
+            }
+        }
+        return allowedOrigins;
     }
 
 }

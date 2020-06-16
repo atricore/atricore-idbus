@@ -447,10 +447,17 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         handleCrossOriginResourceSharing(exchange, allowedOrigins);
     }
 
-        /**
-         * This will add the necessary CORS headers to the HTTP response when CORS is requested.
-         */
+    /**
+     * This will add the necessary CORS headers to the HTTP response when CORS is requested.
+     */
     protected void handleCrossOriginResourceSharing(Exchange exchange, Set<String> allowedOrigins) {
+        handleCrossOriginResourceSharing(exchange, allowedOrigins, null, null);
+    }
+
+    protected void handleCrossOriginResourceSharing(Exchange exchange,
+                                                    Set<String> allowedOrigins,
+                                                    Set<String> allowedMethods,
+                                                    Set<String> allowedHeaders) {
         Message httpOut = exchange.getOut();
         Message httpIn = exchange.getIn();
 
@@ -485,9 +492,37 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             }
 
             if (allow) {
+
+                // Allow Origin
                 httpOut.getHeaders().put("Access-Control-Allow-Origin", origin);
-                httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
-                httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+
+                // Allow Methods
+                if (allowedMethods != null) {
+                    String allowedMethodsStr = "";
+                    String prefix = "";
+                    for (String allowedMethod : allowedMethods) {
+                        allowedMethodsStr += prefix + allowedMethod;
+                        prefix = ", ";
+                    }
+                    httpOut.getHeaders().put("Access-Control-Allow-Methods", allowedMethodsStr);
+                } else {
+                    httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                }
+
+                // Allog Headers
+                if (allowedHeaders != null) {
+                    String allowedHeaderStr = "";
+                    String prefix = "";
+                    for (String allowedHeader : allowedHeaders) {
+                        allowedHeaderStr += prefix + allowedHeader;
+                        prefix = ", ";
+                    }
+                    httpOut.getHeaders().put("Access-Control-Allow-Headers", allowedHeaderStr);
+                } else {
+                    httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
+                }
+
+                // Allow Credentials
                 httpOut.getHeaders().put("Access-Control-Allow-Credentials", "true");
             }
         }

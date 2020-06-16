@@ -85,7 +85,7 @@
                 out.println("</ul>");
             }
             if (error != null) {
-                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription()) + "</p>");
+                out.println("<h3>Error:</h3><p>" + error.getCode() + ":" + URLDecoder.decode(error.getDescription() != null ? error.getDescription() : "") + "</p>");
             }
             if (exception != null) {
                 out.println("<h3>Exception:</h3><p>" + exception.getMessage() + "</p>");
