@@ -60,6 +60,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
         // Resolve IDP TOKEN endpoint, it supports multiple IDPs configured!
         RPAuthnContext authnCtx =
                 (RPAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
+        if (authnCtx == null) {
+            authnCtx = new RPAuthnContext();
+        }
 
 
         EndpointDescriptor tokenEndpoint = lookupTokenEndpoint();
@@ -97,13 +100,10 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     tokenRequest.getAuthorizationGrant(),
                     tokenRequest.getScope());
 
-
-
         // Send request/process response
         // TODO : Eventually use mediation engine IdentityMediator mediator = channel.getIdentityMediator().sendMessage();
         HTTPResponse proxyResponse = proxyTokenRequest.toHTTPRequest().send();
         JSONObject jsonObject = proxyResponse.getContentAsJSONObject();
-
 
         if (proxyResponse.getStatusCode() == HTTPResponse.SC_OK) {
             OIDCTokenResponse proxyTokenResponse = OIDCTokenResponse.parse(jsonObject);

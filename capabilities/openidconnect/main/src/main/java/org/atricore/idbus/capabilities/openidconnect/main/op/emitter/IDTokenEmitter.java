@@ -46,7 +46,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
 
     private SSOKeyResolver encrypter;
 
-    private Map<String, OIDCAttributeProfileMapper> attributeMappers;
+    private Map<String, OIDCAttributeProfileMapper> attributeMappers = new HashMap<String, OIDCAttributeProfileMapper>();
 
     private long timeToLive = 300L;
 

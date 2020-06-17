@@ -131,6 +131,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 rt = (RefreshToken) emitTokenForJWTBearer(state, clientInfo, (JWTBearerGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
             } else if (grant.getType().equals(GrantType.REFRESH_TOKEN)) {
                 rt = (RefreshToken) emitTokenFromRefreshToken(state, clientInfo, (RefreshTokenGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
+            } else if (grant.getType().equals(GrantType.PASSWORD)) {
+                rt = (RefreshToken) emitTokenWithBasicAuthn(state, clientInfo, (ResourceOwnerPasswordCredentialsGrant) grant, WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE, emissionContext);
             } else {
                 logger.warn("Unsupported grant_type : " + grant.getType().getValue());
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, grant.getType().getValue());
@@ -200,11 +202,11 @@ public class TokenProducer extends AbstractOpenIDProducer {
      * Emits an access or refresh token
      */
     protected Token emitTokenWithBasicAuthn(
+            MediationState state,
             ClientInformation clientInfo,
-            OpenIDConnectSecurityTokenEmissionContext ctx,
+            ResourceOwnerPasswordCredentialsGrant grant,
             String tokenType,
-            String username,
-            String password) throws Exception {
+            OpenIDConnectSecurityTokenEmissionContext ctx) throws Exception {
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -218,7 +220,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
         // Access Token
         // Send artifact id as RST context information, similar to relay state.
-        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, username, password, tokenType, emitterCtxArtifact.getContent());
+        RequestSecurityTokenType rst = buildRequestSecurityToken(clientInfo, grant.getUsername(), grant.getPassword().getValue(), tokenType, emitterCtxArtifact.getContent());
 
         if (logger.isDebugEnabled())
             logger.debug("Requesting OIDC Access Token (RST) w/context " + rst.getContext());
@@ -297,7 +299,9 @@ public class TokenProducer extends AbstractOpenIDProducer {
      *
      * JWT MUST be signed and encrypted.
      */
-    protected Token emitTokenForJWTBearer(MediationState state, ClientInformation clientInfo, JWTBearerGrant grant,
+    protected Token emitTokenForJWTBearer(MediationState state,
+                                          ClientInformation clientInfo,
+                                          JWTBearerGrant grant,
                                           String tokenType,
                                           OpenIDConnectSecurityTokenEmissionContext ctx)
             throws Exception {
@@ -316,10 +320,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             }
 
             OIDCClientMetadata md = (OIDCClientMetadata) clientInfo.getMetadata();
-
             OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
-
-
 
             JWTClaimsSet claims = null;
             if (md.getRequestObjectJWEEnc() != null) {
@@ -369,7 +370,8 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "nbt: error");
 
             // Actually emit the tokens
-            return emitTokenWithBasicAuthn(clientInfo, ctx, tokenType, username, password);
+            ResourceOwnerPasswordCredentialsGrant pwdGrant = new ResourceOwnerPasswordCredentialsGrant(username, new Secret(password));
+            return emitTokenWithBasicAuthn(state, clientInfo, pwdGrant, tokenType, ctx);
 
         } catch (OpenIDConnectProviderException e) {
             throw e;
@@ -568,7 +570,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             // Authenticate Client:
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-            CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
             MediationState state = in.getMessage().getState();
 
             AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
@@ -578,7 +579,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     code = codeGrant.getAuthorizationCode().getValue();
                 }
             }
-
 
             // ----------------------------------------------
             // Client ID (also taken from request parameter)
