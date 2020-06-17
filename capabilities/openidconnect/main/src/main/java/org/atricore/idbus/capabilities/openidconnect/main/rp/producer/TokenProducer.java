@@ -61,10 +61,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
         RPAuthnContext authnCtx =
                 (RPAuthnContext) state.getLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY);
 
-        if (authnCtx == null)
-            authnCtx = new OpenIDConnectAuthnContext();
-
-        // Use localhost actually!
 
         EndpointDescriptor tokenEndpoint = lookupTokenEndpoint();
 

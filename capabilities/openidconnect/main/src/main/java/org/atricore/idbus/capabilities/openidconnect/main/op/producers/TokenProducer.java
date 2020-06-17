@@ -388,53 +388,6 @@ public class TokenProducer extends AbstractOpenIDProducer {
         }
     }
 
-    /**
-     * For now this only works for JWT Bearer PWD grant (IdBus extension)
-     *
-     * JWT MUST be signed and encrypted.
-     */
-    protected Token emitTokenForPassword(MediationState state, ClientInformation clientInfo, ResourceOwnerPasswordCredentialsGrant grant,
-                                          String tokenType,
-                                          OpenIDConnectSecurityTokenEmissionContext ctx)
-            throws Exception {
-
-        try {
-
-            if (logger.isTraceEnabled())
-                logger.trace("Validating JWT Bearer Grant [" + clientInfo.getID().getValue() + "]");
-
-            long now = System.currentTimeMillis();
-
-            // Authenticate User with JWT
-            String username = grant.getUsername();
-            Secret password = grant.getPassword();
-
-            if (username == null || password == null) {
-                throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "credentials not provided");
-            }
-
-            OpenIDConnectOPMediator mediator = (OpenIDConnectOPMediator) channel.getIdentityMediator();
-
-            // Actually emit the tokens
-            return emitTokenWithBasicAuthn(clientInfo, ctx, tokenType, username, password.getValue());
-
-        } catch (OpenIDConnectProviderException e) {
-            throw e;
-        } catch (java.text.ParseException e) {
-            logger.error(e.getMessage(), e);
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
-        } catch (JOSEException e) {
-            logger.error(e.getMessage(), e);
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e.getMessage(), e);
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_GRANT, "JWT error");
-        }
-    }
-
     protected Token emitTokenFromAuthzCode(MediationState state,
                                            ClientInformation clientInfo,
                                            AuthorizationCodeGrant authzGrant,

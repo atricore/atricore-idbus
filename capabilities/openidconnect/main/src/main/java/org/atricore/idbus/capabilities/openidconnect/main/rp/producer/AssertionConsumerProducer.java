@@ -103,7 +103,7 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
                         oidcAuthnRequest.getClientID() + " " +
                                 oidcAuthnRequest.getRedirectionURI() + " " +
                                 newRpSessionId + " " +
-                                salt, "SHA256") +
+                                salt, "SHA-256") +
                         "." + salt;
 
                 newSessionState = new State(ss);
