@@ -37,7 +37,7 @@ import org.w3c.dom.Document;
 public interface SamlR2Encrypter {
 
     String ENC_XML_NS = "http://www.w3.org/2001/04/xmlenc#";
-    
+
     String ENC_DATA_ENC_METHOD_3DES =
             "http://www.w3.org/2001/04/xmlenc#tripledes-cbc";
     String ENC_DATA_ENC_METHOD_AES_128 =
@@ -55,7 +55,6 @@ public interface SamlR2Encrypter {
             "http://www.w3.org/2001/04/xmlenc#kw-aes128";
     String ENC_KEY_ENC_METHOD_AES_256 =
             "http://www.w3.org/2001/04/xmlenc#kw-aes256";
-
 
     /*
      * Encrypts a SAMLR2 Assertion
@@ -81,7 +80,7 @@ public interface SamlR2Encrypter {
     public Document decryptAssertionAsDOM ( EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
 
     public NameIDType decryptNameID ( EncryptedElementType encryptedNameID ) throws SamlR2EncrypterException;
-    
+
     public NameIDType decryptNameID ( EncryptedElementType encryptedNameID, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException;
 
 }

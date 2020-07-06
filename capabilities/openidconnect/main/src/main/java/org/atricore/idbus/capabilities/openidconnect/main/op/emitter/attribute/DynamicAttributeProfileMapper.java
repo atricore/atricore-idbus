@@ -149,7 +149,7 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
         for (AttributeMapping attributeMapping : attributeMaps.values()) {
 
             String attrName = attributeMapping.getAttrName().trim();
-            if (attrName.st./atartsWith("\"") && attrName.endsWith("\"") &&
+            if (attrName.startsWith("\"") && attrName.endsWith("\"") &&
                     attributeMapping.getReportedAttrName() != null && !attributeMapping.getReportedAttrName().equals("")) {
 
                 String name = attributeMapping.getReportedAttrName();
