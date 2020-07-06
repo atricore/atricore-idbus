@@ -1745,30 +1745,14 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // If no signature is present, throw an exception!
                 if (request.getSignature() == null)
-
                     throw new SSORequestException(request,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_REQUEST_SIGNATURE);
-                try {
 
-                    if (originalRequest != null)
-                        signer.validateDom(saml2SpMd, originalRequest);
-                    else
-                        signer.validate(saml2SpMd, request);
+                // Validate signature.
+                validateAuthnRequestSignature(originalRequest, request, saml2IdpMd, saml2SpMd, signer);
 
-                } catch (SamlR2SignatureValidationException e) {
-                    throw new SSORequestException(request,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                } catch (SamlR2SignatureException e) {
-                    //other exceptions like JAXB, xml parser...
-                    throw new SSORequestException(request,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                }
             } else {
                 // HTTP-Redirect binding signature validation !
                 try {
@@ -3443,5 +3427,60 @@ public class SingleSignOnProducer extends SSOProducer {
         String idToken = getAssertionValue(assertion, WST_OIDC_ID_TOKEN_TYPE, true);
         if (idToken != null)
             state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idToken);
+    }
+
+    /**
+     * Validates an Authentication Request
+     *
+     * @param originalRequest
+     * @param request
+     * @param saml2IdpMd
+     * @param saml2SpMd
+     * @param signer
+     * @throws SSORequestException
+     */
+    protected void validateAuthnRequestSignature(String originalRequest,
+                                                 AuthnRequestType request,
+                                                 IDPSSODescriptorType saml2IdpMd,
+                                                 SPSSODescriptorType saml2SpMd,
+                                                 SamlR2Signer signer)
+    throws SSORequestException {
+        Exception err = null;
+
+        // Try validating the signature with the SP Metadata.
+        try {
+            if (originalRequest != null)
+                signer.validateDom(saml2SpMd, originalRequest);
+            else
+                signer.validate(saml2SpMd, request);
+
+        } catch (SamlR2SignatureValidationException e) {
+            err = e;
+        } catch (SamlR2SignatureException e) {
+            err = e;
+        }
+
+        // Signature failed with SP information, try with IDP MD for IDP Initiated scenario ...
+        if (err != null) {
+            try {
+                if (originalRequest != null)
+                    signer.validateDom(saml2IdpMd, originalRequest);
+                else
+                    signer.validate(saml2IdpMd, request);
+                err = null; // Clear previous error, signature is good.
+            } catch (SamlR2SignatureValidationException e) {
+                // Keep old error (from SP MD)
+            } catch (SamlR2SignatureException e) {
+                // Keep old error (from SP MD)
+            }
+        }
+
+        // If we have an error, signal signature error.
+        if (err != null)
+            throw new SSORequestException(request,
+                StatusCode.TOP_REQUESTER,
+                StatusCode.REQUEST_DENIED,
+                StatusDetails.INVALID_RESPONSE_SIGNATURE, err);
+
     }
 }
