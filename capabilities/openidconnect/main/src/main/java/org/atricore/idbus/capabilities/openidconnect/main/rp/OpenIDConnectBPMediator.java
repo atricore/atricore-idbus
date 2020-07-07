@@ -266,7 +266,7 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
             allowedOrigins = new HashSet<String>();
             for (URI uri : getClient().getOIDCMetadata().getRedirectionURIs()) {
                 allowedOrigins.add(
-                        uri.getScheme() + "://" + uri.getHost() + (uri.getPort() != 443 && uri.getPort() != 80 ? ":" + uri.getPort() : ""));
+                        uri.getScheme() + "://" + uri.getHost() + (uri.getPort() > 0 ? ":" + uri.getPort() : ""));
             }
         }
         return allowedOrigins;
