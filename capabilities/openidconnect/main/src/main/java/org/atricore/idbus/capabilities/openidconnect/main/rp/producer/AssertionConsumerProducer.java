@@ -173,12 +173,17 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
         // Update state
         state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
 
+        ResponseType responseType = oidcAuthnRequest.getResponseType();
+        ResponseMode responseMode = ResponseMode.resolve(oidcAuthnRequest.getResponseMode(), responseType);
+
+
         out.setMessage(new MediationMessageImpl(ssoAuthnRequest.getID(),
                 authnResponse,
                 "AuthorizationResponse",
                 null,
                 ed,
                 state));
+        out.setHeader("response_mode", responseMode);
 
         exchange.setOut(out);
 
@@ -187,8 +192,13 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
     protected EndpointDescriptor resolveRedirectUri(AuthenticationRequest authnRequest, AuthorizationResponse authnResponse) throws SerializeException {
 
         String redirectUriStr = null;
-        if (authnRequest != null)
+        ResponseMode rm = authnResponse.impliedResponseMode();
+
+        if (rm.equals(ResponseMode.FORM_POST) || rm.equals(ResponseMode.FORM_POST_JWT)) {
+            redirectUriStr = authnResponse.getRedirectionURI().toString();
+        } else {
             redirectUriStr = authnResponse.toURI().toString();
+        }
 
         return new EndpointDescriptorImpl("OpenIDConnectRedirectUri",
                 "OpenIDConnectRedirectUri",

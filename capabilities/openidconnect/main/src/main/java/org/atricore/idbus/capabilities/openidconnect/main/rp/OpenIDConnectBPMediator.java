@@ -125,6 +125,7 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
                         case OPENID_PROVIDER_LOGOUT_HTTP:
                         case SSO_ARTIFACT:
                         case SSO_REDIRECT:
+                        case SSO_PAYLOAD:
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
