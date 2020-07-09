@@ -243,8 +243,6 @@ public class AssertionConsumerProducer extends AbstractOpenIDProducer {
                 // Look for the subject attribute that matches the token type we need to issue, if any!
                 code = new AuthorizationCode(resolveToken(response, tokenType.getFQTN()));
 
-                // Add alternative state key to keep state on back-channel requests
-                state.getLocalState().addAlternativeId(OpenIDConnectConstants.SEC_CTX_AUTHZ_CODE_KEY , code.getValue());
 
             } else if (tokenType.equals(OpenIDConnectTokenType.ACCESS_TOKEN)) {
                 // TODO : This is also defined in the Access Token Emitter, we can hard-code or let the user define this in the console instead.

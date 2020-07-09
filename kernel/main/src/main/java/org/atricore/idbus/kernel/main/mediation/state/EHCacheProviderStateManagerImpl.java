@@ -225,7 +225,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 for (String removedKey : state.getRemovedKeys()) {
                     cache.remove(ctx.getProvider().getName() + ":" +removedKey);
                     if (logger.isTraceEnabled())
-                        logger.trace("LocalState instance removed for alternative key " + removedKey);
+                        logger.trace("LocalState instance removed for alternative key " + ctx.getProvider().getName() + ":");
                 }
 
                 state.clearState();

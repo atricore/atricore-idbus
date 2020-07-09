@@ -50,9 +50,17 @@ public class TokenProducer extends AbstractOpenIDProducer {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
-
-
         TokenRequest tokenRequest = (TokenRequest) in.getMessage().getContent();
+        AuthorizationGrant authzGrant = tokenRequest.getAuthorizationGrant();
+
+        String code = null;
+        if (authzGrant instanceof AuthorizationCodeGrant) {
+            AuthorizationCodeGrant codeGrant = (AuthorizationCodeGrant) authzGrant;
+            if (codeGrant.getAuthorizationCode() != null) {
+                code = codeGrant.getAuthorizationCode().getValue();
+            }
+        }
+
         MediationState state = in.getMessage().getState();
 
         // Forward Token request to destination endpoint
@@ -143,6 +151,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
         }
 
         // Store context
+        if (code != null) state.getLocalState().removeAlternativeId("code", code);
         state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
 
         exchange.setOut(out);

@@ -16,47 +16,47 @@ import java.io.Serializable;
  */
 public class OpenIDConnectSecurityTokenEmissionContext extends AbstractSecurityTokenEmissionContext {
 
-        private AccessToken accessToken;
+    private AccessToken accessToken;
 
-        private RefreshToken refreshToken;
+    private RefreshToken refreshToken;
 
-        private String idToken;
+    private String idToken;
 
-        private String issuer;
+    private String issuer;
 
-        private String previousIdToken;
+    private String previousIdToken;
 
-        public void setAccessToken(AccessToken accessToken) {
-                this.accessToken = accessToken;
-        }
+    public void setAccessToken(AccessToken accessToken) {
+            this.accessToken = accessToken;
+    }
 
-        public AccessToken getAccessToken() {
-                return accessToken;
-        }
+    public AccessToken getAccessToken() {
+            return accessToken;
+    }
 
-        public String getIDToken() {
-                return idToken;
-        }
+    public String getIDToken() {
+            return idToken;
+    }
 
-        public void setIDToken(String idToken) {
-                this.idToken = idToken;
-        }
+    public void setIDToken(String idToken) {
+            this.idToken = idToken;
+    }
 
-        public RefreshToken getRefreshToken() {
-                return refreshToken;
-        }
+    public RefreshToken getRefreshToken() {
+            return refreshToken;
+    }
 
-        public void setRefreshToken(RefreshToken refreshToken) {
-                this.refreshToken = refreshToken;
-        }
+    public void setRefreshToken(RefreshToken refreshToken) {
+            this.refreshToken = refreshToken;
+    }
 
-        public String getIssuer() {
-                return issuer;
-        }
+    public String getIssuer() {
+            return issuer;
+    }
 
-        public void setIssuer(String issuer) {
-                this.issuer = issuer;
-        }
+    public void setIssuer(String issuer) {
+            this.issuer = issuer;
+    }
 
     public String getPreviousIdToken() {
         return previousIdToken;

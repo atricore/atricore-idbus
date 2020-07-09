@@ -95,7 +95,6 @@ import org.atricore.idbus.kernel.main.mediation.provider.*;
 import org.atricore.idbus.kernel.main.session.SSOSessionContext;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
-import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
@@ -125,6 +124,26 @@ import static org.atricore.idbus.capabilities.sts.main.WSTConstants.*;
 public class SingleSignOnProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog(SingleSignOnProducer.class);
+
+    // JOSSO proxied attributes in JOSSO 2 profile
+    private static final String[] proxiedNames = {
+            "idpName",
+            "idpAlias",
+            "authnCtxClass",
+            "oasis_wss_oauth2_token_profile_1_1#OAUTH2.0",
+            "oasis_wss_oauth2_token_profile_1_1#RM_OAUTH2.0",
+            "atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0",
+            "atricore_wss_oidc_access_token_profile_1_1#JWT1.0",
+            "atricore_wss_oidc_id_token_profile_1_1#JWT1.0",
+            "urn:org:atricore:idbus:sso:sp:",
+            "org:atricore:idbus:sso:sp:",
+            "urn:atricore:org:wss:atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0",
+            "urn:atricore:org:wss:atricore_wss_oidc_access_token_profile_1_1#JWT1.0",
+            "urn:atricore:org:wss:atricore_wss_oidc_id_token_profile_1_1#JWT1.0",
+            "urn:atricore:org:wss:atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0_ID",
+            "urn:atricore:org:wss:atricore_wss_oidc_access_token_profile_1_1#JWT1.0_ID",
+            "urn:atricore:org:wss:atricore_wss_oidc_id_token_profile_1_1#JWT1.0_ID",
+    };
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
@@ -1422,7 +1441,7 @@ public class SingleSignOnProducer extends SSOProducer {
                                         logger.debug("Using authnCtxClass " + attr.getValue());
                                     break;
                                 } catch (Exception e) {
-                                    logger.error("Unknonw AuthnCtxClass type " + attr.getValue());
+                                    logger.error("Unknown AuthnCtxClass type " + attr.getValue());
                                 }
 
                             }
@@ -1475,42 +1494,15 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         if (logger.isTraceEnabled())
                             logger.trace("["+ this.channelRef + ":" + this.endpointRef + "] ProxyPrincipal: " + attr.getName() + "=" + attr.getValue());
+
                         // -----------------------------------------------------------
-
-                        // TODO : Improve ? Strategy to detect proxied attributes maybe
-
-                        // JOSSO proxied attributes in JOSSO 2 profile
+                        // JOSSO proxied attributes in JOSSO 2 profile.  This attributes may
+                        // also be issued by the current IDP proxy, we don't want to override them.
+                        // -----------------------------------------------------------
                         String name = attr.getName();
-
-                        if (name.startsWith("urn:org:atricore:idbus:sso:sp:")) {
-                            // Internal SP / Proxy attributte
+                        if (markAsProxied(name))
                             name = name + "_proxied";
-                        }
-
-                        if (name.startsWith("org:atricore:idbus:sso:sp:")) {
-                            // Internal SP / Proxy attributte
-                            name = name + "_proxied";
-                        }
-
-                        // JOSSO proxied attributes in basic profile
-                        if (name.equals("idpName") ||
-                                name.equals("idpAlias") ||
-                                name.equals("authnCtxClass")) {
-
-                            name = name + "_proxied";
-                        }
-
-                        // Some OAUTH 2.0 special attributes
-                        if (name.contains("oasis_wss_oauth2_token_profile_1_1#OAUTH2.0")) {
-                            name = name + "_proxied";
-                        }
-
-                        if (name.contains("oasis_wss_oauth2_token_profile_1_1#RM_OAUTH2.0")) {
-                            name = name + "_proxied";
-                        }
-
                         attr.setName(name);
-
                         // -----------------------------------------------------------
                     }
                 }
@@ -3482,5 +3474,14 @@ public class SingleSignOnProducer extends SSOProducer {
                 StatusCode.REQUEST_DENIED,
                 StatusDetails.INVALID_RESPONSE_SIGNATURE, err);
 
+    }
+
+    protected boolean markAsProxied(String name) {
+        for (int i = 0; i < proxiedNames.length; i++) {
+            String proxiedName = proxiedNames[i];
+            if (proxiedName.equals(name))
+                return true;
+        }
+        return false;
     }
 }

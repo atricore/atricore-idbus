@@ -105,18 +105,19 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
                 throw new SecurityTokenEmissionException("Cannot find OIDC Provider " + clientId);
             }
 
+            List<AbstractPrincipalType> proxyPrincipals =  null;
             ExtAttributeListType samlExtAttrs = resolveAuthnReqExtAttrs(rstCtx);
-
             SSOSession session = null;
 
             if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
                 // We are emitting in the context of our SAML IDP/VP. We have an SSO Session object.
                 SamlR2SecurityTokenEmissionContext emissionContext = (SamlR2SecurityTokenEmissionContext) rstCtx;
                 session = emissionContext.getSsoSession();
+                proxyPrincipals = emissionContext.getProxyPrincipals();
 
             }
 
-            IDTokenClaimsSet claimsSet = buildClaimSet(context, subject, null, session, samlExtAttrs, opMetadata, client);
+            IDTokenClaimsSet claimsSet = buildClaimSet(context, subject, proxyPrincipals, session, samlExtAttrs, opMetadata, client);
             if (claimsSet == null) {
                 logger.error("No claim set created for subject, probably no SSOUser principal found. " + subject);
                 return null;
@@ -171,12 +172,22 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
                                              OIDCProviderMetadata provider,
                                              OIDCClientInformation client) throws ParseException {
 
+        SSOUser user = null;
+        String username = null;
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+
         if (ssoUsers == null || ssoUsers.size() < 1) {
-            logger.error("Can't build ID Token for SimplePrincipal.  Try attaching an ID vault to your IDP/VP");
-            return null;
+            // We are a proxy, without an attached identity source
+            if (logger.isDebugEnabled())
+                logger.debug("Proxy ID Token emitter without identity source.  Using SimplePrincipal/PreviousClaims");
+            Set<SimplePrincipal> users = subject.getPrincipals(SimplePrincipal.class);
+            username = users.iterator().next().getName();
+        } else {
+            if (logger.isDebugEnabled())
+                logger.debug("Proxy ID Token emitter with identity source.  Using local SSOUser");
+            user = ssoUsers.iterator().next();
+            username = user.getName();
         }
-        SSOUser user = ssoUsers.iterator().next();
 
         Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
 
@@ -186,7 +197,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         JWTClaimsSet previousClaims = getPreviousIdTokenClaims(previousIdToken);
 
         // sub : subject
-        com.nimbusds.oauth2.sdk.id.Subject sub = new com.nimbusds.oauth2.sdk.id.Subject(user.getName());
+        com.nimbusds.oauth2.sdk.id.Subject sub = new com.nimbusds.oauth2.sdk.id.Subject(username);
 
         // iss : issuer
         Issuer iss = new Issuer(provider.getIssuer());
@@ -219,7 +230,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         }
 
         if (nonce == null && previousClaims != null && previousClaims.getClaim("nonce") != null) {
-            claimsSet.setNonce(new Nonce((String) previousClaims.getClaim("nonce")));
+            nonce = (String) previousClaims.getClaim("nonce");
         }
 
         if (nonce != null)
@@ -252,7 +263,20 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
 
         // TODO : azp
 
-        claimsSet = getMapper(client.getID().getValue()).toAttributes(rstCtx, subject, proxyPrincipals, claimsSet);
+        // Reuse claims
+        if (previousClaims != null) {
+            Map<String, Object> previousClaimsMap = previousClaims.getClaims();
+            for (String claimName : previousClaimsMap.keySet()) {
+                Object claimValue = previousClaimsMap.get(claimName);
+                // add to current if no value exists!
+                if (claimsSet.getClaim(claimName) == null) {
+                    claimsSet.setClaim(claimName, claimValue);
+                }
+            }
+        } else {
+            claimsSet = getMapper(client.getID().getValue()).toAttributes(rstCtx, subject, proxyPrincipals, claimsSet);
+        }
+
 
         return claimsSet;
 

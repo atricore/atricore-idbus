@@ -14,6 +14,7 @@ import org.atricore.idbus.common.sso._1_0.protocol.SubjectRoleType;
 import org.atricore.idbus.kernel.main.authn.SSONameValuePair;
 import org.atricore.idbus.kernel.main.authn.SSORole;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
+import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
 
 import javax.security.auth.Subject;
 import java.io.*;
@@ -70,20 +71,24 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
         init();
 
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
-        if (ssoUsers == null || ssoUsers.size() < 1) {
-            logger.error("Can't build ID Token for SimplePrincipal.  Try attaching an ID vault to your IDP/VP");
-            return null;
+        String username = null;
+        SSOUser ssoUser = null;
+        if (ssoUsers.size() > 0) {
+            ssoUser = ssoUsers.iterator().next();
+            username = ssoUser.getName();
+        } else {
+            SimplePrincipal user = subject.getPrincipals(SimplePrincipal.class).iterator().next();
+            username = user.getName();
         }
-        SSOUser user = ssoUsers.iterator().next();
 
         VelocityContext veCtx = new VelocityContext();
 
-        veCtx.put("principal", user.getName());
+        veCtx.put("principal", username);
 
         // Additional claims
         Set<String> usedProps = new HashSet<String>();
-        if (user.getProperties() != null) {
-            for (SSONameValuePair property : user.getProperties()) {
+        if (ssoUser != null && ssoUser.getProperties() != null) {
+            for (SSONameValuePair property : ssoUser.getProperties()) {
                 usedProps.add(property.getName());
                 veCtx.put(property.getName(), property.getValue());
 
@@ -109,9 +114,15 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
                 if (principal instanceof SubjectAttributeType) {
                     SubjectAttributeType attr = (SubjectAttributeType) principal;
                     String name = attr.getName();
+
                     if (name != null) {
                         int idx = name.lastIndexOf(':');
                         if (idx >= 0) name = name.substring(idx + 1);
+
+                        if (name.startsWith("oasis_wss"))
+                            continue;
+                        if (name.startsWith("atricore_wss"))
+                            continue;
                     }
 
                     String value = attr.getValue();
