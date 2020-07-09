@@ -61,8 +61,6 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
         Set<Principal> merged = new HashSet<Principal>();
 
         if (isUseLocalId()) {
-
-
             Set<SubjectNameID> subjectNameID = localSubject.getPrincipals(SubjectNameID.class);
             // federated subject is identified using local account name identifier
             for (SubjectNameID sc : subjectNameID) {

@@ -11,6 +11,7 @@
 <%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
 <%@ page import="java.util.Collections" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.SubjectType" %>
+<%@ page import="com.nimbusds.oauth2.sdk.ResponseMode" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -40,8 +41,17 @@
         State state = new State();
         Nonce nonce = new Nonce();
 
-        AuthenticationRequest authnRequest = new AuthenticationRequest.Builder(rt, scope, clientId, redirectUri).
-                endpointURI(authnEndpoint).state(state).nonce(nonce).build();
+        ResponseMode rm = ResponseMode.QUERY;
+        AuthenticationRequest authnRequest = new AuthenticationRequest.Builder(
+                rt,
+                scope,
+                clientId,
+                redirectUri).
+                endpointURI(authnEndpoint).
+                state(state).
+                nonce(nonce).
+                responseMode(rm).
+                build();
 
         session.setAttribute("nonce", nonce);
         session.setAttribute("state", state);

@@ -15,6 +15,7 @@
 <%@ page import="java.nio.charset.Charset" %>
 <%@ page import="com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata" %>
 <%@ page import="com.nimbusds.oauth2.sdk.id.Issuer" %>
+<%@ page import="com.nimbusds.oauth2.sdk.ResponseMode" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -46,8 +47,13 @@
 
         request.getSession().setAttribute("code_verifier", codeVerifier);
 
+        ResponseMode rm = ResponseMode.FORM_POST;
         AuthenticationRequest authnRequest = new AuthenticationRequest.Builder(rt, scope, clientId, redirectUri).
-                endpointURI(authnEndpoint).state(state).nonce(nonce).codeChallenge(codeVerifier, codeChallengeMethod).
+                endpointURI(authnEndpoint).
+                state(state).
+                nonce(nonce).
+                codeChallenge(codeVerifier, codeChallengeMethod).
+                responseMode(rm).
                 build();
 
         session.setAttribute("nonce", nonce);

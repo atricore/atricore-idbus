@@ -45,6 +45,8 @@ public interface OpenIDConnectConstants {
 
     QName SSOSingleLogoutService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "SSOSingleLogoutService");
 
+    QName PayloadResolutionService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:op", "PayloadResolutionService");
+
     // Open ID Connect Relaying Party Services
     QName AuthorizationConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:rp", "AuthorizationConsumerService");
 

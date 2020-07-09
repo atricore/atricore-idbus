@@ -4,19 +4,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.op.binding.AuthnHttpBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.op.binding.LogoutHttpBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.OPStateRestfulBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.ProviderConfigurationRestfulBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.JWKRestfulBinding;
-import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.CheckSessionIFrameRestfulBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.*;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
+import org.atricore.idbus.capabilities.sso.main.binding.SsoPayloadResolutionBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.Map;
 
 /**
  *
@@ -54,6 +55,9 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
             case SSO_ARTIFACT:
                 mb = new SsoHttpArtifactBinding(channel);
                 break;
+            case SSO_PAYLOAD:
+                mb = new PayloadResolutionBinding(channel);
+                break;
             case OPENID_PROVIDER_AUTHZ_HTTP:
                 mb = new AuthnHttpBinding(channel);
                 break;
@@ -83,7 +87,15 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
         }
 
         if (mb != null && mb instanceof AbstractMediationBinding) {
+
+            Map<String, ConfigurationContext> cfgs  = applicationContext.getBeansOfType(ConfigurationContext.class);
+            if (cfgs.size() == 1) {
+                ConfigurationContext cfg = cfgs.values().iterator().next();
+                ((AbstractMediationBinding)mb).setConfigurationContext(cfg);
+            }
+
             ((AbstractMediationBinding)mb).setStateManagerClassLoader(this.applicationContext.getClassLoader());
+
         }
         return mb;
     }

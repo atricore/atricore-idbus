@@ -28,6 +28,7 @@ public enum OpenIDConnectBinding {
     SSO_REDIRECT(SSOBinding.SSO_REDIRECT.getValue(), SSOBinding.SSO_REDIRECT.isFrontChannel()),
     SSO_ARTIFACT(SSOBinding.SSO_ARTIFACT.getValue(), SSOBinding.SSO_ARTIFACT.isFrontChannel()),
     SSO_LOCAL(SSOBinding.SSO_LOCAL.getValue(), SSOBinding.SSO_LOCAL.isFrontChannel()),
+    SSO_PAYLOAD("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Payload", true),
     ;
 
 

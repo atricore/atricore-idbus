@@ -78,6 +78,10 @@ public class OpenIDConnectComponent extends DefaultComponent {
                 endpoint = new SSOSingleLogoutEndpoint(uri, this, parameters);
                 break;
 
+            case PayloadResolutionService:
+                endpoint = new PayloadResolutionEndpoint(uri, this, parameters);
+                break;
+
             default:
                 throw new IllegalArgumentException( "Unsupported OpenID Connect endpoint " + remaining );
         }

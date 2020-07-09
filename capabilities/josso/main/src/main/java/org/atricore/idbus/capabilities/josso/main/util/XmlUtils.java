@@ -200,6 +200,9 @@ public class XmlUtils {
      */
     public static void verifyID(String ID) throws Exception {
 
+        if (ID == null)
+            return;
+
         for (String s : xpath) {
             if (ID.contains(s))
                 throw new InvalidXMLException("Invalid ID " + ID + " [" + s + "]");

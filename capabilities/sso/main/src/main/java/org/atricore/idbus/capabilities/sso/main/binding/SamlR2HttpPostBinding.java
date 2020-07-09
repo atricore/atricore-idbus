@@ -278,7 +278,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
     }
 
     /**
-     * Since this is used by our JS UI, we will send a reditect to load the payload.
+     * Since this is used by our JS UI, we will send a redirect to load the payload.
      *
      * @param issuer
      * @param targetLocation

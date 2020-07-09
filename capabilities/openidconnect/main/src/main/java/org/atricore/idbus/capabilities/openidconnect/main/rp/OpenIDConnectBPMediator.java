@@ -125,6 +125,7 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
                         case OPENID_PROVIDER_LOGOUT_HTTP:
                         case SSO_ARTIFACT:
                         case SSO_REDIRECT:
+                        case SSO_PAYLOAD:
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
@@ -266,7 +267,7 @@ public class OpenIDConnectBPMediator extends AbstractCamelMediator {
             allowedOrigins = new HashSet<String>();
             for (URI uri : getClient().getOIDCMetadata().getRedirectionURIs()) {
                 allowedOrigins.add(
-                        uri.getScheme() + "://" + uri.getHost() + (uri.getPort() != 443 && uri.getPort() != 80 ? ":" + uri.getPort() : ""));
+                        uri.getScheme() + "://" + uri.getHost() + (uri.getPort() > 0 ? ":" + uri.getPort() : ""));
             }
         }
         return allowedOrigins;

@@ -285,7 +285,7 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
 
     protected int getRetryCount() {
         if (getConfigurationContext() == null) {
-            logger.warn("No Configuration context find in binding " + getBinding());
+            logger.warn("No Configuration context found in binding " + getBinding());
             return -1;
         }
 
@@ -295,7 +295,7 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
 
         int retryCount = Integer.parseInt(retryCountStr);
         if (retryCount < 1) {
-            logger.warn("Configuratio property 'binding.restful.loadStateRetryCount' cannot be " + retryCount);
+            logger.warn("Configuration property 'binding.restful.loadStateRetryCount' cannot be " + retryCount);
             retryCount = 3;
         }
 
@@ -304,17 +304,17 @@ public abstract class AbstractOpenIDRestfulBinding extends AbstractMediationHttp
 
     protected long getRetryDelay() {
         if (getConfigurationContext() == null) {
-            logger.warn("No Configuration context find in binding " + getBinding());
-            return -1;
+            logger.warn("No Configuration context found in binding " + getBinding());
+            return 100;
         }
 
-        String retryDelayStr = getConfigurationContext().getProperty("binding.soap.loadStateRetryDelay");
+        String retryDelayStr = getConfigurationContext().getProperty("binding.soap.loadStateRetryDelay", "100");
         if (retryDelayStr == null)
             return -1;
 
         long retryDelay = Long.parseLong(retryDelayStr);
         if (retryDelay < 0) {
-            logger.warn("Configuratio property 'binding.restful.loadStateRetryDelay' cannot be " + retryDelay);
+            logger.warn("Configuration property 'binding.restful.loadStateRetryDelay' cannot be " + retryDelay);
             retryDelay = 100;
         }
 

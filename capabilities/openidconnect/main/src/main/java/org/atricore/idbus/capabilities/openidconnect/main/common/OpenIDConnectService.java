@@ -15,6 +15,8 @@ public enum OpenIDConnectService {
 
     SSOSingleLogoutService(OpenIDConnectConstants.SSOSingleLogoutService_QNAME),
 
+    PayloadResolutionService(OpenIDConnectConstants.PayloadResolutionService_QNAME),
+
     AuthorizationService(OpenIDConnectConstants.AuthorizationService_QNAME),
 
     SSOAssertionConsumerService(OpenIDConnectConstants.SSOAssertionConsumerService_QNAME),

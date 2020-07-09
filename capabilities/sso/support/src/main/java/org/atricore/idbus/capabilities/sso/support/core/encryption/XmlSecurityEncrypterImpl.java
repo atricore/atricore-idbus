@@ -86,7 +86,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
     }
 
     /*
-     * @org.apache.xbean.Property alias="symmetric-key-algorithm"
+     * Default encryption algorithm.  Can be modified for each encryption.
      */
     public void setSymmetricKeyAlgorithmURI(String symmetricKeyAlgorithmURI) {
         this.symmetricKeyAlgorithmURI = symmetricKeyAlgorithmURI;
@@ -105,7 +105,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
     }
 
     /**
-     * @org.apache.xbean.Property alias="key-resolver" nestedType="org.atricore.idbus.capabilities.sso.SSOKeyResolver"
+     *
      */
     public void setKeyResolver(SSOKeyResolver keyResolver) {
         this.keyResolver = keyResolver;
@@ -164,51 +164,67 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
 
             // Verify if any of the SPs encription methods is supported
             String dataEncryptionAlgorithm = null;
-
             int expectedKeySize = 0;
+            boolean useDefaultAlg = false;
+            int defaultKeySize = 0;
             int keySize = 0;
             if (key.getEncryptionMethod() != null) {
                 List<EncryptionMethodType> encMethods = key.getEncryptionMethod();
                 for(EncryptionMethodType encMethod : encMethods) {
-                    if (isSupported(encMethod.getAlgorithm())) {
-                        dataEncryptionAlgorithm = encMethod.getAlgorithm();
 
-                        for (Object o : encMethod.getContent()) {
-                            if (o instanceof JAXBElement) {
-                                JAXBElement e = (JAXBElement) o;
-                                if (e.getValue() instanceof BigInteger) {
-                                    keySize = ((BigInteger)e.getValue()).intValue();
-                                }
+                    if (!isSupported(encMethod.getAlgorithm()))  {
+                        logger.debug("Ignoring target SP encryption algorithm ["+dataEncryptionAlgorithm+"], not supported");
+                        continue;
+                    }
+
+                    String alg = encMethod.getAlgorithm();
+                    int ks = 0;
+
+                    for (Object o : encMethod.getContent()) {
+                        if (o instanceof JAXBElement) {
+                            JAXBElement e = (JAXBElement) o;
+                            if (e.getValue() instanceof BigInteger) {
+                                ks = ((BigInteger) e.getValue()).intValue();
                             }
                         }
-
-                        if (keySize <= 0)
-                            keySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
-
-                        if (logger.isDebugEnabled())
-                            logger.debug("Using target SP supported encryption algorithm ["+dataEncryptionAlgorithm+"] size ["+ keySize + "]");
-                        break;
-                    } else {
-                        logger.debug("Ignoring target SP encryption algorithm ["+dataEncryptionAlgorithm+"], not supported");
                     }
+
+                    if (ks <= 0)
+                        ks = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
+
+                    // Take the first one.
+                    if (dataEncryptionAlgorithm == null) {
+                        dataEncryptionAlgorithm = alg;
+                        keySize = ks;
+                        if (logger.isDebugEnabled())
+                            logger.debug("Selecting SP supported enc-algorithm [" + alg + "]");
+                    }
+
+                    // Get default as recommended
+                    if (defaultDataEncryptionAlgorithm != null && defaultDataEncryptionAlgorithm.equals(alg)) {
+                        defaultKeySize = ks;
+                        useDefaultAlg = true;
+                        if (logger.isDebugEnabled())
+                            logger.debug("Selecting SP supported enc-algorithm [" + alg + "] as recommended");
+                    }
+
                 }
             }
 
             // If no algorithm is found/supported, use default (could cause problems)
-            if (dataEncryptionAlgorithm == null && defaultDataEncryptionAlgorithm != null) {
+            if (useDefaultAlg || (dataEncryptionAlgorithm == null && defaultDataEncryptionAlgorithm != null)) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Using configured enc-algorithm [" + defaultDataEncryptionAlgorithm + "], none provided/supported in key " + key);
+                    logger.debug("Using selected enc-algorithm [" + defaultDataEncryptionAlgorithm + "], none provided/supported in key " + key);
                 dataEncryptionAlgorithm = defaultDataEncryptionAlgorithm;
-                keySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
+                keySize = defaultKeySize;
             }
 
             if (dataEncryptionAlgorithm == null) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Using default enc-algorithm [" + defaultDataEncryptionAlgorithm + "], none provided/supported in key " + key);
+                    logger.debug("Using configured enc-algorithm [" + getSymmetricKeyAlgorithmURI() + "], none provided/supported in key " + key);
                 dataEncryptionAlgorithm = getSymmetricKeyAlgorithmURI();
                 keySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
             }
-
 
             expectedKeySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
 

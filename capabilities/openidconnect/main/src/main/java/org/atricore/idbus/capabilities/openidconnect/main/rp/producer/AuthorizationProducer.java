@@ -230,12 +230,21 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
             throw new OpenIDConnectProviderException(OAuth2Error.REQUEST_URI_NOT_SUPPORTED.setURI(authnReq.getRedirectionURI()), "request resolution not supported");
         }
 
-
-        // TODO : Verify response_type / response_mode consistency
+        // Verify response_type / response_mode consistency
         ResponseType responseType = authnReq.getResponseType();
-        ResponseMode responseMode = authnReq.getResponseMode();
+        boolean rtOk = false;
+        for (ResponseType rt : idpMetadata.getResponseTypes()) {
+            if (rt.equals(responseType)) {
+                rtOk = true;
+                break;
+            }
+        }
+        if (!rtOk) {
+            if (logger.isDebugEnabled())
+                logger.debug("ResponseType not supported by client " + responseType);
 
-        // TODO : Verify response_type with active flows
+            throw new OpenIDConnectProviderException(OAuth2Error.REQUEST_NOT_SUPPORTED, "response_type not supported "+responseType+"]");
+        }
 
     }
 }
