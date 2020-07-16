@@ -62,7 +62,7 @@ public class JWKProducer extends AbstractOpenIDProducer {
             RSAPublicKey pubKey = (RSAPublicKey) idpMediator.getSignKeyResolver().getPublicKey();
             key = new RSAKey.Builder(pubKey)
                     .keyUse(KeyUse.SIGNATURE)
-                    .keyID(getFederatedProvider().getName() + "-sign")
+                    .keyID(mediator.getClient().getID().getValue() + "-sign")
                     .algorithm(jwsAlgorithm)
                     .build();
 
