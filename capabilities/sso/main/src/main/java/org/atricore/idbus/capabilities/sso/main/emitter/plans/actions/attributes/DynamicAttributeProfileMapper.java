@@ -162,7 +162,7 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
                 attrProp.setName(attributeMapping.getReportedAttrName());
                 attrProp.setFriendlyName(attrProp.getName());
                 attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
-                attrProp.getAttributeValue().add(attrName.substring(1, attrName.length() - 2));
+                attrProp.getAttributeValue().add(attrName.substring(1, attrName.length() - 1));
                 userAttrs.add(attrProp);
 
             } else if (attrName.startsWith("vt:")) {
