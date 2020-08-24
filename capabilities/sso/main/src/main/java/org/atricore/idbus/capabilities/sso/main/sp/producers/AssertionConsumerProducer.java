@@ -1818,7 +1818,11 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.debug("Updated SP security context " + secCtx);
 
         in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+
+        in.getMessage().getState().getLocalState().removeAlternativeIds("ssoSessionId");
         in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
+
+        in.getMessage().getState().getLocalState().removeAlternativeIds("idpSsoSessionId");
         in.getMessage().getState().getLocalState().addAlternativeId("idpSsoSessionId", secCtx.getIdpSsoSession());
 
         if (logger.isTraceEnabled())

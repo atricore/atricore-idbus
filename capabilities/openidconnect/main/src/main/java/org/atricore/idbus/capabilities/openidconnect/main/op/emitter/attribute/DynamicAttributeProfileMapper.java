@@ -164,7 +164,7 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
                     attributeMapping.getReportedAttrName() != null && !attributeMapping.getReportedAttrName().equals("")) {
 
                 String name = attributeMapping.getReportedAttrName();
-                String value = attrName.substring(1, attrName.length() - 2);
+                String value = attrName.substring(1, attrName.length() - 1);
                 claimsSet.setClaim(name, value);
             } else if (attrName.startsWith("vt:")) {
                 String vtExpr = attributeMapping.getAttrName().substring("vt:".length());

@@ -163,7 +163,7 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
 
     protected EncryptedJWT encryptJWT(OIDCClientInformation client, JWEAlgorithm jweAlgorithm, EncryptionMethod encMethod, JWTClaimsSet claimsSet) {
         try {
-            EncryptedJWT encryptedJWT = new EncryptedJWT(new JWEHeader(jweAlgorithm, encMethod), claimsSet);
+
             JWEEncrypter jwtEncrypter = null;
 
             if (JWEAlgorithm.Family.RSA.contains(jweAlgorithm)) {
@@ -193,6 +193,8 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
             }
 
             jwtEncrypter .getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+
+            EncryptedJWT encryptedJWT = new EncryptedJWT(new JWEHeader(jweAlgorithm, encMethod), claimsSet);
             encryptedJWT.encrypt(jwtEncrypter);
             return encryptedJWT;
 
@@ -204,9 +206,9 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
     protected SignedJWT signJWT(OIDCClientInformation client, Key key, JWSAlgorithm jwsAlgorithm, JWTClaimsSet claimsSet) {
 
         try {
-            SignedJWT signedJWT = new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet);
-            JWSSigner jwtSigner = null;
 
+            JWSSigner jwtSigner = null;
+            String kid = null;
             if (JWSAlgorithm.Family.HMAC_SHA.contains(jwsAlgorithm)) {
                 SecretKey secretKey = KeyUtils.extendOrTruncateKey(client);
                 jwtSigner = new MACSigner(secretKey.getEncoded());
@@ -241,6 +243,7 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
             } else if (JWSAlgorithm.Family.RSA.contains(jwsAlgorithm)) {
                 // We sign with our private key
                 // We have an RSA key pair as part of the IDP
+                kid = client.getID().getValue() + "-sign";
                 PrivateKey privateKey = (PrivateKey) key;
                 jwtSigner = new RSASSASigner(privateKey);
 
@@ -248,8 +251,12 @@ public abstract class OIDCTokenEmitter extends AbstractSecurityTokenEmitter {
                 throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName());
             }
 
+            SignedJWT signedJWT = kid != null ?
+                    new SignedJWT(new JWSHeader.Builder(jwsAlgorithm).keyID(kid).build(), claimsSet) :
+                    new SignedJWT(new JWSHeader(jwsAlgorithm), claimsSet);
             signedJWT.sign(jwtSigner);
             return signedJWT;
+
         } catch (NoSuchAlgorithmException e) {
             throw new SecurityTokenEmissionException("Unsupported JWS Algorithm " + jwsAlgorithm.getName() + ". " + e.getMessage(), e);
         } catch (KeyLengthException e) {

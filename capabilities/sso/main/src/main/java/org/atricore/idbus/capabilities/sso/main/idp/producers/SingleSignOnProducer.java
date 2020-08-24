@@ -1080,6 +1080,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // Set the SSO Session var
             in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+            in.getMessage().getState().getLocalState().removeAlternativeIds(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
             in.getMessage().getState().getLocalState().addAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, secCtx.getSessionIndex());
 
             // --------------------------------------------------------------------
@@ -1546,6 +1547,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Set the SSO Session var
                 in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+                in.getMessage().getState().getLocalState().removeAlternativeIds(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
                 in.getMessage().getState().getLocalState().addAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, secCtx.getSessionIndex());
 
             }
