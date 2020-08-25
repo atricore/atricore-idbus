@@ -1341,7 +1341,18 @@ public class SingleLogoutProducer extends SSOProducer {
 
         // Build sloresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
-        IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
+        // IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
+
+        // The channel may be different from the current channel since we may be overriding things.
+        IdentityPlanExecutionExchange idPlanExchange = new IdentityPlanExecutionExchangeImpl();
+
+        // Publish some important attributes:
+        // Circle of trust will allow actions to access identity configuration
+        FederationChannel spChannel = resolveSpChannel(sp);
+        idPlanExchange.setProperty(VAR_COT, this.getCot());
+        idPlanExchange.setProperty(VAR_COT_MEMBER, spChannel.getMember());
+        idPlanExchange.setProperty(VAR_CHANNEL, spChannel);
+        //idPlanExchange.setProperty(VAR_ENDPOINT, this.endpoint);
 
         // Publish SP springmetadata
         idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, sp);

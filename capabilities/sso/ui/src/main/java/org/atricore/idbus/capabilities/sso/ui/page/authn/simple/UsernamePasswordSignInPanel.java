@@ -159,7 +159,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             } else if (credentialClaimsRequest.getLastErrorId() != null) {
 
                 if (logger.isDebugEnabled())
-                    logger.info("Received last error ID : " +
+                    logger.debug("Received last error ID : " +
                             credentialClaimsRequest.getLastErrorId() +
                             " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
 
@@ -169,7 +169,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
                 String lastAppErrorID = ((SSOWebSession)getSession()).getLastAppErrorId();
                 if (logger.isDebugEnabled())
-                    logger.info("Found last app error ID : " +
+                    logger.debug("Found last app error ID : " +
                             lastAppErrorID +
                             " ("+lastAppErrorID+")");
 
