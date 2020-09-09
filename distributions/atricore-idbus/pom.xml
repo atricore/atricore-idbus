@@ -104,7 +104,7 @@
         <spring.osgi.version>1.2.1</spring.osgi.version>
         <spring2.version>2.5.6.SEC02</spring2.version>
         <spring.version>3.1.0.RELEASE</spring.version>
-        <sshd.version>0.8.0</sshd.version>
+        <sshd.version>0.12.0</sshd.version>
         <xbean.version>3.7</xbean.version>
         <javax.mail.version>1.4.4</javax.mail.version>
         <karaf.version>2.2.3</karaf.version>
@@ -137,6 +137,7 @@
         <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.5.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
         <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.5.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
         <idbus.bundle.datanucleus-v2_1_2.version>1.5.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
+        <idbus.bundle.karaf-shell-v2_2_3.version>1.5.0-SNAPSHOT</idbus.bundle.karaf-shell-v2_2_3.version>
         <idbus.bundle.javax-jdo2-v2_3_ec.version>1.5.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
         <idbus.bundle.javax-jdo-v3_0.version>1.5.0-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
         <idbus.bundle.javax-jstl-v1_2.version>1.5.0-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
@@ -1538,6 +1539,18 @@
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
             <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.apache.karaf.shell.ssh-v2_2_3</artifactId>
+            <version>${idbus.bundle.karaf-shell-v2_2_3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.apache.karaf.shell.ssh-v2_2_3</artifactId>
+            <version>${idbus.bundle.karaf-shell-v2_2_3.version}</version>
             <type>pom</type>
         </dependency>
 
