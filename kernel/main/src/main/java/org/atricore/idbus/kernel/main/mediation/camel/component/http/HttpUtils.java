@@ -14,6 +14,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class HttpUtils {
 
@@ -120,4 +121,30 @@ public class HttpUtils {
 
         return velocityEngine;
     }
+
+    public static String getRemoteAddress(HttpServletRequest req) {
+        String remoteAddr = null;
+        if (req.getHeader("X-Forwarded-For") != null) {
+            // This means that we're behind an external proxy
+
+            /**
+             The general format of the field is:
+             X-Forwarded-For: client, proxy1, proxy2
+             where the value is a comma+space separated list of IP addresses, the left-most being the original client, and each successive proxy
+             */
+            String addresses = req.getHeader("X-Forwarded-For");
+            StringTokenizer st = new StringTokenizer(addresses, ",", false);
+            remoteAddr = st.nextToken();
+            if (remoteAddr != null)
+                remoteAddr = remoteAddr.trim();
+        }
+
+        // Take default request remote address
+        if (remoteAddr  == null) {
+            remoteAddr = req.getRemoteAddr();
+        }
+        return remoteAddr;
+
+    }
+
 }

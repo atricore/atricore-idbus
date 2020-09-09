@@ -110,7 +110,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
         String parentThread = httpServletRequest.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST);
         if (parentThread == null) {
-            remoteAddr = httpServletRequest.getRemoteAddr();
+            remoteAddr = HttpUtils.getRemoteAddress(httpServletRequest);
             remoteHost = httpServletRequest.getRemoteHost();
             if (logger.isTraceEnabled())
                 logger.trace("Using request remote address/host : ["+remoteAddr+"/" + remoteHost + "]");
