@@ -211,7 +211,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
         String origin = (String) httpIn.getHeader("Origin");
 
-        if (origin != null) {
+        if (origin != null && httpOut.getHeader("Access-Control-Allow-Origin") == null) {
 
             // External application is requesting cross origin support:
 

@@ -36,6 +36,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -232,19 +233,27 @@ public class AuthorizationProducer extends AbstractOpenIDProducer {
 
         // Verify response_type / response_mode consistency
         ResponseType responseType = authnReq.getResponseType();
-        boolean rtOk = false;
-        for (ResponseType rt : idpMetadata.getResponseTypes()) {
-            if (rt.equals(responseType)) {
-                rtOk = true;
-                break;
+        Iterator<ResponseType.Value> it =  responseType.iterator();
+        while (it.hasNext()) {
+
+            boolean rtOk = false;
+            ResponseType.Value receivedRt = it.next();
+
+            for (ResponseType validRt : idpMetadata.getResponseTypes()) {
+                if (validRt.contains(receivedRt.getValue())) {
+                    rtOk = true;
+                    break;
+                }
+            }
+
+            if (!rtOk) {
+                if (logger.isDebugEnabled())
+                    logger.debug("ResponseType not supported by client " + receivedRt);
+
+                throw new OpenIDConnectProviderException(OAuth2Error.REQUEST_NOT_SUPPORTED, "response_type not supported "+receivedRt+"]");
             }
         }
-        if (!rtOk) {
-            if (logger.isDebugEnabled())
-                logger.debug("ResponseType not supported by client " + responseType);
 
-            throw new OpenIDConnectProviderException(OAuth2Error.REQUEST_NOT_SUPPORTED, "response_type not supported "+responseType+"]");
-        }
 
     }
 }
