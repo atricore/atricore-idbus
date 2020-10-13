@@ -56,7 +56,7 @@
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <javax.jdo.version>2.3-ec</javax.jdo.version>
         <javax.jdo.osgi.version>2.3.0</javax.jdo.osgi.version>
-        <junit.version>4.4</junit.version>
+        <junit.version>4.13.1</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <!--<spring.version>3.1.0.RELEASE</spring.version>-->
