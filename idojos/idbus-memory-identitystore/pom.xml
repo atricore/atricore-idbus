@@ -42,7 +42,7 @@
     <properties>
         <commons-logging.version>1.1.1</commons-logging.version>
         <xbean.version>3.7</xbean.version>
-        <junit.version>4.4</junit.version>
+        <junit.version>4.13.1</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <!--<spring.version>3.1.0.RELEASE</spring.version>-->
