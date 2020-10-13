@@ -63,7 +63,7 @@
         <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
         <javax.servlet.jsp.version>2.0</javax.servlet.jsp.version>
         <jetty.version>6.1.22</jetty.version>
-        <junit.version>4.4</junit.version>
+        <junit.version>4.13.1</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
