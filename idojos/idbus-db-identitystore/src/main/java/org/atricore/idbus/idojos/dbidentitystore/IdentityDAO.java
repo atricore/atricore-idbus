@@ -194,7 +194,7 @@ public class IdentityDAO {
         try {
 
             if (logger.isDebugEnabled())
-                logger.debug("[selectCredemtiasl()]]: key=" + key.getId());
+                logger.debug("[selectCredentials()]]: key=" + key.getId());
             stmt = createPreparedStatement(_credentialsQueryString);
             // We don't jave JDBC 3.0 drivers, so ... bind all variables manually
             for (int i = 1; i <= _credentialsQueryVariables; i++) {
@@ -319,7 +319,7 @@ public class IdentityDAO {
             if( result.next() ){
                 throw new SSOIdentityException( "Statement " + stmt + " returned more than one row" );
             }
-            return username; 
+            return username;
 
         } catch (SQLException sqlE) {
             logger.error("SQLException while loading user with relay credential", sqlE);
