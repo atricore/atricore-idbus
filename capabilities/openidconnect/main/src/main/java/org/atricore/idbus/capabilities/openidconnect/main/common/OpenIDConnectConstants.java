@@ -54,6 +54,10 @@ public interface OpenIDConnectConstants {
 
     // Open ID Connect Identity Provider Proxy Services
 
+    QName OidcAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "OidcAuthzTokenConsumerService");
+
+    QName AzureAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "AzureAuthzTokenConsumerService");
+
     QName GoogleAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "GoogleAuthzTokenConsumerService");
 
     QName FacebookAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "FacebookAuthzTokenConsumerService");

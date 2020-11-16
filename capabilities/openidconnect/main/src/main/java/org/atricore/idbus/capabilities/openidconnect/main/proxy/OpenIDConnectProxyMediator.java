@@ -10,6 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.AbstractOpenIDConnectMediator;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
+import org.atricore.idbus.capabilities.openidconnect.main.proxy.producers.mapping.OpenIdSubjectMapper;
+import org.atricore.idbus.capabilities.openidconnect.main.proxy.producers.mapping.OpenIdSubjectMapperFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -33,6 +35,8 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private HttpTransport httpTransport;
 
+    private OpenIdSubjectMapperFactory subjectMapperFactory;
+
     private String authzTokenServiceLocation;
 
     private String mobileAuthzTokenServiceLocation;
@@ -44,6 +48,8 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
     private String clientId;
 
     private String clientSecret;
+
+    private String serverKey;
 
     private String idpProxyAlias;
 
@@ -67,7 +73,6 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
         jacksonFactory = new JacksonFactory();
         httpTransport = new ApacheHttpTransport();
     }
-
 
     @Override
     protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
@@ -96,6 +101,7 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
                         case SSO_ARTIFACT:
                         case OPENID_HTTP_POST:
                         case OPENIDCONNECT_AUTHZ:
+                        case OPENID_PROXY_RELAYING_PARTY_AUTHZ_HTTP:
 
                             // ----------------------------------------------------------
                             // HTTP Incoming messages:
@@ -135,6 +141,7 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
                             }
 
                             break;
+
 
                         default:
                             throw new OpenIDConnectException("Unsupported OpenID Connect Binding " + binding.getValue());
@@ -315,5 +322,21 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public void setUserFields(String userFields) {
         this.userFields = userFields;
+    }
+
+    public OpenIdSubjectMapperFactory getSubjectMapperFactory() {
+        return subjectMapperFactory;
+    }
+
+    public void setSubjectMapperFactory(OpenIdSubjectMapperFactory subjectMapperFactory) {
+        this.subjectMapperFactory = subjectMapperFactory;
+    }
+
+    public String getServerKey() {
+        return serverKey;
+    }
+
+    public void setServerKey(String serverKey) {
+        this.serverKey = serverKey;
     }
 }

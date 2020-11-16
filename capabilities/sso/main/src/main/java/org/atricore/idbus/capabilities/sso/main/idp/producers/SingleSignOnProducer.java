@@ -3073,14 +3073,24 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (logger.isTraceEnabled())
                     logger.trace("Processing endpoint : " + endpoint.getType() + "[" + endpoint.getBinding() + "] from " + proxyChannel.getName());
 
+                // We support two types of SP initated services, the old one has priority
                 if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnServiceProxy.toString())) {
-
                     if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                         if (logger.isDebugEnabled())
                             logger.debug("Found SP Initiated SSO Service endpoint : " + endpoint.getName());
                         // This is the endpoint we're looking for
                         return proxyChannel.getIdentityMediator().resolveEndpoint(proxyChannel, endpoint);
                     }
+                }
+
+                if (endpoint.getType().equals(SSOService.SPInitiatedAuthnServiceProxy.toString())) {
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Found SP Initiated SSO Service endpoint : " + endpoint.getName());
+                        // This is the endpoint we're looking for
+                        return proxyChannel.getIdentityMediator().resolveEndpoint(proxyChannel, endpoint);
+                    }
+
                 }
             }
         } catch (IdentityMediationException e) {

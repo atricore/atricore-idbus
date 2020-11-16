@@ -59,6 +59,8 @@ public interface SSOMetadataConstants {
 
     final static QName SPInitiatedSingleSignOnServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnServiceProxy");
 
+    final static QName SPInitiatedAuthnServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedAuthnServiceProxy");
+
     final static QName SPInitiatedSingleLogoutServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleLogoutServiceProxy");
 
     final static QName IdPInitiatedSingleLogoutServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "IdPInitiatedSingleLogoutServiceProxy");

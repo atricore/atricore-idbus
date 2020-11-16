@@ -34,8 +34,21 @@ public class OpenIDConnectProxyComponent extends DefaultComponent {
         OpenIDConnectService e = getOpenIDService( remaining );
 
         switch ( e ) {
+
             case SPInitiatedSingleSignOnServiceProxy:
                 endpoint = new SingleSignOnProxyEndpoint(uri, this, parameters);
+                break;
+
+            case SPInitiatedAuhnServiceProxy:
+                endpoint = new SPInitiatedEndpoint(uri, this, parameters);
+                break;
+
+            case OidcAuthzTokenConsumerServiceProxy:
+                endpoint = new OidcAuthzTokenConsumerEndpoint(uri, this, parameters);
+                break;
+
+            case AzureAuthzTokenConsumerServiceProxy:
+                endpoint = new ProxyRPAuthzTokenConsumerEndpoint(uri, this, parameters);
                 break;
 
             case GoogleAuthzTokenConsumerServiceProxy:

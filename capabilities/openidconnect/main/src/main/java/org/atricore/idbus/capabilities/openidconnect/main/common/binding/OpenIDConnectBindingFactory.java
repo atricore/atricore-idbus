@@ -2,12 +2,11 @@ package org.atricore.idbus.capabilities.openidconnect.main.common.binding;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.op.binding.AuthnHttpBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.op.binding.LogoutHttpBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.proxy.binding.ProxyAuthnReqHttpBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.rp.binding.*;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpRedirectBinding;
-import org.atricore.idbus.capabilities.sso.main.binding.SsoPayloadResolutionBinding;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationBindingFactory;
@@ -59,7 +58,10 @@ public class OpenIDConnectBindingFactory extends MediationBindingFactory impleme
                 mb = new PayloadResolutionBinding(channel);
                 break;
             case OPENID_PROVIDER_AUTHZ_HTTP:
-                mb = new AuthnHttpBinding(channel);
+                mb = new org.atricore.idbus.capabilities.openidconnect.main.op.binding.AuthnReqHttpBinding(channel);
+                break;
+            case OPENID_PROXY_RELAYING_PARTY_AUTHZ_HTTP:
+                mb = new ProxyAuthnReqHttpBinding(channel);
                 break;
             case OPENID_PROVIDER_TOKEN_RESTFUL:
                 mb = new TokenRequestRestfulBinding(channel);

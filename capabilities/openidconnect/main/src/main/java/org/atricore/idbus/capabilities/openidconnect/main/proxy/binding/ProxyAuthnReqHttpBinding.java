@@ -1,9 +1,11 @@
-package org.atricore.idbus.capabilities.openidconnect.main.common.binding;
+package org.atricore.idbus.capabilities.openidconnect.main.proxy.binding;
 
+import com.nimbusds.oauth2.sdk.AuthorizationResponse;
+import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.ResponseMode;
-import com.nimbusds.oauth2.sdk.SerializeException;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
+import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
 import org.apache.camel.Exchange;
@@ -11,13 +13,10 @@ import org.apache.camel.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectService;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
-import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
-import org.atricore.idbus.kernel.main.mediation.MediationMessage;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
+import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
@@ -32,26 +31,80 @@ import org.w3._1999.xhtml.*;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.Object;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
-/**
- *
- */
-public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBinding {
+public class ProxyAuthnReqHttpBinding extends AbstractMediationHttpBinding {
 
-    private static final Log logger = LogFactory.getLog(AbstractOpenIDHttpBinding.class);
+    private static final Log logger = LogFactory.getLog(org.atricore.idbus.capabilities.openidconnect.main.op.binding.AuthnReqHttpBinding.class);
 
-    public AbstractOpenIDHttpBinding(String binding, Channel channel) {
-        super(binding, channel);
+    public ProxyAuthnReqHttpBinding(Channel channel) {
+        super(OpenIDConnectBinding.OPENID_PROXY_RELAYING_PARTY_AUTHZ_HTTP.getValue(), channel);
+    }
+
+
+    /**
+     * Build an OIDC Authentication Request
+     * @param message
+     * @return
+     */
+    @Override
+    public MediationMessage createMessage(CamelMediationMessage message) {
+
+        try {
+
+            // The nested exchange contains HTTP information
+            Exchange exchange = message.getExchange().getExchange();
+            if (logger.isDebugEnabled())
+                logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
+
+            Message httpMsg = exchange.getIn();
+
+            if (httpMsg.getHeader("http.requestMethod") == null ||
+                    !httpMsg.getHeader("http.requestMethod").equals("GET")) {
+                throw new IllegalArgumentException("Unknown message, no valid HTTP Method header found!");
+            }
+
+            // HTTP Request Parameters from HTTP Request body
+            MediationState state = createMediationState(exchange);
+
+            // Get URL from Camel
+            HTTPRequest httpRequest = new HTTPRequest(HTTPRequest.Method.GET,
+                    new URL((String) httpMsg.getHeader("org.atricore.idbus.http.RequestURL")));
+            httpRequest.setQuery((String) httpMsg.getHeader("org.atricore.idbus.http.QueryString"));
+            //httpRequest.setContentType(CommonContentTypes.APPLICATION_URLENCODED);
+
+            AuthorizationResponse autzhResponse = AuthorizationResponse.parse(httpRequest);
+            AuthenticationResponse authnResponse = null;
+            if (autzhResponse.indicatesSuccess()) {
+                authnResponse = AuthenticationSuccessResponse.parse(httpRequest);
+            } else {
+                authnResponse = AuthenticationErrorResponse.parse(httpRequest);
+            }
+
+            return new MediationMessageImpl<AuthenticationResponse>(httpMsg.getMessageId(),
+                    authnResponse,
+                    null,
+                    authnResponse.getState() != null ? authnResponse.getState().getValue() : null,
+                    null,
+                    state);
+
+
+        } catch (ParseException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
     public void copyMessageToExchange(CamelMediationMessage openIdConnectOut, Exchange exchange) {
 
-        // Transfer message information to HTTP layer
-
         try {
-
             // Content is OPTIONAL
             MediationMessage out = openIdConnectOut.getMessage();
             EndpointDescriptor ed = out.getDestination();
@@ -69,39 +122,32 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
 
             Message httpOut = exchange.getOut();
             Message httpIn = exchange.getIn();
-
-            Object openIdResponse = out.getContent();
-
-            String relayState = out.getRelayState();
             String location = null;
             String marshalledHttpResponseBody = null;
             ResponseMode responseMode = null;
 
-            if (openIdResponse instanceof AuthenticationSuccessResponse) {
-                AuthenticationSuccessResponse authnResponse = (AuthenticationSuccessResponse) openIdResponse;
-                responseMode = (ResponseMode) openIdConnectOut.getHeader("response_mode");
-                if (responseMode != null && (responseMode.equals(ResponseMode.FORM_POST) ||
-                        responseMode.equals(ResponseMode.FORM_POST_JWT))) {
-                    String targetLocation = this.buildHttpTargetLocation(httpIn, ed, true);
+            Object openIdAuthnRequest = out.getContent();
+
+            if (openIdAuthnRequest instanceof AuthenticationRequest) {
+                AuthenticationRequest req = (AuthenticationRequest) openIdAuthnRequest;
+                responseMode = req.getResponseMode();
+
+                if (responseMode != null && (responseMode.equals(ResponseMode.FORM_POST) || responseMode.equals(ResponseMode.FORM_POST_JWT))) {
+                    String targetLocation = req.toURI().toString();
 
                     if (logger.isDebugEnabled())
                         logger.debug("Creating HTML Form with action " + targetLocation);
 
-                    Html post = this.createHtmlPostMessage(targetLocation, authnResponse);
+                    Html post = this.createHtmlPostMessage(targetLocation, req);
 
                     marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
                             new String[]{"org.w3._1999.xhtml"});
                 } else {
-                    location = buildHttpAuthnResponseLocation(openIdConnectOut, authnResponse, relayState, ed);
+                    location  = req.toURI().toString();
                 }
 
-
-            } else if (openIdResponse instanceof AuthenticationErrorResponse) {
-                AuthenticationErrorResponse authnResponse = (AuthenticationErrorResponse) openIdResponse;
-                // TODO : Send error response
             } else {
-                // Unknow OpenID Response type
-                throw new IdentityMediationException("Unknown OpenID Connect message type " + openIdResponse);
+                throw new IdentityMediationException("Unknown OpenID Connect message " + openIdAuthnRequest);
             }
 
             copyBackState(out.getState(), exchange);
@@ -113,7 +159,7 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
                     (responseMode.equals(ResponseMode.FORM_POST) ||
                             responseMode.equals(ResponseMode.FORM_POST_JWT))) {
 
-                boolean redirectForPayload = redirectForPayload(httpIn);
+                boolean redirectForPayload = this.redirectForPayload(httpIn);
                 String redirectPayloadLocation = null;
                 String uuid = null;
                 if (redirectForPayload) {
@@ -142,7 +188,7 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
                     state.setLocalVariable(uuid, marshalledHttpResponseBody);
 
                     // ------------------------------------------------------------
-                    // Prepare HTTP Resposne
+                    // Prepare HTTP Response
                     // ------------------------------------------------------------
                     copyBackState(out.getState(), exchange);
 
@@ -172,6 +218,7 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
 
             }
 
+
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -179,43 +226,11 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
     }
 
     protected String buildHttpAuthnResponseLocation(CamelMediationMessage openIdConnectOut,
-                                                    AuthenticationResponse authnResponse,
-                                                    String relayState,
+                                                    AuthenticationRequest authnRequest,
                                                     EndpointDescriptor ed) throws UnsupportedEncodingException {
 
-        String location = buildHttpTargetLocation(openIdConnectOut, ed);
-        if (!location.contains("?"))
-            location += "?";
-
-        StringBuffer redirectUri = new StringBuffer(location);
-
-
-        if (logger.isTraceEnabled())
-            logger.trace("Sending OpenID Connect Authorization Response");
-
-        if (authnResponse instanceof AuthenticationSuccessResponse) {
-
-            AuthenticationSuccessResponse authnSuccessResponse = (AuthenticationSuccessResponse) authnResponse;
-
-            try {
-                HTTPResponse httpResponse = authnSuccessResponse.toHTTPResponse();
-            } catch (SerializeException e) {
-                logger.error(e.getMessage());
-            }
-            // TODO : Parse
-
-        } else if (authnResponse instanceof AuthenticationErrorResponse){
-            AuthenticationErrorResponse authzErrorResponse = (AuthenticationErrorResponse) authnResponse;
-            // TODO : Error handling
-        }
-
-        // Remove the trailing '&' if any
-        location = redirectUri.toString();
-        if (location.endsWith("&"))
-            location = location.substring(0, location.length() - 1);
-
+        String location = authnRequest.toQueryString();
         return location;
-
     }
 
     protected FederatedLocalProvider getFederatedProvider() {
@@ -231,7 +246,7 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
     }
 
     protected Html createHtmlPostMessage(String url,
-                                         AuthenticationSuccessResponse authnResponse) throws Exception {
+                                         AuthenticationRequest authnRequest) throws Exception {
 
 
         Html html = createHtmlBaseMessage();
@@ -261,7 +276,7 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
             // Div with form fields
             Div divFields = new Div();
 
-            java.util.Map<String, List<String>> params = authnResponse.toParameters();
+            java.util.Map<String, List<String>> params = authnRequest.toParameters();
 
             for (String paramName : params.keySet()) {
 
@@ -303,20 +318,6 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
         return html;
     }
 
-    /**
-     *
-     * @param uuid
-     *
-     */
-    protected String redirectPayloadLocation(String uuid) {
-        for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
-            if (endpoint.getType().equals(OpenIDConnectService.PayloadResolutionService.toString())) {
-                return channel.getLocation() + endpoint.getLocation() + "?uuid=" + uuid;
-            }
-        }
-        return null;
-    }
-
 
     /**
      * Since this is used by our JS UI, we will send a redirect to load the payload.
@@ -331,5 +332,16 @@ public abstract class AbstractOpenIDHttpBinding extends AbstractMediationHttpBin
         return true;
     }
 
+    /**
+     * @param uuid
+     */
+    protected String redirectPayloadLocation(String uuid) {
+        for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
+            if (endpoint.getType().equals(OpenIDConnectService.PayloadResolutionService.toString())) {
+                return channel.getLocation() + endpoint.getLocation() + "?uuid=" + uuid;
+            }
+        }
+        return null;
+    }
 
 }

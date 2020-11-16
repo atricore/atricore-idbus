@@ -21,12 +21,12 @@ import java.net.URL;
 /**
  * In-bound binding to receive authentication requests
  */
-public class AuthnHttpBinding extends AbstractOpenIDHttpBinding {
+public class AuthnReqHttpBinding extends AbstractOpenIDHttpBinding {
 
-    private static final Log logger = LogFactory.getLog(AuthnHttpBinding.class);
+    private static final Log logger = LogFactory.getLog(AuthnReqHttpBinding.class);
 
-    public AuthnHttpBinding(Channel channel) {
-        super(OpenIDConnectBinding.OPENID_PROVIDER_AUTHZ_HTTP.getValue(), channel);
+    public AuthnReqHttpBinding(Channel channel) {
+        super(OpenIDConnectBinding.OPENID_PROXY_RELAYING_PARTY_AUTHZ_HTTP.getValue(), channel);
     }
 
     /**

@@ -54,7 +54,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
      * This procedure will process an authn request.
      * <p/>
      * <p/>
-     * If we already stablished identity for the 'presenter' (user) of the request, we'll generate
+     * If we already established identity for the 'presenter' (user) of the request, we'll generate
      * an assertion using the authn statement stored in session as security token.
      * The assertion will be sent to the SP in a new Response.
      * <p/>
@@ -73,7 +73,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         OpenIDConnectProxyMediator mediator = (OpenIDConnectProxyMediator) channel.getIdentityMediator();
 
         // Resolve authz token service endpoint
-        EndpointDescriptor responseLocation = resolveAuthzTokenServiceEndpoint();
+        EndpointDescriptor responseLocation = resolveAuthnResponseEndpoint();
 
         if (responseLocation == null)
             throw new OpenIDConnectException("Cannot resolve local Authorization Code token service endpoint");
@@ -216,7 +216,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
     }
 
 
-    protected EndpointDescriptor resolveAuthzTokenServiceEndpoint() {
+    protected EndpointDescriptor resolveAuthnResponseEndpoint() {
 
         String googleSvc = OpenIDConnectConstants.GoogleAuthzTokenConsumerService_QNAME.toString();
         String fbSvc = OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME.toString();

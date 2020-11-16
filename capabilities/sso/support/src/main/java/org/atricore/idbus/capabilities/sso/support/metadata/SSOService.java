@@ -72,6 +72,8 @@ public enum SSOService {
 
     SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
 
+    SPInitiatedAuthnServiceProxy(SSOMetadataConstants.SPInitiatedAuthnServiceProxy_QNAME),
+
     SPInitiatedSingleLogoutServiceProxy(SSOMetadataConstants.SPInitiatedSingleLogoutServiceProxy_QNAME),
 
     ProxyAssertionConsumerService(SSOMetadataConstants.ProxyAssertionConsumerService_QName),
