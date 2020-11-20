@@ -26,9 +26,10 @@ public class DefaultSessionHandlerBuilder implements SessionHandlerBuilder {
 
         if (LOG.isTraceEnabled())
             LOG.trace("Building Default SessionHandler ");
-        
+
         // Default JETTY Session Handler
         DefaultSessionManager sm = new DefaultSessionManager();
+        sm.setHttpOnly(true);
         sm.setIdManager(new DefaultSessionIdManager());
         sm.setSecureCookies(secureCookies);
 
