@@ -50,6 +50,8 @@ public enum OpenIDConnectService {
 
     SPInitiatedAuhnServiceProxy(SSOMetadataConstants.SPInitiatedAuthnServiceProxy_QNAME),
 
+    ExtOpAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.ExtOpAuthzTokenConsumerService_QNAME),
+
     AzureAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.AzureAuthzTokenConsumerService_QNAME),
 
     GoogleAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.GoogleAuthzTokenConsumerService_QNAME),

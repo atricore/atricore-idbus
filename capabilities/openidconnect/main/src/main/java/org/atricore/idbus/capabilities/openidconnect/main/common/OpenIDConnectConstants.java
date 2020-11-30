@@ -56,6 +56,8 @@ public interface OpenIDConnectConstants {
 
     QName OidcAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "OidcAuthzTokenConsumerService");
 
+    QName ExtOpAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "ExtOpAuthzTokenConsumerService");
+
     QName AzureAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "AzureAuthzTokenConsumerService");
 
     QName GoogleAuthzTokenConsumerService_QNAME = new QName("urn:org:atricore:idbus:openidconnect:metadata", "GoogleAuthzTokenConsumerService");

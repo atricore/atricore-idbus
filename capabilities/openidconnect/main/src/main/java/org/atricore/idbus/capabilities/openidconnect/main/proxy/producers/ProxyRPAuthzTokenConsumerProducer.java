@@ -150,14 +150,25 @@ public class ProxyRPAuthzTokenConsumerProducer extends AbstractAuthzTokenConsume
             SecretKey secretKey = SecretKeyDerivation.deriveSecretKey(secret, 256);
 
             // -------------------------------------------------
-            // TODO support RSA keys:
+            // Support RSA keys:
             // Load IDP RSA Public key from a DER file
             String publicKeyContent = mediator.getServerKey();
-            byte[] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, "").getBytes());
 
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            Certificate cert = cf.generateCertificate(new ByteArrayInputStream(publicKeyContentBytes));
-            PublicKey pubKey = cert.getPublicKey();
+            // Build signature verifier
+            JWSVerifier verifier = null;
+            if (publicKeyContent != null) {
+                byte[] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, "").getBytes());
+
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                Certificate cert = cf.generateCertificate(new ByteArrayInputStream(publicKeyContentBytes));
+                PublicKey pubKey = cert.getPublicKey();
+                verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
+             } else {
+                // EC (ES256,etc. ) Signature check
+                // JWSVerifier verifier = new ECDSAVerifier(publicKey);
+                // HMAC
+                verifier = new MACVerifier(secretKey);
+            }
 
             // Load IDP RSA Public key from a pub key file
             /*
@@ -224,18 +235,7 @@ public class ProxyRPAuthzTokenConsumerProducer extends AbstractAuthzTokenConsume
                     }
                 }
 
-                // TODO Validate State
-
                 SignedJWT signedIdToken = (SignedJWT) idToken;
-
-                // RSA Signature check
-                JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
-
-                // EC (ES256,etc. ) Signature check
-                // JWSVerifier verifier = new ECDSAVerifier(publicKey);
-
-                // HMAC
-                // JWSVerifier verifier = new MACVerifier(secretKey);
 
                 // Verify signature
                 signedIdToken.verify(verifier);

@@ -43,10 +43,7 @@ public class OpenIDConnectProxyComponent extends DefaultComponent {
                 endpoint = new SPInitiatedEndpoint(uri, this, parameters);
                 break;
 
-            case OidcAuthzTokenConsumerServiceProxy:
-                endpoint = new OidcAuthzTokenConsumerEndpoint(uri, this, parameters);
-                break;
-
+            case ExtOpAuthzTokenConsumerServiceProxy:
             case AzureAuthzTokenConsumerServiceProxy:
                 endpoint = new ProxyRPAuthzTokenConsumerEndpoint(uri, this, parameters);
                 break;
