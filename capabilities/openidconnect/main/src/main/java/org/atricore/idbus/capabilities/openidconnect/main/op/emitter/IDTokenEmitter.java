@@ -311,7 +311,7 @@ public class IDTokenEmitter extends OIDCTokenEmitter {
         OIDCAttributeProfileMapper mapper = attributeMappers.get(clientId);
         if (mapper == null) {
             mapper = new OneToOneAttributeProfileMapper();
-            logger.error("No mapper defined for client: " + clientId + ".  Using one-to-one!");
+            logger.warn("No mapper defined for client: " + clientId + ".  Using one-to-one!");
         }
 
         return mapper;

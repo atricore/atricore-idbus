@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -20,7 +20,7 @@
 
     <properties>
         <felix.plugin.version>2.0.1</felix.plugin.version>
-        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.kernel.version>1.5.1-SNAPSHOT</idbus.kernel.version>
         <spring.version>3.1.0.RELEASE</spring.version>
         <commons-logging.version>1.1.1</commons-logging.version>
     </properties>

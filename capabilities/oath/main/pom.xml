@@ -29,13 +29,13 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.oath</groupId>
         <artifactId>oath</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.oath</groupId>
     <artifactId>org.atricore.idbus.capabilities.oath.main</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : OATH Main Component</name>
 
