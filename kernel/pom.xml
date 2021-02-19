@@ -613,8 +613,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.0.2</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>1.7</source>
+                        <target>1.7</target>
                         <maxmem>256M</maxmem>
                         <fork>${compiler.fork}</fork>
                     </configuration>
@@ -677,7 +677,7 @@
                     <breakiterator>true</breakiterator>
                     <quiet>true</quiet>
                     <verbose>false</verbose>
-                    <source>1.6</source>
+                    <source>1.7</source>
                     <!--
                     FIXME: This worked in m1, but m2 complains about it being an invalid flag
 
