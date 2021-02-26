@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.SPChannelRBACRule;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
+import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.policies.AbstractAuthenticationPolicy;
 import org.atricore.idbus.capabilities.sts.main.policies.AccountLockedAuthnPolicy;
 import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
@@ -12,9 +13,10 @@ import org.atricore.idbus.kernel.main.authn.SSORole;
 
 import javax.security.auth.Subject;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+
+import static org.atricore.idbus.capabilities.sts.main.WSTConstants.RST_CTX;
 
 public class SPbyGroupAccessAuthzPolicy extends AbstractAuthenticationPolicy {
 
@@ -25,97 +27,111 @@ public class SPbyGroupAccessAuthzPolicy extends AbstractAuthenticationPolicy {
     }
 
     @Override
-    public Set<PolicyEnforcementStatement> verify(Subject subject, Object context) throws SecurityTokenAuthenticationFailure {
+    public Set<PolicyEnforcementStatement> verify(Subject subject, Object c) throws SecurityTokenAuthenticationFailure {
 
         Set<PolicyEnforcementStatement> s = new HashSet<PolicyEnforcementStatement>();
+        SecurityTokenProcessingContext context = (SecurityTokenProcessingContext) c;
 
-        if (context instanceof SamlR2SecurityTokenEmissionContext) {
-            /*
-            SamlR2SecurityTokenEmissionContext ctx = (SamlR2SecurityTokenEmissionContext) context;
+        if (context.getProperty(RST_CTX) instanceof SamlR2SecurityTokenEmissionContext) {
+
+            SamlR2SecurityTokenEmissionContext ctx = (SamlR2SecurityTokenEmissionContext) context.getProperty(RST_CTX);
             String alias = ctx.getMember().getAlias();
             SPChannelConfiguration cfg = ctx.getSpChannelConfig();
 
-            s.addAll(cfg.getRbac()
-                    .stream()
-                    .filter(r -> r.getAlias().equals(alias))
-                    .map(r -> this.verifyRequiredRBAC(subject, r))
-                    .flatMap(Set::stream)
-                    .collect(Collectors.toSet()));
+            for (SPChannelRBACRule r : cfg.getRbac()) {
 
-            s.addAll(cfg.getRbac()
-                    .stream()
-                    .filter(r -> r.getAlias().equals(alias))
-                    .map(r -> this.verifyRestrictedRBAC(subject, r))
-                    .flatMap(Set::stream)
-                    .collect(Collectors.toSet()));
+                if (!r.getAlias().equals(alias))
+                    continue;
 
-             */
+                s.addAll(verifyRequiredRBAC(subject, r));
+                s.addAll(verifyRestrictedRBAC(subject, r));
+            }
         }
+
+        if (s.size() > 0)
+            throw new SecurityTokenAuthenticationFailure(getName(), s, null);
 
         return s;
     }
-/*
+
+    /**
+     * Verifies if the subject complies with the RBAC Rule requirements.
+     *
+     *
+     * @param subject
+     * @param rbac
+     * @return Set of violations, if any.  An empty set if no violations are found
+     */
     protected Set<PolicyEnforcementStatement> verifyRequiredRBAC(Subject subject, SPChannelRBACRule rbac) {
 
-        boolean hasAll = rbac.getRequiredRoles()
-                .stream()
-                .allMatch( r -> hasRole(subject, r));
+        Set<PolicyEnforcementStatement> p = new HashSet<PolicyEnforcementStatement>();
 
-        boolean hasAny = rbac.getRequiredRoles()
-                .stream()
-                .anyMatch( r -> hasRole(subject, r));
+        boolean hasAll = true; // True if subject has all the groups in the required rule
+        boolean hasAny = false; // True if the subject has any group in the required rule
+
+        for (String r : rbac.getRequiredRoles()) {
+            if (!hasRole(subject, r)) {
+                hasAll = false;
+                p.add(new RoleRequiredAuthzStatement(r));
+            } else {
+                hasAny = true;
+            }
+        }
 
         // Get a policy for each role that is NOT part of the subject.
         if (rbac.getRequiredRolesMatchMode() == SPChannelRBACRule.ROLES_MATCH_MODE_ALL ) {
             if (!hasAll)
-                return missingRequiredRoles(subject, rbac.getRequiredRoles());
+                return p;
         } else {
             if (!hasAny)
-                return missingRequiredRoles(subject, rbac.getRequiredRoles());
+                return p;
         }
 
         return new HashSet<>();
     }
 
+    /**
+     * Verifies if the subject complies with the RBAC Rule restrictions.
+     *
+     *
+     * @param subject
+     * @param rbac
+     * @return Set of violations, if any.  An empty set if no violations are found
+     */
     protected Set<PolicyEnforcementStatement> verifyRestrictedRBAC(Subject subject, SPChannelRBACRule rbac) {
 
-        boolean hasNone = rbac.getRestrictedRoles()
-                .stream()
-                .noneMatch( r -> hasRole(subject, r));
+        boolean hasAll = true; // True if subject has all the groups in the required rule
+        boolean hasAny = false; // True if the subject has any group in the required rule
 
-        boolean hasAny = rbac.getRestrictedRoles()
-                .stream()
-                .anyMatch( r -> hasRole(subject, r));
+        Set<PolicyEnforcementStatement> p = new HashSet<PolicyEnforcementStatement>();
+        for (String r : rbac.getRestrictedRoles()) {
+            if (!hasRole(subject, r)) {
+                hasAll = false;
+            } else {
+                hasAny = true;
+                p.add(new RoleRestrictedAuthzStatement(r));
+            }
+        }
 
-        // Get a policy for each role that is NOT part of the subject.
         if (rbac.getRestrictedRolesMatchMode() == SPChannelRBACRule.ROLES_MATCH_MODE_ALL ) {
-            if (!hasNone)
-                return existingRestrictedRoles(subject, rbac.getRestrictedRoles());
+            if (hasAll)
+                return p;
         } else {
-            if (!hasAny)
-                return existingRestrictedRoles(subject, rbac.getRestrictedRoles());
+            if (hasAny)
+                return p;
         }
 
         return new HashSet<>();
-    }
 
+    }
 
     protected boolean hasRole(Subject s, String role) {
-        return s.getPrincipals(SSORole.class).stream().anyMatch(r -> r.getName().equals(role));
+          Set<SSORole> roles = s.getPrincipals(SSORole.class);
+          for (SSORole r : roles) {
+              if (r.getName().equals(role))
+                  return true;
+          }
+          return false;
     }
 
-    protected Set<PolicyEnforcementStatement> missingRequiredRoles(Subject s, List<String> requiredRoles) {
-        return requiredRoles
-                .stream()
-                .filter(r -> !hasRole(s, r))
-                .map(RoleRequiredAuthzStatement::new).collect(Collectors.toSet());
-    }
-
-    protected Set<PolicyEnforcementStatement> existingRestrictedRoles(Subject s, List<String> requiredRoles) {
-        return requiredRoles
-                .stream()
-                .filter(r -> hasRole(s, r))
-                .map(RoleRestrictedAuthzStatement::new).collect(Collectors.toSet());
-    }
-*/
 }

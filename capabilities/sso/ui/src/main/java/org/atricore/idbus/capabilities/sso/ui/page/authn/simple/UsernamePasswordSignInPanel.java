@@ -30,9 +30,13 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.emitter.RoleRequiredAuthzStatement;
+import org.atricore.idbus.capabilities.sso.main.emitter.RoleRestrictedAuthzStatement;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
@@ -144,7 +148,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         protected void onInitialize() {
             super.onInitialize();
 
-            // Since wicket does not know about form submittion yet (form.isSubmitted() always false),
+            // Since wicket does not know about form submition yet (form.isSubmitted() always false),
             // we have a work-around that does the same check that wicket will perform later.
             boolean submitted = false;
             if (getRequest().getContainerRequest() instanceof HttpServletRequest) {
@@ -277,6 +281,10 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
         Set<PolicyEnforcementStatement> policyStatements = ((SSOWebSession) getSession()).
                 getCredentialClaimsRequest().getSsoPolicyEnforcements();
         if (policyStatements != null && policyStatements.size() > 0) {
+
+            String restrictedRoles = "";
+            String requiredRoles = "";
+
             for (PolicyEnforcementStatement stmt : policyStatements) {
 
                 if (stmt instanceof PasswordPolicyEnforcementError &&
@@ -292,7 +300,37 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
                     displayFeedbackMessage(getString("claims.text.passwordExpired", null, "Your password expired"));
                 } else if (stmt instanceof AccountLockedAuthnStatement) {
                     displayFeedbackMessage(getString("claims.text.accountLocked", null, "Your account is locked"));
+                } else if (stmt instanceof RoleRestrictedAuthzStatement) {
+                    restrictedRoles += " " + ((RoleRestrictedAuthzStatement)stmt).getRequiredRole();
+                } else if (stmt instanceof RoleRequiredAuthzStatement) {
+                    requiredRoles += " " + ((RoleRequiredAuthzStatement)stmt).getRequiredRole();
                 }
+            }
+
+            if (requiredRoles.length() > 0) {
+                final String m = restrictedRoles;
+                displayFeedbackMessage(
+                        getString("authz.groups.required",
+                                new AbstractReadOnlyModel<String>() {
+                                    @Override
+                                    public String getObject() {
+                                        return m;
+                                    }
+                                }
+                                ,
+                                "Access denied, not enough privileges !"));
+            }
+
+            if (restrictedRoles.length() > 0) {
+                final String m = restrictedRoles;
+                displayFeedbackMessage(getString("authz.groups.restricted",
+                        new AbstractReadOnlyModel<String>() {
+                            @Override
+                            public String getObject() {
+                                return m;
+                            }
+                        }
+                        , "Access denied, restricted privileges !"));
             }
         }
 

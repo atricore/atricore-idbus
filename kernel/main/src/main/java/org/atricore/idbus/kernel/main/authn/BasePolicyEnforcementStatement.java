@@ -3,6 +3,7 @@ package org.atricore.idbus.kernel.main.authn;
 import javax.xml.namespace.QName;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -19,6 +20,10 @@ public class BasePolicyEnforcementStatement implements PolicyEnforcementStatemen
     public BasePolicyEnforcementStatement(String ns, String name) {
         this.ns = ns;
         this.name = name;
+    }
+
+    public String getDetails() {
+        return "";
     }
 
     public QName getQName() {
@@ -41,24 +46,16 @@ public class BasePolicyEnforcementStatement implements PolicyEnforcementStatemen
         return "Policy[name=" + name + "]";
     }
 
-    /**
-     * Compare this BaseRole's name against another BaseRole
-     *
-     * @return true if name equals another.getName();
-     */
-    public boolean equals(Object another) {
-        if (!(another instanceof BaseRole))
-            return false;
-        String anotherName = ((BaseRole) another).getName();
-        boolean equals = false;
-        if (name == null)
-            equals = anotherName == null;
-        else
-            equals = name.equals(anotherName);
-        return equals;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BasePolicyEnforcementStatement that = (BasePolicyEnforcementStatement) o;
+        return Objects.equals(ns, that.ns) && Objects.equals(name, that.name);
     }
 
+    @Override
     public int hashCode() {
-        return (name == null ? 0 : name.hashCode());
+        return Objects.hash(ns, name);
     }
 }

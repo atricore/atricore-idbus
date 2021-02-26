@@ -853,7 +853,38 @@ public class SingleSignOnProducer extends SSOProducer {
             if (secCtx.getProxyPrincipals() != null)
                 securityTokenEmissionCtx.getProxyPrincipals().addAll(secCtx.getProxyPrincipals());
 
-            securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx, (SPChannel) channel);
+            try {
+                securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx, (SPChannel) channel);
+            } catch (SecurityTokenAuthenticationFailure e) {
+
+                if (e.getSsoPolicyEnforcements() != null &&
+                        e.getSsoPolicyEnforcements().size() > 0) {
+
+                    // Access denied!
+                    String d = "";
+                    String p = "";
+                    for (PolicyEnforcementStatement policy : e.getSsoPolicyEnforcements()) {
+                        d += p + policy.getQName().getNamespaceURI() + ":" + policy.getQName().getLocalPart();
+                        p = ",";
+                    }
+
+                    throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                            StatusCode.AUTHZ_FAILED.getValue(),
+                            d,
+                            e.getMessage(),
+                            null
+                    );
+
+                } else {
+
+                    throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                            StatusCode.AUTHN_FAILED.getValue(),
+                            null,
+                            e.getMessage(),
+                            e
+                    );
+                }
+            }
 
             if (logger.isDebugEnabled())
                 logger.debug("Created SAMLR2 Assertion " + securityTokenEmissionCtx.getAssertion().getID() +

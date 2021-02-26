@@ -22,6 +22,7 @@ package org.atricore.idbus.capabilities.sso.ui.page.error;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -29,6 +30,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
@@ -40,6 +42,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Page for dumping single sign-on errors.
@@ -77,7 +80,9 @@ public class IdBusErrorPage extends BasePage {
                 if (fault != null) {
 
                     IdentityMediationFault err = fault.getFault();
+
                     List<String> causes = buildCauses(err);
+                    List<String> policies = buildPolicies(err);
 
                     add(new Label("status", getString(err.getFaultCode(), null, "N/A")));
                     add(new Label("secStatus", getString(err.getSecFaultCode(), null, "")));
@@ -87,13 +92,25 @@ public class IdBusErrorPage extends BasePage {
                     String details = null;
                     String statusDetails = err.getStatusDetails();
                     if (statusDetails != null) {
-                        details = getString(statusDetails, null, defaultDetails);
+
+                        StringTokenizer st = new StringTokenizer(statusDetails,  ",");
+                        String prefix = "";
+                        details = "";
+                        while (st.hasMoreElements()) {
+                            details += prefix + getString(st.nextToken(), null, "");
+                            prefix = "<br>";
+                        }
+                        if (details.length() < 1) details = defaultDetails;
                     } else {
                         details = defaultDetails;
                     }
                     add(new Label("details", details));
 
-                    fillCausesList(new CausesModel(causes));
+                    if (err.getSecFaultCode() == null || !err.getSecFaultCode().equals(StatusCode.AUTHZ_FAILED.getValue()))
+                        fillCausesList(new CausesModel(causes));
+                    else
+                        fillCausesList(new CausesModel(policies));
+
                 } else {
                     add(new Label("status", "N/A"));
                     add(new Label("secStatus", ""));
@@ -121,6 +138,24 @@ public class IdBusErrorPage extends BasePage {
 
     public void setArtifactQueueManager(MessageQueueManager artifactQueueManager) {
         this.artifactQueueManager = artifactQueueManager;
+    }
+
+    /**
+     * This assumes that error status details is a  CSV  of failed authn/authz policies
+     * @param err
+     * @return
+     */
+    protected List<String> buildPolicies(IdentityMediationFault err) {
+        List<String> p = new ArrayList<String>();
+        String statusDetails = err.getStatusDetails();
+
+        StringTokenizer st = new StringTokenizer(statusDetails,  ",");
+
+        while (st.hasMoreElements()) {
+            String s = st.nextToken();
+            p.add(getString(s, null, s));
+        }
+        return p;
     }
 
     /**
