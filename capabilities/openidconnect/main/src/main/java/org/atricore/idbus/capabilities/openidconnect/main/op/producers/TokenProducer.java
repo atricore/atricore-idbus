@@ -700,7 +700,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                 // This is a token refresh request
 
                 // Validate the received refresh token
-                RefreshToken rt = tokenRequest.getExistingGrant();
+                RefreshToken rt = ((RefreshTokenGrant) authzGrant).getRefreshToken();
 
                 if (rt == null || rt.getValue() == null) {
                     if (logger.isTraceEnabled())
