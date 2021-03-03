@@ -24,12 +24,17 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans.actions;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.SubjectNameIDBuilder;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.SamlR2AttributeProfileMapper;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.planning.jbpm.AbstractIdentityPlanActionHandler;
 import org.jbpm.graph.exe.ExecutionContext;
+import org.osgi.framework.ServiceReference;
+import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
 import java.util.Collection;
 
@@ -42,6 +47,10 @@ public abstract class AbstractSSOAssertionAction extends AbstractIdentityPlanAct
 
     private static final Log logger = LogFactory.getLog(AbstractSSOAssertionAction.class);
 
+    private AttributeProfileRegistry registry;
+
+    private ServiceReference registryRef;
+
     public AbstractSSOAssertionAction() {
         if (logger.isDebugEnabled())
             logger.debug("Creating Identity Plan SSO Action Handler instance.");
@@ -49,6 +58,35 @@ public abstract class AbstractSSOAssertionAction extends AbstractIdentityPlanAct
 
     protected void doInit(ExecutionContext executionContext) throws Exception {
 
+        OsgiBundleXmlApplicationContext appCtx = (OsgiBundleXmlApplicationContext) getAppliactionContext();
+
+        // Get repository admin service.
+        registryRef = appCtx.getBundleContext().getServiceReference(AttributeProfileRegistry.class.getName());
+        if (registryRef == null) {
+            throw new SSOException("Cannot find AttributeProfileRegistry service is unavailable. (no service reference)");
+        }
+
+        AttributeProfileRegistry svc = (AttributeProfileRegistry) appCtx.getBundleContext().getService(registryRef);
+        if (svc == null) {
+            throw new SSOException("Cannot find AttributeProfileRegistry service");
+        }
+
+        this.registry = svc;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+
+        if (registryRef != null) {
+            try {
+                OsgiBundleXmlApplicationContext appCtx = (OsgiBundleXmlApplicationContext) getAppliactionContext();
+                appCtx.getBundleContext().ungetService(registryRef);
+                registryRef = null;
+                registry = null;
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            }
+        }
     }
 
     protected SubjectNameIDBuilder resolveNameIDBuiler(ExecutionContext executionContext, NameIDPolicyType nameIDPolicy) {
@@ -86,6 +124,18 @@ public abstract class AbstractSSOAssertionAction extends AbstractIdentityPlanAct
             logger.debug("Using DefaultNameIDBuilder : " + defaultNameIDBuilder);
 
         return defaultNameIDBuilder;
+
+    }
+
+    protected SamlR2AttributeProfileMapper resolveMapper(String mapperName, String defaultMapper) {
+        SamlR2AttributeProfileMapper m = registry.resolveMapper(mapperName);
+        if (m == null) m = registry.resolveMapper(defaultMapper);
+        return m;
+
+    }
+
+    protected SamlR2AttributeProfileMapper resolveMapper(String mapperName) {
+        return resolveMapper(mapperName, "basic-built-in");
 
     }
 

@@ -166,6 +166,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
             authnCtx.setAccessToken(at);
 
             state.setLocalVariable(authnCtxId, authnCtx);
+            state.setLocalVariable(authnCtxId(rt), authnCtx);
             state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idTokenStr);
 
             // Both RT and AT can be used by resful (back) channels to keep track of current state
@@ -707,7 +708,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
                 }
 
-                AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId(clientId));
+                AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId(rt));
 
                 if (authnCtx == null || authnCtx.getRefreshToken() == null) {
                     if (logger.isTraceEnabled())

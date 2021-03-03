@@ -30,6 +30,7 @@ import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.SamlR2AttributeProfileMapper;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.SamlR2AttributeProfileType;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
@@ -54,45 +55,11 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
 
     private static final Log logger = LogFactory.getLog(BuildAuthnAssertionAuthStatementAction.class);
 
-    private AttributeProfileRegistry registry;
 
-    private ServiceReference registryRef;
 
-    @Override
-    protected void doInit(ExecutionContext executionContext) throws Exception {
-        super.doInit(executionContext);
 
-        OsgiBundleXmlApplicationContext appCtx = (OsgiBundleXmlApplicationContext) getAppliactionContext();
 
-        // Get repository admin service.
-        registryRef = appCtx.getBundleContext().getServiceReference(AttributeProfileRegistry.class.getName());
-        if (registryRef == null) {
-            throw new SSOException("Cannot find AttributeProfileRegistry service is unavailable. (no service reference)");
-        }
 
-        AttributeProfileRegistry svc = (AttributeProfileRegistry) appCtx.getBundleContext().getService(registryRef);
-        if (svc == null) {
-            throw new SSOException("Cannot find AttributeProfileRegistry service");
-        }
-
-        this.registry = svc;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-
-        if (registryRef != null) {
-            try {
-                OsgiBundleXmlApplicationContext appCtx = (OsgiBundleXmlApplicationContext) getAppliactionContext();
-                appCtx.getBundleContext().ungetService(registryRef);
-                registryRef = null;
-                registry = null;
-            } catch (Exception e) {
-                logger.warn(e.getMessage());
-            }
-        }
-    }
 
     @Override
     protected void doExecute(IdentityArtifact in , IdentityArtifact out, ExecutionContext executionContext) {
@@ -109,6 +76,9 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
 
         String mapperName = ctx.getAttributeProfile();
         SamlR2AttributeProfileMapper mapper = resolveMapper(mapperName);
+        if (mapper == null) {
+            logger.error("No identity mapper found for " + ctx.getMember().getAlias());
+        }
 
         // Get user SSO Session information!
         AuthnStatementType authnStatement;
@@ -190,7 +160,5 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
         logger.debug("ending action");
     }
 
-    protected SamlR2AttributeProfileMapper resolveMapper(String mapperName) {
-        return registry.resolveMapper(mapperName);
-    }
+
 }

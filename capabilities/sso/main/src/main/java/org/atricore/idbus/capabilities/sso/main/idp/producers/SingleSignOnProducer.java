@@ -856,34 +856,7 @@ public class SingleSignOnProducer extends SSOProducer {
             try {
                 securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx, (SPChannel) channel);
             } catch (SecurityTokenAuthenticationFailure e) {
-
-                if (e.getSsoPolicyEnforcements() != null &&
-                        e.getSsoPolicyEnforcements().size() > 0) {
-
-                    // Access denied!
-                    String d = "";
-                    String p = "";
-                    for (PolicyEnforcementStatement policy : e.getSsoPolicyEnforcements()) {
-                        d += p + policy.getQName().getNamespaceURI() + ":" + policy.getQName().getLocalPart();
-                        p = ",";
-                    }
-
-                    throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
-                            StatusCode.AUTHZ_FAILED.getValue(),
-                            d,
-                            e.getMessage(),
-                            null
-                    );
-
-                } else {
-
-                    throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
-                            StatusCode.AUTHN_FAILED.getValue(),
-                            null,
-                            e.getMessage(),
-                            e
-                    );
-                }
+                throw buildFault(e);
             }
 
             if (logger.isDebugEnabled())
@@ -1538,15 +1511,19 @@ public class SingleSignOnProducer extends SSOProducer {
                         // -----------------------------------------------------------
                     }
                 }
-
+                SamlR2SecurityTokenEmissionContext stsCtx = null;
                 if (proxyResponse.getSubjectRoles() != null)
                     securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectRoles());
 
-                SamlR2SecurityTokenEmissionContext stsCtx = emitAssertionFromClaims(exchange,
-                        securityTokenEmissionCtx,
-                        claims,
-                        sp,
-                        requiredSpChannel);
+                try {
+                    stsCtx = emitAssertionFromClaims(exchange,
+                            securityTokenEmissionCtx,
+                            claims,
+                            sp,
+                            requiredSpChannel);
+                } catch (SecurityTokenAuthenticationFailure e) {
+                    throw buildFault(e);
+                }
 
                 assertion = stsCtx.getAssertion();
                 Subject authnSubject = stsCtx.getSubject();
@@ -3526,5 +3503,35 @@ public class SingleSignOnProducer extends SSOProducer {
                 return true;
         }
         return false;
+    }
+
+    protected IdentityMediationFault buildFault(SecurityTokenAuthenticationFailure e) {
+        if (e.getSsoPolicyEnforcements() != null &&
+                e.getSsoPolicyEnforcements().size() > 0) {
+
+            // Access denied!
+            String d = "";
+            String p = "";
+            for (PolicyEnforcementStatement policy : e.getSsoPolicyEnforcements()) {
+                d += p + policy.getQName().getNamespaceURI() + ":" + policy.getQName().getLocalPart();
+                p = ",";
+            }
+
+            return new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                    StatusCode.AUTHZ_FAILED.getValue(),
+                    d,
+                    e.getMessage(),
+                    null
+            );
+
+        } else {
+
+            return new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                    StatusCode.AUTHN_FAILED.getValue(),
+                    null,
+                    e.getMessage(),
+                    e
+            );
+        }
     }
 }

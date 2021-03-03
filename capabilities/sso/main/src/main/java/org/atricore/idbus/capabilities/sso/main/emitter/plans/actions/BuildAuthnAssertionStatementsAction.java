@@ -51,49 +51,6 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
 
     private static final Log logger = LogFactory.getLog(BuildAuthnAssertionStatementsAction.class);
 
-    private AttributeProfileRegistry registry;
-
-    private ServiceReference registryRef;
-
-    @Override
-    protected void doInit(ExecutionContext executionContext) throws Exception {
-        super.doInit(executionContext);
-
-        OsgiBundleXmlApplicationContext appCtx = (OsgiBundleXmlApplicationContext) getAppliactionContext();
-
-        // Get repository admin service.
-        registryRef = appCtx.getBundleContext().getServiceReference(AttributeProfileRegistry.class.getName());
-        if (registryRef == null) {
-            throw new SSOException("Cannot find AttributeProfileRegistry service is unavailable. (no service reference)");
-        }
-
-        AttributeProfileRegistry svc = (AttributeProfileRegistry) appCtx.getBundleContext().getService(registryRef);
-        if (svc == null) {
-            throw new SSOException("Cannot find AttributeProfileRegistry service");
-        }
-
-        this.registry = svc;
-
-
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-
-        if (registryRef != null) {
-            try {
-                OsgiBundleXmlApplicationContext appCtx = (OsgiBundleXmlApplicationContext) getAppliactionContext();
-                appCtx.getBundleContext().ungetService(registryRef);
-                registryRef = null;
-                registry = null;
-            } catch (Exception e) {
-                logger.warn(e.getMessage());
-            }
-        }
-
-    }
-
     @Override
     protected void doExecute(IdentityArtifact in , IdentityArtifact out, ExecutionContext executionContext) {
 
@@ -128,9 +85,5 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
         assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().add( attributeStatement );
 
         logger.debug("ending action");
-    }
-
-    protected SamlR2AttributeProfileMapper resolveMapper(String mapperName) {
-        return registry.resolveMapper(mapperName);
     }
 }

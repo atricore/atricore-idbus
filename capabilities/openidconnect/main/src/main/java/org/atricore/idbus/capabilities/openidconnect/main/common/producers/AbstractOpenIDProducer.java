@@ -5,6 +5,7 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.oauth2.sdk.OAuth2Error;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -362,6 +363,13 @@ public abstract class AbstractOpenIDProducer extends AbstractCamelProducer<Camel
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    protected String authnCtxId(RefreshToken rt) {
+        if (rt == null)
+            return null;
+
+        return  (AUTHN_CTX_KEY + ":" + rt.hashCode()) + "";
     }
 
     protected String authnCtxId(ClientID cd) {
