@@ -149,6 +149,9 @@ public class IdBusErrorPage extends BasePage {
         List<String> p = new ArrayList<String>();
         String statusDetails = err.getStatusDetails();
 
+        if (statusDetails == null)
+            return new ArrayList<>();
+
         StringTokenizer st = new StringTokenizer(statusDetails,  ",");
 
         while (st.hasMoreElements()) {
