@@ -1,7 +1,6 @@
 package org.atricore.idbus.kernel.main.authn.util;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import com.sun.istack.Nullable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,9 +22,17 @@ public class PasswordUtil {
     private static final String NUMBER = "0123456789";
     private static final String OTHER_CHAR = "!@#$%&*()_+-=[]?";
 
+    private static final String OTHER_CHAR_PROP = "#%&*()_+-";
+
     private static final String PASSWORD_ALLOW_BASE = CHAR_LOWER + CHAR_UPPER + NUMBER + OTHER_CHAR;
     private static final String PASSWORD_ALLOW_BASE_SHUFFLE = shuffleString(PASSWORD_ALLOW_BASE);
-    private static final String PASSWORD_ALLOW = PASSWORD_ALLOW_BASE_SHUFFLE;
+    private static final String PASSWORD_ALLOW_B = PASSWORD_ALLOW_BASE_SHUFFLE;
+
+    // Property friendly allowed chars
+    private static final String PASSWORD_ALLOW_PROPS = CHAR_LOWER + CHAR_UPPER + NUMBER + OTHER_CHAR_PROP;
+    private static final String PASSWORD_ALLOW_PROPS_SHUFFLE = shuffleString(PASSWORD_ALLOW_PROPS);
+    private static final String PASSWORD_ALLOW_P = PASSWORD_ALLOW_PROPS_SHUFFLE;
+
 
     private static SecureRandom random = new SecureRandom();
 
@@ -34,12 +41,21 @@ public class PasswordUtil {
 
 
     public static String generateRandomPassword(int length) {
+        return generateRandomPassword(length, PASSWORD_ALLOW_B);
+    }
+
+    public static String generateRandomPasswordForProp(int length) {
+        return generateRandomPassword(length, PASSWORD_ALLOW_P);
+    }
+
+
+    public static String generateRandomPassword(int length, String allowed) {
         if (length < 1) throw new IllegalArgumentException();
 
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
-            int rndCharAt = random.nextInt(PASSWORD_ALLOW.length());
-            char rndChar = PASSWORD_ALLOW.charAt(rndCharAt);
+            int rndCharAt = random.nextInt(allowed.length());
+            char rndChar = allowed.charAt(rndCharAt);
             sb.append(rndChar);
         }
 
