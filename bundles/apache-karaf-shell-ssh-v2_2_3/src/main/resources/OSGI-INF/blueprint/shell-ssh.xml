@@ -109,11 +109,17 @@
         <reference-listener ref="agentFactory" bind-method="registerAgent" unbind-method="unregisterAgent" />
     </reference-list>
 
-    <bean id="keyPairProvider" class="org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider">
+    <!--bean id="keyPairProvider" class="org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider">
+        <property name="path" value="${hostKey}"/>
+        <property name="keySize" value="${keySize}"/>
+        <property name="algorithm" value="${algorithm}"/>
+    </bean-->
+    <bean id="keyPairProvider" class="org.apache.sshd.server.keyprovider.PEMGeneratorHostKeyProvider">
         <property name="path" value="${hostKey}"/>
         <property name="keySize" value="${keySize}"/>
         <property name="algorithm" value="${algorithm}"/>
     </bean>
+
     <bean id="authenticator" class="org.apache.karaf.shell.ssh.KarafJaasAuthenticator">
         <property name="realm" value="${sshRealm}"/>
         <property name="role" value="${sshRole}"/>
