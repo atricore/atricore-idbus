@@ -42,7 +42,7 @@
         <karaf.version>2.2.3</karaf.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <osgi.version>4.0.1</osgi.version>
-        <sshd.version>0.12.0</sshd.version>
+        <sshd.version>0.12.1</sshd.version> <!-- atricore fork -->
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
     </properties>
