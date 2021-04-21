@@ -17,6 +17,10 @@ public class UserAttributeDefinition implements Serializable {
 
     private AttributeType type;
 
+    private AttributePermission userPermission;
+
+    private AttributePermission adminPermission;
+
     private boolean required;
 
     private boolean multivalued;
@@ -67,6 +71,22 @@ public class UserAttributeDefinition implements Serializable {
 
     public void setMultivalued(boolean multivalued) {
         this.multivalued = multivalued;
+    }
+
+    public AttributePermission getUserPermission() {
+        return userPermission;
+    }
+
+    public void setUserPermission(AttributePermission userPermission) {
+        this.userPermission = userPermission;
+    }
+
+    public AttributePermission getAdminPermission() {
+        return adminPermission;
+    }
+
+    public void setAdminPermission(AttributePermission adminPermission) {
+        this.adminPermission = adminPermission;
     }
 
     @Override

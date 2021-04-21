@@ -3,12 +3,13 @@ package org.atricore.idbus.capabilities.openidconnect.main.proxy.producers;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
+import com.restfb.Parameter;
 import com.restfb.Version;
 import com.restfb.types.User;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
@@ -17,6 +18,7 @@ import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -32,6 +34,10 @@ import java.util.List;
 public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProducer {
 
     private static final Log logger = LogFactory.getLog(FacebookAuthzTokenConsumerProducer.class);
+
+    private static final int MAX_NUM_OF_FB_API_CALL_RETRIES = 3;
+
+    private static final String TOKEN_FOR_BUSINESS_USER_ATTR_NAME = "fbBusinessToken";
 
     public FacebookAuthzTokenConsumerProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -75,17 +81,53 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         // ---------------------------------------------------------------
         EndpointDescriptor response_uri = resolveAccessTokenConsumerEndpoint(OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME.toString());
 
-        FacebookClient fb = new DefaultFacebookClient(Version.VERSION_2_2);
+        FacebookClient fb = new DefaultFacebookClient(Version.VERSION_2_4);
 
-        FacebookClient.AccessToken at = fb.obtainUserAccessToken(mediator.getClientId(),
-                mediator.getClientSecret(),
-                response_uri.getLocation(),
-                code);
+        int retry = 0;
+        FacebookClient.AccessToken at = null;
+        while (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+            try {
+                at = fb.obtainUserAccessToken(mediator.getClientId(),
+                        mediator.getClientSecret(),
+                        response_uri.getLocation(),
+                        code);
+                break;
+            } catch (Exception e) {
+                retry++;
+                logger.error(e.getMessage(), e);
+                if (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+                    logger.debug("Getting Facebook access token, retry: " + retry);
+                } else {
+                    throw new IdentityMediationException(e);
+                }
+            }
+        }
+        if (at == null) {
+            throw new IdentityMediationException("Facebook authorization failed!");
+        }
 
         // Now create a new instance with the token
-        fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_2);
+        fb = new DefaultFacebookClient(at.getAccessToken(), Version.VERSION_2_4);
 
-        User user = fb.fetchObject("me", User.class);
+        retry = 0;
+        User user = null;
+        while (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+            try {
+                user = fb.fetchObject("me", User.class, Parameter.with("fields", mediator.getUserFields()));
+                break;
+            } catch (Exception e) {
+                retry++;
+                logger.error(e.getMessage(), e);
+                if (retry <= MAX_NUM_OF_FB_API_CALL_RETRIES) {
+                    logger.debug("Getting Facebook user info, retry: " + retry);
+                } else {
+                    throw new IdentityMediationException(e);
+                }
+            }
+        }
+        if (user == null) {
+            throw new IdentityMediationException("Facebook authorization failed!");
+        }
 
         SubjectType subject;
 
@@ -137,7 +179,7 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
             ssoResponse.setInReplayTo(ssoRequest.getID());
         }
 
-        ssoResponse.setSessionIndex(uuidGenerator.generateId());
+        ssoResponse.setSessionIndex(sessionUuidGenerator.generateId());
         ssoResponse.setSubject(subject);
         ssoResponse.getSubjectAttributes().addAll(attrs);
 
@@ -164,8 +206,6 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         exchange.setOut(out);
 
         return;
-
-
     }
 
     private void addUserAttributes(User user, List<SubjectAttributeType> attrs) {
@@ -179,6 +219,31 @@ public class FacebookAuthzTokenConsumerProducer extends AuthzTokenConsumerProduc
         addUserAttribute(PROFILE_LINK_USER_ATTR_NAME, user.getLink(), attrs);
         addUserAttribute(IS_VERIFIED_USER_ATTR_NAME, String.valueOf(user.getVerified()), attrs);
         addUserAttribute(BIRTHDAY_USER_ATTR_NAME, user.getBirthday(), attrs);
+        addUserAttribute(TOKEN_FOR_BUSINESS_USER_ATTR_NAME, user.getTokenForBusiness(), attrs);
+
+        addUserAttribute("middleName", user.getMiddleName(), attrs);
+        addUserAttribute("bio", user.getBio(), attrs);
+        addUserAttribute("quotes", user.getQuotes(), attrs);
+        addUserAttribute("about", user.getAbout(), attrs);
+        addUserAttribute("relationshipStatus", user.getRelationshipStatus(), attrs);
+        addUserAttribute("religion", user.getReligion(), attrs);
+        addUserAttribute("timezone", toJsonString(user.getTimezone()), attrs);
+        addUserAttribute("political", user.getPolitical(), attrs);
+        addUserAttribute("ageRange", toJsonString(user.getAgeRange()), attrs);
+        addUserAttribute("hometown", user.getHometownName(), attrs);
+        addUserAttribute("location", toJsonString(user.getLocation()), attrs);
+        addUserAttribute("significantOther", toJsonString(user.getSignificantOther()), attrs);
+        addUserAttribute("updatedTime", toJsonString(user.getUpdatedTime()), attrs);
+        addUserAttribute("currency", toJsonString(user.getCurrency()), attrs);
+        addUserAttribute("interestedIn", listToJsonString(user.getInterestedIn()), attrs);
+        addUserAttribute("meetingFor", listToJsonString(user.getMeetingFor()), attrs);
+        addUserAttribute("devices", listToJsonString(user.getDevices()), attrs);
+        addUserAttribute("work", listToJsonString(user.getWork()), attrs);
+        addUserAttribute("education", listToJsonString(user.getEducation()), attrs);
+        addUserAttribute("sports", listToJsonString(user.getSports()), attrs);
+        addUserAttribute("favoriteTeams", listToJsonString(user.getFavoriteTeams()), attrs);
+        addUserAttribute("favoriteAthletes", listToJsonString(user.getFavoriteAthletes()), attrs);
+        addUserAttribute("languages", listToJsonString(user.getLanguages()), attrs);
     }
 
     private String getUserFullName(User user) {

@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *  The mapped subject contains remote sujbect information 
+ *  The mapped subject contains remote subject information
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
@@ -28,8 +28,10 @@ public class RemoteSubjectIdentityMapper implements IdentityMapper {
     private Set<String> roleAttributeNames = new HashSet<String>();
 
     public RemoteSubjectIdentityMapper() {
+        // TODO : This depends on the attribute profile, make it dynamic!
         roleAttributeNames.add(DCEPACAttributeDefinition.GROUPS.getValue());
         roleAttributeNames.add(DCEPACAttributeDefinition.GROUP.getValue());
+        roleAttributeNames.add("groups");
     }
 
     public Set<String> getRoleAttributeNames() {

@@ -25,7 +25,7 @@ public class TwoFactorSecurityTokenAuthenticator extends AbstractSecurityTokenAu
     private static Log logger = LogFactory.getLog(TwoFactorSecurityTokenAuthenticator.class);
 
     public TwoFactorSecurityTokenAuthenticator() {
-        super();
+        super(SCHEME_NAME);
         setScheme(SCHEME_NAME);
     }
 
@@ -51,9 +51,10 @@ public class TwoFactorSecurityTokenAuthenticator extends AbstractSecurityTokenAu
         String passcode = usernameToken.getOtherAttributes().get( new QName( PASSCODE_NS) );
 
         Credential usernameCredential = getAuthenticator().newCredential(getScheme(), "username", username);
+        Credential useridCredential = getAuthenticator().newCredential(getScheme(), "userid", username);
         Credential passcodeCredential = getAuthenticator().newCredential(getScheme(), "passcode", passcode);
 
-        return new Credential[] {usernameCredential, passcodeCredential};
+        return new Credential[] {usernameCredential, useridCredential, passcodeCredential};
 
     }
 }

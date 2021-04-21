@@ -28,26 +28,27 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>idbus-all</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <artifactId>all</artifactId>
+        <version>1.5.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.idojos</groupId>
     <artifactId>org.atricore.idbus.idojos.ehcachesessionstore</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: IDOJO : RDBMS Session Store</name>
 
     <properties>
         <commons-logging.version>1.1.1</commons-logging.version>
-        <spring.version>3.1.0.RELEASE</spring.version>
+        <!--<spring.version>3.1.0.RELEASE</spring.version>-->
         <ehcache-core.version>2.6.8</ehcache-core.version>
         <xbean.version>3.7</xbean.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <idbus-kernel.version>1.5.0-SNAPSHOT</idbus-kernel.version>
+        <idbus-kernel.version>1.5.1-SNAPSHOT</idbus-kernel.version>
+        <ehcache-bundle.version>1.5.1-SNAPSHOT</ehcache-bundle.version>
     </properties>
 
     <build>
@@ -77,8 +78,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -99,6 +100,12 @@
             <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
             <version>${idbus-kernel.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
+            <version>${ehcache-bundle.version}</version>
         </dependency>
 
         <dependency>

@@ -118,6 +118,11 @@ public class SpnegoAuthenticationScheme extends AbstractAuthenticationScheme {
         return new SimplePrincipal(pName);
     }
 
+    @Override
+    public Principal getInputPrincipal() {
+        return getPrincipal();
+    }
+
     public Principal getPrincipal(Credential[] credentials) {
         return new SimplePrincipal(getSpnegoToken(credentials));
     }

@@ -32,6 +32,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
  */
 public class FindUserByUsernameResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -2898476899156498718L;
+
     private User user;
 
     public User getUser() {

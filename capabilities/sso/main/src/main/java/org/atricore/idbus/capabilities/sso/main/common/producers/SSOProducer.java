@@ -23,23 +23,31 @@ package org.atricore.idbus.capabilities.sso.main.common.producers;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.metadata.*;
+import oasis.names.tc.saml._2_0.protocol.StatusCodeType;
+import oasis.names.tc.saml._2_0.protocol.StatusDetailType;
+import oasis.names.tc.saml._2_0.protocol.StatusType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.main.common.plans.SSOPlanningConstants;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.main.sp.SPSecurityContext;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
-import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
+import org.atricore.idbus.kernel.main.mediation.Channel;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
@@ -48,17 +56,18 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.provider.*;
 import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
 
 import javax.security.auth.Subject;
+import javax.xml.bind.JAXBElement;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -71,6 +80,8 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         implements SAMLR2Constants, SAMLR2MessagingConstants, SSOPlanningConstants {
 
     private static final Log logger = LogFactory.getLog(SSOProducer.class);
+
+    private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     protected SSOProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
         super(endpoint);
@@ -203,9 +214,16 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             SPSSODescriptorType samlr2sp = (SPSSODescriptorType) md.getEntry();
 
             EndpointDescriptor ed = resolveEndpoint(samlr2sp.getSingleLogoutService(),
-                    preferredBindings, SSOService.SingleLogoutService, true);
-            if (ed == null)
-                logger.warn("No SLO Endpoint found for SP " + spAlias);
+                    preferredBindings, SSOService.SingleLogoutService, onlyPreferredBinding);
+
+            if (ed == null) {
+                String bindings = "";
+                for (SSOBinding preferredBinding : preferredBindings) {
+                    bindings += preferredBinding.getValue();
+                }
+                logger.warn("No SP SLO Endpoint found [" + spAlias + "] " +
+                    SSOService.SingleLogoutService.toString() + "/" + bindings);
+            }
 
             return ed;
 
@@ -251,8 +269,14 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
             EndpointDescriptor ed = resolveEndpoint(samlr2idp.getSingleLogoutService(),
                     preferredBindings, SSOService.SingleLogoutService, true);
 
-            if (ed == null)
-                throw new SSOException("No SLO Endpoint found for IDP " + idpAlias);
+            if (ed == null) {
+                String bindings = "";
+                for (SSOBinding preferredBinding : preferredBindings) {
+                    bindings += preferredBinding.getValue();
+                }
+                logger.warn("No IDP SLO Endpoint found [" + idpAlias + "] " +
+                        SSOService.SingleLogoutService.toString() + "/" + bindings);
+            }
 
             return ed;
 
@@ -352,19 +376,52 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
     }
 
     /**
-     * @return
+     * Obtains the SP Channel that the target SP must use to send messages to the current provider
      */
-    protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
+    protected FederationChannel resolveSpChannel(CircleOfTrustMemberDescriptor targetSp) {
         // Resolve IdP channel, then look for the ACS endpoint
-        BindingChannel bChannel = (BindingChannel) channel;
-        FederatedLocalProvider sp = bChannel.getFederatedProvider();
+        FederatedLocalProvider idp = (FederatedLocalProvider) getProvider();
 
+        FederationChannel spChannel = idp.getChannel();
+
+        if (targetSp == null)
+            return spChannel;
+
+        for (FederationChannel fChannel : idp.getChannels()) {
+
+            FederatedProvider sp = fChannel.getTargetProvider();
+            for (CircleOfTrustMemberDescriptor member : sp.getMembers()) {
+                if (member.getAlias().equals(targetSp.getAlias())) {
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Selected IdP channel " + fChannel.getName() + " for provider " + sp.getName());
+                    spChannel = fChannel;
+                    break;
+                }
+
+            }
+
+        }
+        return spChannel;
+    }
+
+    /**
+     * Obtains the IdP Channel that the target IdP must use to send messages to the current provider (SP)
+     */
+    protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor targetIdp) {
+        // Resolve IdP channel, then look for the ACS endpoint
+
+        FederatedLocalProvider sp = (FederatedLocalProvider) getProvider();
+
+        // Default IdP channel
         FederationChannel idpChannel = sp.getChannel();
+
+        // Look for overrides
         for (FederationChannel fChannel : sp.getChannels()) {
 
             FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
-                if (member.getAlias().equals(idpDescriptor.getAlias())) {
+                if (member.getAlias().equals(targetIdp.getAlias())) {
 
                     if (logger.isDebugEnabled())
                         logger.debug("Selected IdP channel " + fChannel.getName() + " for provider " + idp.getName());
@@ -377,7 +434,6 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         }
 
         return idpChannel;
-
     }
 
     protected void destroySPSecurityContext(CamelMediationExchange exchange,
@@ -409,26 +465,211 @@ public abstract class SSOProducer extends AbstractCamelProducer<CamelMediationEx
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
         AuditingServer aServer = mediator.getAuditingServer();
 
-        Properties props = null;
+        Properties props = new Properties();
+        String providerName = getProvider().getName();
+        props.setProperty("provider", providerName);
 
         String remoteAddr = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
         if (remoteAddr != null) {
-            if (props == null) props = new Properties();
             props.setProperty("remoteAddress", remoteAddr);
         }
 
         String session = (String) exchange.getIn().getHeader("org.atricore.idbus.http.Cookie.JSESSIONID");
         if (session != null) {
-            if (props == null) props = new Properties();
             props.setProperty("httpSession", session);
         }
 
         if (otherProps != null) {
-            if (props == null) props = new Properties();
             props.putAll(otherProps);
         }
 
         aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", action, actionOutcome, principal != null ? principal : "UNKNOWN", new java.util.Date(), null, props);
+    }
+
+    /**
+     * SPs can build an IdP selectio request using this method, specifically designed for SP binding channel producers
+     */
+    protected SelectEntityRequestType buildSelectIdPRequest(BindingChannel bChannel,
+                                                            SSORequestAbstractType ssoRequest,
+                                                            Collection<CircleOfTrustMemberDescriptor> availableIdPs) {
+
+        SSOSPMediator mediator = (SSOSPMediator) bChannel.getIdentityMediator();
+
+        SelectEntityRequestType selectIdPRequest = new SelectEntityRequestType();
+        selectIdPRequest.setID(uuidGenerator.generateId());
+        selectIdPRequest.setIssuer(bChannel.getFederatedProvider().getName());
+        for (IdentityMediationEndpoint ed : channel.getEndpoints()) {
+            if (ed.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue()) &&
+                    ed.getType().equals(endpoint.getType())) {
+                selectIdPRequest.setReplyTo(channel.getLocation() + ed.getLocation());
+                break;
+            }
+        }
+
+        for (CircleOfTrustMemberDescriptor idp : availableIdPs) {
+
+            RequestAttributeType idpAttr = new RequestAttributeType();
+            idpAttr.setName(SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
+            idpAttr.setValue(idp.getAlias());
+
+            selectIdPRequest.getRequestAttribute().add(idpAttr);
+        }
+
+        // Send the name of the SP asking for the selection
+        RequestAttributeType spAttr = new RequestAttributeType();
+        spAttr.setName(EntitySelectorConstants.ISSUER_SP_ATTR);
+        spAttr.setValue(((BindingChannel)channel).getProvider().getName());
+
+        selectIdPRequest.getRequestAttribute().add(spAttr);
+
+        // Send the preferred IDP alias
+        RequestAttributeType preferredIdp = new RequestAttributeType();
+        preferredIdp.setName(EntitySelectorConstants.PREFERRED_IDP_ATTR);
+        preferredIdp.setValue(mediator.getPreferredIdpAlias());
+
+        selectIdPRequest.getRequestAttribute().add(preferredIdp);
+
+        if (ssoRequest != null) {
+
+            // Add additional information about the environment ...
+
+            if (ssoRequest instanceof SPInitiatedAuthnRequestType) {
+
+                SPInitiatedAuthnRequestType ssoAuthnRequest = (SPInitiatedAuthnRequestType) ssoRequest;
+
+                RequestAttributeType authnCtx = new RequestAttributeType();
+                authnCtx.setName(EntitySelectorConstants.AUTHN_CTX_ATTR);
+                authnCtx.setValue(ssoAuthnRequest.getAuthnCtxClass());
+
+                selectIdPRequest.getRequestAttribute().add(authnCtx);
+            }
+
+            // All request attributes
+            if (ssoRequest.getRequestAttribute() != null) {
+                for (int i = 0; i < ssoRequest.getRequestAttribute().size(); i++) {
+                    RequestAttributeType a =
+                            ssoRequest.getRequestAttribute().get(i);
+
+                    RequestAttributeType a1 = new RequestAttributeType();
+                    a1.setName(a.getName());
+                    a1.setValue(a.getValue());
+
+                    selectIdPRequest.getRequestAttribute().add(a1);
+
+                }
+            }
+        }
+
+        return selectIdPRequest;
+    }
+
+    protected CircleOfTrustMemberDescriptor resolveActualIdP(CircleOfTrustMemberDescriptor selectedIdP) {
+        // This is useful when the IdP is local, and overrides the SP channel.
+
+
+        CircleOfTrust cot = null;
+        FederatedProvider sp = null;
+        if (channel instanceof FederationChannel) {
+            FederationChannel fChannel = (FederationChannel) channel;
+            sp = fChannel.getFederatedProvider();
+            cot = fChannel.getCircleOfTrust();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Resolving actual IdP from FederationChannel " + fChannel.getName());
+        } else if (channel instanceof BindingChannel) {
+            BindingChannel bChannel = (BindingChannel) channel;
+            sp = bChannel.getFederatedProvider();
+            cot = sp.getDefaultFederationService().getChannel().getCircleOfTrust();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Resolving actual IdP from BindingChannel " + bChannel.getName());
+
+        }
+
+
+        IdentityProvider idp = null;
+        for (FederatedProvider provider : cot.getProviders()) {
+            for (CircleOfTrustMemberDescriptor cotDescr : provider.getMembers()) {
+                if (cotDescr.getAlias().equals(selectedIdP.getAlias())) {
+
+                    if (provider instanceof IdentityProvider) {
+                        idp = (IdentityProvider) provider;
+                        break;
+                    }
+                }
+            }
+
+            if (idp != null)
+                break;
+        }
+
+        if (idp == null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Local IdP not found for COT Member " + selectedIdP);
+
+            // assume this is a remote IdP
+            return selectedIdP;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Local IdP " + idp.getName() + " found for COT Member " + selectedIdP);
+
+
+
+        for (FederationChannel fChannel : idp.getDefaultFederationService().getOverrideChannels()) {
+            if (fChannel.getTargetProvider() != null &&
+                    fChannel.getTargetProvider().equals(sp)) {
+                return fChannel.getMember();
+            }
+        }
+
+        return idp.getDefaultFederationService().getChannel().getMember();
+
+    }
+
+    protected EndpointDescriptor resolveAccessSSOSessionEndpoint(Channel myChannel, BindingChannel spBindingChannel) throws IdentityMediationException {
+
+        IdentityMediationEndpoint soapEndpoint = null;
+
+        for (IdentityMediationEndpoint endpoint : spBindingChannel.getEndpoints()) {
+
+            if (endpoint.getType().equals(SSOService.SPSessionHeartBeatService.toString())) {
+
+                if (endpoint.getBinding().equals(SSOBinding.SSO_LOCAL.getValue())) {
+                    return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, endpoint);
+                } else if (endpoint.getBinding().equals(SSOBinding.SSO_SOAP.getValue())) {
+                    soapEndpoint = endpoint;
+                }
+
+
+            }
+
+        }
+
+        if (soapEndpoint != null)
+            return myChannel.getIdentityMediator().resolveEndpoint(spBindingChannel, soapEndpoint);
+
+        return null;
+    }
+
+    protected String getErrorDetails(StatusType status) {
+        String errorDetails = null;
+
+        StatusDetailType details = status.getStatusDetail();
+        if (details != null && details.getAny() != null && details.getAny().size() > 0) {
+
+            for (Object o : details.getAny()) {
+                if (o instanceof JAXBElement) {
+                    JAXBElement e = (JAXBElement) o;
+
+                    if (e.getValue() instanceof String) {
+                        errorDetails = (String) e.getValue();
+                    }
+                }
+            }
+        }
+
+        return errorDetails;
     }
 
     

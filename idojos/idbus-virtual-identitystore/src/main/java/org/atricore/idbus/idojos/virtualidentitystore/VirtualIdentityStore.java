@@ -78,10 +78,12 @@ public class VirtualIdentityStore extends AbstractStore {
 
             BaseUser sourceUser;
             try {
-            	sourceUser = identitySource.getBackingIdentityStore().loadUser(key);
-            	if (sourceUser != null) {
+                sourceUser = identitySource.getBackingIdentityStore().loadUser(key);
+                if (sourceUser != null) {
                     sourceUsers.add(sourceUser);
                 }
+            } catch (NoSuchUserException e) {
+                logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
             	logger.warn("Error loading user from embedded identity source", t);
             }
@@ -136,7 +138,8 @@ public class VirtualIdentityStore extends AbstractStore {
                 if (baseRoles != null) {
                     virtualUserRoles.addAll(Arrays.asList(baseRoles));
                 }
-
+            } catch (NoSuchUserException e) {
+                logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
                 logger.warn("Error find roles from embedded identity source", t);
                                 
@@ -180,17 +183,18 @@ public class VirtualIdentityStore extends AbstractStore {
 
         // Collect user information from the configured sources
 
-        for (Iterator<IdentitySource> identitySourceIterator = identitySources.iterator(); identitySourceIterator.hasNext();) {
-            IdentitySource identitySource = identitySourceIterator.next();
+        for (IdentitySource identitySource : identitySources) {
 
             Credential[] Credentials;
-            
+
             try {
                 Credentials = ((CredentialStore) identitySource.getBackingIdentityStore()).loadCredentials(key, cp);
 
                 if (Credentials != null) {
                     virtualUserCredentials.addAll(Arrays.asList(Credentials));
                 }
+            } catch (NoSuchUserException e) {
+                logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
                 logger.warn("Cannot load credentials from embedded identity source", t);
             }
@@ -281,7 +285,32 @@ public class VirtualIdentityStore extends AbstractStore {
         
         return virtualUserExistsOutcome.isExists();
 	}
-    
+
+    @Override
+    public boolean isUpdatePasswordEnabled() {
+        for (Iterator<IdentitySource> identitySourceIterator = getIdentitySources().iterator(); identitySourceIterator.hasNext();) {
+            IdentitySource identitySource = identitySourceIterator.next();
+            if (identitySource.getBackingIdentityStore().isUpdatePasswordEnabled())
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void updatePassword(UserKey key, String currentPassword, String newPassword) throws SSOIdentityException {
+        IdentitySource identitySource = null;
+        for (Iterator<IdentitySource> identitySourceIterator = getIdentitySources().iterator(); identitySourceIterator.hasNext();) {
+            identitySource = identitySourceIterator.next();
+            if (identitySource.getBackingIdentityStore().isUpdatePasswordEnabled())
+                break;
+        }
+        if (identitySource != null) {
+            identitySource.getBackingIdentityStore().updatePassword(key, currentPassword, newPassword);
+        } else {
+            throw new SSOIdentityException("Password update isn't enabled on any identity source");
+        }
+    }
+
     /**
      * @return
      * @org.apache.xbean.Property alias="sources"

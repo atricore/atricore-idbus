@@ -1,6 +1,6 @@
 package org.atricore.idbus.kernel.main.mediation.policy;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 
 import java.io.Serializable;
@@ -15,5 +15,5 @@ public interface PolicyEnforcementRequest extends Serializable {
 
     EndpointDescriptor getReplyTo();
 
-    Set<SSOPolicyEnforcementStatement> getStatements();
+    Set<PolicyEnforcementStatement> getStatements();
 }

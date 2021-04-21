@@ -10,13 +10,13 @@ class SimpleClaimEndpointSelection(name : String, retries : Int)
 
   val route =
     logRequestResponse("") {
-      withNoSession {
+      //withNoSession {
         pendingRetries(retries) {
           retryToCollectClaimsOnSameClaimChannel
         } ~
         pickClaimChannel {
           collectClaims(_, _)
         }
-      }
+      //}
     }
 }

@@ -28,8 +28,8 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>idbus-all</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <artifactId>all</artifactId>
+        <version>1.5.1-SNAPSHOT</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -37,7 +37,7 @@
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Java JDO2 Api v2.3-ec OSGi</name>
 

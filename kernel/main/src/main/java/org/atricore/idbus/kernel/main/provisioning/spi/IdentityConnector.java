@@ -2,10 +2,6 @@ package org.atricore.idbus.kernel.main.provisioning.spi;
 
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * The identity connector provides information about a specific connection
  *
@@ -25,15 +21,9 @@ public class IdentityConnector {
 
     private IdentityVault vault;
 
-    private IdentityPartition identityPartition;
-
-    private MediationPartition mediationPartition;
-
-    private Map<String, IdentityResource> identityResources = new HashMap<String, IdentityResource>();
+    private IdentityPartition partition;
 
     private ProvisioningTarget target;
-
-    private ProvisioningEngine engine;
 
     public String getName() {
         return name;
@@ -68,7 +58,7 @@ public class IdentityConnector {
     }
 
     public IdentityStore getStore() {
-        return identityPartition.getIdentityStore();
+        return partition.getIdentityStore();
     }
 
     public IdentityVault getVault() {
@@ -79,20 +69,12 @@ public class IdentityConnector {
         this.vault = vault;
     }
 
-    public IdentityPartition getIdentityPartition() {
-        return identityPartition;
+    public IdentityPartition getPartition() {
+        return partition;
     }
 
-    public void setIdentityPartition(IdentityPartition identityPartition) {
-        this.identityPartition = identityPartition;
-    }
-
-    public MediationPartition getMediationPartition() {
-        return mediationPartition;
-    }
-
-    public void setMediationPartition(MediationPartition mediationPartition) {
-        this.mediationPartition = mediationPartition;
+    public void setPartition(IdentityPartition partition) {
+        this.partition = partition;
     }
 
     public ProvisioningTarget getTarget() {
@@ -103,30 +85,10 @@ public class IdentityConnector {
         this.target = target;
     }
 
-    public ProvisioningEngine getEngine() {
-        return engine;
-    }
-
-    public void setEngine(ProvisioningEngine engine) {
-        this.engine = engine;
-    }
-
-    public IdentityResource lookupResource(String oid) {
-        return identityResources.get(oid);
-    }
-
-    public void registerResource(IdentityResource resource) {
-        identityResources.put(resource.getOid(), resource);
-    }
-
-    public Collection<IdentityResource> getResources() {
-        return identityResources.values();
-    }
-
     @Override
     public String toString() {
         return name + ">vault:" + (vault != null ? vault.getName() : "null") +
-                ", partition:" + (identityPartition != null ? identityPartition.getName() : "null") +
+                ", partition:" + (partition != null ? partition.getName() : "null") +
                 ", target:" + (target != null ? target.getName() : "null") +
                 ", store:" + (getStore() != null ? getStore() : "null");
     }

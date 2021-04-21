@@ -31,4 +31,8 @@ public interface IdGenerator {
 
     String generateId();
 
+    void setPrefix(String prefix);
+
+    String getPrefix();
+
 }

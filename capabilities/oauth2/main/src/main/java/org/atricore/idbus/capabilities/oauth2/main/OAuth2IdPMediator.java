@@ -3,9 +3,11 @@ package org.atricore.idbus.capabilities.oauth2.main;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.app.VelocityEngine;
 import org.atricore.idbus.capabilities.oauth2.main.binding.OAuth2Binding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
@@ -29,6 +31,12 @@ public class OAuth2IdPMediator extends AbstractCamelMediator {
 
     // List of trusted OAuth 2 clients
     private Set<OAuth2Client> clients = new HashSet<OAuth2Client>();
+
+    private MailService mailService;
+
+    private VelocityEngine velocityEngine;
+
+    private PasswordLessConfig passwordLessConfig;
 
     public OAuth2IdPMediator() {
         logger.info("OAuth2IdPMediator Instantiated");
@@ -117,6 +125,7 @@ public class OAuth2IdPMediator extends AbstractCamelMediator {
                             }
                             break;
                         case OAUTH2_RESTFUL:
+                        case OAUTH2_REDIRECT:
 
                             // FROM idbus-http TO idbus-bind (through direct component)
                             from("idbus-http:" + ed.getLocation()).
@@ -288,5 +297,29 @@ public class OAuth2IdPMediator extends AbstractCamelMediator {
 
     public void setClients(Set<OAuth2Client> clients) {
         this.clients = clients;
+    }
+
+    public MailService getMailService() {
+        return mailService;
+    }
+
+    public void setMailService(MailService mailService) {
+        this.mailService = mailService;
+    }
+
+    public VelocityEngine getVelocityEngine() {
+        return velocityEngine;
+    }
+
+    public void setVelocityEngine(VelocityEngine velocityEngine) {
+        this.velocityEngine = velocityEngine;
+    }
+
+    public PasswordLessConfig getPasswordLessConfig() {
+        return passwordLessConfig;
+    }
+
+    public void setPasswordLessConfig(PasswordLessConfig passwordLessConfig) {
+        this.passwordLessConfig = passwordLessConfig;
     }
 }

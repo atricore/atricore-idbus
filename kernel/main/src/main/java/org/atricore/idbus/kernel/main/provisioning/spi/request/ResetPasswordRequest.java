@@ -8,6 +8,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
  */
 public class ResetPasswordRequest extends  AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -4439068098156498718L;
+
     private User user;
 
     private String newPassword;

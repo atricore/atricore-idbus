@@ -39,6 +39,8 @@ public interface JossoConstants {
 
     public static final String JOSSO_CMD_VAR = "josso_cmd";
 
+    public static final String JOSSO_AUTHN_CTX_VAR = "josso_authn_ctx";
+
     public static final String JOSSO_APPID_VAR = "josso_partnerapp_id";
 
     public static final String JOSSO_IDPALIAS_VAR = "josso_idp_alias";

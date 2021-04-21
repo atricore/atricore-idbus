@@ -22,10 +22,33 @@
 package org.atricore.idbus.kernel.main.federation;
 
 import javax.security.auth.Subject;
+import java.util.Map;
+import java.util.HashMap;
 
 public class DynamicAccountLinkImpl extends AbstractAccountLink implements DynamicAccountLink {
 
-    public DynamicAccountLinkImpl(Subject idpSubject, String localAccountNameIdentifier, String localAccountNameFormat) {
-        super(idpSubject, localAccountNameIdentifier, localAccountNameFormat);
+    public DynamicAccountLinkImpl(Subject idpSubject,
+                                  String localAccountNameIdentifier,
+                                  String localAccountNameFormat,
+                                  Map<String, String> context) {
+        super(idpSubject, localAccountNameIdentifier, localAccountNameFormat, context);
     }
+
+    public DynamicAccountLinkImpl(Subject idpSubject,
+                                  String localAccountNameIdentifier,
+                                  String localAccountNameFormat) {
+        super(idpSubject, localAccountNameIdentifier, localAccountNameFormat, new HashMap<String, String>());
+    }
+
+    public static class Builder extends BaseAccountLinkBuilder<Builder> {
+
+        @Override
+        public AccountLink build() {
+            DynamicAccountLinkImpl l = new DynamicAccountLinkImpl(this.idpSubject, this.localAccount, this.accountFormat, this.props);
+            l.setDeleted(this.isDeleted);
+            l.setEnabled(this.isEnabled);
+            return l;
+        }
+    }
+
 }

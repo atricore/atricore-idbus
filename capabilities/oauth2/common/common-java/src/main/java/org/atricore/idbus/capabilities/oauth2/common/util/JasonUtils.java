@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessTokenEnvelope;
+import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.*;
@@ -40,19 +41,19 @@ public class JasonUtils {
             logger.trace("Marshaled AccessToken (JSON):\n" + jsonToken);
 
         if (encode)
-            return new String(Base64.encodeBase64(jsonToken.getBytes()));
+            return new String(Base64.encodeBase64(jsonToken.getBytes("UTF-8")));
         else
             return jsonToken;
     }
 
     public static OAuth2AccessToken unmarshalAccessToken(String strAccessToken, boolean decode) throws IOException {
         if (decode)
-            strAccessToken = new String(Base64.decodeBase64(strAccessToken.getBytes()));
+            strAccessToken = new String(Base64.decodeBase64(strAccessToken.getBytes("UTF-8")));
 
         if (logger.isTraceEnabled())
             logger.trace("Unmarshal Access Token (JSON)\n" + strAccessToken);
 
-        return mapper.readValue(new ByteArrayInputStream(strAccessToken.getBytes()), OAuth2AccessToken.class);
+        return mapper.readValue(new ByteArrayInputStream(strAccessToken.getBytes("UTF-8")), OAuth2AccessToken.class);
     }
 
     public static OAuth2AccessToken unmarshalAccessToken(String strAccessToken) throws IOException {
@@ -90,7 +91,25 @@ public class JasonUtils {
             logger.trace("Unmarshal AccessTokenEnvelope (JSON):\n" + strAccessTokenEnvelope);
 
 
-        return mapper.readValue(new ByteArrayInputStream(strAccessTokenEnvelope.getBytes()), OAuth2AccessTokenEnvelope.class);
+        return mapper.readValue(new ByteArrayInputStream(strAccessTokenEnvelope.getBytes("UTF-8")), OAuth2AccessTokenEnvelope.class);
+    }
+
+    public static String marshalAccessTokenResponse(AccessTokenResponseType accessTokenResponse) throws IOException {
+        return marshalAccessTokenResponse(accessTokenResponse, true);
+    }
+
+    public static String marshalAccessTokenResponse(AccessTokenResponseType accessTokenResponse, boolean encode) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        mapper.writeValue(baos, accessTokenResponse);
+        String jsonTokenResp = new String(baos.toByteArray());
+
+        if (logger.isTraceEnabled())
+            logger.trace("Marshaled AccessTokenResponse (JSON):\n" + jsonTokenResp);
+
+        if (encode)
+            return new String(Base64.encodeBase64(jsonTokenResp.getBytes("UTF-8")));
+        else
+            return jsonTokenResp;
     }
 
     public static String deflate(String tokenStr, boolean encode) {
@@ -123,7 +142,7 @@ public class JasonUtils {
         return new String(exact);
     }
 
-    public static String inflate(String tokenStr, boolean decode) {
+    public static String inflate(String tokenStr, boolean decode) throws java.io.UnsupportedEncodingException {
 
         if (tokenStr == null || tokenStr.length() == 0) {
             throw new RuntimeException("Token string cannot be null or empty");
@@ -131,9 +150,9 @@ public class JasonUtils {
 
         byte[] redirBin = null;
         if (decode)
-            redirBin = new Base64().decode(removeNewLineChars(tokenStr).getBytes());
+            redirBin = new Base64().decode(removeNewLineChars(tokenStr).getBytes("UTF-8"));
         else
-            redirBin = tokenStr.getBytes();
+            redirBin = tokenStr.getBytes("UTF-8");
 
         // Decompress the bytes
         Inflater inflater = new Inflater(true);

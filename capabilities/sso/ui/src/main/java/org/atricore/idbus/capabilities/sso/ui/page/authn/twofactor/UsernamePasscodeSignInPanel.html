@@ -5,55 +5,41 @@
 <body>
 <wicket:panel>
 
-    <div id="authentication">
+    <!-- login form head -->
+    <div class="gt-login-hd">
+        <wicket:message key="claims.title.userLogin"/>
+    </div>
 
-        <div class="message error">
+    <!-- login box -->
+    <div class="gt-login-box">
+
+        <div wicket:id="feedbackBox" class="gt-notice-box">
             <span wicket:id="feedback"/>
         </div>
 
-        <div id="bysy_indicator">
-            <span><wicket:message key="general.text.processing"/></span>
-        </div>
+        <!-- login form -->
+        <form wicket:id="signInForm" class="gt-form">
+            <!-- form row -->
+            <div class="gt-form-row">
+                <label class="gt-login-label" for="username"><wicket:message key="claims.label.username"/></label>
+                <input type="text" class="gt-form-text" wicket:id="username" path="username" tabindex="10"/>
+            </div><!-- /form row -->
 
-        <div id="subwrapper">
+            <!-- form row -->
+            <div class="gt-form-row">
+                <label class="gt-login-label" for="password"><wicket:message key="claims.label.passcode"/></label>
+                <input type="password" class="gt-form-text" wicket:id="passcode" path="passcode" tabindex="20"/>
+            </div><!-- /form row -->
 
-            <div class="main">
-                <h2><wicket:message key="claims.title.userLogin"/></h2>
-
-                <p><wicket:message key="claims.text.userLogin"/></p>
-
-                <form wicket:id="signInForm">
-                    <fieldset>
-                        <div><label for="username"><wicket:message key="claims.label.username"/></label><input wicket:id="username" cssClass="text" path="username"
-                                                                                                               tabindex="10"/>
-                        </div>
-                        <div><label for="passcode"><wicket:message key="claims.label.passcode"/></label><input wicket:id="passcode" type="password" cssClass="text error" path="passcode"
-                                                                                                               tabindex="10"/>
-                        </div>
-                    </fieldset>
-                    <div>
-                        <input class="button indent" type="button" value="Login" onclick="saveForm(this);"/>
-                    </div>
-                    <br/>
-                    <br/>
-                </form>
-
-                <div class="highlight">
-                    <h3 class="help"><wicket:message key="claims.title.help"/></h3>
-
-                    <p><wicket:message key="claims.text.login.help"/></p>
-
-                    <div class="footer"></div>
-
-                </div>
-                <!-- /highlight -->
-
+            <!-- form row -->
+            <div class="gt-form-row">
+                <input type="submit" value="Login" class="gt-btn-gray-medium gt-btn-right" />
             </div>
-            <!-- /main -->
-        </div>
+            <!-- /form row -->
 
-    </div>
-    <!-- /authentication -->
+        </form><!-- /login form -->
+    </div><!-- /login box -->
+
 </wicket:panel>
 </body>
 </html>

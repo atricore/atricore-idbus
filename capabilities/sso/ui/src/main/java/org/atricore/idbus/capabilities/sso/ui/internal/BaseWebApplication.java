@@ -5,18 +5,24 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.IRequestCycleProvider;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
-import org.apache.wicket.markup.html.pages.AccessDeniedPage;
-import org.apache.wicket.markup.html.pages.PageExpiredErrorPage;
 import org.apache.wicket.markup.parser.filter.RelativePathPrefixHandler;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
+import org.apache.wicket.settings.IRequestCycleSettings;
 import org.atricore.idbus.capabilities.sso.ui.*;
 import org.atricore.idbus.capabilities.sso.ui.agent.JossoAuthorizationStrategy;
+import org.atricore.idbus.capabilities.sso.ui.page.error.AccessDeniedPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
+import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
-import org.atricore.idbus.capabilities.sso.ui.spi.*;
+import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEvent;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingEventListener;
+import org.atricore.idbus.capabilities.sso.ui.spi.WebBrandingService;
 import org.atricore.idbus.kernel.main.mail.MailService;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
@@ -25,9 +31,12 @@ import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.*;
@@ -40,7 +49,7 @@ import java.util.*;
 public abstract class BaseWebApplication extends WebApplication implements WebBrandingEventListener {
 
     private static final Log logger = LogFactory.getLog(BaseWebApplication.class);
-    
+
     private static final Set<String> imageExtensions = new HashSet<String>();
 
     private static final Set<String> fontExtensions = new HashSet<String>();
@@ -48,7 +57,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     protected boolean ready;
 
     // Dependency injection does not work for application objects (pax-wicket)!
-    
+
     protected BundleContext bundleContext;
 
     protected ApplicationRegistry appConfigRegistry;
@@ -71,11 +80,15 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
     protected Map<String, PageMountPoint> mountsByPath;
 
+    protected ConfigurationContext kernelConfig;
+
 
     static {
 
         fontExtensions.add("ttf"); // TrueType font
         fontExtensions.add("eot"); // Embedded OpenType font
+        fontExtensions.add("woff"); // Web Open Font Format
+        fontExtensions.add("woff2"); // Web Open Font Format 2.0
 
         imageExtensions.add("bmp"); // Bitmap Image File
         imageExtensions.add("dds"); // DirectDraw Surface
@@ -89,7 +102,11 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         imageExtensions.add("tif"); // Tagged Image File
         imageExtensions.add("yuv"); // YUV Encoded Image File
         imageExtensions.add("ico"); // Icon file
+        imageExtensions.add("svg"); // Vector graphic
+
     }
+
+
 
     public BaseWebApplication() {
         super();
@@ -151,7 +168,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     public boolean isReady() {
         return ready;
     }
-    
+
     @Override
     protected void init() {
         super.init();
@@ -192,8 +209,8 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
     protected void setupSettingPages() {
         getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
-        getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
-        //getApplicationSettings().setInternalErrorPage(ApplicationErrorPage.class);
+        getApplicationSettings().setPageExpiredErrorPage(SessionExpiredPage.class);
+        getApplicationSettings().setInternalErrorPage(AppErrorPage.class);
     }
 
     protected void mountPages() {
@@ -205,7 +222,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     }
 
     public Class resolvePage(String path) {
-        PageMountPoint m = resolveMoutnPoint(path);
+        PageMountPoint m = resolveMountPoint(path);
         if (m == null) {
             logger.warn("Page not found for " + path);
             return null;
@@ -213,7 +230,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         return m.getPageClass();
     }
 
-    public PageMountPoint resolveMoutnPoint(String path)  {
+    public PageMountPoint resolveMountPoint(String path)  {
         PageMountPoint m = mountsByPath.get(path);
         if (m == null) {
             logger.warn("page Mount point not found for " + path);
@@ -225,11 +242,12 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
 
     protected void preInit() {
+
         setRequestCycleProvider(new IRequestCycleProvider()
         {
             public RequestCycle get(RequestCycleContext context)
             {
-                return new IdBusRequestCycle(context);
+                return new IdBusRequestCycle(context, BaseWebApplication.this);
             }
         });
 
@@ -241,6 +259,9 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         // Resource settings
         getResourceSettings().setEncodeJSessionId(false);
+
+        // Avoid redirects on UI pages
+        getRequestCycleSettings().setRenderStrategy(IRequestCycleSettings.RenderStrategy.ONE_PASS_RENDER);
 
 
     }
@@ -316,11 +337,20 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         return cfg;
     }
 
+    public ConfigurationContext getKernelConfig() {
+        return kernelConfig;
+    }
+
     public List<AppResource> getAppResources() {
         return appResources;
     }
 
-    public final synchronized void config(BundleContext bundleContext, ApplicationRegistry appConfigRegistry, WebBrandingService brandingService, IdentityMediationUnitRegistry idsuRegistry, MailService mailService) {
+    public final synchronized void config(BundleContext bundleContext,
+                                          ApplicationRegistry appConfigRegistry,
+                                          WebBrandingService brandingService,
+                                          IdentityMediationUnitRegistry idsuRegistry,
+                                          ConfigurationContext kernelConfig,
+                                          MailService mailService) {
 
         // We're ready
         this.ready = true;
@@ -329,6 +359,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         this.appConfigRegistry = appConfigRegistry;
         this.brandingService = brandingService;
         this.idsuRegistry = idsuRegistry;
+        this.kernelConfig = kernelConfig;
         this.mailService = mailService;
 
         // Register the application to the branding service
@@ -339,7 +370,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
             if (branding.getDefaultLocale() != null) {
                 logger.debug("Setting default locale to " + branding.getDefaultLocale());
-                Locale.setDefault(new Locale(branding.getDefaultLocale()));
+                Locale.setDefault(StringUtils.parseLocaleString((branding.getDefaultLocale())));
             }
         } else {
             logger.error("No branding configured for " + getAppConfig().getAppName() + " using ID : " + brandingId);
@@ -348,17 +379,17 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
         postConfig();
         refreshBranding();
     }
-    
+
     public void refreshBranding() {
-        
+
         Set<String> resourcePaths = new HashSet<String>();
 
         // TODO : Instead of taking resources list from branding, also support scanning specific packages of specific bundles !!!!
         if (branding != null) {
-            
+
             // TODO : Reset locale
 
-            // Mount branding shared resources explicitly declared 
+            // Mount branding shared resources explicitly declared
             for (BrandingResource resource : branding.getResources()) {
                 // All shared resource MUST be scoped to AppResourceLocator
                 if (resource.isShared()) {
@@ -368,37 +399,37 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                     mountResource("/" + resource.getPath(), ref);
                     resourcePaths.add(resource.getPath());
                     if (logger.isTraceEnabled())
-                        logger.trace("Mounting EXPLICITY shared resource ["+resource.getId()+"] at /" + resource.getPath());
+                        logger.trace("Mounting EXPLICITLY shared resource ["+resource.getId()+"] at /" + resource.getPath());
                 }
             }
-            
+
             // Auto-discovery all resources bound to AppResourceLocator class package.
             // Make them available as global resources
             Bundle b = bundleContext.getBundle();
             String basePath = "/" + AppResourceLocator.class.getPackage().getName().replace('.', '/');
-            
+
             Enumeration e = b.findEntries(basePath, "*", true);
             while (e.hasMoreElements()) {
                 URL location = (URL) e.nextElement();
                 String path = location.getPath();
                 String mountPath = path.substring(basePath.length() + 1);
-                
+
                 if (resourcePaths.contains(mountPath)) {
                     if (logger.isDebugEnabled())
-                        logger.debug("Resource declared EXPLICITLY : "+ path);
+                        logger.debug("Resource declared EXPLICITLY : " + path);
                     continue;
                 }
 
                 BrandingResourceType type = getTypeFromPath(path);
                 if (type == null || type.equals(BrandingResourceType.OTHER))
                     continue;
-                
+
                 String id = mountPath.replace('/', '-');
                 id = id.replace('.', '-');
-                
+
                 if (logger.isTraceEnabled())
-                    logger.trace("Mounting DISCOVERED shared resource ["+id+"] at /" + mountPath);
-                
+                    logger.trace("Mounting DISCOVERED shared resource [" + id + "] at /" + mountPath);
+
                 BrandingResource resource = new BrandingResource(id, mountPath, null, type);
 
                 PackageResourceReference ref = new PackageResourceReference(AppResourceLocator.class, resource.getPath());
@@ -406,15 +437,39 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
                 mountResource("/" + resource.getPath(), ref);
                 resourcePaths.add(resource.getPath());
                 if (logger.isTraceEnabled())
-                    logger.trace("Mounting shared resource ["+resource.getId()+"] at /" + resource.getPath());
-                
+                    logger.trace("Mounting shared resource [" + resource.getId() + "] at /" + resource.getPath());
+
             }
-            
+
+            {
+                WebAppConfig appConfig = getAppConfig();
+
+                String exteranlResourcesPath = System.getProperty("karaf.home") + File.separator + "data" + File.separator + "branding";
+
+                if (branding.getExternalResourcesPath() != null)
+                    exteranlResourcesPath = branding.getExternalResourcesPath();
+
+                String unitName = appConfig.getUnitName();
+                String applianceName = unitName.substring(0, unitName.length() - "-mediation-unit".length());
+
+                String brandingExternalResources = exteranlResourcesPath + File.separator + applianceName;
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Loading external branding resources from : " + brandingExternalResources);
+
+                FolderContentResource extResourcesFolder = new FolderContentResource(new File(brandingExternalResources));
+                Collection<String> extResources = extResourcesFolder.scan();
+                getSharedResources().add(applianceName, extResourcesFolder);
+
+                for (String extResource : extResources) {
+                    mountResource(extResource, new SharedResourceReference(applianceName));
+                }
+            }
 
         }
 
     }
-    
+
     protected BrandingResourceType getTypeFromPath(String path) {
         //String imgs
         int mid = path.lastIndexOf('.');
@@ -426,7 +481,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         if (extension.equalsIgnoreCase("js"))
             return BrandingResourceType.SCRIPT;
-        
+
         if (imageExtensions.contains(extension))
             return BrandingResourceType.IMAGE;
 
@@ -438,7 +493,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
 
         return BrandingResourceType.OTHER;
     }
-    
+
     public void removeBranding() {
         // TODO : What happens when the branding is removed ?!
         logger.warn("Configured branding was removed ! ["+branding.getId()+"]");
@@ -539,5 +594,10 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
     }
 
 
-
+    @Override
+    public String getMimeType(String fileName) {
+        if (fileName.endsWith(".svg"))
+            return "image/svg+xml";
+        return super.getMimeType(fileName);
+    }
 }

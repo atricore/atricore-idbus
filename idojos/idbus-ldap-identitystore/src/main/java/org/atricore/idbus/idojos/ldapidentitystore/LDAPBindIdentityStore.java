@@ -28,14 +28,25 @@ import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyC
 import org.atricore.idbus.idojos.ldapidentitystore.codec.ppolicy.PasswordPolicyResponseControl;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
+import org.atricore.idbus.kernel.main.store.SimpleUserKey;
+import org.atricore.idbus.kernel.main.store.UserKey;
+import org.atricore.idbus.kernel.main.store.exceptions.CredentialsPolicyVerificationException;
+import org.atricore.idbus.kernel.main.store.exceptions.InvalidCredentialsException;
+import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.BindContext;
 import org.atricore.idbus.kernel.main.store.identity.BindableCredentialStore;
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
+import javax.naming.NamingException;
+import javax.naming.directory.*;
 import javax.naming.ldap.BasicControl;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -141,6 +152,11 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
 
     private boolean passwordPolicySupport = false;
 
+    private boolean updatePasswordEnabled = false;
+
+    private LDAPVendor ldapVendor;
+    private Map<LDAPVendor, Map<String, String>> ldapVendorErrorCodes;
+
     public boolean isValidateBindWithSearch() {
         return this.validateBindWithSearch;
     }
@@ -157,7 +173,38 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
         this.passwordPolicySupport = passwordPolicySupport;
     }
 
-    // ----------------------------------------------------- CredentialStore Methods
+    public LDAPVendor getLdapVendor() {
+        return ldapVendor;
+    }
+
+    public void setLdapVendor(LDAPVendor ldapVendor) {
+        this.ldapVendor = ldapVendor;
+    }
+
+    public Map<LDAPVendor, Map<String, String>> getLdapVendorErrorCodes() {
+        return ldapVendorErrorCodes;
+    }
+
+    public void setLdapVendorErrorCodes(Map<LDAPVendor, Map<String, String>> ldapVendorErrorCodes) {
+        this.ldapVendorErrorCodes = ldapVendorErrorCodes;
+    }
+
+    public LDAPBindIdentityStore() {
+        super();
+
+        ldapVendor = LDAPVendor.APACHE;
+
+        // Initialize LDAP Vendor error code mappings
+        ldapVendorErrorCodes = new HashMap<LDAPVendor, Map<String, String>>();
+
+        Map<String, String> apacheErrorCodes = new HashMap<String, String>();
+        apacheErrorCodes.put(CredentialsPolicyVerificationException.PASSWORD_IN_HISTORY, "password history");
+        apacheErrorCodes.put(CredentialsPolicyVerificationException.PASSWORD_TOO_SHORT, "have a minimum of");
+        apacheErrorCodes.put(CredentialsPolicyVerificationException.PASSWORD_CONTAINS_USERNAME, "parts of the username");
+        ldapVendorErrorCodes.put(LDAPVendor.APACHE, apacheErrorCodes);
+    }
+
+// ----------------------------------------------------- CredentialStore Methods
 
     /**
      * This store performs a bind to the configured LDAP server and closes the connection immediately.
@@ -168,17 +215,27 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
     public boolean bind(String username, String password, BindContext bindCtx) throws SSOAuthenticationException {
 
         String dn = null;
+        boolean error = false;
 
         try {
 
-            // first try to retrieve the user using an known user
+            // Try to resolve a user DN using the username
             dn = selectUserDN(username);
             if (dn == null || "".equals(dn)) {
                 if (logger.isDebugEnabled())
                     logger.debug("No DN found for user : " + username);
-                return false;
+
+                if (validateBindWithSearch) {
+                    bindCtx.addPolicyEnforcementStatement(new AccountNotFoundAuthnPolicy(null));
+                    return false;
+                }
+
+                // Infer a DN, this only works if all users are stored under the configured context DN for users (ONELEVEL)
+                dn = getPrincipalUidAttributeID() +  "=" + username + "," + getUsersCtxDN();
             }
-            logger.debug("user dn = " + dn);
+
+            if (logger.isDebugEnabled())
+                logger.debug("user dn = [" + dn + "]");
 
             // Create context without binding!
             InitialLdapContext ctx = this.createLdapInitialContext(null, null);
@@ -216,6 +273,11 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 if (logger.isDebugEnabled())
                     logger.debug("LDAP Bind Authentication error : " + e.getMessage(), e);
 
+                if (dn == null)
+                    bindCtx.addPolicyEnforcementStatement(new AccountNotFoundAuthnPolicy(null));
+                else
+                    bindCtx.addPolicyEnforcementStatement(new InvalidPasswordAuthnPolicy(null));
+
                 return false;
 
             } finally {
@@ -231,12 +293,19 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                     if (ppolicyCtrl != null)
                         addPasswordPolicyToBindCtx(ppolicyCtrl, bindCtx);
 
+                    // Check for errors
+                    for (PolicyEnforcementStatement policyStatement : bindCtx.getSSOPolicies()) {
+                        if (policyStatement instanceof PasswordPolicyEnforcementError) {
+                            error = true;
+                            break;
+                        }
+                    }
                 }
 
                 ctx.close();
             }
 
-            return true;
+            return !error;
 
 
         } catch (Exception e) {
@@ -306,14 +375,18 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
                 PasswordPolicyControlContainer container = new PasswordPolicyControlContainer();
                 container.setPasswordPolicyResponseControl(new PasswordPolicyResponseControl());
                 ControlDecoder decoder = container.getPasswordPolicyControl().getDecoder();
-                decoder.decode(ldapControl.getEncodedValue(), container.getPasswordPolicyControl());
+                if (ldapControl.getEncodedValue() != null) {
+                    decoder.decode(ldapControl.getEncodedValue(), container.getPasswordPolicyControl());
 
-                PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
+                    PasswordPolicyResponseControl ctrl = container.getPasswordPolicyControl();
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Password Policy Control : " + ctrl.toString());
+                    if (logger.isDebugEnabled())
+                        logger.debug("Password Policy Control : " + ctrl.toString());
 
-                return ctrl;
+                    return ctrl;
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -322,5 +395,78 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
         return null;
     }
 
+    @Override
+    public boolean isUpdatePasswordEnabled() {
+        return updatePasswordEnabled;
+    }
 
+    public void setUpdatePasswordEnabled(boolean updatePasswordEnabled) {
+        this.updatePasswordEnabled = updatePasswordEnabled;
+    }
+
+    @Override
+    public void updatePassword(UserKey key, String currentPassword, String newPassword) throws SSOIdentityException {
+        if (!(key instanceof SimpleUserKey)) {
+            throw new SSOIdentityException("Unsupported key type : " + key.getClass().getName());
+        }
+
+        InitialLdapContext ctx = null;
+
+        try {
+            String dn = selectUserDN(((SimpleUserKey) key).getId());
+
+            ctx = this.createLdapInitialContext(dn, currentPassword);
+
+            // Set new password
+            String userPasswordAttribute = getUpdateableCredentialAttribute();
+            if (userPasswordAttribute == null || userPasswordAttribute.trim().equals("")) {
+                userPasswordAttribute = "userPassword";
+            }
+            Attributes attrs = new BasicAttributes();
+            Attribute pwdAttr = new BasicAttribute(userPasswordAttribute, newPassword);
+            attrs.put(pwdAttr);
+            ctx.modifyAttributes(dn, InitialLdapContext.REPLACE_ATTRIBUTE, attrs);
+
+            // Remove pwdReset attribute
+            ctx = this.createLdapInitialContext();
+            Attributes attrs1 = new BasicAttributes();
+            Attribute pwdResetAttr = new BasicAttribute("pwdReset", false);
+            attrs1.put(pwdResetAttr);
+            ctx.modifyAttributes(dn, InitialLdapContext.REPLACE_ATTRIBUTE, attrs1);
+
+        } catch (AuthenticationException e) {
+            // Invalid old password value
+            throw new InvalidCredentialsException(e.getMessage(), e);
+        } catch (InvalidAttributeValueException e) {
+            // Invalid new password value
+            throw buildCredentialsPolicyVerificationException(e);
+        } catch (NamingException e) {
+            throw new SSOIdentityException(e);
+        } finally {
+            try {
+                if (ctx != null)
+                    ctx.close();
+            } catch (NamingException e) {
+                throw new SSOIdentityException(e);
+            }
+        }
+    }
+
+    protected CredentialsPolicyVerificationException buildCredentialsPolicyVerificationException(InvalidAttributeValueException e) {
+        String errorMessage = e.getMessage();
+        List<String> errorCodes = new ArrayList<String>();
+
+        Map<String, String> ldapVendorErrorCodeMappings = ldapVendorErrorCodes.get(ldapVendor);
+        for (String errorCode : ldapVendorErrorCodeMappings.keySet()) {
+            if (errorMessage.contains(ldapVendorErrorCodeMappings.get(errorCode))) {
+                errorCodes.add(errorCode);
+            }
+        }
+
+        if (errorCodes.size() == 0) {
+            errorCodes.add(CredentialsPolicyVerificationException.INVALID_PASSWORD);
+        }
+
+        return new CredentialsPolicyVerificationException(errorCodes.toArray(new String[errorCodes.size()]), e.getMessage(), e);
+    }
 }

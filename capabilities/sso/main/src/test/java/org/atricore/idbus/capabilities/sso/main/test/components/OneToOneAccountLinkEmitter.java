@@ -28,6 +28,7 @@ import org.atricore.idbus.kernel.main.federation.DynamicAccountLinkImpl;
 import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 
 import javax.security.auth.Subject;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,13 +37,22 @@ import java.util.Set;
  * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
  */
 public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
+
+    @Override
     public AccountLink emit(Subject subject) {
+        return emit(subject, null);
+    }
+
+    @Override
+    public AccountLink emit(Subject subject, Object ctx) {
 
         Set<SubjectAttribute> idpAttrs = subject.getPrincipals(SubjectAttribute.class);
 
         for (SubjectAttribute idpAttr : idpAttrs) {
             if (idpAttr.getName().equals("urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:principal")) {
-                return new DynamicAccountLinkImpl(subject, idpAttr.getValue(), NameIDFormat.UNSPECIFIED.getValue() );
+                return new DynamicAccountLinkImpl(subject, idpAttr.getValue(),
+                        NameIDFormat.UNSPECIFIED.getValue(),
+                        ctx instanceof Map ? (Map<String, String>) ctx : null);
             }
         }
 

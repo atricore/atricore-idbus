@@ -120,6 +120,7 @@ public class SSOClaimsMediator extends AbstractSSOMediator {
 
                     switch (binding) {
                         case SSO_ARTIFACT:
+                        case SSO_PAYLOAD:
                         case SSO_POST:
                         case SSO_REDIRECT:
                         case SSO_PREAUTHN:

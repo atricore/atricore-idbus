@@ -50,7 +50,7 @@
                 <sequence>
                     <element name="Credentials" type="ssop:CredentialType" maxOccurs="unbounded"/>
                 </sequence>
-                <attribute name="Passive" type="boolean" use="required"/>
+                <attribute name="Passive" type="boolean" use="optional"/>
                 <attribute name="ForceAuthn" type="boolean" use="optional"/>
                 <attribute name="AuthnCtxClass" type="string" use="optional"/>
             </extension>
@@ -89,6 +89,7 @@
             <extension base="ssop:IDPInitiatedAuthnRequestType">
                 <attribute name="SecurityToken" type="string" use="required"/>
                 <attribute name="AuthnCtxClass" type="string" use="optional"/>
+                <attribute name="RememberMe" type="boolean" use="optional"/>
             </extension>
         </complexContent>
     </complexType>
@@ -150,6 +151,18 @@
 
     <element name="CurrentEntityResponse" type="ssop:SSOResponseType"/>
 
+    <element name="ClearEntityRequest" type="ssop:ClearEntityRequestType"/>
+    <complexType name="ClearEntityRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="entityId" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="ClearEntityResponse" type="ssop:SSOResponseType"/>
+
+
     <element name="SPCredentialsCallbackResponse" type="ssop:SPCredentialsCallbackResponseType"/>
     <complexType name="SPCredentialsCallbackResponseType">
         <complexContent>
@@ -169,6 +182,24 @@
             </extension>
         </complexContent>
     </complexType>
+
+    <element name="IDPPRoxyInitiatedLogoutRequest" type="ssop:IDPProxyInitiatedLogoutRequestType"/>
+    <complexType name="IDPProxyInitiatedLogoutRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="ssoSessionId" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="IDPPRoxyInitiatedLogoutResponse" type="ssop:IDPPRoxyInitiatedLogoutResponseType"/>
+    <complexType name="IDPPRoxyInitiatedLogoutResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+            </extension>
+        </complexContent>
+    </complexType>
+
 
     <element name="AssertIdentityWithSimpleAuthenticationRequest" type="ssop:AssertIdentityWithSimpleAuthenticationRequestType"/>
     <complexType name="AssertIdentityWithSimpleAuthenticationRequestType">
@@ -222,6 +253,7 @@
 
     <element name="SSOResponse" type="ssop:SSOResponseType"/>
     <complexType name="SSOResponseType" >
+
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="InReplayTo" type="ID" use="required"/>
         <attribute name="issuer" type="string" use="optional"/>
@@ -232,6 +264,7 @@
         -->
         <attribute name="PrimaryErrorCode" type="string" use="optional"/>
         <attribute name="SecondaryErrorCode" type="string" use="optional"/>
+        <attribute name="ErrorDetails" type="string" use="optional"/>
 
     </complexType>
 
@@ -256,6 +289,7 @@
                     <element name="SubjectRoles" type="ssop:SubjectRoleType" maxOccurs="unbounded"/>
                 </sequence>
 
+                <attribute name="idpAlias" type="string" />
                 <attribute name="SessionIndex" type="string" use="required"/>
                 <attribute name="Failed" type="boolean" use="required"/>
 

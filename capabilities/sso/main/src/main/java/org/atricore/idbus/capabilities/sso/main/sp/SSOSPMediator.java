@@ -58,14 +58,12 @@ public class SSOSPMediator extends AbstractSSOMediator {
 
     private String spBindingSLO;
 
-
     private String idpSelector;
 
     private boolean wantSLOResponseSigned;
 
-    // Send IdP Heart Beat every 7 minutes by default
-
-    private long idpSessionHeartBeatInterval = 1L * 60L;
+    // Send IdP Heart Beat every 0 seconds by default
+    private long idpSessionHeartBeatInterval = 5L;
 
     @Override
     protected RouteBuilder createSPRoutes(final IdPChannel idpChannel) throws Exception {
@@ -92,9 +90,11 @@ public class SSOSPMediator extends AbstractSSOMediator {
 
                     switch (binding) {
                         // All HTTP Endpoint routes are created the same way
+                        case SAMLR2_MD:
                         case SAMLR2_ARTIFACT:
                         case SAMLR2_POST:
                         case SAMLR2_REDIRECT:
+                        case SSO_JSON_FRONT_CHANNEL:
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
@@ -278,6 +278,7 @@ public class SSOSPMediator extends AbstractSSOMediator {
                             break;
 
                         case SSO_ARTIFACT:
+                        case SSO_PAYLOAD:
 
                             // ----------------------------------------------------------
                             // HTTP Incomming messages:
@@ -371,6 +372,7 @@ public class SSOSPMediator extends AbstractSSOMediator {
                     switch (binding) {
                         // All HTTP Endpoint routes are created the same way
                         case SSO_ARTIFACT:
+                        case SSO_PAYLOAD:
                         case SSO_REDIRECT:
 
                             // ----------------------------------------------------------

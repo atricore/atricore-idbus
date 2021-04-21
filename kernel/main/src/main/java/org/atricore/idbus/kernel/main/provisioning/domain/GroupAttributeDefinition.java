@@ -68,7 +68,7 @@ public class GroupAttributeDefinition implements Serializable {
     public void setMultivalued(boolean multivalued) {
         this.multivalued = multivalued;
     }
-
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,5 +85,5 @@ public class GroupAttributeDefinition implements Serializable {
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : super.hashCode();
-    }
+    }    
 }

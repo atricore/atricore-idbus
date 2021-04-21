@@ -63,6 +63,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
     private boolean _invalidateExceedingSessions = false;
 
+    private boolean _initStats = true;
+
     private SSOSessionStats _stats;
 
     @Deprecated
@@ -139,12 +141,11 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         logger.info("[initialize()] : MaxInactive.................=" + _maxInactiveInterval);
         logger.info("[initialize()] : MaxSessionsPerUser..........=" + _maxSessionsPerUser);
         logger.info("[initialize()] : InvalidateExceedingSessions.=" + _invalidateExceedingSessions);
-        logger.info("[initialize()] : SesisonMonitorInteval.......=" + _sessionMonitorInterval);
+        logger.info("[initialize()] : SessionMonitorInterval......=" + _sessionMonitorInterval);
         logger.info("[initialize()] : Node........................=" + _node);
 
         // Start session monitor.
         _monitor.start();
-
 
         // Register sessions in security domain !
         logger.info("[initialize()] : Restore Sec.Domain Registry.=" + _securityDomainName);
@@ -152,36 +153,36 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     }
 
     /**
-     * TODO: deprecate
-     * Initiates a new session.
-     *
-     * @return the new session identifier.
-     * @deprecated
-     */
-    @Deprecated
-    public String initiateSession(String username) throws SSOSessionException {
-        throw new UnsupportedOperationException("Operation was deprecated!");
-    }
-
-
-    /**
      * Initiates a new session. The new session id is returned.
      *
      * @return the new session identifier.
      */
-    public String initiateSession(String username, SecurityToken securityToken) throws SSOSessionException {
+    public String initiateSession(String username, SecurityToken securityToken, SSOSessionContext ctx) throws SSOSessionException {
         // Convert minutes to seconds:
-        return initiateSession(username, securityToken, getMaxInactiveInterval() * 60);
+        return initiate(username, securityToken, ctx, getMaxInactiveInterval() * 60);
     }
 
     /**
      * Initiates a new session. The new session id is returned.
      *
-     * @param sessionTimeout in seconds
+     * @param sessionTimeoutInSeconds in seconds
      * @return
      * @throws SSOSessionException
      */
-    public String initiateSession(String username, SecurityToken securityToken, int sessionTimeout) throws SSOSessionException {
+    public String initiateSession(String username, SecurityToken securityToken, SSOSessionContext ctx, int sessionTimeoutInSeconds) throws SSOSessionException {
+        return initiate(username, securityToken, ctx, sessionTimeoutInSeconds);
+    }
+
+    /**
+     * Method that initiates a new session.
+     *
+     * @param username
+     * @param securityToken
+     * @param sessionTimeout
+     * @return
+     * @throws SSOSessionException
+     */
+    protected String initiate(String username, SecurityToken securityToken, SSOSessionContext ctx, int sessionTimeout) throws SSOSessionException {
 
         // Invalidate sessions if necessary
         BaseSession sessions[] = _store.loadByUsername(username);
@@ -190,20 +191,20 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         if (!_invalidateExceedingSessions &&
                 _maxSessionsPerUser != -1 &&
                 _maxSessionsPerUser <= sessions.length) {
-            throw new TooManyOpenSessionsException(sessions.length - 1);
+            throw new TooManyOpenSessionsException(sessions.length);
         }
 
         // Check if sessions should be auto-invalidated.
         if (_invalidateExceedingSessions && _maxSessionsPerUser != -1) {
 
-            // Number of sessions to invalidate
-            int invalidate = sessions.length - _maxSessionsPerUser;
+            // Number of sessions to invalidate, since we're about to create a new session, add one to the result
+            int invalidate = sessions.length - _maxSessionsPerUser + 1;
             if (logger.isDebugEnabled())
                 logger.debug("Auto-invalidating " + invalidate + " sessions for user : " + username);
 
             for (int i = 0; i < sessions.length; i++) {
 
-                if (invalidate < 0)
+                if (invalidate < 1)
                     break;
 
                 BaseSession session = sessions[i];
@@ -372,7 +373,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
         // Remove it from the store
         try {
             _store.remove(sessionId);
-
+        } catch(NoSuchSessionException e) {
+            logger.trace("Can't remove session from store: " + e.getMessage(), e);
         } catch (SSOSessionException e) {
             logger.warn("Can't remove session from store: " + e.getMessage(), e);
         } catch (Exception e) {
@@ -429,6 +431,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
                 // Only expire sessions handled by this node
                 if (_node != null) {
+                    // TODO: This doesn't work. The last node property value is never set (i.e. null)
                     String lastNode = session.getLastNode();
                     if (lastNode != null && !_node.equals(lastNode)) {
                         logger.trace("Session " + session.getId() + " is not handled by this node (" + _node + "/" + lastNode + ")");
@@ -442,6 +445,8 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
 
                     if (logger.isTraceEnabled())
                         logger.trace("[checkValidSessions()] Session expired : " + session.getId());
+                } else {
+                    logger.warn("Cannot remove session " + session.getId() + " from store as it's still valid");
                 }
 
 
@@ -457,7 +462,7 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
      * @param ss
      */
     public void setSessionStore(SessionStore ss) {
-        _store = ss;
+        _store = ss; // todo :  grab statistics ?!
     }
 
     @Override
@@ -585,8 +590,18 @@ public class SSOSessionManagerImpl implements SSOSessionManager, InitializingBea
     }
 
     public long getStatsCurrentSessions() {
-        if (_stats != null)
+        if (_stats != null) {
+
+            if (_initStats) {
+                try {
+                    _stats.init(_store.getSize());
+                    _initStats = false;
+                } catch (SSOSessionException e) {
+                    logger.warn(e.getMessage());
+                }
+            }
             return _stats.getCurrentSessions();
+        }
 
         return -1;
     }

@@ -158,7 +158,7 @@ public abstract class AbstractDBIdentityStore extends AbstractStore {
                 getResetCredentialDml(),
                 getRelayCredentialQueryString(),
                 isUseColumnsAsPropertyNames());
-        
+
     }
 
     /**
@@ -280,5 +280,10 @@ public abstract class AbstractDBIdentityStore extends AbstractStore {
 
     public void setUseColumnsAsPropertyNames(boolean useColumnsAsPropertyNames) {
         this._useColumnsAsPropertyNames = useColumnsAsPropertyNames;
+    }
+
+    @Override
+    public boolean isUpdatePasswordEnabled() {
+        return this._resetCredentialDml != null && !"".equals(_resetCredentialDml);
     }
 }

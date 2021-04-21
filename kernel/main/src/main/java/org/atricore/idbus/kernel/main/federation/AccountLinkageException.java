@@ -21,25 +21,64 @@
 
 package org.atricore.idbus.kernel.main.federation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Rev: 1040 $ $Date: 2009-03-04 22:56:52 -0200 (Wed, 04 Mar 2009) $
  */
 public class AccountLinkageException extends Exception {
-    public AccountLinkageException() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
-    }
+
+
+    // ID already exists for a user
+    public static final int DUPLICATE_ID = 1;
+
+    // ID Already used for another social service, ID source
+    public static final int USED_ID = 2;
+
+    // No account link found.
+    public static final int NO_ACCOUNT_LINK = 3;
+
+
+
+    private String errorDetails;
+
+    private int error = NO_ACCOUNT_LINK;
+
 
     public AccountLinkageException(String message) {
-        super(message);    //To change body of overridden methods use File | Settings | File Templates.
+        super(message);
+    }
+
+    public AccountLinkageException(int error, String message, String details) {
+        super(message);
+        this.errorDetails = details;
+        this.error = error;
+    }
+
+    public AccountLinkageException(int error, String message, String details, Throwable cause) {
+        super(message, cause);
+        this.errorDetails = details;
+        this.error = error;
+    }
+
+    public AccountLinkageException(String message, String details, Throwable cause) {
+        super(message, cause);
+        this.errorDetails = details;
     }
 
     public AccountLinkageException(String message, Throwable cause) {
-        super(message, cause);    //To change body of overridden methods use File | Settings | File Templates.
+        super(message, cause);
     }
 
-    public AccountLinkageException(Throwable cause) {
-        super(cause);    //To change body of overridden methods use File | Settings | File Templates.
+
+    public String getErrorDetails() {
+        return errorDetails;
+    }
+
+    public int getError() {
+        return error;
     }
 }

@@ -8,7 +8,9 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.oauth2.common.OAuth2Service;
 import org.atricore.idbus.capabilities.oauth2.main.authorization.endpoints.AuthorizationEndpoint;
 import org.atricore.idbus.capabilities.oauth2.main.sso.endpoints.AssertionConsumerEndpoint;
+import org.atricore.idbus.capabilities.oauth2.main.sso.endpoints.SingleLogoutEndpoint;
 import org.atricore.idbus.capabilities.oauth2.main.sso.endpoints.SingleSignOnEndpoint;
+import org.atricore.idbus.capabilities.oauth2.main.token.endpoints.PasswordlessLinkEndpoint;
 import org.atricore.idbus.capabilities.oauth2.main.token.endpoints.TokenEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 
@@ -43,11 +45,17 @@ public class OAuth2Component extends DefaultComponent {
             case SSOSingleSignOnService:
                 endpoint = new SingleSignOnEndpoint(uri, this, parameters);
                 break;
+            case SSOSingleLogoutService:
+                endpoint = new SingleLogoutEndpoint(uri, this, parameters);
+                break;
             case AuthorizationService:
                 endpoint = new AuthorizationEndpoint(uri, this , parameters);
                 break;
             case TokenService:
                 endpoint = new TokenEndpoint(uri, this, parameters);
+                break;
+            case PasswordlessLinkService:
+                endpoint = new PasswordlessLinkEndpoint(uri, this, parameters);
                 break;
             default:
                 throw new IllegalArgumentException( "Unsupported OAUTH 2 service type " + remaining );

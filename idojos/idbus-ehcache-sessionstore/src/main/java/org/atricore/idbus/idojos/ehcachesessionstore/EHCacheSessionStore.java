@@ -3,12 +3,15 @@ package org.atricore.idbus.idojos.ehcachesessionstore;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import net.sf.ehcache.distribution.RMICacheManagerPeerProvider;
 import net.sf.ehcache.event.CacheEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.session.BaseSession;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.store.session.AbstractSessionStore;
+import org.atricore.idbus.bundles.ehcache.distribution.DynamicRMICacheManagerPeerProvider;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -44,6 +47,10 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
     private ApplicationContext applicationContext;
 
     private List<CacheEventListener> listeners;
+
+    private int loadRetryCount = -1;
+
+    private long loadRetryDelay = 100;
 
     public void afterPropertiesSet() throws Exception {
         init();
@@ -97,6 +104,14 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         this.cache = cache;
     }
 
+    public int getLoadRetryCount() {
+        return loadRetryCount;
+    }
+
+    public void setLoadRetryCount(int loadRetryCount) {
+        this.loadRetryCount = loadRetryCount;
+    }
+
     public void init() {
 
         if (init)
@@ -118,6 +133,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                 } else {
                     logger.info("Cache does not exists '"+cacheName+"', adding it");
                     cacheManager.addCache(cacheName);
+                    registerPeers();
                 }
 
                 cache = cacheManager.getCache(cacheName);
@@ -141,8 +157,26 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
                     }
                 }
 
-                logger.info("Initialized EHCache Session store using cache " + cacheName + ". Size: " + cache.getSize());
+                Map<String, ConfigurationContext> ctxs = applicationContext.getBeansOfType(ConfigurationContext.class);
 
+                if (ctxs.size() == 1) {
+                    ConfigurationContext ctx = ctxs.values().iterator().next();
+
+                    String loadRetryCountStr = ctx.getProperty("sessionstore.loadRetryCount");
+                    String loadRetryDelayStr = ctx.getProperty("sessionstore.loadRetryDelay");
+
+                    if (loadRetryCountStr != null) {
+                        loadRetryCount = Integer.parseInt(loadRetryCountStr);
+                        logger.trace("Load retry count       " + loadRetryCount);
+                    }
+
+                    if (loadRetryDelayStr != null) {
+                        loadRetryDelay = Long.parseLong(loadRetryDelayStr);
+                        logger.trace("Load retry delay       " + loadRetryDelay);
+                    }
+                }
+
+                logger.info("Initialized EHCache Session store using cache " + cacheName + ". Size: " + cache.getSize());
                 init = true;
             } finally {
                 Thread.currentThread().setContextClassLoader(orig);
@@ -152,6 +186,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
 
     public void destroy() throws Exception {
         if (init) {
+            unregisterPeers();
             cacheManager.removeCache(cacheName);
             init = false;
         }
@@ -186,7 +221,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             // We have sessions bye username stored in the cache.
             // If a username starts with 'id', the load method can handle it.
             if (strKey.startsWith("id")) {
-                BaseSession s = load(strKey);
+                BaseSession s = load(strKey, true);
                 if (s != null)
                     allSessions.add(s);
             }
@@ -196,33 +231,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
     }
 
     public BaseSession load(String id) throws SSOSessionException {
-        ClassLoader orig = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
-
-            Element e = cache.get(id);
-            if (e != null) {
-                Object value = e.getObjectValue();
-                // We have different type of entries,
-                if (value instanceof BaseSession) {
-
-                    BaseSession s = (BaseSession) value;
-
-                    // Refresh user sessions access time
-                    cache.get(s.getUsername());
-
-                    if (logger.isTraceEnabled())
-                        logger.trace("Loaded session " + s.getId() + " for user " + s.getUsername());
-
-                    return s;
-                }
-            }
-
-            return null;
-
-        } finally {
-            Thread.currentThread().setContextClassLoader(orig);
-        }
+        return load(id, false);
     }
 
     public BaseSession[] loadByUsername(String name) throws SSOSessionException {
@@ -230,7 +239,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
-            Element e = cache.get(name);
+            Element e = retrieveElement(name, false);
 
             if (e != null) {
 
@@ -286,14 +295,14 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
-            BaseSession s = load(id);
+            BaseSession s = load(id, true);
             if (s != null) {
 
                 // Remove this session
                 cache.remove(id);
 
                 // Update user sessions list
-                Element e = cache.get(s.getUsername());
+                Element e = retrieveElement(s.getUsername(), true);
                 Set<String> sessionKeys = (Set<String>) e.getObjectValue();
                 sessionKeys.remove(id);
                 cache.put(e);
@@ -327,16 +336,22 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             Element s = new Element(session.getId(), session);
-            s.setTimeToIdle(session.getMaxInactiveInterval());
-            s.setTimeToLive(0);
+            // Make sure that the cache element expires after the session, so that when this condition is triggered the session
+            // will be stale and therefore ready to be disposed.
+            s.setTimeToIdle(session.getMaxInactiveInterval() + 60);
+            // Let's put a limit - 12 hs - to the life of the cache element so that in case it's not explicitly removed, the
+            // the cache manager will.
+            s.setTimeToLive(12 * 60 * 60);
 
             // Update user sessions table
             // Concurrency should be low, a user normally does not have that many sessions
-            Element u = cache.get(session.getUsername());
+            Element u = retrieveElement(session.getUsername(), false);
             if (u == null) {
                 // Concurrent HashMap backing a Set
                 Set<String> sessions = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
                 u = new Element(session.getUsername(), sessions);
+                u.setTimeToIdle(s.getTimeToIdle());
+                u.setTimeToLive(s.getTimeToLive());
             }
 
             Set<String> sessions = (Set<String>) u.getObjectValue();
@@ -353,6 +368,98 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
 
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
+        }
+    }
+
+    protected BaseSession load(String id, boolean quiet) throws SSOSessionException {
+        ClassLoader orig = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
+
+            Element e = retrieveElement(id, quiet);
+            if (e != null) {
+                Object value = e.getObjectValue();
+                // We have different type of entries,
+                if (value instanceof BaseSession) {
+
+                    BaseSession s = (BaseSession) value;
+
+                    // Refresh user sessions access time
+                    retrieveElement(s.getUsername(), quiet);
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Loaded session " + s.getId() + " for user " + s.getUsername());
+
+                    return s;
+                }
+            }
+
+            return null;
+
+        } finally {
+            Thread.currentThread().setContextClassLoader(orig);
+        }
+    }
+
+
+    protected Element retrieveElement(String key, boolean quiet) {
+        Element e;
+        e = quiet ? cache.getQuiet(key) : cache.get(key);
+
+        if (e == null) {
+
+            int retry = 0;
+            while (e == null && retry < loadRetryCount) {
+                // Wait and try again, maybe state is on the road :)
+                if (logger.isTraceEnabled())
+                    logger.trace("Cache miss, wait for " + loadRetryDelay + " ms");
+
+                try { Thread.sleep(loadRetryDelay); } catch (InterruptedException ie ) { /* Ignore this */ }
+                e = quiet ? cache.getQuiet(key) : cache.get(key);
+                retry ++;
+            }
+        }
+
+        return e;
+    }
+
+    protected void registerPeers() {
+
+        RMICacheManagerPeerProvider peerProvider =
+                (RMICacheManagerPeerProvider) cacheManager.getCacheManagerPeerProvider("RMI");
+
+        // Not a clustered environment
+        if (peerProvider == null)
+            return;
+
+        if (peerProvider instanceof DynamicRMICacheManagerPeerProvider) {
+            DynamicRMICacheManagerPeerProvider dynamicPeerProvider = (DynamicRMICacheManagerPeerProvider) peerProvider;
+            Collection<String> remoteHosts = dynamicPeerProvider.listRemoteHosts();
+            for (String remoteHost : remoteHosts) {
+                String rmiUrl = "//" + remoteHost + "/" + cacheName;
+                logger.info("Registering remote cache : " + rmiUrl);
+                dynamicPeerProvider.registerPeer(rmiUrl);
+            }
+        }
+    }
+
+    protected void unregisterPeers() {
+
+        RMICacheManagerPeerProvider peerProvider =
+                (RMICacheManagerPeerProvider) cacheManager.getCacheManagerPeerProvider("RMI");
+
+        // Not a clustered environment
+        if (peerProvider == null)
+            return;
+
+        if (peerProvider instanceof DynamicRMICacheManagerPeerProvider) {
+            DynamicRMICacheManagerPeerProvider dynamicPeerProvider = (DynamicRMICacheManagerPeerProvider) peerProvider;
+            Collection<String> remoteHosts = dynamicPeerProvider.listRemoteHosts();
+            for (String remoteHost : remoteHosts) {
+                String rmiUrl = "//" + remoteHost + "/" + cacheName;
+                logger.info("Unregistering remote cache : " + rmiUrl);
+                dynamicPeerProvider.unregisterPeer(rmiUrl);
+            }
         }
     }
 }

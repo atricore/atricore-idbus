@@ -23,6 +23,7 @@ package org.atricore.idbus.capabilities.sso.main.binding;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
@@ -39,6 +40,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.Abstract
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 
 /**
@@ -85,13 +88,19 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         if (securityToken != null) {
             idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
             ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setSecurityToken(securityToken);
-            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_PASSIVE_CTX.getValue());
+            ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_CTX.getValue());
+
+            String rememberMe = state.getTransientVariable("remember_me");
+            if (rememberMe != null) {
+                ((PreAuthenticatedIDPInitiatedAuthnRequestType) idpInitReq).setRememberMe(Boolean.parseBoolean(rememberMe));
+            }
         } else {
             idpInitReq = new IDPInitiatedAuthnRequestType();
         }
 
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
+
 
         // We can send several attributes within the request.
         String spAlias = state.getTransientVariable("atricore_sp_alias");
@@ -110,11 +119,50 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             idpInitReq.getRequestAttribute().add(a);
         }
 
+        String idpAlias = state.getTransientVariable("atricore_idp_alias");
+        if (idpAlias != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_idp_alias");
+            a.setValue(idpAlias);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
         String passive = state.getTransientVariable("passive");
         if (passive != null) {
             idpInitReq.setPassive(Boolean.parseBoolean(passive));
         }
-       
+
+        String forceAuthn = state.getTransientVariable("force_authn");
+        if (forceAuthn != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("force_authn");
+            a.setValue(forceAuthn);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
+        String authnCtxClass = state.getTransientVariable("authn_ctx_class");
+        if (authnCtxClass != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("authn_ctx_class");
+            a.setValue(authnCtxClass);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
+        // Valid values are from SSOBinding
+        String bindingStr =  state.getTransientVariable("protocol_binding");
+        if (bindingStr != null) {
+            try {
+                SSOBinding binding = SSOBinding.asEnum(bindingStr);
+                idpInitReq.setProtocolBinding(binding.getValue());
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using protocol binding: " + binding.getValue());
+
+            } catch (IllegalArgumentException e) {
+                logger.error ("Ignoring requested binding: " + e.getMessage());
+            }
+        }
+
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
                         idpInitReq,
                         null,
@@ -133,27 +181,74 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
         // Validate received message
         // ------------------------------------------------------------
         assert ed != null : "Mediation Response MUST Provide a destination";
-        if (out.getContent() != null)
-            throw new IllegalStateException("Content not supported for IDBUS HTTP Redirect bidning");
 
-        // ------------------------------------------------------------
-        // Create HTML Form for response body
-        // ------------------------------------------------------------
-        if (logger.isDebugEnabled())
-            logger.debug("Creating HTML Redirect to " + ed.getLocation());
-
-        String ssoQryString = "";
-
-        ssoQryString += "?ResponseMode=unsolicited";
-
-        if (out.getRelayState() != null) {
-            ssoQryString += "&relayState=" + out.getRelayState() ;
-        }
-
+        String ssoRedirLocation = null;
         Message httpOut = exchange.getOut();
         Message httpIn = exchange.getIn();
 
-        String ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed) + ssoQryString;
+        if (out.getContent() != null) {
+
+            if (out.getContent() instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
+
+                PreAuthenticatedIDPInitiatedAuthnRequestType req = (PreAuthenticatedIDPInitiatedAuthnRequestType) out.getContent();
+                // ------------------------------------------------------------
+                // Send redirect
+                // ------------------------------------------------------------
+                if (logger.isDebugEnabled())
+                    logger.debug("Creating HTML Redirect to " + ed.getLocation());
+
+                String ssoQryString = "";
+
+                ssoQryString += "?ResponseMode=unsolicited";
+
+                if (out.getRelayState() != null) {
+                    ssoQryString += "&relayState=" + out.getRelayState();
+                }
+
+                try {
+                    ssoQryString += "&atricore_security_token=" + URLEncoder.encode(req.getSecurityToken(), "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (req.getRememberMe() != null)
+                    ssoQryString += "&remember_me=" + req.getRememberMe();
+
+                for (RequestAttributeType attr : req.getRequestAttribute()) {
+
+                    if (attr.getName().equals("atricore_sp_alias")) {
+                        try {
+                            ssoQryString += "&atricore_sp_alias=" +  URLEncoder.encode(attr.getValue(), "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+
+                ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed) + ssoQryString;
+
+
+            } else {
+                throw new IllegalStateException("Content not supported for IDBUS HTTP Redirect bidning");
+            }
+        } else {
+
+            // ------------------------------------------------------------
+            // Send redirec
+            // ------------------------------------------------------------
+            if (logger.isDebugEnabled())
+                logger.debug("Creating HTML Redirect to " + ed.getLocation());
+
+            String ssoQryString = "";
+
+            ssoQryString += "?ResponseMode=unsolicited";
+
+            if (out.getRelayState() != null) {
+                ssoQryString += "&relayState=" + out.getRelayState();
+            }
+
+            ssoRedirLocation = this.buildHttpTargetLocation(httpIn, ed) + ssoQryString;
+        }
 
         if (logger.isDebugEnabled())
             logger.debug("Redirecting to " + ssoRedirLocation);

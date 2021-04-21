@@ -8,6 +8,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
  */
 public class PrepareAddUserResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -3598476899156498718L;
+
     private String transactionId;
 
     private User user;

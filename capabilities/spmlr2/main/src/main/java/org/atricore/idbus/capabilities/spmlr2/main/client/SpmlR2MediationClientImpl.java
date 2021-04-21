@@ -20,13 +20,11 @@ import oasis.names.tc.spml._2._0.suspend.SuspendRequestType;
 import oasis.names.tc.spml._2._0.updates.IterateRequestType;
 import oasis.names.tc.spml._2._0.updates.UpdatesRequestType;
 import oasis.names.tc.spml._2._0.updates.UpdatesResponseType;
-import oasis.names.tc.spml._2._0.wsdl.SPMLRequestPortType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
@@ -248,6 +246,14 @@ public class SpmlR2MediationClientImpl implements SpmlR2Client, InitializingBean
     public ModifyResponseType spmlModifyRequest(ModifyRequestType request) {
         try {
             return (ModifyResponseType) mediator.sendMessage(request, doMakeDestination(request), psp.getChannel());
+        } catch (IdentityMediationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public VerifyResetPasswordResponseType spmlVerifyResetPasswordRequest(VerifyResetPasswordRequestType request) {
+        try {
+            return (VerifyResetPasswordResponseType) mediator.sendMessage(request, doMakeDestination(request), psp.getChannel());
         } catch (IdentityMediationException e) {
             throw new RuntimeException(e);
         }

@@ -14,9 +14,12 @@
         <feature version="${version}">atricore-spml2</feature>
         <feature version="${version}">atricore-josso</feature>
         <feature version="${version}">atricore-spnego</feature>
+        <feature version="${version}">atricore-csca</feature>
         <feature version="${version}">atricore-openid</feature>
         <feature version="${version}">atricore-openidconnect</feature>
+        <feature version="${version}">atricore-oath</feature>
         <feature version="${version}">atricore-oauth2</feature>
+        <feature version="${version}">atricore-preauthn</feature>
         <feature version="${version}">atricore-idconfirmation</feature>
         <feature version="${version}">atricore-idbus-ui</feature>
         <feature version="${version}">atricore-monitoring</feature>
@@ -41,11 +44,11 @@
     </feature>
 
     <feature name="atricore-auditing-core" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.5.1-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-auditing-builtin" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.5.0-SNAPSHOT</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.5.1-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-ha" version="${version}">
@@ -68,6 +71,7 @@
 
     <feature name="atricore-support" version="${version}">
         <feature version="${version}">common</feature>
+        <feature version="${scala.version}">scala</feature>
         <feature version="${version}">web</feature>
         <feature version="${cxf.version}">cxf</feature>
         <feature version="${version}">persistence</feature>
@@ -95,6 +99,7 @@
 
     <feature name="atricore-connectors" version="${version}">
         <bundle>mvn:org.atricore.idbus.connectors/org.atricore.idbus.connectors.jdoidentityvault/${idbus.connectors.jdoidentityvault.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.connectors/org.atricore.idbus.connectors.jitscim/${idbus.connectors.jitscim.version}</bundle>
     </feature>
 
     <feature name="atricore-idojos" version="${version}">
@@ -120,7 +125,7 @@
     </feature>
 
     <feature name="atricore-saml2" version="${version}">
-        <feature version="${version}">scala</feature>
+        <feature version="${scala.version}">scala</feature>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.dsl/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.component.container/${idbus.cap.sso.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.component.builtin/${idbus.cap.sso.version}</bundle>
@@ -130,11 +135,11 @@
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.ui/${idbus.cap.sso.version}</bundle>
     </feature>
 
-    <feature name="atricore-idconfirmation" version="1.5.0-SNAPSHOT">
-        <feature version="${version}">scala</feature>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.main/1.5.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.ui/1.5.0-SNAPSHOT</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.component.builtin/1.5.0-SNAPSHOT</bundle>
+    <feature name="atricore-idconfirmation" version="1.5.1-SNAPSHOT">
+        <feature version="${scala.version}">scala</feature>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.main/1.5.1-SNAPSHOT</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.ui/1.5.1-SNAPSHOT</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.component.builtin/1.5.1-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-spml2" version="${version}">
@@ -146,21 +151,40 @@
         <bundle>mvn:org.atricore.idbus.capabilities.spnego/org.atricore.idbus.capabilities.spnego/${idbus.cap.spnego.version}</bundle>
     </feature>
 
+    <feature name="atricore-csca" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.csca/org.atricore.idbus.capabilities.csca/${idbus.cap.csca.version}</bundle>
+    </feature>
+
+
     <feature name="atricore-openid" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.openid/org.atricore.idbus.capabilities.openid.main/${idbus.cap.openid.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.openid/org.atricore.idbus.capabilities.openid.ui/${idbus.cap.openid.version}</bundle>
     </feature>
 
     <feature name="atricore-openidconnect" version="${version}">
+
         <bundle>mvn:org.atricore.idbus.capabilities.openidconnect/org.atricore.idbus.capabilities.openidconnect.main/${idbus.cap.openidconnect.version}</bundle>
     </feature>
 
+    <feature name="atricore-oath" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.oath/org.atricore.idbus.capabilities.oath.main/${idbus.cap.oath.version}</bundle>
+    </feature>
 
     <feature name="atricore-oauth2" version="${version}">
+
+        <bundle>mvn:joda-time/joda-time/2.9</bundle>
+        <bundle>mvn:com.nimbusds/lang-tag/1.5</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v7_4/${idbus.bundle.nimbus-jose-jwt-v7_4.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v6_13/${idbus.bundle.oauth2-oidc-sdk-v6_13.version}</bundle>
+
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.common/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.rserver/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.main/${idbus.cap.oauth2.version}</bundle>
         <bundle>mvn:org.atricore.idbus.capabilities.oauth2/org.atricore.idbus.capabilities.oauth2.component.builtin/${idbus.cap.oauth2.version}</bundle>
+    </feature>
+
+    <feature name="atricore-preauthn" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.preauthn/org.atricore.idbus.capabilities.preauthn/${idbus.cap.preauthn.version}</bundle>
     </feature>
 
     <feature name="atricore-idbus-ui" version="${version}">
@@ -256,11 +280,11 @@
     </feature>
 
     <feature name="apache-wicket" version="${apache-wicket.version}">
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-util/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-request/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-core/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-auth-roles/6.5.0</bundle>
-        <bundle start-level="40">mvn:org.apache.wicket/wicket-extensions/6.5.0</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-util/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-request/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-core/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-auth-roles/${apache-wicket.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.wicket/wicket-extensions/${apache-wicket.version}</bundle>
     </feature>
 
     <feature name="web" version="${version}">
@@ -305,7 +329,7 @@
         <feature version="${version}">connector</feature>
         <bundle start-level="40">mvn:commons-dbcp/commons-dbcp/${commons-dbcp.version}</bundle>
         <bundle start-level="40">mvn:org.hsqldb/com.springsource.org.hsqldb/1.8.0.9</bundle>
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-derby-network-v10_11_1_1/${idbus.bundle.apache-derby-network-v10_11_1_1.version}</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1/${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</bundle>
         <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.datanucleus-v2_1_2/${idbus.bundle.datanucleus-v2_1_2.version}</bundle>
     </feature>
 
@@ -337,7 +361,8 @@
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-vfs/${commons-vfs.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
-        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io-bundle.version}</bundle>
+        <bundle start-level="35">mvn:commons-io/commons-io/${commons-io.version}</bundle>
         <bundle start-level="35">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimo.annotation.version}</bundle>
         <bundle start-level="35">mvn:org.apache.geronimo.specs/geronimo-ws-metadata_2.0_spec/${geronimo.wsmetadata.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${servicemix.specs.version}</bundle>
@@ -363,9 +388,11 @@
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlbeans/${xmlbeans.version}</bundle>
         <bundle start-level="35">mvn:org.apache.httpcomponents/httpcore-osgi/${httpcore.version}</bundle>
         <bundle start-level="35">mvn:org.apache.httpcomponents/httpclient-osgi/${httpclient.version}</bundle>
+        <bundle start-level="35">mvn:commons-codec/commons-codec/${commons-codec.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-codec/${commons-codec.bundle.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/${commons-httpclient.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-lang/${commons-lang.bundle.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.commons/commons-lang3/${commons-lang3.version}</bundle>
         <bundle start-level="35">mvn:commons-digester/commons-digester/${commons-digester.version}</bundle>
         <bundle start-level="35">mvn:org.apache.commons/commons-compress/${commons-compress.version}</bundle>
         <!--<bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.version}</bundle>-->
@@ -377,15 +404,36 @@
         <bundle start-level="35">mvn:org.apache.commons/com.springsource.org.apache.commons.fileupload/${commons-fileupload.version}</bundle>
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.wadi-v2_1_2/${idbus.bundle.wadi-v2_1_2.version}</bundle>
         <bundle start-level="34">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ini4j-v0_5_1/${idbus.bundle.ini4j-v0_5_1.version}</bundle>
-        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-core-asl/1.9.1</bundle>
-        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-mapper-asl/1.9.1</bundle>
-        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-jaxrs/1.9.1</bundle>
+        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-core-asl/${jackson.version}</bundle>
+        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-mapper-asl/${jackson.version}</bundle>
+        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-jaxrs/${jackson.version}</bundle>
+        <bundle start-level="34">mvn:org.codehaus.jackson/jackson-xc/${jackson.version}</bundle>
+
+        <bundle start-level="34">mvn:com.fasterxml.jackson.core/jackson-core/${fasterxml-jackson.version}</bundle>
+        <bundle start-level="34">mvn:com.fasterxml.jackson.core/jackson-databind/${fasterxml-jackson.version}</bundle>
+        <bundle start-level="34">mvn:com.fasterxml.jackson.core/jackson-annotations/${fasterxml-jackson.version}</bundle>
+        <bundle start-level="34">mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${fasterxml-jackson.version}</bundle>
+
         <bundle start-level="34">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}</bundle>
+        <!--
+        <bundle start-level="35">mvn:org.bouncycastle/bcprov-jdk15on/${bcprov.version}</bundle>
+        <bundle start-level="35">mvn:org.bouncycastle/bcpkix-jdk15on/${bcpkix.version}</bundle/>
+        -->
+        <bundle start-level="35">mvn:net.minidev/json-smart/${json-smart.version}</bundle>
+        <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-v1_9_2/${idbus.bundle.jasypt-v1_9_2.version}</bundle>
+        <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-spring31-v1_9_2/${idbus.bundle.jasypt-v1_9_2.version}</bundle>
+        <bundle start-level="35">wrap:mvn:javax/javaee-api/${javaee-api.version}</bundle>
     </feature>
 
-    <feature name="scala" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_9_1/${idbus.bundle.scala-library-v2_9_1.version}</bundle>
-        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-compiler-v2_9_1/${idbus.bundle.scala-compiler-v2_9_1.version}</bundle>
+    <feature name="scala" version="${scala.version}">
+        <bundle start-level="40">mvn:org.scala-lang/scala-library/${scala.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang/scala-reflect/${scala.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang/scala-compiler/${scala.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang.modules/scala-parser-combinators_${scala.major.version}/${scala.modules.version}</bundle>
+        <bundle start-level="40">mvn:org.scala-lang.modules/scala-xml_${scala.major.version}/${scala.modules.version}</bundle>
+        <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_11_8/${idbus.bundle.scala-library-v2_11_8.version}</bundle>-->
+        <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-library-v2_9_1/${idbus.bundle.scala-library-v2_9_1.version}</bundle>-->
+        <!--<bundle start-level="40">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.scala-compiler-v2_9_1/${idbus.bundle.scala-compiler-v2_9_1.version}</bundle>-->
     </feature>
 
     <feature name="mysql-connector-java" version="5.1.10">
@@ -393,8 +441,9 @@
     </feature>
 
     <feature name="scalate" version="${scalate.version}">
-        <bundle start-level="40">mvn:org.fusesource.scalate/scalate-util_2.9/${scalate.version}</bundle>
-        <bundle start-level="40">mvn:org.fusesource.scalate/scalate-core_2.9/${scalate.version}</bundle>
+        <feature version="${scala.version}">scala</feature>
+        <bundle start-level="40">mvn:org.scalatra.scalate/scalate-util_${scala.major.version}/${scalate.version}</bundle>
+        <bundle start-level="40">mvn:org.scalatra.scalate/scalate-core_${scala.major.version}/${scalate.version}</bundle>
     </feature>
 
 </features>

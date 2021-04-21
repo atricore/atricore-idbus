@@ -32,6 +32,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
  */
 public class UpdateUserRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -5539068098156498718L;
+
     private User user;
 
     public User getUser() {

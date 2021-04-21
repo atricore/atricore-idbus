@@ -209,6 +209,35 @@
                   ref="samlr2-idp-authnresponse-sign-process-fragment"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
 
+    <!-- SamlR2 Response Assertion Signing -->
+    <bean name="samlr2-idp-authnresponse-sign-assertion-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-idp-authnresponse-sign-assertion-process-fragment"/>
+        <property name="lifecycle" value="generate-authnresponse"/>
+        <property name="phase" value="ensure-authenticity"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/idp/plans/response/sign-response-assertion.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-idp-authnresponse-sign-assertion-fragment"
+                  ref="samlr2-idp-authnresponse-sign-assertion-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+
+    <!-- SamlR2 Response Encryption -->
+    <bean name="samlr2-idp-authnresponse-encrypt-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-idp-authnresponse-encrypt-process-fragment"/>
+        <property name="lifecycle" value="generate-authnresponse"/>
+        <property name="phase" value="ensure-content-confidentiality"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/sso/main/idp/plans/response/encrypt-response.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-idp-authnresponse-encrypt-fragment"
+                  ref="samlr2-idp-authnresponse-encrypt-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
     <!-- SamlR2 AuthnRequest init  -->
     <bean name="samlr2-idp-init-authnrequest-process-fragment"
           class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">

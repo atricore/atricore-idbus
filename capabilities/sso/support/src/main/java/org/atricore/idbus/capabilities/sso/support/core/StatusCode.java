@@ -43,6 +43,8 @@ public enum StatusCode {
     // Secondary status codes
     AUTHN_FAILED
             ("urn:oasis:names:tc:SAML:2.0:status:AuthnFailed", "The responding provider was unable to successfully authenticate the principal."),
+    AUTHZ_FAILED
+            ("urn:oasis:names:tc:SAML:2.0:status:AuthzFailed", "Access denied. The responding provider was unable to successfully authorize the principal."),
     INVALID_ATTR_NAME_OR_VALUE
             ("urn:oasis:names:tc:SAML:2.0:status:InvalidAttrNameOrValue", "Unexpected or invalid content was encountered within a <saml:Attribute> or <saml:AttributeValue> element."),
     INVALID_NAMEID_POLICY

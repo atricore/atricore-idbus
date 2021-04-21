@@ -1,9 +1,14 @@
 package org.atricore.idbus.kernel.main.provisioning.impl;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.auditing.core.Action;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
@@ -15,6 +20,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.BeanUtils;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,78 +37,62 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private UUIDGenerator uuid = new UUIDGenerator();
 
+    private UUIDGenerator shortIdGen = new UUIDGenerator(4);
+
     final Random saltRandomizer = new SecureRandom();
 
     private String name;
 
     private String description;
-    
+
     private String hashEncoding;
-    
+
     private String hashAlgorithm;
-    
+
     private String hashCharset;
-    
+
     private int saltLength;
-    
-    private IdentityConnector identityConnector;
+
+    private String saltValue;
+
+    private IdentityPartition identityPartition;
+
+    private MediationPartition mediationPartition;
 
     private SchemaManager schemaManager;
 
     private int maxTimeToLive = 600; // seconds
 
-    private OldTransactionsMonitor monitor;
+    private AuditingServer aServer;
 
-    private Thread monitorThread;
+    private String auditCategory = "";
 
     private static final Set<String> dictionary = new HashSet<String>();
 
+    private List<PasswordPolicy> passwordPolicies = new ArrayList<PasswordPolicy>();
+
     static {
+        // TODO : Take this from resource/file
         dictionary.add("password");
         dictionary.add("123456");
     }
 
-    // TODO : Make it DB Persistent (add store ?)
-    private Map<String, PendingTransaction> pendingTransactions = new ConcurrentHashMap<String, PendingTransaction>();
+    private TransactionStore transactionStore;
 
     //private Map<String, >
 
     public void init() {
-        // Start session monitor.
-        monitor = new OldTransactionsMonitor(this);
-
-        monitorThread = new Thread(monitor);
-        monitorThread.setDaemon(true);
-        monitorThread.setName("ProvisioningTargetMonitor-" + name);
-        monitorThread.start();
+        shortIdGen.setPrefix(null);
 
     }
 
     public void shutDown() {
-        pendingTransactions.clear();
-        monitor.stop = true;
-    }
 
-    public void purgeOldTransactions() {
-        List<String> expiredKeys = new ArrayList<String>();
-        long now = System.currentTimeMillis();
-
-        for (String key : pendingTransactions.keySet()) {
-            PendingTransaction t = pendingTransactions.get(key);
-            if (t.getExpiresOn() < now)
-                expiredKeys.add(key);
-        }
-
-        for (String key : expiredKeys) {
-            PendingTransaction t = pendingTransactions.remove(key);
-            t.rollback();
-
-        }
     }
 
     @Override
     public boolean isMediationPartitionAvailable() {
-        return identityConnector.getMediationPartition() != null;
+        return mediationPartition != null;
     }
 
     @Override
@@ -111,11 +101,17 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public boolean isTransactionValid(String transactionId) {
-        return transactionId != null && pendingTransactions.get(transactionId) != null;
+        if (transactionId != null) {
+            PendingTransaction t = transactionStore.retrieve(transactionId);
+            long now = System.currentTimeMillis();
+            return t.getExpiresOn() < now;
+        }
+
+        return false;
     }
 
     public AbstractProvisioningRequest lookupTransactionRequest(String transactionId) {
-        PendingTransaction t = pendingTransactions.get(transactionId);
+        PendingTransaction t = transactionStore.retrieve(transactionId);
         if (t != null)
             return t.getRequest();
 
@@ -133,7 +129,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public String getDescription() {
         return description;
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -170,12 +166,20 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.saltLength = saltLength;
     }
 
-    public IdentityConnector getIdentityConnector() {
-        return identityConnector;
+    public IdentityPartition getIdentityPartition() {
+        return identityPartition;
     }
 
-    public void setIdentityConnector(IdentityConnector identityConnector) {
-        this.identityConnector = identityConnector;
+    public void setIdentityPartition(IdentityPartition identityPartition) {
+        this.identityPartition = identityPartition;
+    }
+
+    public MediationPartition getMediationPartition() {
+        return mediationPartition;
+    }
+
+    public void setMediationPartition(MediationPartition mediationPartition) {
+        this.mediationPartition = mediationPartition;
     }
 
     public SchemaManager getSchemaManager() {
@@ -185,23 +189,28 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public void setSchemaManager(SchemaManager schemaManager) {
         this.schemaManager = schemaManager;
     }
-    
-    public IdentityPartition getIdentityPartition() {
-        return identityConnector.getIdentityPartition();
+
+    public List<PasswordPolicy> getPasswordPolicies() {
+        return passwordPolicies;
     }
 
-    public MediationPartition getMediationPartition() {
-        return identityConnector.getMediationPartition();
+    public void setPasswordPolicies(List<PasswordPolicy> passwordPolicies) {
+        this.passwordPolicies = passwordPolicies;
     }
 
-    public IdentityResource lookupResource(String oid) {
-        return identityConnector.lookupResource(oid);
+    public void deleteGroup(String id) throws ProvisioningException {
+        try {
+            identityPartition.deleteGroup(id);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
     }
 
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws ProvisioningException {
 
         try {
-            Group group = getIdentityPartition().findGroupByOid(groupRequest.getId());
+            Group group = identityPartition.findGroupById(groupRequest.getId());
             FindGroupByIdResponse groupResponse = new FindGroupByIdResponse ();
             groupResponse.setGroup(group);
             return groupResponse;
@@ -212,11 +221,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws ProvisioningException {
 
         try {
-            Group group = getIdentityPartition().findGroupByName(groupRequest.getName());
+            Group group = identityPartition.findGroupByName(groupRequest.getName());
             FindGroupByNameResponse groupResponse = new FindGroupByNameResponse ();
             groupResponse.setGroup(group);
             return groupResponse;
@@ -227,10 +236,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public ListGroupsResponse listGroups(ListGroupsRequest groupRequest) throws ProvisioningException {
         try {
-            Collection<Group> groups = getIdentityPartition().findAllGroups();
+            Collection<Group> groups = identityPartition.findAllGroups();
 
             ListGroupsResponse groupResponse = new ListGroupsResponse();
             groupResponse.setGroups(groups.toArray(new Group[groups.size()]));
@@ -241,20 +250,20 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningException {
         String name = groupRequest.getName();
         String descr = groupRequest.getDescription();
-        
+
         if (descr != null)
             throw new ProvisioningException("Group search by description not supported");
 
         if (name == null)
             throw new ProvisioningException("Name or description must be specified");
-        
+
         try {
 
-            Group group =  getIdentityPartition().findGroupByName(name);
+            Group group =  identityPartition.findGroupByName(name);
             List<Group> groups = new ArrayList<Group>();
             groups.add(group);
 
@@ -269,61 +278,98 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningException {
 
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupName", groupRequest.getName());
+
         try {
             Group group = new Group();
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
             group.setAttrs(groupRequest.getAttrs());
-            group = getIdentityPartition().addGroup(group);
+            group = identityPartition.addGroup(group);
             AddGroupResponse groupResponse = new AddGroupResponse();
             groupResponse.setGroup(group);
+            recordInfoAuditTrail(Action.ADD_GROUP.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return groupResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
 
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupId", groupRequest.getId());
+
         try {
-            
-            Group group = getIdentityPartition().findGroupByOid(groupRequest.getId());
+
+            Group group = identityPartition.findGroupById(groupRequest.getId());
 
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
             group.setAttrs(groupRequest.getAttrs());
-            
-            group = getIdentityPartition().updateGroup(group);
+
+            group = identityPartition.updateGroup(group);
+
+            auditProps.setProperty("groupName", group.getName());
+            recordInfoAuditTrail(Action.UPDATE_GROUP.getValue(), ActionOutcome.SUCCESS, null, auditProps);
 
             UpdateGroupResponse groupResponse = new UpdateGroupResponse();
             groupResponse.setGroup(group);
 
             return groupResponse;
         } catch (GroupNotFoundException e) {
+            auditProps.setProperty("groupNotFound", "true");
+            recordInfoAuditTrail(Action.UPDATE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupId", groupRequest.getId());
         try {
-            getIdentityPartition().deleteGroup(groupRequest.getId());
+            identityPartition.deleteGroup(groupRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_GROUP.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveGroupResponse();
         } catch (GroupNotFoundException e) {
+            auditProps.setProperty("groupNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_GROUP.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", userRequest.getId());
         try {
-            getIdentityPartition().deleteUser(userRequest.getId());
+            identityPartition.deleteUser(userRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_USER.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveUserResponse();
         } catch (UserNotFoundException e) {
+            auditProps.setProperty("userNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_USER.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_USER.getValue(), ActionOutcome.FAILURE, null, auditProps);
+            throw new ProvisioningException(e);
+        }
+    }
+
+    @Override
+    public RemoveUsersResponse removeUsers(RemoveUsersRequest usersRequest) throws ProvisioningException {
+        try {
+            identityPartition.deleteUsers(usersRequest.getUsers());
+            return new RemoveUsersResponse();
+        } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_USERS.getValue(), ActionOutcome.FAILURE, null, null);
             throw new ProvisioningException(e);
         }
     }
@@ -334,30 +380,77 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         validatePassword(userRequest.getUserPassword());
 
         try {
-            
+
             User user = new User();
 
-            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "securityQuestions", "acls", "userPassword"});
+            BeanUtils.copyProperties(userRequest, user, new String[] { "groups",
+                    "securityQuestions",
+                    "acls",
+                    "userPassword",
+            "accountExpirationDate",
+            "lastAuthentication",
+            "passwordExpirationDate"});
+
+            if (userRequest.getAccountExpirationDate() != null)
+                user.setAccountExpirationDate(userRequest.getAccountExpirationDate().getTime());
+
+            if (userRequest.getLastAuthentication() != null)
+                user.setLastAuthentication(userRequest.getLastAuthentication().getTime());
+
+            if (userRequest.getPasswordExpirationDate() != null)
+                user.setPasswordExpirationDate(userRequest.getPasswordExpirationDate().getTime());
 
             String salt = generateSalt();
 
             user.setSalt(salt);
             user.setUserPassword(createPasswordHash(userRequest.getUserPassword(), salt));
-                
+
             Group[] groups = userRequest.getGroups();
             user.setGroups(groups);
 
             UserSecurityQuestion[] securityQuestions = userRequest.getSecurityQuestions();
             user.setSecurityQuestions(securityQuestions);
 
-            user = getIdentityPartition().addUser(user);
+            user = identityPartition.addUser(user);
             AddUserResponse userResponse = new AddUserResponse();
             userResponse.setUser(user);
 
+            recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUserName(), null);
+
             return userResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.FAILURE, userRequest.getUserName(), null);
             throw new ProvisioningException(e);
         }
+    }
+
+    public List<User> addUsers(List<User> users) throws ProvisioningException {
+
+        for (User user : users) {
+            // Make sure that the password meets the security requirements
+            validatePassword(user.getUserPassword());
+
+            try {
+
+                String salt = generateSalt();
+
+                user.setSalt(salt);
+                user.setLastPasswordChangeDate(System.currentTimeMillis());
+                user.setUserPassword(createPasswordHash(user.getUserPassword(), salt));
+            } catch (Exception e) {
+                recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.FAILURE, user.getUserName(), null);
+                throw new ProvisioningException(e);
+            }
+        }
+
+        try {
+            users = identityPartition.addUsers(users);
+        } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_USER.getValue(), ActionOutcome.FAILURE, null, null);
+            throw new ProvisioningException(e);
+        }
+
+        return users;
     }
 
     public PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest) throws ProvisioningException {
@@ -376,22 +469,27 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         String tmpPassword = RandomStringUtils.randomAlphanumeric(6);
         u.setSalt(salt);
         u.setUserPassword(createPasswordHash(tmpPassword, salt));
+        u.setLastPasswordChangeDate(System.currentTimeMillis());
         u.setAccountDisabled(true);
 
-        u = getIdentityPartition().addUser(u);
+        u = identityPartition.addUser(u);
 
         userResponse.setUser(u);
 
-        // TODO : Make configurable
-        PendingTransaction t = new PendingTransaction(transactionId, System.currentTimeMillis() + (1000L * 60L * 30L), userRequest, userResponse);
+        PendingTransaction t = new PendingTransaction(transactionId, u.getUserName(),
+                System.currentTimeMillis() + (1000L * getMaxTimeToLive()),
+                userRequest,
+                userResponse);
+
         storePendingTransaction(t);
+
+        recordInfoAuditTrail(Action.PREPARE_ADD_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUserName(), null);
 
         return new PrepareAddUserResponse(t.getId(), u, tmpPassword);
     }
 
     public AddUserResponse confirmAddUser(ConfirmAddUserRequest confirmReq) throws ProvisioningException {
         String transactionId = confirmReq.getTransactionId();
-
 
         // Make sure that the password meets the security requirements
         validatePassword(confirmReq.getUserPassword());
@@ -401,8 +499,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Retrieve the user from the partition
         AddUserResponse response = (AddUserResponse) t.getResponse();
-        String uid = response.getUser().getOid();
-        User tmpUser = getIdentityPartition().findUserByOid(uid);
+        String uid = response.getUser().getId();
+        User tmpUser = identityPartition.findUserById(uid);
 
         // New user information
 
@@ -411,6 +509,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         // Password
         tmpUser.setUserPassword(createPasswordHash(confirmReq.getUserPassword(), tmpUser.getSalt()));
+        tmpUser.setLastPasswordChangeDate(System.currentTimeMillis());
 
         // Groups
         // tmpUser.setGroups(confirmReq.getGroups());
@@ -429,7 +528,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         tmpUser.setAccountDisabled(false);
 
         // Store user information
-        User newUser = getIdentityPartition().updateUser(tmpUser);
+        User newUser = identityPartition.updateUser(tmpUser);
+
+        recordInfoAuditTrail(Action.CONFIRM_ADD_USER.getValue(), ActionOutcome.SUCCESS, newUser.getUserName(), null);
 
         // Send response message
         response.setUser(newUser);
@@ -439,7 +540,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws ProvisioningException {
         try {
-            User user = getIdentityPartition().findUserByOid(userRequest.getId());
+            User user = identityPartition.findUserById(userRequest.getId());
             FindUserByIdResponse userResponse = new FindUserByIdResponse();
             userResponse.setUser(user);
             return userResponse;
@@ -450,10 +551,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws ProvisioningException {
         try {
-            User user = getIdentityPartition().findUserByUserName(userRequest.getUsername());
+            User user = identityPartition.findUserByUserName(userRequest.getUsername());
             FindUserByUsernameResponse userResponse = new FindUserByUsernameResponse();
             userResponse.setUser(user);
             return userResponse;
@@ -464,10 +565,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public ListUsersResponse listUsers(ListUsersRequest userRequest) throws ProvisioningException {
         try {
-            Collection<User> users = getIdentityPartition().findAllUsers();
+            Collection<User> users = identityPartition.findAllUsers();
 
             ListUsersResponse userResponse = new ListUsersResponse();
             userResponse.setUsers(users.toArray(new User[users.size()]));
@@ -478,18 +579,36 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    
+
     public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws ProvisioningException {
-        // TODO
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        try {
+            Collection<User> users = identityPartition.findUsers(userRequest.getSearchCriteria(),
+                    userRequest.getFromResult(), userRequest.getResultCount(), "userName", true);
+
+            SearchUserResponse userResponse = new SearchUserResponse();
+            userResponse.setUsers(new ArrayList<User>(users));
+            userResponse.setNumOfUsers(identityPartition.findUsersCount(userRequest.getSearchCriteria()));
+
+            return userResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
-    
+    public Collection<String> findUserNames(List<String> usernames) throws ProvisioningException {
+        try {
+            return identityPartition.findUserNames(usernames);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+
     public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws ProvisioningException {
         try {
-            
+
             User user = userRequest.getUser();
-            User oldUser = getIdentityPartition().findUserByOid(user.getOid());
+            User oldUser = identityPartition.findUserById(user.getId());
 
             // DO NOT UPDATE USER PASSWORD OR LIFE QUESTIONS HERE
             BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "securityQuestions", "acls", "userPassword", "id"});
@@ -498,7 +617,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             // DO NOT UPDATE USER PASSWORD HERE : oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
 
-            user = getIdentityPartition().updateUser(oldUser);
+            user = identityPartition.updateUser(oldUser);
+
+            recordInfoAuditTrail(Action.UPDATE_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUser().getUserName(), null);
 
             UpdateUserResponse userResponse = new UpdateUserResponse();
             userResponse.setUser(user);
@@ -506,37 +627,28 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             return userResponse;
 
         } catch (UserNotFoundException e) {
+            recordInfoAuditTrail(Action.UPDATE_USER.getValue(), ActionOutcome.FAILURE, userRequest.getUser().getUserName(), null);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_USER.getValue(), ActionOutcome.FAILURE, userRequest.getUser().getUserName(), null);
             throw new ProvisioningException(e);
         }
     }
 
     @Override
-    public ListUserAccountsResponse listUserAccounts(ListUserAccountsRequest request) throws ProvisioningException {
+    public UpdateUsersResponse updateUsers(UpdateUsersRequest usersRequest) throws ProvisioningException {
+
         try {
-
-            List<Account> userAccounts = new ArrayList<Account>();
-            for (IdentityResource resource : identityConnector.getResources()) {
-                Account userAccount = resource.getUserAccount(request.getUserOid());
-                userAccounts.add(userAccount);
-            }
-
-            ListUserAccountsResponse response = new ListUserAccountsResponse();
-            response.setAccounts(userAccounts.toArray(new Account[userAccounts.size()]));
-
-            return response;
-
+            List<User> users = identityPartition.updateUsers(usersRequest.getUsers());
+            UpdateUsersResponse resp = new UpdateUsersResponse();
+            resp.setUsers(users);
+            return resp;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_USERS.getValue(), ActionOutcome.FAILURE, null, null);
             throw new ProvisioningException(e);
         }
-    }
 
 
-    @Override
-    public ListResourcesResponse listResources(ListResourcesRequest request) throws ProvisioningException {
-        // TODO !
-        return new ListResourcesResponse();
     }
 
     public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByUserRequest) throws ProvisioningException {
@@ -550,19 +662,28 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         validatePassword(setPwdRequest.getNewPassword());
 
         try {
-            User user = getIdentityPartition().findUserByOid(setPwdRequest.getUserId());
+            User user = identityPartition.findUserById(setPwdRequest.getUserId());
 
-            String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword(), user.getSalt());
-            if (!user.getUserPassword().equals(currentPwd)) {
-                throw new InvalidPasswordException("Provided password is invalid");
+            //
+            String currentPwd = setPwdRequest.getCurrentPassword();
+            if ("BCRYPT".equalsIgnoreCase(hashAlgorithm)) {
+                BCrypt.Result result = BCrypt.verifyer().verify(currentPwd.toCharArray(), user.getUserPassword());
+                if (!result.verified)
+                    throw new InvalidPasswordException("Provided password is invalid");
+            } else {
+                String expectedHash = createPasswordHash(currentPwd, user.getSalt());
+                if (!user.getUserPassword().equals(expectedHash)) {
+                    throw new InvalidPasswordException("Provided password is invalid");
+                }
             }
 
             // TODO : Apply password validation rules
             String newPwdHash = createPasswordHash(setPwdRequest.getNewPassword(), user.getSalt());
             user.setUserPassword(newPwdHash);
-            getIdentityPartition().updateUser(user);
+            user.setLastPasswordChangeDate(System.currentTimeMillis());
+            identityPartition.updateUser(user);
             SetPasswordResponse setPwdResponse = new SetPasswordResponse();
-            
+
             return setPwdResponse;
         } catch (ProvisioningException e) {
             throw e;
@@ -571,7 +692,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
-    public ResetPasswordResponse  resetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
 
         // Generate a password (TODO : improve ?!)
         // Passwords with alphabetic and numeric characters.
@@ -580,22 +701,29 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         // Make sure that the password meets the security requirements
         validatePassword(pwd);
 
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", resetPwdRequest.getUser().getId());
+
         try {
-            User user = getIdentityPartition().findUserByOid(resetPwdRequest.getUser().getOid());
+            User user = identityPartition.findUserById(resetPwdRequest.getUser().getId());
             User providedUser = resetPwdRequest.getUser();
             if (!user.getUserName().equals(providedUser.getUserName()))
                 throw new ProvisioningException("Invalid user information");
 
             String pwdHash = createPasswordHash(pwd, user.getSalt());
             user.setUserPassword(pwdHash);
+            user.setLastPasswordChangeDate(System.currentTimeMillis());
 
-            getIdentityPartition().updateUser(user);
+            identityPartition.updateUser(user);
+
+            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.SUCCESS, resetPwdRequest.getUser().getUserName(), auditProps);
 
             ResetPasswordResponse resetPwdResponse = new ResetPasswordResponse();
             resetPwdResponse.setNewPassword(pwd);
 
             return resetPwdResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.PWD_RESET.getValue(), ActionOutcome.FAILURE, resetPwdRequest.getUser().getUserName(), auditProps);
             throw new ProvisioningException("Cannot reset user password", e);
         }
     }
@@ -603,58 +731,86 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public PrepareResetPasswordResponse prepareResetPassword(ResetPasswordRequest resetPwdRequest) throws ProvisioningException {
 
         String transactionId = uuid.generateId();
-        String pwd = RandomStringUtils.randomAlphanumeric(8);
+        String code = shortIdGen.generateId();
+
+        String pwd = RandomStringUtils.randomAlphanumeric(8); // TODO : Make configurable!
 
         ResetPasswordResponse resetPwdResp = new ResetPasswordResponse();
         resetPwdResp.setNewPassword(pwd);
 
         // TODO : Make confiurable
-        PendingTransaction t = new PendingTransaction(transactionId, System.currentTimeMillis() + (1000L * 60L * 30L), resetPwdRequest, resetPwdResp);
+        PendingTransaction t = new PendingTransaction(transactionId, code, resetPwdRequest.getUser().getUserName(),
+                System.currentTimeMillis() + (1000L * getMaxTimeToLive()), resetPwdRequest, resetPwdResp);
 
         storePendingTransaction(t);
 
-        return new PrepareResetPasswordResponse(t.getId(), pwd);
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", resetPwdRequest.getUser().getId());
+        recordInfoAuditTrail(Action.PREPARE_PWD_RESET.getValue(), ActionOutcome.SUCCESS, resetPwdRequest.getUser().getUserName(), auditProps);
+
+        return new PrepareResetPasswordResponse(t.getId(), t.getCode(), pwd);
     }
 
     public ResetPasswordResponse confirmResetPassword(ConfirmResetPasswordRequest resetPwdRequest) throws ProvisioningException {
 
-        // Either the user provides a new password, or we use the one we created.
-        boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
-        if (!usedGeneratedPwd);
+        User user = null;
+
+        Properties auditProps = new Properties();
+        //auditProps.setProperty("transactionId", resetPwdRequest.getTransactionId());
+
+        try {
+
+            // Either the user provides a new password, or we use the one we created.
+            boolean usedGeneratedPwd = resetPwdRequest.getNewPassword() == null;
+            if (!usedGeneratedPwd) ;
             validatePassword(resetPwdRequest.getNewPassword());
 
-        PendingTransaction t = consumePendingTransaction(resetPwdRequest.getTransactionId());
-        // Did the transaction already expired ?
-        if (t == null || t.expiresOn < System.currentTimeMillis()) {
-            throw new TransactionExpiredExcxeption(resetPwdRequest.getTransactionId());
+            if (logger.isDebugEnabled())
+                logger.trace("Password is valid ");
+
+            String id = resetPwdRequest.getCode() != null ?
+                    resetPwdRequest.getCode() : resetPwdRequest.getTransactionId();
+
+            PendingTransaction t = consumePendingTransaction(id);
+
+
+            // Recover original request ...
+            ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
+            ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
+
+            user = identityPartition.findUserById(req.getUser().getId());
+
+            // Make a case insensitive check!
+            if (!t.getUsername().equalsIgnoreCase(user.getUserName()))
+                throw new TransactionExpiredException(t.getId());
+
+            String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
+            String pwdHash = createPasswordHash(newPwd, user.getSalt());
+            resp.setNewPassword(newPwd);
+
+            // Set user's password
+
+            user.setUserPassword(pwdHash);
+            user.setLastPasswordChangeDate(System.currentTimeMillis());
+
+            user = identityPartition.updateUser(user);
+
+            recordInfoAuditTrail(Action.CONFIRM_PWD_RESET.getValue(), ActionOutcome.SUCCESS, user.getUserName(), auditProps);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Password has been updated using " + (usedGeneratedPwd ? "GENERATED" : "USER PROVIDED") + " password");
+
+            return resp;
+        } catch (ProvisioningException e) {
+            recordInfoAuditTrail(Action.CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, user != null ? user.getUserName() : null, auditProps);
+            throw e;
         }
-
-        ResetPasswordRequest req = (ResetPasswordRequest) t.getRequest();
-        ResetPasswordResponse resp = (ResetPasswordResponse) t.getResponse();
-
-        User user = getIdentityPartition().findUserByOid(req.getUser().getOid());
-
-        String newPwd = usedGeneratedPwd ? req.getNewPassword() : resetPwdRequest.getNewPassword();
-        String pwdHash = createPasswordHash(newPwd, user.getSalt());
-        resp.setNewPassword(newPwd);
-
-        // Set user's password
-
-        user.setUserPassword(pwdHash);
-
-        user = getIdentityPartition().updateUser(user);
-
-        if (logger.isDebugEnabled())
-            logger.debug("Password has been updated using " + (usedGeneratedPwd ? "GENERATED" : "USER PROVIDED") + " password");
-
-        return resp;
-
     }
 
     public FindAclEntryByApprovalTokenResponse findAclEntryByApprovalToken(FindAclEntryByApprovalTokenRequest aclEntryRequest) throws ProvisioningException {
 
         try {
-            AclEntry aclEntry = getMediationPartition().findAclEntryByApprovalToken(aclEntryRequest.getApprovalToken());
+            AclEntry aclEntry = mediationPartition.findAclEntryByApprovalToken(aclEntryRequest.getApprovalToken());
             FindAclEntryByApprovalTokenResponse aclEntryResponse = new FindAclEntryByApprovalTokenResponse();
             aclEntryResponse.setAclEntry(aclEntry);
             return aclEntryResponse;
@@ -668,11 +824,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public UpdateAclEntryResponse updateAclEntry(UpdateAclEntryRequest aclEntryRequest) throws ProvisioningException {
         try {
             AclEntry aclEntry = aclEntryRequest.getAclEntry();
-            AclEntry oldAclEntry = getMediationPartition().findAclEntryById(aclEntry.getId());
+            AclEntry oldAclEntry = mediationPartition.findAclEntryById(aclEntry.getId());
 
             BeanUtils.copyProperties(aclEntry, oldAclEntry, new String[] {"id"});
 
-            aclEntry = getMediationPartition().updateAclEntry(oldAclEntry);
+            aclEntry = mediationPartition.updateAclEntry(oldAclEntry);
 
             UpdateAclEntryResponse aclEntryResponse = new UpdateAclEntryResponse();
             aclEntryResponse.setAclEntry(aclEntry);
@@ -687,7 +843,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public RemoveAclEntryResponse removeAclEntry(RemoveAclEntryRequest aclEntryRequest) throws ProvisioningException {
         try {
-            getMediationPartition().deleteAclEntry(aclEntryRequest.getId());
+            mediationPartition.deleteAclEntry(aclEntryRequest.getId());
             return new RemoveAclEntryResponse();
         } catch (AclEntryNotFoundException e) {
             throw e;
@@ -706,7 +862,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
                     addSecurityTokenRequest.getSerializedContent(),
                     addSecurityTokenRequest.getIssueInstant());
 
-            securityToken = getMediationPartition().addSecurityToken(securityToken);
+            securityToken = mediationPartition.addSecurityToken(securityToken);
 
             AddSecurityTokenResponse resp = new AddSecurityTokenResponse();
             resp.setSecurityToken(securityToken);
@@ -718,13 +874,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public UpdateSecurityTokenResponse updateSecurityToken(UpdateSecurityTokenRequest req) throws ProvisioningException {
         try {
-            SecurityTokenImpl st = (SecurityTokenImpl) getMediationPartition().findSecurityTokenByTokenId(req.getTokenId());
+            SecurityTokenImpl st = (SecurityTokenImpl) mediationPartition.findSecurityTokenByTokenId(req.getTokenId());
             st.setContent(req.getContent());
             st.setSerializedContent(req.getSerializedContent());
             st.setIssueInstant(req.getIssueInstant());
             st.setNameIdentifier(req.getNameIdentifier());
 
-            st = (SecurityTokenImpl) getMediationPartition().updateSecurityToken(st);
+            st = (SecurityTokenImpl) mediationPartition.updateSecurityToken(st);
 
             UpdateSecurityTokenResponse resp = new UpdateSecurityTokenResponse();
             resp.setSecurityToken(st);
@@ -738,8 +894,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public RemoveSecurityTokenResponse removeSecurityToken(RemoveSecurityTokenRequest req) throws ProvisioningException {
         try {
-            SecurityTokenImpl st = (SecurityTokenImpl) getMediationPartition().findSecurityTokenByTokenId(req.getTokenId());
-            getMediationPartition().deleteSecurityToken(st.getId());
+            SecurityTokenImpl st = (SecurityTokenImpl) mediationPartition.findSecurityTokenByTokenId(req.getTokenId());
+            mediationPartition.deleteSecurityToken(st.getId());
             RemoveSecurityTokenResponse resp = new RemoveSecurityTokenResponse();
 
             return resp;
@@ -753,7 +909,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindSecurityTokenByTokenIdResponse findSecurityTokenByTokenId(FindSecurityTokenByTokenIdRequest req) throws ProvisioningException {
         try {
-            SecurityToken st = getMediationPartition().findSecurityTokenByTokenId(req.getTokenId());
+            SecurityToken st = mediationPartition.findSecurityTokenByTokenId(req.getTokenId());
             FindSecurityTokenByTokenIdResponse resp = new FindSecurityTokenByTokenIdResponse();
             resp.setSecurityToken(st);
             return resp;
@@ -766,7 +922,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindSecurityTokensByExpiresOnBeforeResponse findSecurityTokensByExpiresOnBefore(FindSecurityTokensByExpiresOnBeforeRequest req) throws ProvisioningException {
         try {
-            Collection<SecurityToken> st = getMediationPartition().findSecurityTokensByExpiresOnBefore(req.getExpiresOnBefore());
+            Collection<SecurityToken> st = mediationPartition.findSecurityTokensByExpiresOnBefore(req.getExpiresOnBefore());
             FindSecurityTokensByExpiresOnBeforeResponse resp = new FindSecurityTokensByExpiresOnBeforeResponse();
             if (st != null)
                 resp.setSecurityTokens(st.toArray(new SecurityToken[st.size()]));
@@ -782,7 +938,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public FindSecurityTokensByIssueInstantBeforeResponse findSecurityTokensByIssueInstantBefore(FindSecurityTokensByIssueInstantBeforeRequest req) throws ProvisioningException {
         try {
-            Collection<SecurityToken> st = getMediationPartition().findSecurityTokensByIssueInstantBefore(req.getIssueInstant());
+            Collection<SecurityToken> st = mediationPartition.findSecurityTokensByIssueInstantBefore(req.getIssueInstant());
             FindSecurityTokensByIssueInstantBeforeResponse resp = new FindSecurityTokensByIssueInstantBeforeResponse();
             if (st != null)
                 resp.setSecurityTokens(st.toArray(new SecurityToken[st.size()]));
@@ -801,6 +957,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     // ------------------------------------------------------------------------------------
 
     public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userAttributeName", userAttributeRequest.getName());
+
         try {
             // create user attribute
             UserAttributeDefinition userAttribute = new UserAttributeDefinition();
@@ -814,40 +973,61 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             userAttribute = schemaManager.addUserAttribute(userAttribute);
             AddUserAttributeResponse userAttributeResponse = new AddUserAttributeResponse();
             userAttributeResponse.setUserAttribute(userAttribute);
+
+            recordInfoAuditTrail(Action.ADD_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return userAttributeResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public UpdateUserAttributeResponse updateUserAttribute(UpdateUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userAttributeId", userAttributeRequest.getUserAttribute().getId());
+
         try {
             UserAttributeDefinition userAttribute = userAttributeRequest.getUserAttribute();
 
             UserAttributeDefinition oldUserAttribute = schemaManager.findUserAttributeById(userAttribute.getId());
 
             BeanUtils.copyProperties(userAttribute, oldUserAttribute, new String[] {"id"});
-            
+
             userAttribute = schemaManager.updateUserAttribute(oldUserAttribute);
 
             UpdateUserAttributeResponse userAttributeResponse = new UpdateUserAttributeResponse();
             userAttributeResponse.setUserAttribute(userAttribute);
+
+            auditProps.setProperty("userAttributeName", userAttribute.getName());
+            recordInfoAuditTrail(Action.UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return userAttributeResponse;
 
         } catch (UserAttributeNotFoundException e) {
+            auditProps.setProperty("userAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveUserAttributeResponse removeUserAttribute(RemoveUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userAttributeId", userAttributeRequest.getId());
+
         try {
             schemaManager.deleteUserAttribute(userAttributeRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveUserAttributeResponse();
         } catch (UserAttributeNotFoundException e) {
+            auditProps.setProperty("userAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
@@ -892,6 +1072,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public AddGroupAttributeResponse addGroupAttribute(AddGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupAttributeName", groupAttributeRequest.getName());
+
         try {
             // create group attribute
             GroupAttributeDefinition groupAttribute = new GroupAttributeDefinition();
@@ -905,13 +1088,20 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             groupAttribute = schemaManager.addGroupAttribute(groupAttribute);
             AddGroupAttributeResponse groupAttributeResponse = new AddGroupAttributeResponse();
             groupAttributeResponse.setGroupAttribute(groupAttribute);
+
+            recordInfoAuditTrail(Action.ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return groupAttributeResponse;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public UpdateGroupAttributeResponse updateGroupAttribute(UpdateGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupAttributeId", groupAttributeRequest.getGroupAttribute().getId());
+
         try {
             GroupAttributeDefinition groupAttribute = groupAttributeRequest.getGroupAttribute();
 
@@ -923,22 +1113,36 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             UpdateGroupAttributeResponse groupAttributeResponse = new UpdateGroupAttributeResponse();
             groupAttributeResponse.setGroupAttribute(groupAttribute);
+
+            auditProps.setProperty("groupAttributeName", groupAttribute.getName());
+            recordInfoAuditTrail(Action.UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
+
             return groupAttributeResponse;
 
         } catch (GroupAttributeNotFoundException e) {
+            auditProps.setProperty("groupAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
 
     public RemoveGroupAttributeResponse removeGroupAttribute(RemoveGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        Properties auditProps = new Properties();
+        auditProps.setProperty("groupAttributeId", groupAttributeRequest.getId());
+
         try {
             schemaManager.deleteGroupAttribute(groupAttributeRequest.getId());
+            recordInfoAuditTrail(Action.REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, auditProps);
             return new RemoveGroupAttributeResponse();
         } catch (GroupAttributeNotFoundException e) {
+            auditProps.setProperty("groupAttributeNotFound", "true");
+            recordInfoAuditTrail(Action.REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw e;
         } catch (Exception e) {
+            recordInfoAuditTrail(Action.REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, auditProps);
             throw new ProvisioningException(e);
         }
     }
@@ -985,7 +1189,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     public ListSecurityQuestionsResponse listSecurityQuestions(ListSecurityQuestionsRequest request) throws ProvisioningException {
         try {
-            Collection<SecurityQuestion> securityQuestions = getMediationPartition().findAllSecurityQuestions();
+            Collection<SecurityQuestion> securityQuestions = mediationPartition.findAllSecurityQuestions();
             ListSecurityQuestionsResponse response = new ListSecurityQuestionsResponse();
             response.setSecurityQuestions(securityQuestions.toArray(new SecurityQuestion[securityQuestions.size()]));
 
@@ -1005,6 +1209,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
         if (logger.isDebugEnabled())
             logger.debug("Creating password hash for [" + password + "] with algorithm/encoding/salt [" + getHashAlgorithm() + "/" + getHashEncoding() + "/" + salt + "]");
+
+        if (hashAlgorithm != null  && "BCRYPT".equalsIgnoreCase(getHashAlgorithm())) {
+            // Set the cost to a fixed 12 for now.
+            return BCrypt.withDefaults().hashToString(12, password.toCharArray());
+        }
 
         if (salt != null)
             password = salt + password;
@@ -1057,13 +1266,34 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     protected void storePendingTransaction(PendingTransaction t) {
-        this.pendingTransactions.put(t.getId(), t);
+        transactionStore.store(t);
     }
 
-    protected PendingTransaction consumePendingTransaction(String id) {
-        return this.pendingTransactions.remove(id);
+    /**
+     * Looks for transactions by ID and Code
+     */
+    protected PendingTransaction consumePendingTransaction(String idOrCode) throws ProvisioningException {
+
+        // Transaction Code is optional
+        PendingTransaction t = transactionStore.retrieve(idOrCode);
+        if (t != null) {
+            // Did the transaction already expired
+            long now = System.currentTimeMillis();
+            if (t.getExpiresOn() < now) {
+                if (logger.isDebugEnabled())
+                    logger.trace("Transaction has expired ID Or Code : " + idOrCode);
+
+                throw new TransactionExpiredException(idOrCode);
+            }
+            return t;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.trace("Transaction not found ID Or Code : " + idOrCode);
+
+        throw new TransactionInvalidException(idOrCode);
     }
-    
+
     /**
      * Only invoke this if algorithm is set.
      *
@@ -1087,79 +1317,6 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     }
 
-    protected class PendingTransaction {
-
-        private String id;
-
-        private long expiresOn;
-
-        private AbstractProvisioningRequest request;
-
-        private AbstractProvisioningResponse response;
-
-        public PendingTransaction(String id, long expiresOn, AbstractProvisioningRequest request, AbstractProvisioningResponse response) {
-            this.id = id;
-            this.expiresOn = expiresOn;
-            this.request = request;
-            this.response = response;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public long getExpiresOn() {
-            return expiresOn;
-        }
-
-        public AbstractProvisioningRequest getRequest() {
-            return request;
-        }
-
-        public AbstractProvisioningResponse getResponse() {
-            return response;
-        }
-
-        public void rollback() {
-            // TODO : Undo some change, like deleting a temp user that did not confirmed the registration
-        }
-    }
-
-    public class OldTransactionsMonitor implements  Runnable {
-
-        protected boolean stop = false;
-
-        protected int interval = 1000 * 60 * 10; // Ten minutes interval
-
-        private ProvisioningTarget provisioningTarget;
-
-        public OldTransactionsMonitor(ProvisioningTarget provisioningTarget) {
-            this.provisioningTarget = provisioningTarget;
-        }
-
-        public void run() {
-            stop = false;
-            do {
-                try {
-
-                    provisioningTarget.purgeOldTransactions();
-
-                    synchronized (this) {
-                        try {
-
-                            wait(interval);
-
-                        } catch (InterruptedException e) { /**/ }
-                    }
-
-                } catch (Exception e) {
-                    logger.warn("Exception received : " + e.getMessage() != null ? e.getMessage() : e.toString(), e);
-                }
-
-            } while (!stop);
-        }
-    }
-
     public int getMaxTimeToLive() {
         return maxTimeToLive;
     }
@@ -1168,9 +1325,33 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.maxTimeToLive = maxTimeToLive;
     }
 
-    // Use some external plugin/strategy
+    public String getSaltValue() {
+        return saltValue;
+    }
+
+    public void setSaltValue(String saltValue) {
+        this.saltValue = saltValue;
+    }
+
+
     public void validatePassword(String password) throws IllegalPasswordException {
 
+        if (passwordPolicies.size() > 0) {
+
+            List<PolicyEnforcementStatement> allStmts = new ArrayList<PolicyEnforcementStatement>();
+
+            for (PasswordPolicy passwordPolicy : passwordPolicies) {
+                List<PolicyEnforcementStatement> stmts = passwordPolicy.validate(password);
+                if (stmts != null)
+                    allStmts.addAll(stmts);
+
+            }
+
+            if (allStmts.size() > 0)
+                throw new IllegalPasswordException(allStmts);
+
+            return;
+        }
 
 
         if (password == null || password.length() < 6) {
@@ -1216,9 +1397,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         }
     }
 
+    @Override
+    public void purgeOldTransactions() {
+        // Not required  ...
+    }
+
     protected String generateSalt() {
         if (saltLength < 1)
-            return null;
+            return saltValue;
         byte[] saltBytes = new byte[saltLength];
         saltRandomizer.nextBytes(saltBytes);
 
@@ -1227,5 +1413,48 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         return salt;
     }
 
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal, Properties props) {
+        if (aServer != null)
+            aServer.processAuditTrail(auditCategory, "INFO", action, actionOutcome, principal != null ? principal : "UNKNOWN", new Date(), null, props);
+    }
 
+    public AuditingServer getAuditingServer() {
+        return aServer;
+    }
+
+    public void setAuditingServer(AuditingServer aServer) {
+        this.aServer = aServer;
+    }
+
+    public String getAuditCategory() {
+        return auditCategory;
+    }
+
+    public void setAuditCategory(String auditCategory) {
+        this.auditCategory = auditCategory;
+    }
+
+    public UUIDGenerator getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUIDGenerator uuid) {
+        this.uuid = uuid;
+    }
+
+    public UUIDGenerator getShortIdGen() {
+        return shortIdGen;
+    }
+
+    public void setShortIdGen(UUIDGenerator shortIdGen) {
+        this.shortIdGen = shortIdGen;
+    }
+
+    public TransactionStore getTransactionStore() {
+        return transactionStore;
+    }
+
+    public void setTransactionStore(TransactionStore transactionStore) {
+        this.transactionStore = transactionStore;
+    }
 }

@@ -22,6 +22,7 @@
   -->
 <schema targetNamespace="urn:oasis:names:tc:SPML:2:0:atricore"
         xmlns:spml="urn:oasis:names:tc:SPML:2:0"
+        xmlns:spmlsearch="urn:oasis:names:tc:SPML:2:0:search"
         xmlns:spmlatc="urn:oasis:names:tc:SPML:2:0:atricore"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns="http://www.w3.org/2001/XMLSchema"
@@ -29,6 +30,17 @@
 
     <import namespace="urn:oasis:names:tc:SPML:2:0"
             schemaLocation="pstc_spmlv2_core.xsd"/>
+
+    <complexType name="ImportUsersRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <sequence>
+                    <element name="psoID" type="spml:PSOIdentifierType"/>
+                    <element name="newPassword" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
 
     <complexType name="ReplacePasswordRequestType">
         <complexContent>
@@ -98,7 +110,7 @@
                 
                 <attribute name="accountDisabled" type="xsd:boolean" use="optional"/>
                 <attribute name="accountExpires" type="xsd:boolean" use="optional"/>
-                <!--attribute name="accountExpirationDate" type="xsd:dateTime" use="optional"/-->
+                <attribute name="accountExpirationDate" type="xsd:dateTime" use="optional"/>
                 <attribute name="limitSimultaneousLogin" type="xsd:boolean" use="optional"/>
                 <attribute name="maximunLogins" type="xsd:int" use="optional"/>
                 <attribute name="terminatePreviousSession" type="xsd:boolean" use="optional"/>
@@ -107,7 +119,7 @@
                 <attribute name="allowUserToChangePassword" type="xsd:boolean" use="optional"/>
                 <attribute name="forcePeriodicPasswordChanges" type="xsd:boolean" use="optional"/>
                 <attribute name="daysBetweenChanges" type="xsd:int" use="optional"/>
-                <!--attribute name="passwordExpirationDate" type="xsd:dateTime" use="optional"/-->
+                <attribute name="passwordExpirationDate" type="xsd:dateTime" use="optional"/>
                 <attribute name="notifyPasswordExpiration" type="xsd:boolean" use="optional"/>
                 <attribute name="daysBeforeExpiration" type="xsd:int" use="optional"/>
 
@@ -116,6 +128,37 @@
                 <attribute name="automaticallyGeneratePassword" type="xsd:boolean" use="optional"/>
                 <attribute name="emailNewPasword" type="xsd:boolean" use="optional"/>
 
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="UserSearchCriteriaType">
+        <sequence>
+            <element ref="spmlatc:searchAttribute" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="userName" type="xsd:string" use="optional"/>
+        <attribute name="firstName" type="xsd:string" use="optional"/>
+        <attribute name="lastName" type="xsd:string" use="optional"/>
+        <attribute name="email" type="xsd:string" use="optional"/>
+        <attribute name="exactMatch" type="xsd:boolean" use="optional"/>
+    </complexType>
+
+    <complexType name="UserSearchRequestType">
+        <complexContent>
+            <extension base="spmlsearch:SearchRequestType">
+                <sequence>
+                    <element ref="spmlatc:userSearchCriteria" minOccurs="1" maxOccurs="1"/>
+                </sequence>
+                <attribute name="fromResult" type="xsd:long" use="optional"/>
+                <attribute name="resultCount" type="xsd:long" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="UserSearchResponseType">
+        <complexContent>
+            <extension base="spmlsearch:SearchResponseType">
+                <attribute name="numOfUsers" type="xsd:long" use="optional"/>
             </extension>
         </complexContent>
     </complexType>
@@ -152,6 +195,12 @@
         <xsd:attribute name="value" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:complexType name="SearchAttributeType">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+        <xsd:attribute name="type" type="spmlatc:AttributeType" use="required"/>
+    </xsd:complexType>
+
     <xsd:simpleType name="AttributeType">
 	    <xsd:restriction base="xsd:string">
 	        <xsd:enumeration value="STRING" />
@@ -162,12 +211,25 @@
 	    </xsd:restriction>
 	</xsd:simpleType>
 
+    <xsd:complexType name="PolicyEnforcementStatementType">
+        <xsd:sequence>
+            <xsd:element name="values" type="anyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="ns" type="string" use="required"/>
+        <xsd:attribute name="name" type="string" use="required"/>
+    </xsd:complexType>
+
     <element name="replacePasswordRequest" type="spmlatc:ReplacePasswordRequestType"/>
     <element name="replacePasswordResponse" type="spml:ResponseType"/>
     <element name="attributeValue" type="spmlatc:AttributeValueType"/>
+    <element name="searchAttribute" type="spmlatc:SearchAttributeType"/>
     <element name="group" type="spmlatc:GroupType"/>
     <element name="user" type="spmlatc:UserType"/>
     <element name="userAttribute" type="spmlatc:UserAttributeType"/>
     <element name="groupAttribute" type="spmlatc:GroupAttributeType"/>
+    <element name="policyEnforcementStatement" type="spmlatc:PolicyEnforcementStatementType"/>
+    <element name="userSearchCriteria" type="spmlatc:UserSearchCriteriaType"/>
+    <element name="userSearchRequest" type="spmlatc:UserSearchRequestType"/>
+    <element name="userSearchResponse" type="spmlatc:UserSearchResponseType"/>
 
 </schema>

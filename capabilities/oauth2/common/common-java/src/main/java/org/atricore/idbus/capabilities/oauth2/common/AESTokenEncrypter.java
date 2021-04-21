@@ -55,7 +55,7 @@ public class AESTokenEncrypter implements  TokenEncrypter {
     }
 
     /**
-     * Creates an ecnrypted string using AES of the given message.  The string is encoded using base 64.
+     * Creates an encrypted string using AES of the given message.  The string is encoded using base 64.
      */
     protected String encryptAES(String msg, String myKey) throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 

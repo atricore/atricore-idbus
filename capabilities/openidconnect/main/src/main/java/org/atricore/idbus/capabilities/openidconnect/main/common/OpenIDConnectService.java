@@ -5,17 +5,64 @@ import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants
 import javax.xml.namespace.QName;
 
 /**
- * Created by sgonzalez on 3/11/14.
+ * OpenID Connect Service Types
  */
 public enum OpenIDConnectService {
 
+    // Provider Related Services
+
+    SSOSingleSignOnService(OpenIDConnectConstants.SSOSingleSignOnService_QNAME),
+
+    SSOSingleLogoutService(OpenIDConnectConstants.SSOSingleLogoutService_QNAME),
+
+    PayloadResolutionService(OpenIDConnectConstants.PayloadResolutionService_QNAME),
+
+    AuthorizationService(OpenIDConnectConstants.AuthorizationService_QNAME),
+
+    SSOAssertionConsumerService(OpenIDConnectConstants.SSOAssertionConsumerService_QNAME),
+
+    TokenService(OpenIDConnectConstants.TokenService_QNAME),
+
+    UserInfoService(OpenIDConnectConstants.UserInfoService_QNAME),
+
+    RPTokenService(OpenIDConnectConstants.RPTokenService_QNAME),
+
+    RPUserInfoService(OpenIDConnectConstants.RPUserInfoService_QNAME),
+
+    RPInitLogoutService(OpenIDConnectConstants.RPInitLogoutService_QNAME),
+
+    RPCheckSessionIFrameService(OpenIDConnectConstants.RPCheckSessionIFrameService_QNAME),
+
+    OPStateService(OpenIDConnectConstants.OPStateService_QNAME),
+
+    MetadataService(OpenIDConnectConstants.MetadataService_QNAME),
+
+    JWKService(OpenIDConnectConstants.JWKService_QNAME),
+
+    // Relaying Party Services
+    AuthorizationConsumerService(OpenIDConnectConstants.AuthorizationConsumerService_QNAME),
+
+    // Proxy Related Services
+
+    OidcAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.OidcAuthzTokenConsumerService_QNAME),
+
     SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
+
+    SPInitiatedAuhnServiceProxy(SSOMetadataConstants.SPInitiatedAuthnServiceProxy_QNAME),
+
+    ExtOpAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.ExtOpAuthzTokenConsumerService_QNAME),
+
+    AzureAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.AzureAuthzTokenConsumerService_QNAME),
 
     GoogleAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.GoogleAuthzTokenConsumerService_QNAME),
 
     FacebookAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME),
 
-    TwitterAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME);
+    TwitterAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME),
+
+    LinkedInAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.LinkedInAuthzTokenConsumerService_QNAME),
+
+    WeChatAuthzTokenConsumerServiceProxy(OpenIDConnectConstants.WeChatAuthzTokenConsumerService_QNAME);
 
     private QName qname;
 

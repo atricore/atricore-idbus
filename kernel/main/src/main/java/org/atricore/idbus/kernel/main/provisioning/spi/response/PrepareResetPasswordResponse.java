@@ -6,7 +6,11 @@ package org.atricore.idbus.kernel.main.provisioning.spi.response;
  */
 public class PrepareResetPasswordResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -3698476899156498718L;
+
     private String transactionId;
+
+    private String code;
 
     private String newPassword;
 
@@ -17,6 +21,13 @@ public class PrepareResetPasswordResponse extends AbstractProvisioningResponse {
         this.transactionId = transactionId;
         this.newPassword = newPassword;
     }
+
+    public PrepareResetPasswordResponse(String transactionId, String code, String newPassword) {
+        this.transactionId = transactionId;
+        this.code = code;
+        this.newPassword = newPassword;
+    }
+
 
     public String getTransactionId() {
         return transactionId;
@@ -32,5 +43,13 @@ public class PrepareResetPasswordResponse extends AbstractProvisioningResponse {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

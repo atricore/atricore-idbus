@@ -32,6 +32,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.Group;
  */
 public class ListGroupsResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -3198476899156498718L;
+
     private Group[] groups;
 
     public Group[] getGroups() {

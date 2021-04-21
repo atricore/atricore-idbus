@@ -40,6 +40,8 @@
     <!-- ============================================== -->
     <!-- Web Branding service                           -->
     <!-- ============================================== -->
+
+    <!--
     <bean id="webBrandingService" init-method="init"
           class="org.atricore.idbus.capabilities.sso.ui.internal.WebBrandingServiceImpl"/>
 
@@ -54,7 +56,7 @@
     <bean id="osgiWebBrandingRegitry" class="org.atricore.idbus.capabilities.sso.ui.internal.SpringWebBrandingRegistry">
         <constructor-arg ref="webBrandingRegistry" />
     </bean>
-
+-->
     <!--
     <bean id="osgiWebBrandingRegitry" class="org.atricore.idbus.capabilities.sso.ui.internal.OsgiWebBrandingRegitry">
         <constructor-arg ref="webBrandingRegistry" />

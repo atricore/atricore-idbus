@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.common</groupId>
         <artifactId>common</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.common</groupId>
@@ -66,7 +66,7 @@
                     <artifactId>org.springframework.core</artifactId>
                 </exclusion>
             </exclusions>
-            
+
             <scope>provided</scope>
         </dependency>
 
@@ -90,14 +90,32 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <scope>test</scope>
         </dependency>
 
-        
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>mchange-commons-java</artifactId>
+            <version>0.2.19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.52</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
 
@@ -113,7 +131,11 @@
                         <Bundle-Name>Atricore IDBus :: Kernel : Support</Bundle-Name>
                         <Bundle-Description>Atricore IDBus Kernel Support</Bundle-Description>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>org.atricore.idbus.kernel.common.support.*;version=${project.version}</Export-Package>
+                        <Export-Package>
+                            org.atricore.idbus.kernel.common.support.*;version=${project.version},
+                            com.mchange.v2.c3p0.*;version=0.9.5.5,
+                            com.mchange.lang.*;version=0.2.19
+                        </Export-Package>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
@@ -127,8 +149,18 @@
                             javax.crypto.spec,
                             javax.crypto,
                             org.ietf.jgss,
+                            com.typesafe.config;resolution:=optional,
+                            org.apache.logging.log4j;resolution:=optional,
+                            org.apache.logging.log4j.core;resolution:=optional,
+                            org.apache.logging.log4j.core.appender;resolution:=optional,
+                            org.apache.logging.log4j.core.config;resolution:=optional,
+                            org.apache.logging.log4j.message;resolution:=optional,
+                            org.apache.logging.log4j.spi;resolution:=optional,
                             *
                         </Import-Package>
+                        <Embed-Dependency>
+                        *;artifactId=c3p0|mchange-commons-java,
+                    </Embed-Dependency>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                     </instructions>
                 </configuration>
@@ -161,10 +193,10 @@
                         </property>
 
                     </systemProperties>
-                    
+
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
 </project>

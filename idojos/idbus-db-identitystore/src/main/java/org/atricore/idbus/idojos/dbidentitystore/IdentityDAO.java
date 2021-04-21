@@ -194,7 +194,7 @@ public class IdentityDAO {
         try {
 
             if (logger.isDebugEnabled())
-                logger.debug("[selectCredemtiasl()]]: key=" + key.getId());
+                logger.debug("[selectCredentials()]]: key=" + key.getId());
             stmt = createPreparedStatement(_credentialsQueryString);
             // We don't jave JDBC 3.0 drivers, so ... bind all variables manually
             for (int i = 1; i <= _credentialsQueryVariables; i++) {
@@ -319,7 +319,7 @@ public class IdentityDAO {
             if( result.next() ){
                 throw new SSOIdentityException( "Statement " + stmt + " returned more than one row" );
             }
-            return username; 
+            return username;
 
         } catch (SQLException sqlE) {
             logger.error("SQLException while loading user with relay credential", sqlE);
@@ -328,6 +328,42 @@ public class IdentityDAO {
         } catch (Exception e) {
             logger.error("Exception while loading user with relay credential", e);
             throw new SSOIdentityException("During load user with relay credential: " + e.getMessage());
+
+        } finally {
+            closeResultSet(result);
+            closeStatement(stmt);
+        }
+    }
+
+    public String resolveUsernameByCustomQueryString(String queryString, String[] args) throws SSOIdentityException {
+        PreparedStatement stmt = null;
+        ResultSet result = null;
+
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("[resolveUsernameByCustomQueryString(queryString)]]: queryString=" + queryString);
+
+            stmt = createPreparedStatement( queryString);
+            if (args != null)
+                for (int i = 0; i < args.length; i++) {
+                    stmt.setString( i + 1, args[i]);
+                }
+
+            result = stmt.executeQuery();
+
+            String username = result.next() ? result.getString( 1 ) : null;
+            if( result.next() ){
+                throw new SSOIdentityException( "Statement " + stmt + " returned more than one row" );
+            }
+            return username;
+
+        } catch (SQLException sqlE) {
+            logger.error("SQLException while loading user with custom query string", sqlE);
+            throw new SSOIdentityException("During load user with custom query string: " + sqlE.getMessage());
+
+        } catch (Exception e) {
+            logger.error("Exception while loading user with custom query string", e);
+            throw new SSOIdentityException("During load user with custom query string: " + e.getMessage());
 
         } finally {
             closeResultSet(result);
@@ -375,9 +411,13 @@ public class IdentityDAO {
 
         while (rs.next()) {
             for (int i = 1; i <= cols; i++) {
+
+                // SELECT CNAME AS CLABEL ...
                 String cName = rsmd.getColumnName(i);
+                String cLabel = rsmd.getColumnLabel(i);
+
                 String cValue = rs.getString(i);
-                SSONameValuePair prop = new SSONameValuePair(cName, cValue);
+                SSONameValuePair prop = new SSONameValuePair(cLabel != null && !"".equals(cLabel) ? cLabel : cName, cValue);
                 props.add(prop);
             }
         }
@@ -451,7 +491,7 @@ public class IdentityDAO {
      * @param query
      * @throws SQLException
      */
-    private PreparedStatement createPreparedStatement(String query)
+    protected PreparedStatement createPreparedStatement(String query)
             throws SQLException {
 
         if (logger.isDebugEnabled())

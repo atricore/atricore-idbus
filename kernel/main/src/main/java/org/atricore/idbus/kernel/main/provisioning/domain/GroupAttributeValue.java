@@ -41,6 +41,11 @@ public class GroupAttributeValue implements Serializable {
 
 
     @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : super.hashCode();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof GroupAttributeValue)) return false;
@@ -52,10 +57,4 @@ public class GroupAttributeValue implements Serializable {
 
         return false;
     }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : super.hashCode();
-    }
-
 }

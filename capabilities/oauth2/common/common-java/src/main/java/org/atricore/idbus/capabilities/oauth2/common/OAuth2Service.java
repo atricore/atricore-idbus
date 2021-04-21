@@ -13,7 +13,11 @@ public enum OAuth2Service {
 
     SSOSingleSignOnService(new QName(OAuth2Constants.SSO_SERVICE_BASE_URI, "SingleSignOnService")),
 
+    SSOSingleLogoutService(new QName(OAuth2Constants.SSO_SERVICE_BASE_URI, "SingleLogoutService")),
+
     TokenService(new QName(OAuth2Constants.OAUTH2_SERVICE_BASE_URI, "TokenService")),
+
+    PasswordlessLinkService(new QName(OAuth2Constants.OAUTH2_SERVICE_BASE_URI, "PasswordlessLink")),
 
 ;
 

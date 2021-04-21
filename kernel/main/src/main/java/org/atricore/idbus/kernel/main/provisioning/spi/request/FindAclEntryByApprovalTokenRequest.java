@@ -30,6 +30,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class FindAclEntryByApprovalTokenRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -1939068098156498718L;
+
     private String approvalToken;
 
     public String getApprovalToken() {

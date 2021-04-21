@@ -21,17 +21,24 @@
 
 package org.atricore.idbus.kernel.main.mediation.camel.component.http;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.component.http.DefaultHttpBinding;
 import org.apache.camel.component.http.HttpMessage;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
+import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This is actually a CAMEL HTTP Binding extension, it's not related with mediation HTTP bindings
@@ -66,10 +73,23 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
                     logger.debug("Setting IDBus Cookie header for " + cookie.getName() + "=" + cookie.getValue());
 
                 httpMessage.getHeaders().put("org.atricore.idbus.http.Cookie." + cookie.getName(), cookie.getValue());
+                if (cookie.getMaxAge() > 0)
+                    httpMessage.getHeaders().put("org.atricore.idbus.http.Cookie." + cookie.getName() + ".maxAge", cookie.getValue());
+
             }
         }
 
+        Enumeration h = httpServletRequest.getHeaderNames();
+        while (h.hasMoreElements()) {
+            String header = (String) h.nextElement();
+
+            String value = httpServletRequest.getHeader(header);
+            httpMessage.getHeaders().put("org.atricore.idbus.http.Header." + header, value);
+        }
+
+
         // Export additional information in CAMEL headers
+        httpMessage.getHeaders().put("org.atricore.idbus.http.UserAgent", httpServletRequest.getHeader("User-Agent"));
         httpMessage.getHeaders().put("org.atricore.idbus.http.RequestURL", httpServletRequest.getRequestURL().toString());
         httpMessage.getHeaders().put("org.atricore.idbus.http.QueryString", httpServletRequest.getQueryString());
 
@@ -79,9 +99,18 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         if (httpServletRequest.getAttribute("org.atricore.idbus.http.SecureCookies") != null)
             httpMessage.getHeaders().put("org.atricore.idbus.http.SecureCookies", httpServletRequest.getAttribute("org.atricore.idbus.http.SecureCookies"));
 
+        X509Certificate certChain[] = (X509Certificate[]) httpServletRequest.getAttribute("javax.servlet.request.X509Certificate");
+        if (certChain != null) {
+            httpMessage.getHeaders().put("org.atricore.idbus.http.X509Certificate", certChain);
+            for (int i = 0; i < certChain.length; i++) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Received client certificate [" + i + "] = " + certChain[i].toString());
+            }
+        }
+
         String parentThread = httpServletRequest.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST);
         if (parentThread == null) {
-            remoteAddr = httpServletRequest.getRemoteAddr();
+            remoteAddr = HttpUtils.getRemoteAddress(httpServletRequest);
             remoteHost = httpServletRequest.getRemoteHost();
             if (logger.isTraceEnabled())
                 logger.trace("Using request remote address/host : ["+remoteAddr+"/" + remoteHost + "]");
@@ -95,6 +124,8 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteAddress", remoteAddr);
         httpMessage.getHeaders().put("org.atricore.idbus.http.RemoteHost", remoteHost);
 
+        // TODO : Add user-agent
+
         if (logger.isDebugEnabled())
             logger.debug("Publishing HTTP Session as Camel header org.atricore.idbus.http.HttpSession");
 
@@ -107,6 +138,10 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         if (logger.isDebugEnabled())
             logger.debug("Writing HTTP Servlet Response");
 
+        handleProcessingUIResponse(message.getExchange(), httpServletResponse);
+
+        handleCrossOriginResourceSharing(message.getExchange());
+
         // append headers
         for (String key : message.getHeaders().keySet()) {
 
@@ -116,7 +151,7 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
 
                 // This is a filtered header ... check if is a josso 'set cookie'
                 if (key.startsWith("org.atricore.idbus.http.Set-Cookie.")) {
-                    
+
                     String cookieName = key.substring("org.atricore.idbus.http.Set-Cookie.".length());
                     if (!cookieName.equals("JSESSIONID")) {
 
@@ -135,6 +170,93 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
             logger.trace("Writing HTTP Servlet Response");
 
         super.doWriteResponse(message, httpServletResponse);
+    }
+
+
+    /**
+     * This can handle redirects when using the Processing UI page.
+     */
+    protected void handleProcessingUIResponse(Exchange exchange, HttpServletResponse response) {
+
+        OsgiIDBusServlet2.WHttpServletResponse wr = (OsgiIDBusServlet2.WHttpServletResponse) response;
+
+        Message out = exchange.getOut();
+        HttpMessage httpIn = (HttpMessage) exchange.getIn();
+
+        // This is a non-proxied request using the processing UI page.
+        // Check if the status code is redirect, and modify the response so that the page can handle it.
+        if (httpIn.getRequest().getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROXIED_REQUEST) == null &&
+        httpIn.getRequest().getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROCESS_UI) != null) {
+
+            if (out.getHeader("http.responseCode") != null) {
+                int code = (Integer) out.getHeader("http.responseCode", Integer.class);
+
+                if (code == 302) {
+                    // We don't have the Location header, set up the expected header, but tell the page to use
+                    // The original location value.
+                    out.setHeader("http.responseCode", 200);
+                    response.setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_LOCATION, "{USE-Location}");
+                }
+            }
+        }
+
+    }
+
+    /**
+     * This will add the necessary CORS headers to the HTTP response when CORS is requested.
+     */
+    protected void handleCrossOriginResourceSharing(Exchange exchange) {
+        Message httpOut = exchange.getOut();
+        Message httpIn = exchange.getIn();
+
+        String origin = (String) httpIn.getHeader("Origin");
+
+        if (origin != null && httpOut.getHeader("Access-Control-Allow-Origin") == null) {
+
+            // External application is requesting cross origin support:
+
+            ConfigurationContext configurationContext = getConfigurationContext(exchange);
+            Boolean allowAll = configurationContext != null ?
+                    Boolean.parseBoolean(configurationContext.getProperty("binding.http.cors.allowAll", "false")) : false;
+
+            if (logger.isTraceEnabled())
+                logger.trace("User-Agent requesting cross origin support for " + origin);
+
+            boolean allow = false;
+            //IdentityMediationUnit unit = this.channel.getUnitContainer().getUnit();
+            // TODO : Populate this from the console, at the moment the list is always empty!
+            //Set<String> allowedOrigins = (Set<String>) unit.getMediationProperty("binding.http.cors.origins");
+            Set<String> allowedOrigins = null;
+
+            if (allowedOrigins != null && allowedOrigins.size() > 0 && allowedOrigins.contains(origin)) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Allowing cross origin for registered URL " + origin);
+
+                allow = true;
+
+            } else if (allowAll) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Allowing cross origin for non-registered URL " + origin);
+
+                allow = true;
+            } else {
+                logger.warn("Denying cross origin for registered URL " + origin);
+                allow = false;
+            }
+
+            if (allow) {
+                httpOut.getHeaders().put("Access-Control-Allow-Origin", origin);
+                httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
+                httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                httpOut.getHeaders().put("Access-Control-Allow-Credentials", "true");
+            }
+        }
+    }
+
+    protected ConfigurationContext getConfigurationContext(Exchange exchange) {
+        Map<String, ConfigurationContext> cfgs = ((OsgiBundleXmlApplicationContext) exchange.getContext().getRegistry().
+                lookup("applicationContext")).getBeansOfType(ConfigurationContext.class);
+        return cfgs.size() == 1 ? cfgs.values().iterator().next() : null;
     }
 }
 

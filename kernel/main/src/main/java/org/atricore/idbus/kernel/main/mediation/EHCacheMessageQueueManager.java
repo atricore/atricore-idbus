@@ -26,20 +26,26 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
 
     private CacheManager cacheManager;
 
-    private int receiveRetries = 5;
+    private int retryCount = 0;
 
+    private int retryDelay = 100;
+
+    @Override
     public void destroy() throws Exception {
         shutDown();
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         init();
     }
 
+    @Override
     public ConnectionFactory getConnectionFactory() {
         throw new UnsupportedOperationException("Not implemented!");
     }
 
+    @Override
     public String getJmsProviderDestinationName() {
         return jmsProviderDestinationName;
     }
@@ -48,6 +54,7 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
         this.jmsProviderDestinationName = jmsProviderDestinationName;
     }
 
+    @Override
     public void init() throws Exception {
 
         if (cache == null) {
@@ -60,20 +67,20 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
         }
     }
 
+    @Override
     public Object pullMessage(Artifact artifact) throws Exception {
 
         if (logger.isDebugEnabled())
             logger.debug("Pull Message for key: " + artifact.getContent());
 
         Element e = cache.get(artifact.getContent());
-
         if (e == null) {
+
+            // See if we must perform retries
             int retry = 0;
-            while(e == null && retry <= receiveRetries) {
-
+            while(e == null && retry < retryCount) {
                 logger.debug("Pull Message found NO message for [" + artifact + "]. Wait and retry ...");
-
-                try { Thread.sleep(500); } catch (InterruptedException ie) { /*ignore it*/ }
+                try { Thread.sleep(retryDelay); } catch (InterruptedException ie) { /*ignore it*/ }
                 e = cache.get(artifact.getContent());
                 retry ++;
             }
@@ -86,20 +93,34 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
 
         if (e != null) {
             cache.remove(artifact.getContent());
-
-
-            return e.getValue();
+            return e.getObjectValue();
         }
 
         return null;
 
     }
 
+    @Override
     public Object peekMessage(Artifact artifact) throws Exception {
         Element e = cache.get(artifact.getContent());
-        return e.getValue();
+
+        if (e == null) {
+
+            // See if we must perform retries
+            int retry = 0;
+            while(e == null && retry < retryCount) {
+                logger.debug("Peek Message found NO message for [" + artifact + "]. Wait and retry ...");
+                try { Thread.sleep(retryDelay); } catch (InterruptedException ie) { /*ignore it*/ }
+                e = cache.get(artifact.getContent());
+                retry ++;
+            }
+
+        }
+
+        return e.getObjectValue();
     }
 
+    @Override
     public Artifact pushMessage(Object content) throws Exception {
         Artifact artifact = artifactGenerator.generate();
 
@@ -111,6 +132,7 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
         return artifact;
     }
 
+    @Override
     public void shutDown() throws Exception {
         if (cacheManager.cacheExists(jmsProviderDestinationName)) {
             cacheManager.removeCache(jmsProviderDestinationName);
@@ -118,6 +140,7 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
         }
     }
 
+    @Override
     public ArtifactGenerator getArtifactGenerator() {
         return artifactGenerator;
     }
@@ -140,5 +163,21 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
 
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public int getRetryDelay() {
+        return retryDelay;
+    }
+
+    public void setRetryDelay(int retryDelay) {
+        this.retryDelay = retryDelay;
     }
 }

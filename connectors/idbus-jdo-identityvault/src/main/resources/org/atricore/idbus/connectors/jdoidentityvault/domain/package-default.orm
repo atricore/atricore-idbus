@@ -140,17 +140,30 @@
             <field name="accountExpirationDate">
                 <column name="ACCOUNTEXPIRATIONDATE" jdbc-type="DATE"/>
             </field>
+            <field name="lastAuthentication">
+                <column name="LASTAUTHENTICATION" jdbc-type="TIMESTAMP"/>
+            </field>
             <field name="limitSimultaneousLogin">
                 <column name="LIMITSIMULTANEOUSLOGIN" />
             </field>
             <field name="maximunLogins">
                 <column name="MAXIMUNLOGINS" jdbc-type="INTEGER"/>
             </field>
+            <field name="failedLogins">
+                <column name="FAILEDLOGINS" jdbc-type="INTEGER"/>
+            </field>
+
             <field name="terminatePreviousSession">
                 <column name="TERMINATEPREVIOUSSESSION"/>
             </field>
             <field name="preventNewSession">
                 <column name="PREVENTNEWSESSION" />
+            </field>
+            <field name="accountCreationDate">
+                <column name="CREATIONDATE" jdbc-type="DATE"/>
+            </field>
+            <field name="accountModificationDate">
+                <column name="MODIFICATIONDATE" jdbc-type="DATE"/>
             </field>
             <field name="allowUserToChangePassword">
                 <column name="ALLOWUSERTOCHANGEPASSWORD" />
@@ -170,6 +183,9 @@
             <field name="daysBeforeExpiration">
                 <column name="DAYSBEFOREEXPIRATION" jdbc-type="INTEGER"/>
             </field>
+            <field name="lastPasswordChangeDate">
+                <column name="LASTPWDCHANGE" jdbc-type="DATE"/>
+            </field>
             <field name="userPassword">
                 <column name="USERPASSWORD" length="255" jdbc-type="VARCHAR"/>
             </field>
@@ -184,10 +200,6 @@
             </field>
             <field name="emailNewPasword">
                 <column name="EMAILNEWPASSWORD" />
-            </field>
-
-            <field name="changeLog">
-                <column name="CHANGELOG" jdbc-type="VARCHAR"/>
             </field>
 
             <field name="acls" table="ATC_USER_ACL">
@@ -334,6 +346,14 @@
                 <column name="TYPE"/>
             </field>
 
+            <field name="userPermission">
+                <column name="USR_PERMISSION"/>
+            </field>
+
+            <field name="adminPermission">
+                <column name="ADMIN_PERMISSION"/>
+            </field>
+
             <field name="required">
                 <column name="REQUIRED"/>
             </field>
@@ -405,7 +425,7 @@
             </field>
 
             <field name="tokenId">
-                <column jdbc-type="VARCHAR" length="32"/>
+                <column jdbc-type="VARCHAR" length="64"/>
                 <index name="TOKEN_ID_IDX" unique="true"/>
             </field>
 

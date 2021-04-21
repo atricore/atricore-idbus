@@ -32,11 +32,13 @@ public class OAuth2BPMediator extends AbstractCamelMediator {
 
     private String spAlias;
 
+    private String tokenResponseBinding = OAuth2Binding.OAUTH2_RESTFUL.getValue();
+
     public OAuth2BPMediator() {
         logger.info("OAuth2BPMediator Instantiated");
     }
 
-protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
+    protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) throws Exception {
         // Create routes based on endpoints!
 
         return new RouteBuilder() {
@@ -54,7 +56,7 @@ protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) 
 
                 for (IdentityMediationEndpoint endpoint : endpoints) {
 
-                    OAuth2Binding binding = OAuth2Binding .asEnum(endpoint.getBinding());
+                    OAuth2Binding binding = OAuth2Binding.asEnum(endpoint.getBinding());
 
                     EndpointDescriptor ed = resolveEndpoint(bindingChannel, endpoint);
 
@@ -196,5 +198,13 @@ protected RouteBuilder createBindingRoutes(final BindingChannel bindingChannel) 
 
     public void setSpAlias(String spAlias) {
         this.spAlias = spAlias;
+    }
+
+    public String getTokenResponseBinding() {
+        return tokenResponseBinding;
+    }
+
+    public void setTokenResponseBinding(String tokenResponseBinding) {
+        this.tokenResponseBinding = tokenResponseBinding;
     }
 }

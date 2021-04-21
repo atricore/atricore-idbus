@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.atricore.idbus</groupId>
+        <artifactId>all</artifactId>
+        <version>1.5.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.atricore.idbus.examples</groupId>
+    <artifactId>org.atricore.idbus.examples.custom-audit-handler</artifactId>
+    <name>Atricore IDBus :: Example : Custom Audit Handler</name>
+
+    <packaging>bundle</packaging>
+
+    <properties>
+        <felix.plugin.version>2.0.1</felix.plugin.version>
+        <idbus.kernel.version>1.5.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.cap.samlr2.version>1.5.1-SNAPSHOT</idbus.cap.samlr2.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.0.4</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <!--maxmem>256M</maxmem-->
+                    <fork>${compiler.fork}</fork>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+
+                        <Bundle-Name>Atricore IDBus :: Example : Custom Audit Handler</Bundle-Name>
+                        <Bundle-Description>This bundle contains an example Custom Audit Handler</Bundle-Description>
+                        <!-- Bundle Symbolic name is hard coded in datanucleus code! -->
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
+

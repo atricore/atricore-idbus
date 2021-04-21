@@ -351,7 +351,7 @@
 
         <property name="logger" >
             <bean name="idp1-mediation-logger"
-                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger">
+                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger">
                 <property name="messageBuilders">
                     <list>
                         <bean class="org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder"/>
@@ -398,10 +398,10 @@
                   class="org.atricore.idbus.capabilities.sso.support.core.SSOKeystoreKeyResolver">
                 <property name="keystoreType" value="JKS"/>
                 <property name="keystoreFile" value="classpath:org/atricore/idbus/examples/simplefederation/idau/idp1/idp1-keystore.jks"/>
-                <property name="keystorePass" value="xmlsecurity"/>
-                <property name="privateKeyAlias" value="rsa-keys"/>
-                <property name="privateKeyPass" value="rsa-keys-pwd"/>
-                <property name="certificateAlias" value="rsa-keys"/>
+                <property name="keystorePass" value="ATRICORE"/>
+                <property name="privateKeyAlias" value="josso-sp1"/>
+                <property name="privateKeyPass" value="ATRICORE"/>
+                <property name="certificateAlias" value="josso-sp1"/>
             </bean>
         </property>
     </bean>
@@ -471,7 +471,7 @@
 
         <property name="logger" >
             <bean name="idp1-cc-1-mediation-logger"
-                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger">
+                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger">
                 <property name="messageBuilders">
                     <list>
                         <bean class="org.atricore.idbus.capabilities.sso.main.binding.logging.SamlR2LogMessageBuilder"/>

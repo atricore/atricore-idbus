@@ -232,7 +232,7 @@
 
         <property name="logger">
             <bean name="bp1-binding-mediation-logger"
-                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger">
+                  class="org.atricore.idbus.kernel.main.mediation.camel.logging.XMLMediationLogger">
                 <property name="messageBuilders">
                     <list>
                         <bean class="org.atricore.idbus.capabilities.josso.main.binding.logging.JossoLogMessageBuilder"/>

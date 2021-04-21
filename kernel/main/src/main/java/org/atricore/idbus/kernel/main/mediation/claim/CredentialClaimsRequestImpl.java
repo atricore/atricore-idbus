@@ -21,12 +21,11 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -42,10 +41,13 @@ public class CredentialClaimsRequestImpl implements CredentialClaimsRequest {
     private ClaimChannel claimsChannel;
     private String lastErrorId;
     private String lastErrorMsg;
-    private Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = new HashSet<SSOPolicyEnforcementStatement>();
+    private Set<PolicyEnforcementStatement> ssoPolicyEnforcements = new HashSet<PolicyEnforcementStatement>();
     private String skin;
     private String preauthenticationSecurityToken;
-    
+    private Map<String, Object> params = new HashMap<String, Object>();
+    private Locale locale;
+
+
     public CredentialClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint, ClaimChannel claimsChannel) {
         this.id = id;
         this.issuerChannel = issuerChannel;
@@ -120,7 +122,7 @@ public class CredentialClaimsRequestImpl implements CredentialClaimsRequest {
         this.lastErrorId = lastErrorId;
     }
 
-    public Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements() {
+    public Set<PolicyEnforcementStatement> getSsoPolicyEnforcements() {
         return ssoPolicyEnforcements;
     }
 
@@ -146,6 +148,23 @@ public class CredentialClaimsRequestImpl implements CredentialClaimsRequest {
 
     public void setPreauthenticationSecurityToken(String preauthenticationSecurityToken) {
         this.preauthenticationSecurityToken = preauthenticationSecurityToken;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 
     @Override

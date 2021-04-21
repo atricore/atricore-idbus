@@ -73,6 +73,10 @@ public class SpmlR2ServiceImpl implements SPMLRequestPortType {
         throw new UnsupportedOperationException("This service is not meant to be invoked");
     }
 
+    public VerifyResetPasswordResponseType spmlVerifyResetPasswordRequest(@WebParam(partName = "body", name = "verifyResetPasswordRequest", targetNamespace = "urn:oasis:names:tc:SPML:2:0") VerifyResetPasswordRequestType body) {
+        throw new UnsupportedOperationException("This service is not meant to be invoked");
+    }
+
     public SearchResponseType spmlSearchRequest(@WebParam(partName = "body", name = "searchRequest", targetNamespace = "urn:oasis:names:tc:SPML:2:0:search") SearchRequestType body) {
         throw new UnsupportedOperationException("This service is not meant to be invoked");
     }

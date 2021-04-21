@@ -8,7 +8,9 @@ import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.main.binding.SsoHttpArtifactBinding;
 import org.atricore.idbus.capabilities.sso.main.select.selectors.UserSelectedIdPEntitySelector;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
@@ -16,8 +18,7 @@ import org.atricore.idbus.capabilities.sso.ui.internal.SSOUIApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.model.IdPModel;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
-import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.AppResource;
+import org.atricore.idbus.capabilities.sso.main.AppResource;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -186,71 +187,78 @@ public class SelectIdPMediator implements Serializable {
 
                                 FederatedRemoteProvider idp = (FederatedRemoteProvider) p;
 
-                                // Get Entity ID and resource type
-                                CircleOfTrustMemberDescriptor d = idp.getMembers().get(0);
-                                idpAlias = d.getAlias();
-                                providerType = AppResource.SAML2_IDP_REMOTE.getResourceType();
-
-                            } else {
-                                if (p instanceof IdentityProvider) {
-
-                                    providerType = AppResource.SAML2_IDP_LOCAL.getResourceType();
-
-                                    // Local IdPs may have dedicated channels to talk to us, with specific MD
-
-                                    IdentityProvider idp = (IdentityProvider) p;
-                                    // Get the proper SP Channel and look for the entity ID.
-
-                                    SPChannel spChannel = null;
-                                    for (Channel c : idp.getChannels()) {
-                                        if (c instanceof SPChannel) {
-                                            SPChannel spC = (SPChannel) c;
-                                            if (spC.getTargetProvider() != null && spC.getTargetProvider().getName().equals(sp.getName())) {
-                                                spChannel = spC;
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    // No override channel configured on IdP to talk to us, use default.
-                                    if (spChannel == null) {
-                                        // This better be an SP Channel ...
-                                        spChannel = (SPChannel) idp.getChannel();
-                                    }
-
-                                    if (logger.isTraceEnabled())
-                                        logger.trace("SPChannel used to access IdP : " + spChannel.getName());
-
-                                    idpAlias = spChannel.getMember().getAlias();
-
-                                    if (spChannel.getProxy() != null)
-                                        if (spChannel.getProxy() instanceof BindingChannel) {
-                                            BindingChannel bc = (BindingChannel) spChannel.getProxy();
-                                            FederatedRemoteProvider remoteIdP = null;
-                                            if (bc.getFederatedProvider() instanceof BindingProvider) {
-                                                BindingProvider bp = (BindingProvider) bc.getFederatedProvider();
-                                                remoteIdP = bp.getProxy();
-                                            } else {
-                                                ServiceProvider localSp = (ServiceProvider) bc.getFederatedProvider();
-                                                remoteIdP = (FederatedRemoteProvider)
-                                                        localSp.getDefaultFederationService().getChannel().getTargetProvider();
-                                            }
-
-                                            if (logger.isTraceEnabled())
-                                                logger.debug("Remote IdP available : " + remoteIdP.getName());
-
-                                            // TODO: This IdP works as proxy, report remote service type based on remote idp
-
-                                        } else {
-                                            logger.error("Unsupported proxy binding channel type " + spChannel.getProxy());
-                                        }
-
+                                // Check if this is a SAML 2 IdP
+                                if (idp.getRole().equals(SSOMetadataConstants.IDPSSODescriptor_QNAME.toString())) {
+                                    // Get Entity ID and resource type
+                                    CircleOfTrustMemberDescriptor d = idp.getMembers().get(0);
+                                    idpAlias = d.getAlias();
+                                    providerType = AppResource.SAML2_IDP_REMOTE.getResourceType();
 
                                 } else {
-                                    logger.error("Uknown Identity Provider type " + p.getClass().getName());
+                                    logger.warn("Unknown IdP role " + idp.getRole());
                                     continue;
                                 }
+
+
+                            } else  if (p instanceof IdentityProvider) {
+
+                                providerType = AppResource.SAML2_IDP_LOCAL.getResourceType();
+
+                                // Local IdPs may have dedicated channels to talk to us, with specific MD
+
+                                IdentityProvider idp = (IdentityProvider) p;
+                                // Get the proper SP Channel and look for the entity ID.
+
+                                SPChannel spChannel = null;
+                                for (Channel c : idp.getChannels()) {
+                                    if (c instanceof SPChannel) {
+                                        SPChannel spC = (SPChannel) c;
+                                        if (spC.getTargetProvider() != null && spC.getTargetProvider().getName().equals(sp.getName())) {
+                                            spChannel = spC;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                // No override channel configured on IdP to talk to us, use default.
+                                if (spChannel == null) {
+                                    // This better be an SP Channel ...
+                                    spChannel = (SPChannel) idp.getChannel();
+                                }
+
+                                if (logger.isTraceEnabled())
+                                    logger.trace("SPChannel used to access IdP : " + spChannel.getName());
+
+                                idpAlias = spChannel.getMember().getAlias();
+
+                                if (spChannel.getProxy() != null)
+                                    if (spChannel.getProxy() instanceof BindingChannel) {
+                                        BindingChannel bc = (BindingChannel) spChannel.getProxy();
+                                        FederatedRemoteProvider remoteIdP = null;
+                                        if (bc.getFederatedProvider() instanceof BindingProvider) {
+                                            BindingProvider bp = (BindingProvider) bc.getFederatedProvider();
+                                            remoteIdP = bp.getProxy();
+                                        } else {
+                                            ServiceProvider localSp = (ServiceProvider) bc.getFederatedProvider();
+                                            remoteIdP = (FederatedRemoteProvider)
+                                                    localSp.getDefaultFederationService().getChannel().getTargetProvider();
+                                        }
+
+                                        if (logger.isTraceEnabled())
+                                            logger.debug("Remote IdP available : " + remoteIdP.getName());
+
+                                        // TODO: This IdP works as proxy, report remote service type based on remote idp
+
+                                    } else {
+                                        logger.error("Unsupported proxy binding channel type " + spChannel.getProxy());
+                                    }
+
+
+                            } else {
+                                logger.error("Unknown Identity Provider type " + p.getClass().getName());
+                                continue;
                             }
+
 
                             // Create the IDP model
                             IdPModel idpModel = new IdPModel(p.getName(),
@@ -258,7 +266,7 @@ public class SelectIdPMediator implements Serializable {
                                     p.getDisplayName() != null ? p.getDisplayName() : p.getDescription(),
                                     p.getDescription(),
                                     idpAlias,
-                                    spInitSso + "?atricore_idp_alias=" + new String(Base64.encodeBase64(idpAlias.getBytes())),
+                                    spInitSso + "?"+ EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR+"=" + new String(Base64.encodeBase64(idpAlias.getBytes())),
                                     spInitSlo,
                                     providerType);
 

@@ -22,27 +22,43 @@ package org.atricore.idbus.capabilities.sso.ui.page.authn.simple;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.StatelessForm;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.value.ValueMap;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.emitter.RoleRequiredAuthzStatement;
+import org.atricore.idbus.capabilities.sso.main.emitter.RoleRestrictedAuthzStatement;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.ui.components.GtFeedbackPanel;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.authn.BaseSignInPanel;
+import org.atricore.idbus.capabilities.sts.main.policies.AccountLockedAuthnStatement;
+import org.atricore.idbus.kernel.main.authn.PasswordPolicyEnforcementError;
+import org.atricore.idbus.kernel.main.authn.PasswordPolicyErrorType;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.*;
-import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
+import org.atricore.idbus.kernel.main.mediation.Artifact;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
+import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
+import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
 
 /**
  * Sign-in panel for simple authentication for collecting username and password credentials.
@@ -88,14 +104,12 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
     /**
      * Sign in form.
      */
-    public final class UsernamePasswordSignInForm extends StatelessForm<Void> {
-
-        private static final long serialVersionUID = 3245927593457623741L;
+    public class UsernamePasswordSignInForm extends StatelessForm<Void> {
 
         /**
          * Model for form.
          */
-        private final ValueMap properties = new ValueMap();
+        private ValueMap properties = new ValueMap();
 
         /**
          * Constructor.
@@ -110,9 +124,9 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             PropertyModel<String> m = new PropertyModel<String>(properties, "username");
 
             SSOWebSession s = (SSOWebSession) getSession();
-            if (s.getLastUsername() != null) {
+            /*if (s.getLastUsername() != null) {
                 m.setObject(s.getLastUsername());
-            }
+            }*/
 
             add(username = new RequiredTextField<String>("username", m));
             username.setType(String.class);
@@ -126,13 +140,15 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
             add(rememberMe = new CheckBox("rememberMe", new PropertyModel<Boolean>(properties, "rememberMe")));
 
+            BaseWebApplication app = (BaseWebApplication) getApplication();
+            add(new BookmarkablePageLink<Void>("forgotPasswordLink", app.resolvePage("SS/REQPWDRESET")));
         }
 
         @Override
         protected void onInitialize() {
             super.onInitialize();
 
-            // Since wicket does not know about form submittion yet (form.isSubmitted() always false),
+            // Since wicket does not know about form submition yet (form.isSubmitted() always false),
             // we have a work-around that does the same check that wicket will perform later.
             boolean submitted = false;
             if (getRequest().getContainerRequest() instanceof HttpServletRequest) {
@@ -147,7 +163,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
             } else if (credentialClaimsRequest.getLastErrorId() != null) {
 
                 if (logger.isDebugEnabled())
-                    logger.info("Received last error ID : " +
+                    logger.debug("Received last error ID : " +
                             credentialClaimsRequest.getLastErrorId() +
                             " ("+ credentialClaimsRequest.getLastErrorMsg()+")");
 
@@ -157,7 +173,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
                 String lastAppErrorID = ((SSOWebSession)getSession()).getLastAppErrorId();
                 if (logger.isDebugEnabled())
-                    logger.info("Found last app error ID : " +
+                    logger.debug("Found last app error ID : " +
                             lastAppErrorID +
                             " ("+lastAppErrorID+")");
 
@@ -179,7 +195,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
          * @see org.apache.wicket.markup.html.form.Form#onSubmit()
          */
         @Override
-        public final void onSubmit() {
+        public void onSubmit() {
 
             try {
                 String claimsConsumerUrl = signIn(getUsername(), getPassword(), isRememberMe());
@@ -262,7 +278,64 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
      * The received request contains previous error information
      */
     protected void onPreviousError() {
+        Set<PolicyEnforcementStatement> policyStatements = ((SSOWebSession) getSession()).
+                getCredentialClaimsRequest().getSsoPolicyEnforcements();
+        if (policyStatements != null && policyStatements.size() > 0) {
+
+            String restrictedRoles = "";
+            String requiredRoles = "";
+
+            for (PolicyEnforcementStatement stmt : policyStatements) {
+
+                if (stmt instanceof PasswordPolicyEnforcementError &&
+                        PasswordPolicyErrorType.CHANGE_PASSWORD_REQUIRED.equals(((PasswordPolicyEnforcementError) stmt).getType())) {
+
+                    SSOIdPApplication app = (SSOIdPApplication) getApplication();
+
+                    IdentityStore identityStore = ((SPChannel) app.getIdentityProvider().getDefaultFederationService().getChannel()).getIdentityManager().getIdentityStore();
+                    if (identityStore.isUpdatePasswordEnabled() || app.getHomePage() != null) {
+                        throw new RestartResponseAtInterceptPageException(app.resolvePage("POLICY/PWDRESET"));
+                    }
+
+                    displayFeedbackMessage(getString("claims.text.passwordExpired", null, "Your password expired"));
+                } else if (stmt instanceof AccountLockedAuthnStatement) {
+                    displayFeedbackMessage(getString("claims.text.accountLocked", null, "Your account is locked"));
+                } else if (stmt instanceof RoleRestrictedAuthzStatement) {
+                    restrictedRoles += " " + ((RoleRestrictedAuthzStatement)stmt).getRequiredRole();
+                } else if (stmt instanceof RoleRequiredAuthzStatement) {
+                    requiredRoles += " " + ((RoleRequiredAuthzStatement)stmt).getRequiredRole();
+                }
+            }
+
+            if (requiredRoles.length() > 0) {
+                final String m = restrictedRoles;
+                displayFeedbackMessage(
+                        getString("authz.groups.required",
+                                new AbstractReadOnlyModel<String>() {
+                                    @Override
+                                    public String getObject() {
+                                        return m;
+                                    }
+                                }
+                                ,
+                                "Access denied, not enough privileges !"));
+            }
+
+            if (restrictedRoles.length() > 0) {
+                final String m = restrictedRoles;
+                displayFeedbackMessage(getString("authz.groups.restricted",
+                        new AbstractReadOnlyModel<String>() {
+                            @Override
+                            public String getObject() {
+                                return m;
+                            }
+                        }
+                        , "Access denied, restricted privileges !"));
+            }
+        }
+
         displayFeedbackMessage(getString("claims.text.invalidCredentials", null, "Unable to sign you in"));
+
     }
 
     /**
@@ -301,7 +374,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
     /**
      * Removes persisted form data for the signin panel (forget me)
      */
-    public final void forgetMe() {
+    public void forgetMe() {
         // Remove persisted user data. Search for child component
         // of type UsernamePasswordSignInForm and remove its related persistence values.
         // getPage().removePersistedFormData(UsernamePasswordSignInForm.class, true);
@@ -363,6 +436,7 @@ public class UsernamePasswordSignInPanel extends BaseSignInPanel {
 
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(new CredentialClaimImpl("username", username));
+        claims.addClaim(new CredentialClaimImpl("userid", username));
         claims.addClaim(new CredentialClaimImpl("password", password));
         claims.addClaim(new UserClaimImpl("rememberMe", rememberMe));
 

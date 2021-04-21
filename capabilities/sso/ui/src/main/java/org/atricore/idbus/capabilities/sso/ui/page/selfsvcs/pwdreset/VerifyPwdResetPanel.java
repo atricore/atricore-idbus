@@ -5,31 +5,33 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.StatelessForm;
-import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.PasswordUtil;
-import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserSecurityQuestion;
+import org.atricore.idbus.kernel.main.provisioning.exception.IllegalPasswordException;
+import org.atricore.idbus.kernel.main.provisioning.exception.InvalidPasswordException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.ResetPasswordRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.ResetPasswordResponse;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 /**
+ * Password reset verification using security questions
+ *
  * @author: sgonzalez@atriocore.com
  * @date: 4/16/13
  */
@@ -37,106 +39,52 @@ public class VerifyPwdResetPanel extends Panel {
 
     private static final Log logger = LogFactory.getLog(ReqPwdResetPanel.class);
 
-    private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    private static final int SEC_QUESTIONS_PER_USER = 3;
+    final private Form form;
 
-    private Form form;
+    final private SubmitLink submit;
 
-    private SubmitLink submit;
+    final private PwdResetState state;
 
-    private User user;
+    private boolean success;
 
-    private UserSecurityQuestion[] questions;
-
-    private String hashAlgorithm = "MD5";
-
-    private String hashEncoding = "HEX";
-
-    private VerifyPwdResetModel model;
-
-    public VerifyPwdResetPanel(String id, User user, String hashAlgorithm, String hashEncoding) {
-        this(id, user);
-        this.hashAlgorithm = hashAlgorithm;
-        this.hashEncoding = hashEncoding;
-    }
-
-    public VerifyPwdResetPanel(String id, User user) {
+    public VerifyPwdResetPanel(String id, PwdResetState s) {
         super(id);
-        this.user = user;
+        this.state = s;
 
-        Random rg = new Random();
+        form = new Form<VerifyPwdResetModel>("pwdResetForm", new CompoundPropertyModel<VerifyPwdResetModel>(new VerifyPwdResetModel()));
 
-        model = new VerifyPwdResetModel();
+        final PasswordTextField newPassword = new PasswordTextField("newPassword");
+        form.add(newPassword);
 
-        // Get three security questions to recover the password:
-        Map<Integer, UserSecurityQuestion>  q = new HashMap<Integer, UserSecurityQuestion>();
-        for (int i = 0 ;  i < 3 ; i ++) {
-            q.put(i, user.getSecurityQuestions()[i]);
-        }
+        final PasswordTextField retypedPassword = new PasswordTextField("retypedPassword");
+        form.add(retypedPassword);
 
-        SSOWebSession session = (SSOWebSession) getSession();
-        if (session.getSecurityQuestions() == null) {
-            questions = new UserSecurityQuestion[q.values().size()];
-            int idx = 0;
-            for (UserSecurityQuestion sq : q.values()) {
-                questions[idx] = sq;
-                idx ++;
-            }
-            session.setSecurityQuestions(questions);
-        } else {
-            questions = session.getSecurityQuestions();
-        }
-
-        form = new StatelessForm<VerifyPwdResetModel>("verifyPwdResetForm", new CompoundPropertyModel<VerifyPwdResetModel>(model));
-
-        submit = new SubmitLink("doVerifyPwdReset")  {
+        submit = new SubmitLink("doSave")  {
 
             @Override
             public void onSubmit() {
-                try {
-                    if (!verifyPwdReset()) {
-                        onVerifyPwdResetFailed();
-                        return;
-                    }
-
-                } catch (Exception e) {
-                    logger.error("Fatal error during password reset request : " + e.getMessage(), e);
-                    onVerifyPwdResetError();
-                    return;
+                // We have already succeeded
+                if (success) {
+                    // TODO : Continue LOGIN ?!
+                    throw new RestartResponseAtInterceptPageException(((BaseWebApplication) getApplication()).resolvePage("LOGIN/SIMPLE"));
                 }
-                onVerifyPwdResetSucceeded();
+
+                try {
+                    pwdReset(state);
+                    onPwdResetSucceeded();
+                } catch (InvalidPasswordException e) {
+                    onIllegalPassword();
+                } catch (IllegalPasswordException e) {
+                    onIllegalPassword();
+                } catch (Exception e) {
+                    logger.error("Fatal error during password reset : " + e.getMessage(), e);
+                    onPwdResetFailed();
+                }
             }
         };
 
         form.add(submit);
-
-        // Q1
-        UserSecurityQuestion q1 = questions[0];
-        String q1Text = getQuestionText(q1);
-        final Label q1Label = new Label("question1", q1Text);
-        form.add(q1Label);
-
-        final TextField<String> answer1 = new TextField<String>("answer1");
-        form.add(answer1);
-
-        // Q2
-        UserSecurityQuestion q2 = questions[1];
-        String q2Text = getQuestionText(q2);
-        final Label q2Label = new Label("question2", q2Text);
-        form.add(q2Label);
-
-        final TextField<String> answer2 = new TextField<String>("answer2");
-        form.add(answer2);
-
-        // Q3
-        UserSecurityQuestion q3 = questions[2];
-        String q3Text = getQuestionText(q3);
-        final Label q3Label = new Label("question3", q3Text);
-        form.add(q3Label);
-
-        final TextField<String> answer3 = new TextField<String>("answer3");
-        form.add(answer3);
 
         add(form);
 
@@ -148,81 +96,68 @@ public class VerifyPwdResetPanel extends Panel {
         feedback.setOutputMarkupId(true);
         feedbackBox.add(feedback);
 
+    }
 
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        success = false;
+        if (this.state.getUser() == null) {
+            onPwdCodeExpired();
+        }
+    }
+
+    protected VerifyPwdResetModel getModel() {
+        return (VerifyPwdResetModel) form.getDefaultModelObject();
     }
 
 
+    protected void pwdReset(PwdResetState state) throws ProvisioningException {
 
-    protected boolean verifyPwdReset() throws Exception {
+        SSOIdPApplication app = (SSOIdPApplication) getApplication();
 
-        // Verify each question
+        VerifyPwdResetModel model = getModel();
 
-        String a1 = model.getAnswer1();
-        if (!a1.equals(questions[0].getAnswer())) {
-            return false;
-        }
+        FindUserByUsernameRequest fu = new FindUserByUsernameRequest();
+        fu.setUsername(state.getUser().getUserName());
+        FindUserByUsernameResponse fur = app.getProvisioningTarget().findUserByUsername(fu);
+        User user = fur.getUser();
 
-        String a2 = model.getAnswer2();
-        if (!a2.equals(questions[1].getAnswer())) {
-            return false;
-        }
+        ResetPasswordRequest req = new ResetPasswordRequest(user);
+        req.setNewPassword(model.getNewPassword());
 
-        String a3 = model.getAnswer3();
-        if (!a3.equals(questions[2].getAnswer())) {
-            return false;
-        }
+        ResetPasswordResponse resp = app.getProvisioningTarget().resetPassword(req);
 
-        return true;
     }
 
-    protected void onVerifyPwdResetSucceeded() {
-        PageParameters params = new PageParameters();
-        params.add("username", user.getUserName());
-        throw new RestartResponseAtInterceptPageException(((BaseWebApplication)getApplication()).resolvePage("SS/PWDRESET"), params);
+    protected void onIllegalPassword() {
+        success = false;
+        error(getLocalizer().getString("error.password.illegal", this, "Illegal Password"));
     }
 
-    protected void onVerifyPwdResetError() {
+    protected void onPwdResetSucceeded() {
+        success = true;
+
+        PasswordTextField newPwd = (PasswordTextField) form.get("newPassword").setEnabled(false);
+        newPwd.setRequired(false);
+
+        PasswordTextField reTypedPwd = (PasswordTextField) form.get("retypedPassword").setEnabled(false);
+        reTypedPwd.setRequired(false);
+
+        info(getLocalizer().getString("info.pwdreset.succeed", this, "Your password has been updated"));
+    }
+
+    protected void onPwdCodeExpired() {
+        success = false;
+        submit.setEnabled(false);
+        error(getLocalizer().getString("error.verification.code", this, "Your verification code expired."));
+    }
+
+    protected void onPwdResetFailed() {
+        success = false;
         submit.setEnabled(false);
         error(getLocalizer().getString("app.error", this, "Operation failed"));
     }
 
-    protected void onVerifyPwdResetFailed() {
-        SSOWebSession session = (SSOWebSession) getSession();
-        session.setSecurityQuestions(null);
-        error(getLocalizer().getString("verification.error", this, "Operation failed"));
-    }
 
-    protected String getQuestionText(UserSecurityQuestion q) {
-        if (q.getCustomMessage() != null)
-            return q.getCustomMessage();
-        return getLocalizer().getString(q.getQuestion().getMessageKey(), this, q.getQuestion().getDefaultMessage());
-    }
-
-
-    protected MessageDigest getDigest() throws ProvisioningException {
-
-        MessageDigest digest = null;
-        if (hashAlgorithm != null) {
-
-            try {
-                digest = MessageDigest.getInstance(hashAlgorithm);
-                logger.debug("Using hash algorithm/encoding : " + hashAlgorithm + "/" + hashEncoding);
-            } catch (NoSuchAlgorithmException e) {
-                logger.error("Algorithm not supported : " + hashAlgorithm, e);
-                throw new ProvisioningException(e.getMessage(), e);
-            }
-        }
-
-        return digest;
-
-    }
-
-
-    public String getHashAlgorithm() {
-        return hashAlgorithm;
-    }
-
-    public String getHashEncoding() {
-        return hashEncoding;
-    }
 }

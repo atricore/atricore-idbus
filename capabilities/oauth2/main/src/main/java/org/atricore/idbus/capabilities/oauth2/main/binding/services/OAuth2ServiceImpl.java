@@ -1,9 +1,6 @@
 package org.atricore.idbus.capabilities.oauth2.main.binding.services;
 
-import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenRequestType;
-import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
-import org.atricore.idbus.common.oauth._2_0.protocol.AuthorizationRequestType;
-import org.atricore.idbus.common.oauth._2_0.protocol.AuthorizationResponseType;
+import org.atricore.idbus.common.oauth._2_0.protocol.*;
 import org.atricore.idbus.common.oauth._2_0.wsdl.OAuthPortType;
 
 import javax.jws.WebService;
@@ -27,4 +24,7 @@ public class OAuth2ServiceImpl implements OAuthPortType {
         throw new UnsupportedOperationException("Not intended to be executed!");
     }
 
+    public SendPasswordlessLinkResponseType sendPasswordlessLinkRequest(SendPasswordlessLinkRequestType body) {
+        throw new UnsupportedOperationException("Not intended to be executed!");
+    }
 }

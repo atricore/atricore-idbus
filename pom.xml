@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
   ~ Atricore IDBus
   ~
   ~ Copyright 2009, Atricore Inc.
@@ -19,87 +19,18 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.atricore.idbus</groupId>
-    <artifactId>idbus-all</artifactId>
+    <artifactId>all</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.5.0-SNAPSHOT</version>
-    <name>Atricore IDBus All POM</name>
+    <version>1.5.1-SNAPSHOT</version>
+    <name>Atricore IDBus :: All : POM</name>
     <inceptionYear>2009</inceptionYear>
-
-    <modules>
-        <module>kernel</module>
-
-        <module>bundles/josso-ws-v1_2</module>
-        <module>bundles/apache-tiles-jsp-v2_0_6</module>
-        <module>bundles/apache-tiles-jsp-v2_2_2</module>
-        <module>bundles/javax-jdo2-v2_3-eb</module>
-        <module>bundles/javax-jdo2-v2_3-ec</module>
-        <module>bundles/javax-jdo-v3_0</module>
-        <module>bundles/javax-jstl-v1_2</module>
-        <module>bundles/datanucleus-v2_0_3</module>
-        <module>bundles/datanucleus-v2_1_2</module>
-        <module>bundles/apache-derby-network-v10_5_3_0_1</module>
-        <module>bundles/apache-derby-network-v10_11_1_1</module>
-        <module>bundles/apache-derby-client-v10_5_3_0_1</module>
-        <module>bundles/apache-derby-client-v10_11_1_1</module>
-        <module>bundles/apache-ds-v1_5_7</module>
-        <module>bundles/apache-maven-v3_0</module>
-        <module>bundles/ehcache-v2_1_0</module>
-        <module>bundles/ehcache-v2_8_1</module>
-        <module>bundles/pax-web-runtime-v0_7_2</module>
-        <module>bundles/pax-web-jetty-v0_7_2</module>
-        <module>bundles/pax-web-jetty-v0_7_3</module>
-        <module>bundles/wadi-v2_1_2</module>
-        <module>bundles/ini4j-v0_5_1</module>
-        <module>bundles/scala-library-v2_9_1</module>
-        <module>bundles/scala-compiler-v2_9_1</module>
-        <module>capabilities/spmlr2</module>
-        <module>capabilities/sso</module>
-        <module>capabilities/josso</module>
-        <module>capabilities/sts</module>
-        <module>capabilities/spnego</module>
-        <module>capabilities/openid</module>
-        <module>capabilities/openidconnect</module>
-        <module>capabilities/oauth2</module>
-        <module>capabilities/atricoreid</module>
-
-        <module>capabilities/client-cert-authn</module>
-        <module>capabilities/idconfirmation</module>
-
-        <module>idojos/idbus-db-identitystore</module>
-        <module>idojos/idbus-db-sessionstore</module>
-        <module>idojos/idbus-ldap-identitystore</module>
-        <module>idojos/idbus-memory-identitystore</module>
-        <module>idojos/idbus-memory-sessionstore</module>
-        <module>idojos/idbus-serialized-sessionstore</module>
-        <module>idojos/idbus-ehcache-sessionstore</module>
-        <!--module>idojos/idbus-strong-authscheme</module-->
-        <module>idojos/idbus-impersonateusr-authscheme</module>
-        <module>idojos/idbus-gatein-identitystore</module>
-        <module>idojos/idbus-virtual-identitystore</module>
-
-        <module>connectors/idbus-jdo-identityvault</module>
-
-        <module>applications/idbus-server</module>
-        <module>examples/custom-accountlink-emitter</module>
-        <module>examples/custom-identity-mapper</module>
-        <module>examples/custom-identity-vault</module>
-        <module>examples/simple-federation</module>
-        <module>examples/simple-provisioning</module>
-        <module>examples/salesforce</module>
-        <module>examples/oauth2-preauthn-app</module>
-        <module>examples/simple-iwa</module>
-        <module>examples/simple-openid</module>
-
-        <module>distributions</module>
-    </modules>
 
     <prerequisites>
         <maven>2.0.9</maven>
@@ -108,10 +39,16 @@
     <properties>
         <compiler.fork>true</compiler.fork>
         <felix.plugin.version>2.1.0</felix.plugin.version>
+        <spring.version>3.1.0.RELEASE</spring.version>
+        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <scala.major.version>2.11</scala.major.version>
+        <scala.version>${scala.major.version}.8</scala.version>
+        <scala.modules.version>1.0.5</scala.modules.version>
+        <!--<scala.osgi.version>${scala.version}.v20160304-115712-1706a37eb8</scala.osgi.version>-->
+        <scalate.version>1.7.1</scalate.version>
     </properties>
 
 
-    <!-- Minor change -->
     <scm>
         <connection>scm:git://atricore.git.sourceforge.net/gitroot/atricore/atricore</connection>
         <!-- Used by Maven -->
@@ -125,13 +62,15 @@
         <repository>
             <id>atricore-m2-deploy-repo</id>
             <name>Atricore Release Distribution Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url>
+            <url>file:///tmp/maven/repository.atricore.org/m2-release-repository</url>
+            <!--url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-release-repository</url-->
         </repository>
 
         <snapshotRepository>
             <id>atricore-m2-snapshot-deploy-repo</id>
             <name>Atricore Development Snapshot Repository</name>
-            <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
+            <url>file:///tmp/maven/repository.atricore.org/m2-snapshot-repository</url>
+            <!--url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url-->
         </snapshotRepository>
 
     </distributionManagement>
@@ -214,6 +153,13 @@
 
         </repository>
 
+        <!-- Spring -->
+        <repository>
+            <id>spring-repo</id>
+            <name>Spring Repository</name>
+            <url>http://repo.spring.io/release</url>
+        </repository>
+
         <!-- Apache -->
         <repository>
             <id>apache</id>
@@ -269,7 +215,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
+        <!--<repository>
             <id>jansi.release.m2</id>
             <name>jansi Release Repository</name>
             <url>http://jansi.fusesource.org/repo/release</url>
@@ -279,7 +225,7 @@
             <releases>
                 <enabled>true</enabled>
             </releases>
-        </repository>
+        </repository>-->
         <!--repository>
             <id>repo.fusesource.com</id>
             <name>repo.fusesource.com</name>
@@ -348,18 +294,18 @@
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
 
-        <!-- Codehaus 
+        <!-- Codehaus -->
         <repository>
-            <id>codehaus</id>
-            <name>Codehaus repository</name>
-            <url>http://repository.codehaus.org</url>
+            <id>codehaus-mule-repo</id>
+            <name>codehaus-mule-repo</name>
+            <url>https://repository-master.mulesoft.org/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>-->
+        </repository>
         <!-- JBoss -->
         <repository>
             <id>jboss</id>
@@ -442,6 +388,17 @@
             </snapshots>
 
         </repository>
+
+        <repository>
+            <id>wso2</id>
+            <url>http://maven.wso2.org/nexus/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -503,7 +460,7 @@
 
         </pluginRepository>
 
-        <!-- Apache releases 
+        <!-- Apache releases
         <pluginRepository>
             <id>apache-releases</id>
             <name>Apache Releases repository</name>
@@ -573,16 +530,102 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>2.3.4</version>
             </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-parser-combinators_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-xml_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-reflect</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.specs2</groupId>
+                <artifactId>specs2-core_${scala.major.version}</artifactId>
+                <version>3.7</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-library</artifactId>
+                <version>${scala.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-parser-combinators_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang.modules</groupId>
+                <artifactId>scala-xml_${scala.major.version}</artifactId>
+                <version>${scala.modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-reflect</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.scala-lang</groupId>
+                <artifactId>scala-compiler</artifactId>
+                <version>${scala.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.specs2</groupId>
+                <artifactId>specs2-core_${scala.major.version}</artifactId>
+                <version>3.7</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
     <build>
 
         <extensions>
             <extension>
+
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
-                <version>2.4</version>
+                <version>2.10</version>
+                <!--groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>2.10</version-->
+
             </extension>
+
         </extensions>
 
         <pluginManagement>
@@ -592,8 +635,9 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.0.2</version>
                     <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                        <compilerArgument>-XDignore.symbol.file</compilerArgument>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -605,40 +649,191 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.15</version>
                 </plugin>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>compile</goal>
+                                <goal>testCompile</goal>
+                            </goals>
+                            <configuration>
+                                <args>
+                                    <!--
+                                    <arg>-Xprint:typer</arg>
+                                    -->
+                                    <arg>-dependencyfile</arg>
+                                    <arg>${project.build.directory}/.scala_dependencies</arg>
+                                </args>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>com.mmakowski</groupId>
+                    <artifactId>specs2-maven-plugin</artifactId>
+                    <version>0.4.4</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
     <profiles>
         <profile>
-            <id>setup.eclipse</id>
+            <id>full</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
             <modules>
-                <module>assembly</module>
+                <module>kernel</module>
+
+                <module>bundles/josso-ws-v1_2</module>
+                <module>bundles/apache-tiles-jsp-v2_0_6</module>
+                <module>bundles/apache-tiles-jsp-v2_2_2</module>
+                <module>bundles/javax-jdo2-v2_3-eb</module>
+                <module>bundles/javax-jdo2-v2_3-ec</module>
+                <module>bundles/javax-jdo-v3_0</module>
+                <module>bundles/javax-jstl-v1_2</module>
+                <module>bundles/datanucleus-v2_0_3</module>
+                <module>bundles/datanucleus-v2_1_2</module>
+                <module>bundles/apache-derby-network-v10_5_3_0_1</module>
+                <module>bundles/apache-derby-client-v10_5_3_0_1</module>
+                <module>bundles/apache-ds-v1_5_7</module>
+                <module>bundles/apache-maven-v3_0</module>
+                <module>bundles/ehcache-v2_1_0</module>
+                <module>bundles/ehcache-v2_8_1</module>
+                <module>bundles/nimbus-jose-jwt-v3_10</module>
+                <module>bundles/oauth2-oidc-sdk-v4_14_1</module>
+                <module>bundles/nimbus-jose-jwt-v7_4</module>
+                <module>bundles/oauth2-oidc-sdk-v6_13</module>
+                <module>bundles/pax-web-runtime-v0_7_2</module>
+                <module>bundles/pax-web-jetty-v0_7_2</module>
+                <module>bundles/pax-web-jetty-v0_7_3</module>
+                <module>bundles/wadi-v2_1_2</module>
+                <module>bundles/ini4j-v0_5_1</module>
+                <module>bundles/apache-karaf-shell-ssh-v2_2_3</module>
+
+                <!--<module>bundles/scala-library-v2_9_1</module>-->
+                <!--<module>bundles/scala-compiler-v2_9_1</module>-->
+                <!--<module>bundles/scala-library-v2_11_8</module>-->
+                <module>bundles/jasypt-v1_9_2</module>
+                <module>bundles/jasypt-spring31-v1_9_2</module>
+                <module>capabilities/spmlr2</module>
+                <module>capabilities/oath</module>
+                <module>capabilities/sso</module>
+                <module>capabilities/josso</module>
+                <module>capabilities/sts</module>
+                <module>capabilities/spnego</module>
+                <module>capabilities/preauthn</module>
+                <module>capabilities/openid</module>
+                <module>capabilities/openidconnect</module>
+                <module>capabilities/oauth2</module>
+                <module>capabilities/atricoreid</module>
+
+                <module>capabilities/csca</module>
+                <module>capabilities/idconfirmation</module>
+
+                <module>idojos/idbus-db-identitystore</module>
+                <module>idojos/idbus-db-sessionstore</module>
+                <module>idojos/idbus-ldap-identitystore</module>
+                <module>idojos/idbus-memory-identitystore</module>
+                <module>idojos/idbus-memory-sessionstore</module>
+                <module>idojos/idbus-serialized-sessionstore</module>
+                <module>idojos/idbus-ehcache-sessionstore</module>
+                <!--module>idojos/idbus-strong-authscheme</module-->
+                <module>idojos/idbus-impersonateusr-authscheme</module>
+                <module>idojos/idbus-gatein-identitystore</module>
+                <module>idojos/idbus-virtual-identitystore</module>
+
+                <module>connectors/idbus-jdo-identityvault</module>
+                <module>connectors/jit-scim-provisioning</module>
+
+                <module>applications/idbus-server</module>
+                <module>examples/simple-federation</module>
+                <module>examples/simple-provisioning</module>
+                <module>examples/salesforce</module>
+                <module>examples/oauth2-preauthn-app</module>
+                <module>examples/simple-iwa</module>
+                <module>examples/simple-openid</module>
+                <module>examples/custom-identity-mapper</module>
+                <module>examples/custom-identity-vault</module>
+                <module>examples/custom-accountlink-emitter</module>
+                <module>examples/custom-audit-handler</module>
+                <module>examples/custom-session-manager-factory</module>
+                <module>examples/custom-subject-authn-policies</module>
+                <module>examples/custom-ui</module>
+                <module>examples/oidc-client</module>
+                <module>examples/spring-boot-partnerapp</module>
+
+                <module>distributions</module>
             </modules>
-            <properties>
-                <eclipse.workspace.dir>${basedir}/../workspace</eclipse.workspace.dir>
-            </properties>
-            <build>
-                <defaultGoal>eclipse:eclipse</defaultGoal>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-eclipse-plugin</artifactId>
-                        <inherited>false</inherited>
-                        <executions>
-                            <execution>
-                                <id>setup.eclipse.workspace</id>
-                                <phase>process-test-sources</phase>
-                                <goals>
-                                    <goal>add-maven-repo</goal>
-                                </goals>
-                                <configuration>
-                                    <workspace>${eclipse.workspace.dir}</workspace>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+
+        </profile>
+        <profile>
+            <id>dev</id>
+
+            <modules>
+                <module>kernel</module>
+
+                <module>bundles/josso-ws-v1_2</module>
+                <module>bundles/apache-tiles-jsp-v2_0_6</module>
+                <module>bundles/apache-tiles-jsp-v2_2_2</module>
+                <module>bundles/javax-jdo2-v2_3-eb</module>
+                <module>bundles/javax-jdo2-v2_3-ec</module>
+                <module>bundles/javax-jdo-v3_0</module>
+                <module>bundles/javax-jstl-v1_2</module>
+                <module>bundles/datanucleus-v2_0_3</module>
+                <module>bundles/datanucleus-v2_1_2</module>
+                <module>bundles/apache-derby-network-v10_5_3_0_1</module>
+                <module>bundles/apache-derby-client-v10_5_3_0_1</module>
+                <module>bundles/apache-ds-v1_5_7</module>
+                <module>bundles/apache-maven-v3_0</module>
+                <module>bundles/ehcache-v2_1_0</module>
+                <module>bundles/ehcache-v2_8_1</module>
+                <module>bundles/nimbus-jose-jwt-v3_10</module>
+                <module>bundles/oauth2-oidc-sdk-v4_14_1</module>
+                <module>bundles/nimbus-jose-jwt-v7_4</module>
+                <module>bundles/oauth2-oidc-sdk-v6_13</module>
+                <module>bundles/pax-web-runtime-v0_7_2</module>
+                <module>bundles/pax-web-jetty-v0_7_2</module>
+                <module>bundles/pax-web-jetty-v0_7_3</module>
+                <module>bundles/wadi-v2_1_2</module>
+                <module>bundles/ini4j-v0_5_1</module>
+                <module>bundles/jasypt-v1_9_2</module>
+                <module>bundles/jasypt-spring31-v1_9_2</module>
+                <module>bundles/apache-karaf-shell-ssh-v2_2_3</module>
+
+                <module>capabilities/spmlr2</module>
+                <module>capabilities/oath</module>
+                <module>capabilities/sso</module>
+                <module>capabilities/josso</module>
+                <module>capabilities/sts</module>
+                <module>capabilities/spnego</module>
+                <module>capabilities/preauthn</module>
+                <module>capabilities/openid</module>
+                <module>capabilities/openidconnect</module>
+                <module>capabilities/oauth2</module>
+                <module>capabilities/atricoreid</module>
+                <module>capabilities/csca</module>
+                <module>capabilities/idconfirmation</module>
+
+                <module>idojos/idbus-db-identitystore</module>
+                <module>idojos/idbus-db-sessionstore</module>
+                <module>idojos/idbus-ldap-identitystore</module>
+                <module>idojos/idbus-memory-identitystore</module>
+                <module>idojos/idbus-memory-sessionstore</module>
+                <module>idojos/idbus-serialized-sessionstore</module>
+                <module>idojos/idbus-ehcache-sessionstore</module>
+                <module>idojos/idbus-impersonateusr-authscheme</module>
+                <module>idojos/idbus-gatein-identitystore</module>
+                <module>idojos/idbus-virtual-identitystore</module>
+
+                <module>connectors/idbus-jdo-identityvault</module>
+                <module>connectors/jit-scim-provisioning</module>
+
+            </modules>
+
         </profile>
     </profiles>
 

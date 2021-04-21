@@ -4,6 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
+import org.atricore.idbus.capabilities.sso.support.core.InvalidXMLException;
 import org.atricore.idbus.capabilities.sso.support.core.util.StringSource;
 import org.atricore.idbus.kernel.main.databinding.JAXBUtils;
 import org.xml.sax.SAXException;
@@ -29,6 +30,17 @@ import java.util.TreeSet;
  * @version $Id$
  */
 public class XmlUtils {
+
+    /**
+     * List of tokens that may be in an xpath expression.
+     */
+    private static String[] xpath = {
+            "/", "..", "@", "*", "[", "]", "(", "(", "{", "}", "?", "$", "#", "|", "*", "=", "!=", "<", "<=", ">", ">=",
+            "node", "ancestor", "descendant", "following", "attribute", "child", "namespace", "parent", "preceding", "self",
+            "document-node", "text", "comment", "namespace-code", "processing-instruction",
+    };
+
+
     private static final Log logger = LogFactory.getLog(XmlUtils.class);
 
     private static final TreeSet<String> ssoContextPackages = new TreeSet<String>();
@@ -47,7 +59,39 @@ public class XmlUtils {
         javax.xml.parsers.SAXParserFactory saxf =
                 SAXParserFactory.newInstance();
 
+        String FEATURE = null;
+
         try {
+            // -----------------------------------------------------------------------------
+            // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all
+            // XML entity attacks are prevented
+            // -----------------------------------------------------------------------------
+            FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+            dbf.setFeature(FEATURE, true);
+
+            // -----------------------------------------------------------------------------
+            // If you can't completely disable DTDs, then at least do the following:
+            // -----------------------------------------------------------------------------
+            // JDK7+ - http://xml.org/sax/features/external-general-entities
+            FEATURE = "http://xml.org/sax/features/external-general-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // JDK7+ - http://xml.org/sax/features/external-parameter-entities
+            FEATURE = "http://xml.org/sax/features/external-parameter-entities";
+            dbf.setFeature(FEATURE, false);
+
+            // -----------------------------------------------------------------------------
+            // Disable external DTDs as well
+            // -----------------------------------------------------------------------------
+            FEATURE = "http://apache.org/xml/features/nonvalidating/load-external-dtd";
+            dbf.setFeature(FEATURE, false);
+
+            // -----------------------------------------------------------------------------
+            // and these as well, per Timothy Morgan's 2014 paper: "XML Schema, DTD, and Entity Attacks"
+            // -----------------------------------------------------------------------------
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);
+
             logger.debug("DocumentBuilder = " + dbf.newDocumentBuilder());
             logger.debug("SAXParser = " + saxf.newSAXParser());
             logger.debug("XMLEventReader = " + staxIF.createXMLEventReader(new StringSource("<a>Hello</a>")));
@@ -148,4 +192,22 @@ public class XmlUtils {
 
     }
 
+    /**
+     * Verifh that IDs do not have an XPath expression that the digital signature tool may try to resolve.
+     *
+     * @param ID
+     * @throws Exception
+     */
+    public static void verifyID(String ID) throws Exception {
+
+        if (ID == null)
+            return;
+
+        for (String s : xpath) {
+            if (ID.contains(s))
+                throw new InvalidXMLException("Invalid ID " + ID + " [" + s + "]");
+
+        }
+
+    }
 }

@@ -9,7 +9,7 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = -2547786148798290707L;
 
-    private String oid;
+    private String id;
 
     //<--- General Information ---->
     private String userName;
@@ -49,10 +49,14 @@ public class User implements Serializable {
     private Boolean accountDisabled;
     private Boolean accountExpires;
     private Long accountExpirationDate;
+    private Long lastAuthentication;
     private Boolean limitSimultaneousLogin;
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
     private Boolean preventNewSession;
+    private Long accountCreationDate;
+    private Long accountModificationDate;
+    private Integer failedLogins;
 
 //<--- Security Password---->
     private Boolean allowUserToChangePassword;
@@ -61,6 +65,7 @@ public class User implements Serializable {
     private Long passwordExpirationDate;
     private Boolean notifyPasswordExpiration;
     private Integer daysBeforeExpiration;
+    private Long lastPasswordChangeDate;
 
 //<--- Security Set Password---->
     private String userPassword;
@@ -74,12 +79,12 @@ public class User implements Serializable {
 
     private UserAttributeValue[] attrs;
 
-    public String getOid() {
-        return oid;
+    public String getId() {
+        return id;
     }
 
-    public void setOid(String oid) {
-        this.oid = oid;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserName() {
@@ -330,6 +335,14 @@ public class User implements Serializable {
         this.accountExpirationDate = accountExpirationDate;
     }
 
+    public Long getLastAuthentication() {
+        return lastAuthentication;
+    }
+
+    public void setLastAuthentication(Long lastAuthentication) {
+        this.lastAuthentication = lastAuthentication;
+    }
+
     public Boolean isLimitSimultaneousLogin() {
         return limitSimultaneousLogin;
     }
@@ -372,6 +385,30 @@ public class User implements Serializable {
 
     public void setPreventNewSession(Boolean preventNewSession) {
         this.preventNewSession = preventNewSession;
+    }
+
+    public Long getAccountCreationDate() {
+        return accountCreationDate;
+    }
+
+    public void setAccountCreationDate(Long accountCreationDate) {
+        this.accountCreationDate = accountCreationDate;
+    }
+
+    public Long getAccountModificationDate() {
+        return accountModificationDate;
+    }
+
+    public void setAccountModificationDate(Long accountModificationDate) {
+        this.accountModificationDate = accountModificationDate;
+    }
+
+    public Integer getFailedLogins() {
+        return failedLogins;
+    }
+
+    public void setFailedLogins(Integer failedLogins) {
+        this.failedLogins = failedLogins;
     }
 
     public Boolean isAllowUserToChangePassword() {
@@ -434,6 +471,14 @@ public class User implements Serializable {
         this.daysBeforeExpiration = daysBeforeExpiration;
     }
 
+    public Long getLastPasswordChangeDate() {
+        return lastPasswordChangeDate;
+    }
+
+    public void setLastPasswordChangeDate(Long lastPasswordChangeDate) {
+        this.lastPasswordChangeDate = lastPasswordChangeDate;
+    }
+
     public String getUserPassword() {
         return userPassword;
     }
@@ -489,15 +534,15 @@ public class User implements Serializable {
 
         User that = (User) o;
 
-        if (oid != null)
-            return oid.equals(that.oid);
+        if (id != null)
+            return id.equals(that.id);
 
         return false;
     }
 
     @Override
     public int hashCode() {
-        return oid != null ? oid.hashCode() : super.hashCode();
+        return id != null ? id.hashCode() : super.hashCode();
     }
 
 }

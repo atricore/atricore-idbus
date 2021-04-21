@@ -21,15 +21,16 @@
 
 package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 
-import oasis.names.tc.saml._2_0.assertion.AssertionType;
-import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
-import org.atricore.idbus.capabilities.sso.main.emitter.plans.Samlr2AssertionEmissionException;
+import oasis.names.tc.saml._2_0.metadata.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
-import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypter;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -37,26 +38,70 @@ import java.util.Map;
  */
 public class EncryptAssertionAction extends AbstractSSOAssertionAction {
 
+    private static final Log logger = LogFactory.getLog(EncryptAssertionAction.class);
+
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
+        /* !!!! Encryption is done when building the response !!!!
 
-        AssertionType assertion = null;
+        AssertionType assertion = (AssertionType) out.getContent();
+        ContextInstance ctx = executionContext.getContextInstance();
 
-        // TODO : Get context variables required to encrypt the assertion, like SAMLR2 Metadata
+        Object rstCtx = ctx.getVariable(RST_CTX);
+        if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
+            SamlR2SecurityTokenEmissionContext saml2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
+            CircleOfTrustMemberDescriptor sp = saml2Ctx.getMember();
+            SamlR2Encrypter encrypter = (SamlR2Encrypter) ctx.getTransientVariable(VAR_SAMLR2_ENCRYPTER);
 
-        try {
-             assertion = (AssertionType) out.getContent();
-        } catch (ClassCastException e) {
-            throw new Samlr2AssertionEmissionException( " Object of type [" + out.getContent().getClass().getCanonicalName() + "] can not be encrypted" );
+            ChannelConfiguration channelCfg = saml2Ctx.getSpChannelConfig();
+
+            if (channelCfg != null) {
+
+                if (!channelCfg.isEncryptAssertion())
+                    return;
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Encrypting SAMLR2 Assertion : " + assertion.getID() + " for SP " + sp.getAlias());
+
+                KeyDescriptorType encKey = getEncryptionKey(sp);
+                if (encKey == null) {
+                    logger.warn("No Encryption Key found, try disabling assertion encryption (SP : " + sp.getAlias() + ")");
+                    return;
+                }
+
+                // Add encrypted assertion as nested element
+                EncryptedElementType encryptedAssertion = encrypter.encrypt(assertion, encKey);
+                IdentityArtifact encrypted = new IdentityArtifactImpl(new QName(SAMLR2Constants.SAML_ASSERTION_NS, "EncryptedElement"), encryptedAssertion);
+                out.setNested(encrypted);
+            }
+        }
+        */
+
+    }
+
+    protected KeyDescriptorType getEncryptionKey(CircleOfTrustMemberDescriptor sp) throws SSOException {
+        EntityDescriptorType ed = (EntityDescriptorType) sp.getMetadata().getEntry();
+
+        List<RoleDescriptorType> ssoRoles = ed.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor();
+        if (ssoRoles == null)
+            throw new SSOException("No Role descriptors found in metadata " + ed.getID());
+
+        for (RoleDescriptorType ssoRole : ssoRoles) {
+            if (ssoRole instanceof SPSSODescriptorType) {
+
+                SPSSODescriptorType spRole = (SPSSODescriptorType) ssoRole;
+                List<KeyDescriptorType> keyDescriptors = spRole.getKeyDescriptor();
+                if (keyDescriptors == null)
+                    return null;
+
+                for (KeyDescriptorType keyDescriptor : keyDescriptors) {
+                    if (keyDescriptor.getUse() != null && keyDescriptor.getUse().equals(KeyTypes.ENCRYPTION))
+                        return keyDescriptor;
+                }
+
+            }
         }
 
-        Map encrypters = getAppliactionContext().getBeansOfType( SamlR2Encrypter.class );
-        if ( encrypters.values().size() != 1 )
-            throw new Samlr2AssertionEmissionException( "Cannot find a valid Samlr2 encrypter in application context" );
+        return null;
 
-        SamlR2Encrypter encrypter = (SamlR2Encrypter) encrypters.values().iterator().next();
-
-        EncryptedElementType eet = encrypter.encrypt( assertion );
-
-        out.replaceContent( eet );
     }
 }

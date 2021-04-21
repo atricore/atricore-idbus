@@ -8,7 +8,7 @@ import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
 import com.google.api.client.http.GenericUrl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.openidconnect.main.binding.OpenIDConnectBinding;
+import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
 import org.atricore.idbus.capabilities.openidconnect.main.common.oauth.OAuthGetTemporaryTokenUsingPost;
@@ -54,7 +54,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
      * This procedure will process an authn request.
      * <p/>
      * <p/>
-     * If we already stablished identity for the 'presenter' (user) of the request, we'll generate
+     * If we already established identity for the 'presenter' (user) of the request, we'll generate
      * an assertion using the authn statement stored in session as security token.
      * The assertion will be sent to the SP in a new Response.
      * <p/>
@@ -73,7 +73,7 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         OpenIDConnectProxyMediator mediator = (OpenIDConnectProxyMediator) channel.getIdentityMediator();
 
         // Resolve authz token service endpoint
-        EndpointDescriptor responseLocation = resolveAuthzTokenServiceEndpoint();
+        EndpointDescriptor responseLocation = resolveAuthnResponseEndpoint();
 
         if (responseLocation == null)
             throw new OpenIDConnectException("Cannot resolve local Authorization Code token service endpoint");
@@ -81,12 +81,24 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         if (logger.isDebugEnabled())
             logger.debug("AuthzTokenConsumer: " + responseLocation.getLocation());
 
+        String userAgent = (String) in.getHeader("org.atricore.idbus.http.UserAgent");
+
         // redirect to the authorization flow
         String relayState = uuidGenerator.generateId();
 
         GenericUrl authorizationUrl;
+        String authorizationUrlStr;
 
-        if (OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType())) {
+        boolean weChat = OpenIDConnectConstants.WeChatAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType());
+        boolean twitter = OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME.toString().equals(responseLocation.getType());
+        boolean mobile = isMobile(userAgent);
+
+        if (logger.isTraceEnabled())
+            logger.trace("WeChat: "  + weChat +
+                    ", Twitter: " + twitter +
+                    " Mobile: " + mobile);
+
+        if (twitter) {
             OAuthHmacSigner signer = new OAuthHmacSigner();
             signer.clientSharedSecret = mediator.getClientSecret();
 
@@ -122,9 +134,16 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
             // Keep track of state
             mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:signer", signer);
             mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:requestToken", requestTokenResponse.token);
+
+            authorizationUrlStr = authorizationUrl.build();
+
         } else {
-            authorizationUrl =
-                    new AuthorizationCodeRequestUrl(mediator.getAuthzTokenServiceLocation(), mediator.getClientId());
+
+            authorizationUrl = (!weChat || !mobile ?
+                    new AuthorizationCodeRequestUrl(mediator.getAuthzTokenServiceLocation(), mediator.getClientId()) :
+                    new AuthorizationCodeRequestUrl(mediator.getMobileAuthzTokenServiceLocation(), mediator.getClientId()));
+
+
 
             // Keep track of state
             ((AuthorizationCodeRequestUrl) authorizationUrl).setState(relayState);
@@ -138,15 +157,41 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
 
             // Request the proper scopes, this varies from IdP to IdP:
 
-            String scopes = mediator.getScopes();
+            String scopes = (!weChat || !mobile ? mediator.getScopes() : mediator.getMobileScopes());
 
             if (logger.isDebugEnabled())
                 logger.debug("Setting scopes URL parameter to [" + scopes + "]");
 
-            ((AuthorizationCodeRequestUrl) authorizationUrl).setScopes(Collections.singleton(scopes));
+            if (scopes != null) {
+                ((AuthorizationCodeRequestUrl) authorizationUrl).setScopes(Collections.singleton(scopes));
+            }
+
+            /*
+            if (weChat) {
+                URL responseUrl = new URL(responseLocation.getLocation());
+                String redirectUri = responseUrl.getProtocol() + "://" + responseUrl.getHost();
+                ((AuthorizationCodeRequestUrl) authorizationUrl).setRedirectUri(redirectUri);
+            } else {
+                ((AuthorizationCodeRequestUrl) authorizationUrl).setRedirectUri(responseLocation.getLocation());
+            }*/
 
             ((AuthorizationCodeRequestUrl) authorizationUrl).setRedirectUri(responseLocation.getLocation());
+
+            authorizationUrlStr = authorizationUrl.build();
+
         }
+
+        if (weChat) {
+
+            // TODO : Mobile browser support! user different URL
+
+            authorizationUrlStr = authorizationUrlStr.replace("client_id", "appid");
+            authorizationUrlStr += "#wechat_redirect";
+
+            // snsapi_userinfo snsapi_base
+        }
+
+        // Some changes for WeChat!
 
         // Keep track of state
         mediationState.setLocalVariable("urn:OPENID-CONNECT:1.0:relayState", relayState);
@@ -156,11 +201,11 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
         EndpointDescriptor ed = new EndpointDescriptorImpl("authzCodeService",
                 OpenIDConnectConstants.AuthzCodeProviderService_QNAME.getLocalPart(),
                 OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.getValue(),
-                authorizationUrl.build(),
+                authorizationUrlStr,
                 null);
 
         out.setMessage(new MediationMessageImpl(relayState,
-                authorizationUrl,
+                authorizationUrlStr,
                 "OpenIDAuthenticationRequest",
                 relayState,
                 ed,
@@ -171,17 +216,19 @@ public class SingleSignOnProxyProducer extends OpenIDConnectProducer {
     }
 
 
-    protected EndpointDescriptor resolveAuthzTokenServiceEndpoint() {
+    protected EndpointDescriptor resolveAuthnResponseEndpoint() {
 
         String googleSvc = OpenIDConnectConstants.GoogleAuthzTokenConsumerService_QNAME.toString();
         String fbSvc = OpenIDConnectConstants.FacebookAuthzTokenConsumerService_QNAME.toString();
         String twSvc = OpenIDConnectConstants.TwitterAuthzTokenConsumerService_QNAME.toString();
+        String linkedInSvc = OpenIDConnectConstants.LinkedInAuthzTokenConsumerService_QNAME.toString();
         String binding = OpenIDConnectBinding.OPENIDCONNECT_AUTHZ.toString();
 
         for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
             if (endpoint.getType().equals(googleSvc) ||
                     endpoint.getType().equals(fbSvc) ||
                     endpoint.getType().equals(twSvc) ||
+                    endpoint.getType().equals(linkedInSvc) ||
                     endpoint.getType().endsWith("AuthzTokenConsumerService")) { // Kind of a hack
 
                 if (endpoint.getBinding().equals(binding))

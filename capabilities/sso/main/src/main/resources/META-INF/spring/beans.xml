@@ -33,6 +33,32 @@
     <!-- Services  -->
     <!--           -->
 
+    <bean id="attributeProfileMapperRegistry" class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry"
+            init-method="init">
+        <property name="builtInMappers">
+            <list>
+                <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.BasicAttributeProfileMapper">
+                    <property name="name" value="basic-built-in"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.JOSSOAttributeProfileMapper">
+                    <property name="name" value="josso-built-in"/>
+                </bean>
+                <bean class="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.OneToOneAttributeProfileMapper">
+                    <property name="name" value="one-to-one-built-in"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <osgi:service id="attributeProfileMapperRegistryExporter"
+                  interface="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry"
+                  ref="attributeProfileMapperRegistry"/>
+
+    <osgi:list id="attributeProfileMappers" interface="org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.SamlR2AttributeProfileMapper"
+               cardinality="0..N" >
+        <osgi:listener ref="attributeProfileMapperRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
     <bean id="osgiSelectionStrategiesRegistry" class="org.atricore.idbus.capabilities.sso.main.select.internal.OsgiSelectionStrategiesRegistry">
         <constructor-arg ref="selectionStrategiesRegistry" />
     </bean>
@@ -48,6 +74,7 @@
                         <!-- Ordered list of selectors -->
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
+                            <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreviouslyUsedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreferredIdPEntitySelector"/>
                         </list>
                     </property>
@@ -60,6 +87,7 @@
                         <list>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.RequestedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreviouslySelectedIdPEntitySelector"/>
+                            <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreviouslyUsedIdPEntitySelector"/>
                             <bean class="org.atricore.idbus.capabilities.sso.main.select.selectors.PreferredIdPEntitySelector"/>
                         </list>
                     </property>
@@ -96,6 +124,17 @@
                cardinality="0..N" >
         <osgi:listener ref="osgiSelectionStrategiesRegistry" bind-method="register" unbind-method="unregister" />
     </osgi:list>
+
+    <!-- SP by group policy -->
+    <bean id="spByGroupPolicy" class="org.atricore.idbus.capabilities.sso.main.emitter.SPbyGroupAccessAuthzPolicy" />
+
+    <osgi:service id="spByGroupPolicySvc" ref="spByGroupPolicy"
+                  interface="org.atricore.idbus.capabilities.sts.main.SubjectAuthenticationPolicy">
+        <service-properties>
+            <!-- This MUST match the SubjectAuthenticationPolicy property named 'name' -->
+            <entry key="policyName" value="idbus-sp-by-group-authz"/>
+        </service-properties>
+    </osgi:service>
 
 
     <!--           -->

@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.atricore.idbus.capabilities.sso.ui.model.IdPModel;
 
 /**
@@ -30,11 +31,10 @@ public class IdPDetailsPanel extends Panel {
         super.onInitialize();
 
         // IDP Description
-        add(new Label("description", model.getObject().getDescription()));
+        add(new Label("idpDescription", model.getObject().getDescription()));
 
-        // IDP Initiated SSO link
-        add(new Link<IdPModel>("ssoLink", model) {
-
+        // IDP Initiated SSO link w/Button
+        add(new Link<IdPModel>("ssoLinkBtn", model) {
             @Override
             public void onClick() {
                 // Send response back!
@@ -43,6 +43,10 @@ public class IdPDetailsPanel extends Panel {
                 mediator.onSelectIdp(idp.getName(), true);
             }
         });
+
+        add(new Label("idpId", model.getObject().getId()));
+
+        add(new Label("idpType", new ResourceModel(model.getObject().getProviderType())));
     }
 
 

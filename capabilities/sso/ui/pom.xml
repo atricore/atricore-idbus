@@ -29,21 +29,21 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.sso</groupId>
         <artifactId>sso</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>org.atricore.idbus.capabilities.sso.ui</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SSO UI Component</name>
 
     <properties>
         <!--apache-wicket.version>1.4.18</apache-wicket.version-->
-        <apache-wicket.version>6.5.0</apache-wicket.version>
-        <idbus.cap.sso.version>1.5.0-SNAPSHOT</idbus.cap.sso.version>
-        <idbus.cap.oauth2.version>1.5.0-SNAPSHOT</idbus.cap.oauth2.version>
-        <ops4j.paxwicket.version>2.1.0</ops4j.paxwicket.version>
+        <apache-wicket.version>6.7.0</apache-wicket.version>
+        <idbus.cap.sso.version>1.5.1-SNAPSHOT</idbus.cap.sso.version>
+        <idbus.cap.oauth2.version>1.5.1-SNAPSHOT</idbus.cap.oauth2.version>
+        <ops4j.paxwicket.version>2.1.1</ops4j.paxwicket.version>
         <osgi.version>4.0.1</osgi.version>
         <pax.web.version>0.7.2</pax.web.version>
     </properties>
@@ -174,6 +174,12 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.auditing</groupId>
+            <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -480,8 +486,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                             http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <bean id="custom-session-manager-factory" class="org.atricore.idbus.examples.sessionmanager.CustomSSOSessionManagerFactory">
+        <property name="name" value="custom-session-manager"/>
+        <property name="description" value="Custom Session Manager Factory"/>
+    </bean>
+
+    <osgi:service id="custom-session-manager-factory-svc" ref="custom-session-manager-factory"
+                  interface="org.atricore.idbus.kernel.main.session.SSOSessionManagerFactory">
+        <service-properties>
+            <!-- This MUST match the SSOSessionManagerFactory property named 'name' -->
+            <entry key="factoryName" value="custom-session-manager"/>
+        </service-properties>
+    </osgi:service>
+
+</s:beans>

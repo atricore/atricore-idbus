@@ -96,7 +96,7 @@ public class PwdChangePanel extends Panel {
 
         SetPasswordRequest req = new SetPasswordRequest ();
 
-        req.setUserId(user.getOid());
+        req.setUserId(user.getId());
         req.setCurrentPassword(pwdChange.getCurrentPassword());
         req.setNewPassword(pwdChange.getNewPassword());
 
@@ -105,7 +105,7 @@ public class PwdChangePanel extends Panel {
     }
 
     protected void onInvalidPassword() {
-        error(getLocalizer().getString("error.password.invalid", this, "Operation failed"));
+        error(getLocalizer().getString("error.password.invalid", this, "Invalid Password"));
     }
 
     protected void onIllegalPassword() {
@@ -132,6 +132,6 @@ public class PwdChangePanel extends Panel {
     }
 
     protected void onUpdateSucceeded() {
-        error(getLocalizer().getString("pwdChangeSucceeded", this, "Your password has been updated"));
+        success(getLocalizer().getString("pwdChangeSucceeded", this, "Your password has been updated"));
     }
 }

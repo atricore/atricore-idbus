@@ -111,11 +111,11 @@ public class ProfilePanel extends Panel {
 
     protected void onUpdateSucceeded() {
         // Go to profile
-        form.setResponsePage(((BaseWebApplication)getApplication()).resolvePage("SS/PROFILEPAGE"));
+        success(getLocalizer().getString("updateSuccess", this, "Your account has been updated"));
     }
 
     protected void onUpdateFailed() {
-        // Show app. error page or validation error
+        error(getLocalizer().getString("updateError", this, "An error occurred updating your account"));
     }
 
 

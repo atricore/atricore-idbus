@@ -60,6 +60,13 @@ public class OAuth2AuthenticationScheme extends AbstractAuthenticationScheme {
             atrf.setConfig(config);
             AccessTokenResolver ats = atrf.newResolver();
             this.oauth2AccessToken = ats.resolve(oauth2AccessToken);
+
+            // Check token expiration:
+            long expiresOn = this.oauth2AccessToken.getExpiresOn();
+            if (expiresOn < System.currentTimeMillis()) {
+                logger.debug("Authentication failed: token expired " + new java.util.Date(expiresOn));
+                throw new AuthenticationFailureException("Authentication failed: token expired " + new java.util.Date(expiresOn));
+            }
             
             setAuthenticated(true);
 
@@ -74,6 +81,11 @@ public class OAuth2AuthenticationScheme extends AbstractAuthenticationScheme {
         } catch (Exception e) {
             throw new SSOAuthenticationException(e);
         }
+    }
+
+    @Override
+    public Principal getInputPrincipal() {
+        return getPrincipal();
     }
 
     public Principal getPrincipal() {

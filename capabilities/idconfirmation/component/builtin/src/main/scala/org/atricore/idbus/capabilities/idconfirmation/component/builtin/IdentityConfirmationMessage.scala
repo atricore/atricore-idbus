@@ -22,7 +22,7 @@
 package org.atricore.idbus.capabilities.idconfirmation.component.builtin
 
 import java.net.URL
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 
 /**
  * Message types issued by the identity confirmation binding to the corresponding producer.
@@ -35,4 +35,4 @@ case class TokenSharedConfirmation(@BeanProperty secret : String, @BeanProperty 
 
 case class TokenAuthenticationRequest(@BeanProperty secret : String) extends IdentityConfirmationMessage
 
-case class IdentityConfirmationNegotiationInitiation extends IdentityConfirmationMessage
+abstract class IdentityConfirmationNegotiationInitiation extends IdentityConfirmationMessage

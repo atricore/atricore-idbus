@@ -24,6 +24,7 @@ package org.atricore.idbus.kernel.main.mediation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.AbstractIdGenerator;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 /**
  * @org.apache.xbean.XBean element="artifact-generator"
@@ -35,7 +36,7 @@ public class ArtifactGeneratorImpl extends AbstractIdGenerator implements Artifa
 
     private static final Log logger = LogFactory.getLog(ArtifactGeneratorImpl.class);
 
-    private int artifactLength = 8;
+    private static final UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     private String node;
 
@@ -43,37 +44,11 @@ public class ArtifactGeneratorImpl extends AbstractIdGenerator implements Artifa
      * Generate and return an artifact
      */
     public synchronized String generateId() {
-
-        byte random[] = new byte[16];
-
-        // Render the result as a String of hexadecimal digits
-        StringBuffer result = new StringBuffer();
-        int resultLenBytes = 0;
-        while (resultLenBytes < artifactLength) {
-            getRandomBytes(random);
-            random = getDigest().digest(random);
-            for (int j = 0;
-                 j < random.length && resultLenBytes < artifactLength;
-                 j++) {
-                byte b1 = (byte) ((random[j] & 0xf0) >> 4);
-                byte b2 = (byte) (random[j] & 0x0f);
-                if (b1 < 10)
-                    result.append((char) ('0' + b1));
-                else
-                    result.append((char) ('A' + (b1 - 10)));
-                if (b2 < 10)
-                    result.append((char) ('0' + b2));
-                else
-                    result.append((char) ('A' + (b2 - 10)));
-                resultLenBytes++;
-            }
-        }
-
+        String result = uuidGenerator.generateId();
         if (node != null)
-            return node + result.toString();
+            return node + result;
         
-        return result.toString();
-
+        return result;
     }
 
     public Artifact generate() {

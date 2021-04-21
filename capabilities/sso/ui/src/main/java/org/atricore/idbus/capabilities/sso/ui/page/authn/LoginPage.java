@@ -107,6 +107,13 @@ public abstract class LoginPage extends BasePage {
             throw new RestartResponseAtInterceptPageException(resolvePage("ERROR/SESSION"));
         }
 
+        // Setting selected locale:
+        if (credentialClaimsRequest.getLocale() != null) {
+            if (logger.isDebugEnabled())
+                logger.debug("Setting user requested locale " + credentialClaimsRequest.getLocale());
+            getSession().setLocale(credentialClaimsRequest.getLocale());
+        }
+
         // Add signIn panel to page
         add(prepareSignInPanel("signIn", credentialClaimsRequest, artifactQueueManager, idsuRegistry));
     }

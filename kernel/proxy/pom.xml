@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel</groupId>
         <artifactId>kernel</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel</groupId>
@@ -38,13 +38,11 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.9.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.9.1</version>
             <classifier>sources</classifier>
             <scope>provided</scope>
         </dependency>
@@ -55,17 +53,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.scala-tools.subcut</groupId>
-            <artifactId>subcut_2.9.1</artifactId>
-            <version>1.0</version>
+            <groupId>com.escalatesoft.subcut</groupId>
+            <artifactId>subcut_${scala.major.version}</artifactId>
+            <version>2.1</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-tools.subcut</groupId>
-            <artifactId>subcut_2.9.1</artifactId>
-            <version>1.0</version>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
@@ -82,7 +73,7 @@
         <dependency>
             <groupId>org.josso</groupId>
             <artifactId>josso-ws-v1_2</artifactId>
-            <version>1.8.10-SNAPSHOT</version>
+            <version>1.8.14-SNAPSHOT</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -107,8 +98,7 @@
         </dependency>
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2_2.9.1</artifactId>
-            <version>1.7.1</version>
+            <artifactId>specs2-core_${scala.major.version}</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -117,9 +107,8 @@
         <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
-                <groupId>org.scala-tools</groupId>
-                <artifactId>maven-scala-plugin</artifactId>
-                <version>2.15.3-SNAPSHOT</version>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <goals>
@@ -131,7 +120,6 @@
                                 <!--
                                 <arg>-Xprint:typer</arg>
                                 -->
-                                <arg>-make:transitive</arg>
                                 <arg>-dependencyfile</arg>
                                 <arg>${project.build.directory}/.scala_dependencies</arg>
                             </args>
@@ -141,17 +129,7 @@
             </plugin>
             <plugin>
                 <groupId>com.mmakowski</groupId>
-                <artifactId>maven-specs2-plugin</artifactId>
-                <version>0.3.0</version>
-                <executions>
-                    <execution>
-                        <id>verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>run-specs</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <artifactId>specs2-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnitContainer;
@@ -100,6 +101,79 @@ public class SamlR2LocalBinding extends AbstractMediationBinding {
 
             return body;
 
+        } else if (in.getBody() instanceof SSORequestAbstractType) {
+
+            MediationState state = null;
+            LocalState lState = null;
+            MediationMessage body;
+
+            SSORequestAbstractType ssoRequestAbstracType = (SSORequestAbstractType) in.getBody();
+
+            try {
+
+                Method getSsoSessionId = ssoRequestAbstracType.getClass().getMethod("getSsoSessionId");
+                String ssoSessionId = (String) getSsoSessionId.invoke(ssoRequestAbstracType);
+
+                ProviderStateContext ctx = createProviderStateContext();
+                lState = ctx.retrieve("ssoSessionId", ssoSessionId);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for ssoSessionId " + ssoSessionId);
+
+            } catch (NoSuchMethodException e) {
+                // Ignore this ...
+                if (logger.isTraceEnabled())
+                    logger.trace("SSO Request does not have session index : " + e.getMessage());
+
+            } catch (InvocationTargetException e) {
+                logger.error("Cannot recover local state : " + e.getMessage(), e);
+            } catch (IllegalAccessException e) {
+                logger.error("Cannot recover local state : " + e.getMessage(), e);
+            }
+
+            if (lState == null) {
+                try {
+
+                    Method getRelayStateReference = ssoRequestAbstracType.getClass().getMethod("getRelayStateReference");
+                    String relayStateReference = (String) getRelayStateReference.invoke(ssoRequestAbstracType);
+
+                    ProviderStateContext ctx = createProviderStateContext();
+                    lState = ctx.retrieve(relayStateReference);
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Local state was" + (lState == null ? " NOT" : "") + " retrieved for relayStateReference " + relayStateReference);
+
+                } catch (NoSuchMethodException e) {
+                    // Ignore this ...
+                    if (logger.isTraceEnabled())
+                        logger.trace("SSO Request does not have session index : " + e.getMessage());
+
+                } catch (InvocationTargetException e) {
+                    logger.error("Cannot recover local state : " + e.getMessage(), e);
+                } catch (IllegalAccessException e) {
+                    logger.error("Cannot recover local state : " + e.getMessage(), e);
+                }
+
+            }
+
+            if (lState == null) {
+                // Create a new local state instance ?
+                state = createMediationState(exchange);
+            } else {
+                state = new MediationStateImpl(lState);
+
+            }
+
+            // Process Saml Response in SOAP Channel
+            body = new MediationMessageImpl(
+                    in.getMessageId(),
+                    in.getBody(),
+                    null,
+                    null,
+                    null,
+                    state);
+
+            return body;
         } else if (in.getBody() instanceof SSOCredentialClaimsRequest) {
             MediationState state = null;
             LocalState lState = null;

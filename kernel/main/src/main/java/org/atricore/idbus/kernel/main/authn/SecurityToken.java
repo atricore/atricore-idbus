@@ -42,4 +42,6 @@ public interface SecurityToken<T> extends Serializable {
 
     long getExpiresOn();
 
+    boolean isAuthenticationGrant();
+
 }

@@ -56,27 +56,27 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
     }
 
     public MediationBinding createBinding(String binding, Channel channel) {
-        
+
         SSOBinding b = null;
         try {
             b = SSOBinding.asEnum(binding);
         } catch (IllegalArgumentException e) {
                 return null;
         }
-        
-        
+
+
         MediationBinding mb = null;
         switch (b) {
             case SAMLR2_POST:
                 mb = new SamlR2HttpPostBinding(channel);
                 break;
-            case SAMLR2_REDIRECT: 
+            case SAMLR2_REDIRECT:
                 mb = new SamlR2HttpRedirectBinding(channel);
                 break;
             case SAMLR2_ARTIFACT:
                 mb = new SamlR2HttpArtifactBinding(channel);
                 break;
-            case SAMLR2_SOAP: 
+            case SAMLR2_SOAP:
                 mb = new SamlR2SoapBinding(channel);
                 break;
             case SAMLR2_LOCAL:
@@ -97,11 +97,17 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             case SSO_ARTIFACT:
                 mb = new SsoHttpArtifactBinding(channel);
                 break;
+            case SSO_PAYLOAD:
+                mb = new SsoPayloadResolutionBinding(channel);
+                break;
             case SSO_POST:
                 mb = new SsoHttpPostBinding(channel);
                 break;
             case SSO_SOAP:
                 mb = new SsoSoapBinding(channel);
+                break;
+            case SSO_JSON_FRONT_CHANNEL:
+                mb = new SsoJSONFrontChannelBinding(channel);
                 break;
             case SSO_IDP_INITIATED_SSO_HTTP_SAML2:
                 mb = new SamlR2SsoIDPInitiatedHttpBinding(channel);
@@ -115,10 +121,13 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             case SSO_PREAUTHN:
                 mb = new SsoPreAuthnTokenSvcBinding(channel);
                 break;
+            case SAMLR2_MD:
+                mb = new SamlR2MetaDataBinding(channel);
+                break;
             default:
                 logger.warn("Unknown SAMLR2 Binding! " + binding);
         }
-        
+
         if (mb != null && mb instanceof AbstractMediationBinding) {
 
             Map<String, ConfigurationContext> cfgs  = applicationContext.getBeansOfType(ConfigurationContext.class);
@@ -129,8 +138,8 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
 
             ((AbstractMediationBinding)mb).setStateManagerClassLoader(this.applicationContext.getClassLoader());
         }
-        
+
         return mb;
-        
+
     }
 }

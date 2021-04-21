@@ -26,6 +26,8 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.AbstractProvision
 
 public class UpdateAclEntryResponse extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -4798476899156498718L;
+
     private AclEntry aclEntry;
 
     public AclEntry getAclEntry() {

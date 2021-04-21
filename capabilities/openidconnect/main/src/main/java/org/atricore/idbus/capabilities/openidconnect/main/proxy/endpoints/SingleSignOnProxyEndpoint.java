@@ -9,7 +9,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import java.util.Map;
 
 /**
- * Created by sgonzalez on 3/11/14.
+ *
  */
 public class SingleSignOnProxyEndpoint extends AbstractCamelEndpoint<CamelMediationExchange> {
 

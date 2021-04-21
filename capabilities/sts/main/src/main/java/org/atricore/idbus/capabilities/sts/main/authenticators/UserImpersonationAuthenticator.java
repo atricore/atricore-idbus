@@ -21,7 +21,7 @@ public class UserImpersonationAuthenticator  extends AbstractSecurityTokenAuthen
     private static Log logger = LogFactory.getLog(UserImpersonationAuthenticator.class);
 
     public UserImpersonationAuthenticator() {
-        super();
+        super(SCHEME_NAME);
         setScheme(SCHEME_NAME);
     }
 

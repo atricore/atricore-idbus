@@ -23,12 +23,17 @@ package org.atricore.idbus.capabilities.sts.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.SecurityToken;
+import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
 import org.atricore.idbus.kernel.planning.*;
 
+import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -42,9 +47,12 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
     // To support simultaneous token emissions, using different plan instances!
     protected ThreadLocal<IdentityPlan> identityPlan = new ThreadLocal<IdentityPlan>();
 
-    protected UUIDGenerator uuidGenerator = new UUIDGenerator();
+    protected UUIDGenerator uuidGenerator = new UUIDGenerator(true);
 
     private IdentityPlanRegistry identityPlanRegistry;
+
+    // Optinal property
+    private SSOIdentityManager identityManager;
 
     private boolean emitWhenNotTargeted;
 
@@ -81,6 +89,14 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
     public void setEmitWhenNotTargeted(boolean emitWhenNotTargeted) {
         this.emitWhenNotTargeted = emitWhenNotTargeted;
+    }
+
+    public SSOIdentityManager getIdentityManager() {
+        return identityManager;
+    }
+
+    public void setIdentityManager(SSOIdentityManager identityManager) {
+        this.identityManager = identityManager;
     }
 
     /**
@@ -176,6 +192,75 @@ public abstract class AbstractSecurityTokenEmitter implements SecurityTokenEmitt
 
     protected SecurityToken doMakeToken(String uuid, Object content) {
         return new SecurityTokenImpl(uuid, content);
+    }
+
+    /**
+     * TODO : Use identity planning, and reuse some STS actions!
+     *
+     * @param subject
+     * @return
+     */
+    protected Subject resolveSubject(Subject subject) {
+        Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+        Set<SimplePrincipal> simplePrincipals = subject.getPrincipals(SimplePrincipal.class);
+
+        if (ssoUsers != null && ssoUsers.size() > 0) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Emitting token for Subject with SSOUser");
+
+            // Build Subject
+            // s = new Subject(true, s.getPrincipals(), s.getPrivateCredentials(), s.getPublicCredentials());
+        } else {
+
+            try {
+
+                // Resolve SSOUser
+                SimplePrincipal sp = simplePrincipals.iterator().next();
+                String username = sp.getName();
+
+                SSOIdentityManager idMgr = getIdentityManager();
+
+                // Obtain SSOUser principal
+                SSOUser ssoUser = null;
+                SSORole[] ssoRoles = null;
+                if (idMgr != null) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Resolving SSOUser for " + username);
+                    ssoUser = idMgr.findUser(username);
+                    ssoRoles = idMgr.findRolesByUsername(username);
+                } else {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Not resolving SSOUser for " + username);
+                    ssoUser = new BaseUserImpl(username);
+                    ssoRoles = new BaseRoleImpl[0];
+                }
+
+                Set<Principal> principals = new HashSet<Principal>();
+
+                principals.add(ssoUser);
+                principals.addAll(Arrays.asList(ssoRoles));
+
+                // Use existing SSOPolicyEnforcement principals
+                Set<PolicyEnforcementStatement> ssoPolicies = subject.getPrincipals(PolicyEnforcementStatement.class);
+                if (ssoPolicies != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Adding " + ssoPolicies.size() + " SSOPolicyEnforcement principals ");
+
+                    principals.addAll(ssoPolicies);
+                }
+
+                // Build Subject
+                subject = new Subject(true, principals, subject.getPublicCredentials(), subject.getPrivateCredentials());
+
+            } catch (Exception e) {
+                throw new SecurityTokenEmissionException(e);
+            }
+
+
+        }
+
+        return subject;
     }
 
 

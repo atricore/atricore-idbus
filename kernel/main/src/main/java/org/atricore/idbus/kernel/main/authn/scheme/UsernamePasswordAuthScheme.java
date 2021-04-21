@@ -22,14 +22,14 @@
 package org.atricore.idbus.kernel.main.authn.scheme;
 
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.Credential;
-import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.SimplePrincipal;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.authn.util.Crypt;
+import org.atricore.idbus.kernel.main.authn.util.PasswordUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -94,7 +94,6 @@ import java.security.Principal;
 
 public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
-    public static final String SCHEME_NAME = "basic-authentication";
 
     private static final Log logger = LogFactory.getLog(UsernamePasswordAuthScheme.class);
 
@@ -111,26 +110,54 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     // Some spetial configuration attributes,
 
     /**
-     * This attribute is only used when CRYPT hasing is configued.  The default value is 2.
+     * This attribute is only used when CRYPT hashing is configured.  The default value is 2.
      */
     private int _saltLength = 2;
 
+    private String _saltSuffix;
+
+    private String _saltPrefix;
+
+    protected Credential[] _knowCredentials;
+
     public UsernamePasswordAuthScheme() {
-        this.setName(SCHEME_NAME);
+        this.setName("basic-authentication");
     }
 
     /**
-     * The username recieved as UsernameCredential instance, if any.
+     * The username received as UserNameCredential instance, if any.  Otherwise the UserIdCredential
      */
     public Principal getPrincipal() {
-        return new SimplePrincipal(getUsername(_inputCredentials));
+
+        String principalName = getUserName(_knowCredentials);
+        if (principalName == null)
+            principalName = getUserId(_knowCredentials);
+
+        return new SimplePrincipal(principalName);
     }
 
+    @Override
+    public Principal getInputPrincipal() {
+        String principalName = getUserName(_inputCredentials);
+        if (principalName == null)
+            principalName = getUserId(_inputCredentials);
+        return new SimplePrincipal(principalName);
+    }
+
+
     /**
-     * The username recieved as UsernameCredential instance, if any.
+     * The username recieved as UserIdCredential instance, if any.
      */
     public Principal getPrincipal(Credential[] credentials) {
-        return new SimplePrincipal(getUsername(credentials));
+        String username = getUserName(credentials);
+        if (username == null) {
+            username = getUserId(credentials);
+            logger.debug("Using UserId as username " + username);
+        } else {
+            logger.debug("Using UserName as username " + username);
+        }
+
+        return new SimplePrincipal(username);
     }
 
     /**
@@ -142,36 +169,51 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
 
         setAuthenticated(false);
 
-        String username = getUsername(_inputCredentials);
+        String userid = getUserId(_inputCredentials);
+        String username = getUserName(_inputCredentials);
         String password = getPassword(_inputCredentials);
 
-        // Check if all credentials are present.
-        if (username == null || username.length() == 0 ||
-                password == null || password.length() == 0) {
+        // Check if all credentials are present userid or username and password.
+        if (((userid == null || userid.length() == 0) && (username == null || username.length() == 0))
+                || password == null || password.length() == 0) {
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Username " + (username == null || username.length() == 0 ? " not" : "") + " provided. " +
-                        "Password " + (password == null || password.length() == 0 ? " not" : "") + " provided.");
+                logger.debug(
+                        "Userid" + (userid == null || userid.length() == 0 ? " not" : "") + " provided. " +
+                           "Username" + (username == null || username.length() == 0 ? " not" : "") + " provided. " +
+                           "Password " + (password == null || password.length() == 0 ? " not" : "") + " provided.");
             }
 
             // We don't support empty values !
             return false;
         }
 
-        Credential[] knowCredentials = getKnownCredentials();
-        String knownUsername = getUsername(knowCredentials);
-        String expectedPassword = getPassword(knowCredentials);
+        _knowCredentials = getKnownCredentials();
+        String knownUserId = getUserId(_knowCredentials);
+        String knownUserName = getUserName(_knowCredentials);
 
-        // We might have to hash the password.
-        password = createPasswordHash(password, knowCredentials);
+        // Get user and known user
+        String user = userid != null ? userid : username;
+        String knownUser = knownUserId != null ? knownUserId : knownUserName;
+        String expectedPassword = getPassword(_knowCredentials);
 
         // Validate user identity ...
-        if (!validateUsername(username, knownUsername) || !validatePassword(password, expectedPassword)) {
+        if (user != null) {
+            if (!validateUser(user, knownUser)) {
+                _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
+                return false;
+            }
+
+        }
+
+        // Do not validate password if username does not match
+        if (!validatePassword(password, expectedPassword)) {
+            _policies.add(new InvalidPasswordAuthnPolicy(_knowCredentials));
             return false;
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("[authenticate()], Principal authenticated : " + username);
+            logger.debug("[authenticate()], Principal authenticated [" + userid + "/" + knownUserName + "]");
 
         // We have successfully authenticated this user.
         setAuthenticated(true);
@@ -196,7 +238,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      * Only one username credential supported.
      */
     public Credential[] getPublicCredentials() {
-        Credential c = getUsernameCredential(_inputCredentials);
+        Credential c = getUserIdCredential(_inputCredentials);
         if (c == null)
             return new Credential[0];
 
@@ -209,7 +251,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         try {
             String v = (String) value;
             if (name.equals(UsernamePasswordCredentialProvider.PASSWORD_CREDENTIAL_NAME))
-            v = createPasswordHash(v, getKnownCredentials());
+                v = createPasswordHash(v, getKnownCredentials());
 
             return super.newEncodedCredential(name, v);
 
@@ -227,25 +269,24 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     /**
      * This method validates the input password agaist the expected password.
      *
-     * @param inputPassword
-     * @param expectedPassword
+     * @param inputPassword plain text password
+     * @param storedHashedPassword
      */
-    protected boolean validatePassword(String inputPassword, String expectedPassword) {
+    protected boolean validatePassword(String inputPassword, String storedHashedPassword) throws SSOAuthenticationException {
 
         if (logger.isDebugEnabled())
-            logger.debug("Validating passwords [" + inputPassword + "/" + expectedPassword + "]");
+            logger.debug("Validating passwords...");
 
-        // Validate input and expected passwords.
-        if (inputPassword == null && expectedPassword == null)
-            return false;
+        String saltPrefix = getSalt(_knowCredentials);
+        if (getSaltPrefix() != null) {
+            if (saltPrefix == null)
+                saltPrefix = getSaltPrefix();
+            else
+                saltPrefix  = getSaltPrefix() + saltPrefix;
+        }
 
-        if (_ignorePasswordCase && _hashAlgorithm == null)
-            return inputPassword.equalsIgnoreCase(expectedPassword);
-        else if (_hashAlgorithm != null && _hashEncoding.equals("HEX"))
-            // HEX values are case insensitive when using HASH
-            return inputPassword.equalsIgnoreCase(expectedPassword);
-        else
-            return inputPassword.equals(expectedPassword);
+        return PasswordUtil.verifyPwd(inputPassword, storedHashedPassword, getSaltLength(), getSaltSuffix(), saltPrefix,
+                getHashAlgorithm(), getHashEncoding(), getHashCharset(), getDigest());
     }
 
     /**
@@ -254,7 +295,7 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      * @param inputUsername
      * @param expectedUsername
      */
-    protected boolean validateUsername(String inputUsername, String expectedUsername) {
+    protected boolean validateUser(String inputUsername, String expectedUsername) {
 
         if (logger.isDebugEnabled())
             logger.debug("Validating usernames [" + inputUsername + "/" + expectedUsername + "]");
@@ -285,69 +326,18 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("Creating password hash for [" + password + "] with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
+            logger.debug("Creating password hash with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
 
-        // Check for special encryption mechanisms, not supported by the JDK
-        if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {
-            // Get known password
-            String knownPassword = getPassword(knowCredentials);
-            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, _saltLength) : "";
-
-            return Crypt.crypt(salt, password);
-
-        }
-
-        // If SALT is available, use it
-        String salt = getSalt(knowCredentials);
-        if (salt != null)
-            password = salt + password;
-
-        // TODO : Support other LDAP prefixes !!!!
-
-        byte[] passBytes;
-        String passwordHash = null;
-
-        // convert password to byte data
-        try {
-            if (_hashCharset == null)
-                passBytes = password.getBytes();
+        String saltPrefix = getSalt(knowCredentials);
+        if (getSaltPrefix() != null) {
+            if (saltPrefix == null)
+                saltPrefix = getSaltPrefix();
             else
-                passBytes = password.getBytes(_hashCharset);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("charset " + _hashCharset + " not found. Using platform default.");
-            passBytes = password.getBytes();
+                saltPrefix  = getSaltPrefix() + saltPrefix;
         }
 
-        // calculate the hash and apply the encoding.
-        try {
-
-            byte[] hash;
-            // Hash algorithm is optional
-            if (_hashAlgorithm != null)
-                hash = getDigest().digest(passBytes);
-            else
-                hash = passBytes;
-
-            // At this point, hashEncoding is required.
-            if ("BASE64".equalsIgnoreCase(_hashEncoding)) {
-                passwordHash = CipherUtil.encodeBase64(hash);
-
-            } else if ("HEX".equalsIgnoreCase(_hashEncoding)) {
-                passwordHash = CipherUtil.encodeBase16(hash);
-
-            } else if (_hashEncoding == null) {
-                logger.error("You must specify a hashEncoding when using hashAlgorithm");
-
-            } else {
-                logger.error("Unsupported hash encoding format " + _hashEncoding);
-
-            }
-
-        } catch (Exception e) {
-            logger.error("Password hash calculation failed : \n" + e.getMessage() != null ? e.getMessage() : e.toString(), e);
-        }
-
-        return passwordHash;
+        return PasswordUtil.createPasswordHash(password, getSaltLength(), getSaltSuffix(), saltPrefix,
+                getHashAlgorithm(), getHashEncoding(), getHashCharset(), getDigest());
 
     }
 
@@ -358,6 +348,12 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      * @throws SSOAuthenticationException
      */
     protected MessageDigest getDigest() throws SSOAuthenticationException {
+
+        if (_hashAlgorithm.equalsIgnoreCase("BCRYPT"))
+            return null;
+
+        if (_hashAlgorithm.equalsIgnoreCase("CRYPT"))
+            return null;
 
         MessageDigest _digest = null;
         if (_hashAlgorithm != null) {
@@ -380,11 +376,18 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      *
      * @param credentials
      */
-    protected String getUsername(Credential[] credentials) {
-        UsernameCredential c = getUsernameCredential(credentials);
+    protected String getUserId(Credential[] credentials) {
+        UserIdCredential c = getUserIdCredential(credentials);
         if (c == null)
             return null;
 
+        return (String) c.getValue();
+    }
+
+    protected String getUserName(Credential[] credentials) {
+        UserNameCredential c = getUserNameCredential(credentials);
+        if (c == null)
+            return null;
         return (String) c.getValue();
     }
 
@@ -439,16 +442,26 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
     /**
      * Gets the credential that represents a Username.
      */
-    protected UsernameCredential getUsernameCredential(Credential[] credentials) {
+    protected UserIdCredential getUserIdCredential(Credential[] credentials) {
 
         for (int i = 0; i < credentials.length; i++) {
-            if (credentials[i] instanceof UsernameCredential) {
-                return (UsernameCredential) credentials[i];
+            if (credentials[i] instanceof UserIdCredential) {
+                return (UserIdCredential) credentials[i];
             }
         }
         return null;
     }
 
+
+    protected UserNameCredential getUserNameCredential(Credential[] credentials) {
+
+        for (int i = 0; i < credentials.length; i++) {
+            if (credentials[i] instanceof UserNameCredential) {
+                return (UserNameCredential) credentials[i];
+            }
+        }
+        return null;
+    }
 
     protected CredentialProvider doMakeCredentialProvider() {
         return new UsernamePasswordCredentialProvider();
@@ -506,6 +519,21 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
         _saltLength = sl;
     }
 
+    public String getSaltSuffix() {
+        return _saltSuffix;
+    }
+
+    public void setSaltSuffix(String saltValue) {
+        _saltSuffix = saltValue;
+    }
+
+    public String getSaltPrefix() {
+        return _saltPrefix;
+    }
+
+    public void setSaltPrefix(String saltValue) {
+        _saltPrefix = saltValue;
+    }
 
     /**
      * Values : true , false,

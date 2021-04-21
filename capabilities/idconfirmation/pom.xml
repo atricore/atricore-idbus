@@ -25,14 +25,14 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>idbus-all</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <artifactId>all</artifactId>
+        <version>1.5.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
     <artifactId>idconfirmation</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : Identity Confirmation POM</name>
     <packaging>pom</packaging>
 
@@ -45,9 +45,9 @@
 
     <properties>
 
-        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.5.0-SNAPSHOT</idbus.sts.version>
-        <idbus.sso.version>1.5.0-SNAPSHOT</idbus.sso.version>
+        <idbus.kernel.version>1.5.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.5.1-SNAPSHOT</idbus.sts.version>
+        <idbus.sso.version>1.5.1-SNAPSHOT</idbus.sso.version>
 
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
@@ -65,15 +65,14 @@
         <junit.version>4.4</junit.version>
         <logback.version>1.0.0</logback.version>
         <log4j.version>1.2.16</log4j.version>
-        <scala.version>2.9.1</scala.version>
         <specs2.version>2.9.1</specs2.version>
         <slf4j.version>1.6.1</slf4j.version>
 
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
         <servlet.version>2.5</servlet.version>
-        <spring.version>3.1.0.RELEASE</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <!--<spring.version>3.1.0.RELEASE</spring.version>-->
+        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <xalan.version>2.7.1</xalan.version>
         <xbean.version>3.7</xbean.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>
@@ -83,220 +82,6 @@
     </properties>
 
 
-    <dependencyManagement>
-        <dependencies>
-
-            <dependency>
-                <groupId>org.atricore.idbus.capabilities.sso</groupId>
-                <artifactId>org.atricore.idbus.capabilities.sso.main</artifactId>
-                <version>${idbus.sso.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.atricore.idbus.capabilities.sso</groupId>
-                <artifactId>org.atricore.idbus.capabilities.sso.support</artifactId>
-                <version>${idbus.sso.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.atricore.idbus.capabilities.sso</groupId>
-                <artifactId>org.atricore.idbus.capabilities.sso.dsl</artifactId>
-                <version>${idbus.sso.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.atricore.idbus.kernel</groupId>
-                <artifactId>org.atricore.idbus.kernel.main</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.monitoring</groupId>
-                <artifactId>org.atricore.idbus.kernel.monitoring.core</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.auditing</groupId>
-                <artifactId>org.atricore.idbus.kernel.auditing.core</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.atricore.idbus.kernel</groupId>
-                <artifactId>org.atricore.idbus.kernel.planning</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.samlr11</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.sso</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.kernel.common</groupId>
-                <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
-                <version>${idbus.kernel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.capabilities.sts</groupId>
-                <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
-                <version>${idbus.sts.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.karaf.shell</groupId>
-                <artifactId>org.apache.karaf.shell.console</artifactId>
-                <version>${karaf.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-core</artifactId>
-                <version>${camel.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-http</artifactId>
-                <version>${camel.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-core</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-aop</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-beans</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-context-support</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            
-
-            <dependency>
-                <groupId>org.springframework.osgi</groupId>
-                <artifactId>spring-osgi-core</artifactId>
-                <version>${spring.osgi.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.aop</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.beans</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.context</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>org.springframework.core</artifactId>
-                    </exclusion>
-                </exclusions>
-                
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.servicemix.specs</groupId>
-                <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
-                <version>${servicemix.specs.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.servicemix.bundles</groupId>
-                <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
-                <version>${servicemix.jaxb-impl.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>${felix.osgi.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>${commons-logging.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.scala-lang</groupId>
-                <artifactId>scala-library</artifactId>
-                <version>${scala.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.scala-lang</groupId>
-                <artifactId>scala-library</artifactId>
-                <classifier>sources</classifier>
-                <version>${scala.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.specs2</groupId>
-                <artifactId>specs2_2.9.1</artifactId>
-                <version>1.7.1</version>
-                <scope>test</scope>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
     <repositories>
         <repository>
             <id>typesaferepo</id>
@@ -335,58 +120,6 @@
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.scala-tools</groupId>
-                    <artifactId>maven-scala-plugin</artifactId>
-                    <version>2.15.3-SNAPSHOT</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>compile</goal>
-                                <goal>testCompile</goal>
-                            </goals>
-                            <configuration>
-                                <args>
-                                    <!--
-                                    <arg>-Xprint:typer</arg>
-                                    -->
-                                    <arg>-make:transitive</arg>
-                                    <arg>-dependencyfile</arg>
-                                    <arg>${project.build.directory}/.scala_dependencies</arg>
-                                </args>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>com.mmakowski</groupId>
-                    <artifactId>maven-specs2-plugin</artifactId>
-                    <version>0.3.0</version>
-                    <executions>
-                        <execution>
-                            <id>verify</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>run-specs</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.6</version>
-                    <configuration>
-                        <useFile>false</useFile>
-                        <disableXmlReport>true</disableXmlReport>
-                        <!-- If you have classpath issue like NoDefClassError,... -->
-                        <!-- useManifestOnlyJar>false</useManifestOnlyJar -->
-                        <includes>
-                            <include>**/*Test.*</include>
-                            <include>**/*Suite.*</include>
-                        </includes>
-                    </configuration>
-                </plugin>
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>

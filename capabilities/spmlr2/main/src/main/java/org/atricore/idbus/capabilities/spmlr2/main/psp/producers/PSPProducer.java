@@ -2,8 +2,10 @@ package org.atricore.idbus.capabilities.spmlr2.main.psp.producers;
 
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.*;
-import oasis.names.tc.spml._2._0.password.ResetPasswordRequestType;
-import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
+import oasis.names.tc.spml._2._0.batch.BatchRequestType;
+import oasis.names.tc.spml._2._0.batch.BatchResponseType;
+import oasis.names.tc.spml._2._0.batch.OnErrorType;
+import oasis.names.tc.spml._2._0.password.*;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
@@ -15,6 +17,9 @@ import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.common.producers.SpmlR2Producer;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.capabilities.spmlr2.main.util.XmlUtils;
+import org.atricore.idbus.kernel.auditing.core.Action;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
@@ -23,10 +28,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
+import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
+import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
@@ -36,6 +39,7 @@ import org.w3c.dom.Element;
 import javax.xml.bind.JAXBElement;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * // TODO : Split this in several producers ...
@@ -52,11 +56,29 @@ public class PSPProducer extends SpmlR2Producer {
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         Object content = in.getMessage().getContent();
+
+        ResponseType spmlResponse = doProcessRequest(exchange, (RequestType) content);
+
+        // Send response back.
+        EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
+                endpoint.getType(), endpoint.getBinding(), null, null);
+
+        out.setMessage(new MediationMessageImpl(idGen.generateId(),
+                spmlResponse,
+                spmlResponse.getClass().getSimpleName(),
+                null,
+                ed,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+    }
+
+    protected ResponseType doProcessRequest(CamelMediationExchange exchange, RequestType content) throws Exception {
 
         ResponseType spmlResponse = null;
 
@@ -80,11 +102,11 @@ public class PSPProducer extends SpmlR2Producer {
         } else if (content instanceof ReplacePasswordRequestType) {
             spmlResponse = doProcessReplacePassword(exchange, (ReplacePasswordRequestType) content);
         } else if (content instanceof ResetPasswordRequestType) {
-            // TODO :
-            logger.error("Unknown SPML Request type : " + content.getClass().getName());
-            spmlResponse.setStatus(StatusCodeType.FAILURE);
-            spmlResponse.setError(ErrorCode.UNSUPPORTED_OPERATION);
-
+            spmlResponse = doProcessResetPasswordRequest(exchange, (ResetPasswordRequestType) content);
+        } else if (content instanceof VerifyResetPasswordRequestType) {
+            spmlResponse = doProcessVerifyResetPasswordRequest(exchange, (VerifyResetPasswordRequestType) content);
+        } else if (content instanceof BatchRequestType) {
+            spmlResponse = doProcessBatchRequest(exchange, (BatchRequestType) content);
         } else {
 
             // TODO : Send status=failure error= in response ! (use super producer or binding to build error
@@ -95,19 +117,80 @@ public class PSPProducer extends SpmlR2Producer {
 
         }
 
-        // Send response back.
-        EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
-                endpoint.getType(), endpoint.getBinding(), null, null);
+        return spmlResponse;
 
-        out.setMessage(new MediationMessageImpl(idGen.generateId(),
-                spmlResponse,
-                spmlResponse.getClass().getSimpleName(),
-                null,
-                ed,
-                in.getMessage().getState()));
+    }
 
-        exchange.setOut(out);
+    protected BatchResponseType doProcessBatchRequest(CamelMediationExchange exchange, BatchRequestType spmlBatchRequest) throws Exception {
 
+
+        BatchResponseType batchResponse = new BatchResponseType();
+        batchResponse.setRequestID(spmlBatchRequest.getRequestID());
+
+        for (Object spmlMsg : spmlBatchRequest.getAny()) {
+            if (spmlMsg instanceof RequestType) {
+                try {
+
+                    // Process batch request
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Processing batch request " +
+                                spmlMsg.getClass().getSimpleName() + ":" + ((RequestType) spmlMsg).getRequestID());
+
+                    ResponseType response = doProcessRequest(exchange, (RequestType) spmlMsg);
+
+                    if (response.getStatus() == StatusCodeType.FAILURE) {
+
+                        batchResponse.setStatus(StatusCodeType.FAILURE);
+                        batchResponse.setError(ErrorCode.CUSTOM_ERROR);
+
+                        if (logger.isDebugEnabled()) {
+
+                            String errr = response.getError().value() + ":";
+
+                            if (response.getErrorMessage() != null) {
+                                for (String errMsg : response.getErrorMessage()) {
+                                    errr += ". " + errMsg;
+                                }
+                            }
+                            logger.debug("Error executing batch request " +
+                                    spmlMsg.getClass().getSimpleName() + ":" + ((RequestType) spmlMsg).getRequestID() + " " + errr);
+
+                        }
+
+                        if (spmlBatchRequest.getOnError() != null &&
+                            spmlBatchRequest.getOnError() == OnErrorType.EXIT) {
+
+                            batchResponse.setError(response.getError());
+                            batchResponse.getErrorMessage().addAll(response.getErrorMessage());
+
+                            return batchResponse;
+                        } else {
+                            batchResponse.getErrorMessage().addAll(response.getErrorMessage());
+                        }
+
+                    }
+                } catch (Exception e) {
+
+                    logger.error(e.getMessage(), e);
+                    if (spmlBatchRequest.getOnError() != null &&
+                            spmlBatchRequest.getOnError() == OnErrorType.EXIT) {
+
+                        batchResponse.setStatus(StatusCodeType.FAILURE);
+                        batchResponse.setError(ErrorCode.CUSTOM_ERROR);
+                        batchResponse.getErrorMessage().add(e.getMessage());
+
+                        return batchResponse;
+                    }
+
+                }
+            }
+        }
+
+
+        batchResponse.setStatus(StatusCodeType.SUCCESS);
+
+        return batchResponse;
     }
 
     protected ListTargetsResponseType doProcessListTargetsRequest(CamelMediationExchange exchange, ListTargetsRequestType spmlRequest) {
@@ -137,7 +220,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
-    protected AddResponseType doProcessAddRequest(CamelMediationExchange exchane, AddRequestType spmlRequest) throws Exception {
+    protected AddResponseType doProcessAddRequest(CamelMediationExchange exchange, AddRequestType spmlRequest) throws Exception {
 
         SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) channel.getIdentityMediator();
 
@@ -161,10 +244,14 @@ public class PSPProducer extends SpmlR2Producer {
                 // ERROR, username already exists
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
-                spmlResponse.getErrorMessage().add("Username '" + spmlUser.getUserName()+ "' already exitsts.");
+                spmlResponse.getErrorMessage().add("Username '" + spmlUser.getUserName()+ "' already exists.");
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Username '" + spmlUser.getUserName()+ "' already exitsts.");
+                    logger.debug("Username '" + spmlUser.getUserName()+ "' already exists.");
+
+                Properties auditProps = new Properties();
+                auditProps.setProperty("userExists", "true");
+                recordInfoAuditTrail(Action.SPML_ADD_USER.getValue(), ActionOutcome.FAILURE, spmlUser.getUserName(), exchange, auditProps);
 
                 return spmlResponse;
                 
@@ -178,23 +265,30 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setPso(toSpmlUser(target, res.getUser()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+            recordInfoAuditTrail(Action.SPML_ADD_USER.getValue(), ActionOutcome.SUCCESS, spmlUser.getUserName(), exchange, null);
         } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
             GroupType spmlGroup = (GroupType) spmlRequest.getData();
             if (logger.isDebugEnabled())
                 logger.debug("Processing SPML Add request for Group " + spmlGroup.getName());
 
+            Properties auditProps = new Properties();
+            auditProps.setProperty("groupName", spmlGroup.getName());
+
             try {
 
                 lookupGroup(target, spmlGroup.getName());
 
-                // ERROR, username already exists
+                // ERROR, group already exists
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
-                spmlResponse.getErrorMessage().add("Group '" + spmlGroup.getName()+ "' already exitsts.");
+                spmlResponse.getErrorMessage().add("Group '" + spmlGroup.getName()+ "' already exists.");
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Group '" + spmlGroup.getName()+ "' already exitsts.");
+                    logger.debug("Group '" + spmlGroup.getName()+ "' already exists.");
+
+                auditProps.setProperty("groupExists", "true");
+                recordInfoAuditTrail(Action.SPML_ADD_GROUP.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
                 return spmlResponse;
 
@@ -208,11 +302,15 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+            recordInfoAuditTrail(Action.SPML_ADD_GROUP.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
         } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttributeAttr)) {
 
             UserAttributeType spmlUserAttribute = (UserAttributeType) spmlRequest.getData();
             if (logger.isDebugEnabled())
                 logger.debug("Processing SPML Add request for UserAttribute " + spmlUserAttribute.getName());
+
+            Properties auditProps = new Properties();
+            auditProps.setProperty("userAttributeName", spmlUserAttribute.getName());
 
             try {
 
@@ -221,10 +319,13 @@ public class PSPProducer extends SpmlR2Producer {
                 // ERROR, user attribute name already exists
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
-                spmlResponse.getErrorMessage().add("UserAttribute '" + spmlUserAttribute.getName()+ "' already exitsts.");
+                spmlResponse.getErrorMessage().add("UserAttribute '" + spmlUserAttribute.getName()+ "' already exists.");
 
                 if (logger.isDebugEnabled())
-                    logger.debug("UserAttribute '" + spmlUserAttribute.getName()+ "' already exitsts.");
+                    logger.debug("UserAttribute '" + spmlUserAttribute.getName()+ "' already exists.");
+
+                auditProps.setProperty("userAttributeExists", "true");
+                recordInfoAuditTrail(Action.SPML_ADD_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
                 return spmlResponse;
 
@@ -238,11 +339,15 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setPso(toSpmlUserAttribute(target, res.getUserAttribute()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+            recordInfoAuditTrail(Action.SPML_ADD_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
         } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttributeAttr)) {
 
             GroupAttributeType spmlGroupAttribute = (GroupAttributeType) spmlRequest.getData();
             if (logger.isDebugEnabled())
                 logger.debug("Processing SPML Add request for GroupAttribute " + spmlGroupAttribute.getName());
+
+            Properties auditProps = new Properties();
+            auditProps.setProperty("groupAttributeName", spmlGroupAttribute.getName());
 
             try {
 
@@ -250,11 +355,14 @@ public class PSPProducer extends SpmlR2Producer {
 
                 // ERROR, group attribute name already exists
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
-                spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
-                spmlResponse.getErrorMessage().add("GroupAttribute '" + spmlGroupAttribute.getName()+ "' already exitsts.");
+                spmlResponse.setError(ErrorCode.ALREADY_EXISTS);
+                spmlResponse.getErrorMessage().add("GroupAttribute '" + spmlGroupAttribute.getName() + "' already exists.");
 
                 if (logger.isDebugEnabled())
-                    logger.debug("GroupAttribute '" + spmlGroupAttribute.getName()+ "' already exitsts.");
+                    logger.debug("GroupAttribute '" + spmlGroupAttribute.getName()+ "' already exists.");
+
+                auditProps.setProperty("groupAttributeExists", "true");
+                recordInfoAuditTrail(Action.SPML_ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
                 return spmlResponse;
 
@@ -268,6 +376,12 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setPso(toSpmlGroupAttribute(target, res.getGroupAttribute()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+            recordInfoAuditTrail(Action.SPML_ADD_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
+        } else {
+            logger.error("Request attribute for entity type unknown or missing");
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            spmlResponse.setError(ErrorCode.MALFORMED_REQUEST);
+            spmlResponse.getErrorMessage().add("Request attribute for entity type unknown or missing");
         }
 
         return spmlResponse;
@@ -300,8 +414,7 @@ public class PSPProducer extends SpmlR2Producer {
             // DOM Element
             Element e = (Element) o;
             spmlSelect = (SelectionType) XmlUtils.unmarshal(e, new String[] {SPMLR2Constants.SPML_PKG});
-        }
-        else {
+        } else {
             // JAXB Element
             JAXBElement e = (JAXBElement) o;
             logger.debug("SMPL JAXBElement " + e.getName() + "[" + e.getValue() + "]");
@@ -345,19 +458,68 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         } else if (path.startsWith("/user")) {
-            // TODO : Improve this
-            ListUsersResponse res = target.listUsers(new ListUsersRequest());
-            User[] users = res.getUsers();
 
-            JXPathContext jxp = JXPathContext.newContext(new TargetContainer(users));
-            Iterator it = jxp.iteratePointers(path);
-            while (it.hasNext()) {
-                Pointer userPointer = (Pointer) it.next();
-                User user = (User) userPointer.getValue();
-                PSOType psoUser = toSpmlUser(target, user);
-                spmlResponse.getPso().add(psoUser);
+            SearchUserRequest searchUserRequest = new SearchUserRequest();
+            UserSearchCriteria userSearchCriteria = new UserSearchCriteria();
+
+
+            if (spmlRequest instanceof UserSearchRequestType) {
+
+                UserSearchRequestType userSearchRequest = (UserSearchRequestType) spmlRequest;
+
+                userSearchCriteria.setUsername(userSearchRequest.getUserSearchCriteria().getUserName());
+                userSearchCriteria.setFirstName(userSearchRequest.getUserSearchCriteria().getFirstName());
+                userSearchCriteria.setLastName(userSearchRequest.getUserSearchCriteria().getLastName());
+                userSearchCriteria.setEmail(userSearchRequest.getUserSearchCriteria().getEmail());
+                userSearchCriteria.setExactMatch(userSearchRequest.getUserSearchCriteria().getExactMatch());
+                for (SearchAttributeType searchAttributeType : userSearchRequest.getUserSearchCriteria().getSearchAttribute()) {
+                    SearchAttribute searchAttribute = new SearchAttribute();
+                    searchAttribute.setName(searchAttributeType.getName());
+                    searchAttribute.setValue(searchAttributeType.getValue());
+                    searchAttribute.setType(AttributeType.fromValue(searchAttributeType.getType().name()));
+                    userSearchCriteria.getAttributes().add(searchAttribute);
+                }
+
+                searchUserRequest.setFromResult(userSearchRequest.getFromResult());
+                searchUserRequest.setResultCount(userSearchRequest.getResultCount());
+
+                searchUserRequest.setSearchCriteria(userSearchCriteria);
+                SearchUserResponse res = target.searchUsers(searchUserRequest);
+                List<User> users = res.getUsers();
+
+                spmlResponse = new UserSearchResponseType();
+                for (User user : users) {
+                    spmlResponse.getPso().add(toSpmlUser(target, user));
+                }
+                ((UserSearchResponseType) spmlResponse).setNumOfUsers(res.getNumOfUsers());
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+
+            } else {
+                // TODO : Just for backward compatibility /users[userName='fwadmin']
+
+                if (path.startsWith("/users[userName='")) {
+                    String username = path.substring("/users[userName='".length(), path.length() - 2);
+                    userSearchCriteria.setUsername(username);
+                    userSearchCriteria.setExactMatch(true);
+
+                    //searchUserRequest.setFromResult(userSearchRequest.getFromResult());
+                    //searchUserRequest.setResultCount(userSearchRequest.getResultCount());
+
+                    searchUserRequest.setSearchCriteria(userSearchCriteria);
+                    SearchUserResponse res = target.searchUsers(searchUserRequest);
+                    List<User> users = res.getUsers();
+
+                    spmlResponse = new SearchResponseType();
+                    for (User user : users) {
+                        spmlResponse.getPso().add(toSpmlUser(target, user));
+                    }
+
+                    spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+                }
             }
-            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
 
         } else if (path.startsWith("/attrUser")) {
             // TODO : Improve this
@@ -418,7 +580,7 @@ public class PSPProducer extends SpmlR2Producer {
                 FindGroupByIdResponse res = target.findGroupById(req);
 
                 spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
-                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
             } catch (GroupNotFoundException e) {
                 logger.error(e.getMessage(), e);
@@ -441,7 +603,7 @@ public class PSPProducer extends SpmlR2Producer {
                 FindUserByIdResponse res = target.findUserById(req);
 
                 spmlResponse.setPso(toSpmlUser(target, res.getUser()));
-                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
             } catch (UserNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
@@ -461,7 +623,7 @@ public class PSPProducer extends SpmlR2Producer {
                 FindUserAttributeByIdResponse res = target.findUserAttributeById(req);
 
                 spmlResponse.setPso(toSpmlUserAttribute(target, res.getUserAttribute()));
-                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
             } catch (UserAttributeNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
@@ -481,7 +643,7 @@ public class PSPProducer extends SpmlR2Producer {
                 FindGroupAttributeByIdResponse res = target.findGroupAttributeById(req);
 
                 spmlResponse.setPso(toSpmlGroupAttribute(target, res.getGroupAttribute()));
-                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
             } catch (GroupAttributeNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
@@ -512,6 +674,9 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            Properties auditProps = new Properties();
+            auditProps.setProperty("groupId", spmlGroup.getId());
+
             try {
                 UpdateGroupRequest groupRequest = toUpdateGroupRequest(target, spmlRequest); 
                 UpdateGroupResponse groupResponse = target.updateGroup(groupRequest);
@@ -520,15 +685,19 @@ public class PSPProducer extends SpmlR2Producer {
                 spmlResponse.setPso(toSpmlGroup(target, group));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+                auditProps.setProperty("groupName", group.getName());
+                recordInfoAuditTrail(Action.SPML_UPDATE_GROUP.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
             } catch (GroupNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                auditProps.setProperty("groupNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_UPDATE_GROUP.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+                recordInfoAuditTrail(Action.SPML_UPDATE_GROUP.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             }
 
             return spmlResponse;
@@ -540,21 +709,29 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            UpdateUserRequest userRequest = null;
             try {
-                UpdateUserRequest userRequest = toUpdateUserRequest(target, spmlRequest); 
+                userRequest = toUpdateUserRequest(target, spmlRequest);
                 UpdateUserResponse userResponse = target.updateUser(userRequest);
 
                 spmlResponse.setPso(toSpmlUser(target, userResponse.getUser()));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+                recordInfoAuditTrail(Action.SPML_UPDATE_USER.getValue(), ActionOutcome.SUCCESS, userRequest.getUser().getUserName(), exchange, null);
             } catch (UserNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                Properties auditProps = new Properties();
+                auditProps.setProperty("userNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_UPDATE_USER.getValue(), ActionOutcome.FAILURE,
+                        userRequest != null ? userRequest.getUser().getUserName() : null, exchange, auditProps);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+                recordInfoAuditTrail(Action.SPML_UPDATE_USER.getValue(), ActionOutcome.FAILURE,
+                        userRequest != null ? userRequest.getUser().getUserName() : null, exchange, null);
             }
 
             return spmlResponse;
@@ -565,21 +742,29 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            Properties auditProps = new Properties();
+
             try {
                 UpdateUserAttributeRequest userAttributeRequest = toUpdateUserAttributeRequest(target, spmlRequest);
+                auditProps.setProperty("userAttributeId", userAttributeRequest.getUserAttribute().getId());
                 UpdateUserAttributeResponse userAttributeResponse = target.updateUserAttribute(userAttributeRequest);
 
                 spmlResponse.setPso(toSpmlUserAttribute(target, userAttributeResponse.getUserAttribute()));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+                auditProps.setProperty("userAttributeName", userAttributeResponse.getUserAttribute().getName());
+                recordInfoAuditTrail(Action.SPML_UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
             } catch (UserAttributeNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                auditProps.setProperty("userAttributeNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+                recordInfoAuditTrail(Action.SPML_UPDATE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             }
 
             return spmlResponse;
@@ -590,21 +775,29 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            Properties auditProps = new Properties();
+
             try {
                 UpdateGroupAttributeRequest groupAttributeRequest = toUpdateGroupAttributeRequest(target, spmlRequest);
+                auditProps.setProperty("groupAttributeId", groupAttributeRequest.getGroupAttribute().getId());
                 UpdateGroupAttributeResponse groupAttributeResponse = target.updateGroupAttribute(groupAttributeRequest);
 
                 spmlResponse.setPso(toSpmlGroupAttribute(target, groupAttributeResponse.getGroupAttribute()));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+                auditProps.setProperty("groupAttributeName", groupAttributeResponse.getGroupAttribute().getName());
+                recordInfoAuditTrail(Action.SPML_UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
             } catch (GroupAttributeNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                auditProps.setProperty("groupAttributeNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+                recordInfoAuditTrail(Action.SPML_UPDATE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             }
 
             return spmlResponse;
@@ -627,21 +820,26 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            Properties auditProps = new Properties();
+            auditProps.setProperty("groupId", groupRequest.getId());
+
             try {
                 RemoveGroupResponse groupResponse = target.removeGroup(groupRequest);
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
                 spmlResponse.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr);
 
+                recordInfoAuditTrail(Action.SPML_REMOVE_GROUP.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
             } catch (GroupNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                auditProps.setProperty("groupNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_REMOVE_GROUP.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             } catch (ProvisioningException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
-
+                recordInfoAuditTrail(Action.SPML_REMOVE_GROUP.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             }
 
             return spmlResponse;
@@ -655,21 +853,27 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            Properties auditProps = new Properties();
+            auditProps.setProperty("userId", userRequest.getId());
+
             try {
                 RemoveUserResponse userResponse = target.removeUser(userRequest);
 
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
                 spmlResponse.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr);
 
+                recordInfoAuditTrail(Action.SPML_REMOVE_USER.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
             } catch (UserNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                auditProps.setProperty("userNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_REMOVE_USER.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             } catch (ProvisioningException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+                recordInfoAuditTrail(Action.SPML_REMOVE_USER.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             }
 
             return spmlResponse;
@@ -685,20 +889,26 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            Properties auditProps = new Properties();
+            auditProps.setProperty("userAttributeId", userAttributeRequest.getId());
+
             try {
                 RemoveUserAttributeResponse userAttributeResponse = target.removeUserAttribute(userAttributeRequest);
 
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
-                
+
+                recordInfoAuditTrail(Action.SPML_REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
             } catch (UserAttributeNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                auditProps.setProperty("userAttributeNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             } catch (ProvisioningException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+                recordInfoAuditTrail(Action.SPML_REMOVE_USER_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             }
 
             return spmlResponse;
@@ -714,20 +924,26 @@ public class PSPProducer extends SpmlR2Producer {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
+            Properties auditProps = new Properties();
+            auditProps.setProperty("groupAttributeId", groupAttributeRequest.getId());
+
             try {
                 RemoveGroupAttributeResponse groupAttributeResponse = target.removeGroupAttribute(groupAttributeRequest);
 
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+                recordInfoAuditTrail(Action.SPML_REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
             } catch (GroupAttributeNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
-
+                auditProps.setProperty("groupAttributeNotFound", "true");
+                recordInfoAuditTrail(Action.SPML_REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             } catch (ProvisioningException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+                recordInfoAuditTrail(Action.SPML_REMOVE_GROUP_ATTRIBUTE.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
             }
 
             return spmlResponse;
@@ -768,22 +984,130 @@ public class PSPProducer extends SpmlR2Producer {
     public ResponseType doProcessReplacePassword(CamelMediationExchange exchange, ReplacePasswordRequestType spmlRequest) {
 
         ResponseType spmlResponse = new ResponseType();
+        User user = null;
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", spmlRequest.getPsoID().getID());
         try {
 
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
             String userId = spmlRequest.getPsoID().getID();
             String newPwd = spmlRequest.getNewPassword();
 
-            User user = this.lookupUser(target, userId);
+            user = this.lookupUser(target, userId);
 
             ResetPasswordRequest req = new ResetPasswordRequest (user);
             req.setNewPassword(newPwd);
             target.resetPassword(req);
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+            recordInfoAuditTrail(Action.SPML_PWD_RESET.getValue(), ActionOutcome.SUCCESS, user.getUserName(), exchange, auditProps);
         } catch (ProvisioningException e) {
             logger.error(e.getMessage(), e);
             spmlResponse.setStatus(StatusCodeType.FAILURE);
+            recordInfoAuditTrail(Action.SPML_PWD_RESET.getValue(), ActionOutcome.FAILURE,
+                    user != null ? user.getUserName() : null, exchange, auditProps);
+        }
+
+        return spmlResponse;
+    }
+
+    public ResponseType doProcessVerifyResetPasswordRequest(CamelMediationExchange exchange, VerifyResetPasswordRequestType spmlRequest) {
+        VerifyResetPasswordResponseType spmlResponse = new VerifyResetPasswordResponseType();
+        Properties auditProps = new Properties();
+        //auditProps.setProperty("transactionId", spmlRequest.getTransaction());
+        try {
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            ConfirmResetPasswordRequest req = new ConfirmResetPasswordRequest();
+            req.setTransactionId(spmlRequest.getTransaction());
+            req.setCode(spmlRequest.getCode());
+            req.setNewPassword(spmlRequest.getNewpassword());
+
+            ResetPasswordResponse resp = target.confirmResetPassword(req);
+
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.SUCCESS, null, exchange, auditProps);
+
+        } catch (TransactionExpiredException e) {
+            logger.debug(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+
+            PolicyEnforcementStatementType stmtType = new PolicyEnforcementStatementType();
+            stmtType.setName("expiredTransactionOrCode");
+            stmtType.setNs("urn:org:atricore:idbus:policy:provisioning:transaction");
+            spmlResponse.getSsoPolicyEnforcements().add(stmtType);
+
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+
+        } catch (TransactionInvalidException e) {
+            logger.debug(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+
+            PolicyEnforcementStatementType stmtType = new PolicyEnforcementStatementType();
+            stmtType.setName("invalidTransactionOrCode");
+            stmtType.setNs("urn:org:atricore:idbus:policy:provisioning:transaction");
+            spmlResponse.getSsoPolicyEnforcements().add(stmtType);
+
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+
+        } catch (IllegalPasswordException e) {
+            logger.debug(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Illegal password value ");
+
+            // Get password statements
+            if (e.getStmts() != null) {
+                for (PolicyEnforcementStatement stmt : e.getStmts()) {
+                    PolicyEnforcementStatementType stmtType = new PolicyEnforcementStatementType();
+                    stmtType.setName(stmt.getName());
+                    stmtType.setNs(stmt.getNs());
+                    spmlResponse.getSsoPolicyEnforcements().add(stmtType);
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("{"+stmt.getNs()+"}" + stmt.getName());
+
+                }
+            }
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+        } catch (ProvisioningException e) {
+            logger.error(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            recordInfoAuditTrail(Action.SPML_CONFIRM_PWD_RESET.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
+        }
+
+        return spmlResponse;
+    }
+
+    public ResponseType doProcessResetPasswordRequest(CamelMediationExchange exchange, ResetPasswordRequestType spmlRequest) {
+        ResetPasswordResponseType spmlResponse = new ResetPasswordResponseType();
+        User user = null;
+        Properties auditProps = new Properties();
+        auditProps.setProperty("userId", spmlRequest.getPsoID().getID());
+        try {
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+            String userId = spmlRequest.getPsoID().getID();
+
+            user = this.lookupUser(target, userId);
+
+            ResetPasswordRequest req = new ResetPasswordRequest(user);
+            PrepareResetPasswordResponse resp = target.prepareResetPassword(req);
+
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+            spmlResponse.setTransaction(resp.getTransactionId());
+            spmlResponse.setCode(resp.getCode());
+            spmlResponse.setPassword(resp.getNewPassword());
+
+            recordInfoAuditTrail(Action.SPML_PREPARE_PWD_RESET.getValue(), ActionOutcome.SUCCESS, user.getUserName(), exchange, auditProps);
+        } catch (ProvisioningException e) {
+            logger.error(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            recordInfoAuditTrail(Action.SPML_PREPARE_PWD_RESET.getValue(), ActionOutcome.FAILURE,
+                    user != null ? user.getUserName() : null, exchange, auditProps);
         }
 
         return spmlResponse;
@@ -853,5 +1177,5 @@ public class PSPProducer extends SpmlR2Producer {
             this.groupAttributes = groupAttributes;
         }
     }
-    
+
 }

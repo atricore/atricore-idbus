@@ -25,6 +25,5 @@ PUBLIC "-//OASIS/DTD Entity Resolution XML Catalog V1.0//EN"
 "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
 
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <rewriteURI rewritePrefix="./xml.schema"
-     uriStartString="http://www.w3.org/2001/xml.xsd"/>
+    <rewriteURI rewritePrefix="./xml.schema" uriStartString="http://www.w3.org/2001/xml.xsd"/>
 </catalog>

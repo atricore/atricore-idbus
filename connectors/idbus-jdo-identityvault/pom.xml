@@ -27,8 +27,8 @@
 
     <parent>
         <groupId>org.atricore.idbus</groupId>
-        <artifactId>idbus-all</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <artifactId>all</artifactId>
+        <version>1.5.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -39,17 +39,18 @@
 
     <properties>
 
-        <idbus.bundle.datanucleus-v2_1_2.version>1.5.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.5.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-client-v10_11_1_1.version>1.5.0-SNAPSHOT
-        </idbus.bundle.apache-derby-client-v10_11_1_1.version>
-        <idbus.bundle.apache-derby-network-v10_11_1_1.version>1.5.0-SNAPSHOT
-        </idbus.bundle.apache-derby-network-v10_11_1_1.version>
+        <idbus.bundle.datanucleus-v2_1_2.version>1.5.1-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.5.1-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.5.1-SNAPSHOT
+        </idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.5.1-SNAPSHOT
+        </idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
 
-        <idbus.kernel.version>1.5.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.kernel.version>1.5.1-SNAPSHOT</idbus.kernel.version>
 
         <commons-codec.version>1.3</commons-codec.version>
         <commons-beautils.version>1.8.0</commons-beautils.version>
+        <commons-lang.version>2.0</commons-lang.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
@@ -57,8 +58,8 @@
         <javax.jdo.osgi.version>2.3.0</javax.jdo.osgi.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
-        <spring.version>3.1.0.RELEASE</spring.version>
+        <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
+        <!--<spring.version>3.1.0.RELEASE</spring.version>-->
         <xbean.version>3.7</xbean.version>
     </properties>
 
@@ -175,6 +176,13 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons-lang.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-spring</artifactId>
             <version>${xbean.version}</version>
@@ -248,15 +256,15 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_11_1_1</artifactId>
-            <version>${idbus.bundle.apache-derby-network-v10_11_1_1.version}</version>
+            <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
+            <version>${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_11_1_1</artifactId>
-            <version>${idbus.bundle.apache-derby-client-v10_11_1_1.version}</version>
+            <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1</artifactId>
+            <version>${idbus.bundle.apache-derby-client-v10_5_3_0_1.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -297,6 +305,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <!-- JDO NEEDS 1.6 -->
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
@@ -349,7 +358,13 @@
                         <artifactId>jdo-api</artifactId>
                         <version>3.0.1</version>
                         <scope>runtime</scope>
-                    </dependency>
+		</dependency>
+
+		<dependency>
+		    <groupId>asm</groupId>
+		    <artifactId>asm</artifactId>
+		    <version>3.3.1</version>
+		</dependency>
 
                 </dependencies>
             </plugin>

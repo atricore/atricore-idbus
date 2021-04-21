@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.authn;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
+
 /**
  * Interface to be implemented by components which can build user Credentials.
  *
@@ -39,6 +41,20 @@ public interface CredentialProvider {
      */
     Credential newCredential(String name, Object value);
 
+    /**
+     * Creates a new credential object based on its name and value. The value should be encoded if the credential allows it (i.e. password hash)
+     * @param name
+     * @param value
+     * @return
+     */
     Credential newEncodedCredential(String name, Object value);
+
+    /**
+     * Creates credentials for a User object
+     *
+     * @param user
+     * @return
+     */
+    Credential[] newCredentials(User user);
 
 }

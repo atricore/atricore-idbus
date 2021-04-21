@@ -27,6 +27,8 @@ import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.binding.endpoints.ArtifactResolutionEndpoint;
+import org.atricore.idbus.capabilities.sso.main.common.endpoints.MetadataEndpoint;
+import org.atricore.idbus.capabilities.sso.main.common.endpoints.PayloadResolutionEndpoint;
 import org.atricore.idbus.capabilities.sso.main.sp.endpoints.*;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -54,11 +56,12 @@ public class SSOSPComponent extends DefaultComponent {
             throws Exception {
 
         logger.debug("Creating Camel Endpoint for [" + uri + "] [" + remaining + "]");
-        
+
         AbstractCamelEndpoint endpoint;
         SSOService e = getSamlR2Service( remaining );
 
         switch ( e ) {
+            case ProxySingleLogoutService:
             case SingleLogoutService:
                 endpoint = new SingleLogoutEndpoint( uri, this, parameters );
                 break;
@@ -98,7 +101,12 @@ public class SSOSPComponent extends DefaultComponent {
             case IdPSelectorCallbackService:
                 endpoint = new IdPSelectorCallbackEndpoint(uri, this, parameters);
                 break;
-
+            case MetadataService:
+                endpoint = new MetadataEndpoint(uri, this, parameters);
+                break;
+            case PayloadResolutionService:
+                endpoint = new PayloadResolutionEndpoint(uri, this, parameters);
+                break;
             default:
                 throw new IllegalArgumentException( "Unsupported SAMLR 2.0 endpoint " + remaining );
         }

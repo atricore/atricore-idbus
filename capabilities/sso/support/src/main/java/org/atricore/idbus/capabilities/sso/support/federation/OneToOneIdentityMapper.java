@@ -47,7 +47,6 @@ public class OneToOneIdentityMapper implements IdentityMapper {
     public Subject map(Subject idpSubject, Subject localSubject) {
 
         //Subject federatedSubject = new Subject();
-        
         Set<Principal> merged = new HashSet<Principal>();
 
         Set<SubjectNameID> subjectNameID = localSubject.getPrincipals(SubjectNameID.class);

@@ -19,13 +19,15 @@ public class ReqPwdResetPage extends BasePage {
 
     public ReqPwdResetPage(PageParameters parameters) throws Exception {
         super(parameters);
-        ReqPwdResetPanel resgisterPanel = new ReqPwdResetPanel("reqPwdReset");
-        add(resgisterPanel);
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
+
+        ReqPwdResetPanel resgisterPanel = new ReqPwdResetPanel("reqPwdReset");
+        add(resgisterPanel);
+
         SSOWebSession session = (SSOWebSession) getSession();
         if (session.isAuthenticated())
             throw new RestartResponseAtInterceptPageException(resolvePage("SS/PROFILE"));

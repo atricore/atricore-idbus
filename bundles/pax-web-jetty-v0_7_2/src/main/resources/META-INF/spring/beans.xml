@@ -38,6 +38,7 @@
     <bean name="serverControllerFactory"
           class="org.ops4j.pax.web.service.jetty.internal.ConfigurableServerControllerFactoryImpl">
         <property name="sessionHandlerBuilder" ref="sessionHandlerBuilder"/>
+        <property name="kernelProps" ref="kernelProps"/>
     </bean>
 
     <osgi:service id="serverControllerFactoryExporter"
@@ -67,4 +68,9 @@
               ref="sessionHandlerBuilder"
               interface="org.ops4j.pax.web.service.jetty.spi.SessionHandlerBuilder"/>
      -->
+
+    <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
+        <prop key="binding.http.displayErrorDebugInfo">true</prop>
+    </osgix:cm-properties>
+
 </beans>

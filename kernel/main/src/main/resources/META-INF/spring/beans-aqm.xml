@@ -39,48 +39,40 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- Artifact Queue Manager service definition                           -->
     <!-- =================================================================== -->
 
-    <bean name="aqm"
-          class="org.atricore.idbus.kernel.main.mediation.MemoryMessageQueueManager"
-          init-method="init"
-          destroy-method="shutDown">
+    <bean name="aqm-factory" class="org.atricore.idbus.kernel.main.mediation.MessageQueueManagerFactory">
+        <property name="selectedBuilder" value="${aqm.builder}"/>
+    </bean>
 
+    <bean name="aqm"
+          class="org.atricore.idbus.kernel.main.mediation.MessageQueueManager"
+          factory-bean="aqm-factory"
+          factory-method="build"/>
+
+    <osgi:service id="aqmExport" ref="aqm"
+                  interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager" />
+
+    <!-- =================================================================== -->
+    <!-- Supported AQM Builders :                                            -->
+    <!-- =================================================================== -->
+
+    <bean name="aqm-memory"
+          class="org.atricore.idbus.kernel.main.mediation.MemoryMessageQueueManagerBuilder" >
+        <constructor-arg index="0" ref="kernelConfig"/>
         <property name="monitorInterval" value="${aqm.monitorInterval}"/>
         <property name="artifactTTL" value="${aqm.artifactTTL}"/>
     </bean>
 
-    <!--
-    <bean name="aqm"
-          class="org.atricore.idbus.kernel.main.mediation.ActiveMQMessageQueueManager"
-          depends-on="aqmBroker"
-          init-method="init"
-          destroy-method="shutDown">
-
-        <property name="jmsProviderDestinationName" value="Queue/IDBUS/Artifact"/>
-        <property name="receiveTimeout" value="${aqm.receiveTimeout}"/>
-        <property name="artifactTTL" value="${aqm.artifactTTL}"/>
-
+    <bean name="aqm-ehcache"
+          class="org.atricore.idbus.kernel.main.mediation.EHCacheMessageQueueManagerBuilder" >
+        <constructor-arg index="0" ref="kernelConfig"/>
         <property name="artifactGenerator">
-            <bean class="org.atricore.idbus.kernel.main.mediation.ArtifactGeneratorImpl"/>
-        </property>
-
-        <property name="connectionFactory" >
-            <bean name="aqmConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-                <property name="brokerURL" value="${aqm.brokerUrl}"/>
-
-                <property name="dispatchAsync" value="true"/>
-                <property name="sendAcksAsync" value="true"/>
-                <property name="sendTimeout" value="${aqm.sendTimeout}"/>
-
-                <property name="useCompression" value="${aqm.useCompression}"/>
-
-                <property name="clientID" value="${aqm.brokerName}-client"/>
-
+            <bean class="org.atricore.idbus.kernel.main.mediation.ArtifactGeneratorImpl">
+                <property name="node" value="${idbus.node}"/>
             </bean>
         </property>
+        <property name="jmsProviderDestinationName" value="idbus-aqm"/>
+        <property name="cacheManager" ref="cacheManager"/>
     </bean>
-    -->
 
-    <osgi:service id="aqmExport" ref="aqm"
-                  interface="org.atricore.idbus.kernel.main.mediation.MessageQueueManager" />
 
 </beans>

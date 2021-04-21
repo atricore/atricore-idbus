@@ -33,6 +33,12 @@
 
     <import namespace="urn:oasis:names:tc:SAML:2.0:protocol"
             schemaLocation="saml-schema-protocol-2.0.xsd"/>
+
+    <element name="MetadataRequest" type="samli:MetadataRequestType"/>
+    <complexType name="MetadataRequestType">
+
+    </complexType>
+
     <element name="SecTokenAuthnRequest" type="samli:SecTokenAuthnRequestType"/>
     <complexType name="SecTokenAuthnRequestType">
         <complexContent>
@@ -49,8 +55,38 @@
         <complexContent>
             <extension base="samlp:AuthnRequestType">
                 <attribute name="SecurityToken" type="string" use="required"/>
+                <attribute name="RememberMe" type="boolean" use="optional"/>
             </extension>
         </complexContent>
     </complexType>
+
+    <element name="SPList" type="samli:SPListType"/>
+    <complexType name="SPListType">
+        <sequence>
+            <element ref="samli:SPEntry" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <element name="SPEntry" type="samli:SPEntryType"/>
+    <complexType name="SPEntryType">
+        <attribute name="ProviderID" type="anyURI" use="required"/>
+        <attribute name="Name" type="string" use="optional"/>
+        <attribute name="Loc" type="anyURI" use="optional"/>
+    </complexType>
+
+    <!-- Use to add attributes to SAML messages using the SAML extension -->
+
+    <element name="ExtAttributeList" type="samli:ExtAttributeListType"/>
+    <complexType name="ExtAttributeListType">
+        <sequence>
+            <element ref="samli:ExtendedAttribute" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <element name="ExtendedAttribute" type="samli:ExtendedAttributeType"/>
+    <complexType name="ExtendedAttributeType">
+        <attribute name="Name" type="string" use="required"/>
+        <attribute name="Value" type="string" use="required"/>
+    </complexType>
+
+    <element name="ErrorDetails" type="string"/>
 
 </schema>

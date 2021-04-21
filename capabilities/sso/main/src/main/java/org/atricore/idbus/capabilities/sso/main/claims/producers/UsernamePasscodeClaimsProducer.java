@@ -143,6 +143,8 @@ public class UsernamePasscodeClaimsProducer extends SSOProducer
 
         String passcode = null;
         String username = null;
+        String userid = null;
+        String token = null;
 
         // Addapt received simple claims to SAMLR Required token
         for (Claim c : receivedClaims.getClaims()) {
@@ -152,17 +154,27 @@ public class UsernamePasscodeClaimsProducer extends SSOProducer
             if (credentialClaim.getQualifier().equalsIgnoreCase("username"))
                 username = (String) c.getValue();
 
+            if (credentialClaim.getQualifier().equalsIgnoreCase("userid"))
+                userid = (String) c.getValue();
+
+
             if (credentialClaim.getQualifier().equalsIgnoreCase("passcode"))
                 passcode = (String) c.getValue();
+
+            if (credentialClaim.getQualifier().equalsIgnoreCase("token"))
+                token = (String) c.getValue();
         }
 
         // Build a SAMLR2 Compatible Security token
         UsernameTokenType usernameToken = new UsernameTokenType ();
         AttributedString usernameString = new AttributedString();
-        usernameString.setValue( username );
+        usernameString.setValue( userid != null ? userid : username ); // Prefer userid over username
 
         usernameToken.setUsername( usernameString );
         usernameToken.getOtherAttributes().put(new QName( Constants.PASSCODE_NS), passcode);
+        usernameToken.getOtherAttributes().put(new QName( Constants.TOKEN_NS), token);
+
+        // TODO : This may not be accurate
         usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue()), "TRUE");
 
         CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue(), usernameToken);

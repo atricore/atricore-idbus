@@ -8,6 +8,7 @@ import org.atricore.idbus.capabilities.oauth2.main.OAuth2AuthnContext;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2BPMediator;
 import org.atricore.idbus.capabilities.oauth2.main.OAuth2Exception;
 import org.atricore.idbus.capabilities.oauth2.main.ResourceServer;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
@@ -61,7 +62,8 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
         String idpAlias = null;
         String idpAliasB64 = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_IDPALIAS_VAR);
 
-        boolean passive = false;
+        // Passive option
+        Boolean passive = null;
         String passiveStr = in.getMessage().getState().getTransientVariable(OAuth2Constants.OAUTH2_PASSIVE_VAR);
         if (passiveStr != null) {
             passive = Boolean.parseBoolean(passiveStr);
@@ -123,7 +125,7 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
     /**
      * @return
      */
-    protected SPInitiatedAuthnRequestType buildAuthnRequest(CamelMediationExchange exchange, String idpAlias, boolean passive) {
+    protected SPInitiatedAuthnRequestType buildAuthnRequest(CamelMediationExchange exchange, String idpAlias, Boolean passive) {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
@@ -132,7 +134,7 @@ public class SingleSignOnProducer extends AbstractCamelProducer<CamelMediationEx
         req.setPassive(passive);
 
         RequestAttributeType idpAliasAttr = new RequestAttributeType();
-        idpAliasAttr.setName("atricore_idp_alias");
+        idpAliasAttr.setName(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR);
         idpAliasAttr.setValue(idpAlias);
         req.getRequestAttribute().add(idpAliasAttr);
 

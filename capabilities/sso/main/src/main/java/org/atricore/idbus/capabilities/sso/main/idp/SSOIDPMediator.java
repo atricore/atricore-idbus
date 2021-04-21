@@ -58,9 +58,11 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
     private String claimEndpointSelection;
 
+    private String idpSelector;
+
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
-        
+
         // Create routes based on endpoints!
 
         return new RouteBuilder() {
@@ -83,12 +85,15 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
                     switch (binding) {
                         // http endpoints
+                        case SAMLR2_MD:
                         case SAMLR2_ARTIFACT:
                         case SAMLR11_ARTIFACT:
                         case SAMLR2_POST:
                         case SAMLR2_REDIRECT:
                         case SSO_ARTIFACT:
+                        case SSO_PAYLOAD:
                         case SSO_REDIRECT:
+                        case SSO_JSON_FRONT_CHANNEL:
                         case SSO_IDP_INITIATED_SSO_HTTP_SAML2:
                         case SSO_IDP_INITIATED_SSO_HTTP_SAML11:
 
@@ -236,7 +241,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                     "?binding=" + ed.getBinding() +
                                     "&channelRef=" + spChannel.getName()).
-                                        process(new LoggerProcessor(getLogger())).  
+                                        process(new LoggerProcessor(getLogger())).
                                         to("sso-idp:" + ed.getType() +
                                                 "?channelRef=" + spChannel.getName() +
                                                 "&endpointRef=" + endpoint.getName() +
@@ -340,8 +345,8 @@ public class SSOIDPMediator extends AbstractSSOMediator {
 
             }
         };
-        
-        
+
+
     }
 
     public String getPreferredSpAlias() {
@@ -402,5 +407,22 @@ public class SSOIDPMediator extends AbstractSSOMediator {
         this.claimEndpointSelection = claimEndpointSelection;
     }
 
+    public String getIdpSelector() {
+        return idpSelector;
+    }
+
+    public void setIdpSelector(String idpSelector) {
+        this.idpSelector = idpSelector;
+    }
+
+    public boolean isEncryptAssertion(String name) {
+        SPChannelConfiguration cfg = (SPChannelConfiguration) getChannelConfig(name);
+        return cfg != null && cfg.isEncryptAssertion();
+    }
+
+    public String getEncryptAssertionAlgorithm(String name) {
+        SPChannelConfiguration cfg = (SPChannelConfiguration) getChannelConfig(name);
+        return cfg != null ? cfg.getEncryptAssertionAlgorithm() : null;
+    }
 
 }

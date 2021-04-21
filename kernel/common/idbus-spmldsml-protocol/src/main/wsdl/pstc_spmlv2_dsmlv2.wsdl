@@ -212,6 +212,14 @@
         <wsdl:part name="body" element="spmlpassword:resetPasswordResponse"/>
     </wsdl:message>
 
+    <wsdl:message name="SPMLVerifyResetPasswordRequestMessage">
+        <wsdl:part name="body" element="spmlpassword:verifyResetPasswordRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLVerifyResetPasswordResponseMessage">
+        <wsdl:part name="body" element="spmlpassword:verifyResetPasswordResponse"/>
+    </wsdl:message>
+
     <wsdl:message name="SPMLValidatePasswordRequestMessage">
         <wsdl:part name="body" element="spmlpassword:validatePasswordRequest"/>
     </wsdl:message>
@@ -397,6 +405,14 @@
             <wsdl:output name="SPMLResetPasswordRequestOutput"
                          message="tns:SPMLResetPasswordResponseMessage"/>
         </wsdl:operation>
+
+        <wsdl:operation name="SPMLVerifyResetPasswordRequest">
+            <wsdl:input name="SPMLVerifyResetPasswordRequestInput"
+                        message="tns:SPMLVerifyResetPasswordRequestMessage"/>
+            <wsdl:output name="SPMLVerifyResetPasswordRequestOutput"
+                         message="tns:SPMLVerifyResetPasswordResponseMessage"/>
+        </wsdl:operation>
+
 
         <wsdl:operation name="SPMLValidatePasswordRequest">
             <wsdl:input name="SPMLValidatePasswordRequestInput"
@@ -627,6 +643,18 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+
+        <wsdl:operation name="SPMLVerifyResetPasswordRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/verifyResetPasswordRequest"/>
+            <wsdl:input name="SPMLVerifyResetPasswordRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLVerifyResetPasswordRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
 
         <wsdl:operation name="SPMLValidatePasswordRequest">
             <soap:operation style="document"

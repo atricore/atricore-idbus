@@ -127,6 +127,15 @@ public enum StatusDetails {
     NO_NEWID_NEWENCRYPTEDID_TERMINATE
             ("urn:org:atricore:idbus:samlr2:status:NoNewIDNewEncryptedIDTerminate", "One of the elements must exist: NewID, NewEncryptedID or Terminate."),
 
+    // A profile with the same ID is in use
+    DUPLICATED_USER_ID
+            ("urn:org:atricore:idbus:samlr2:status:DuplicatedUserId", "Duplicated user ID."),
+
+    // The user ID is in use, probably by another identifier or key (i.e. social login
+    USED_USER_ID
+            ("urn:org:atricore:idbus:samlr2:status:UsedUserId", "Duplicated user ID."),
+
+
     INTERNAL_ERROR
             ("urn:org:atricore:idbus:samlr2:status:InternalError", "Internal Error");
 

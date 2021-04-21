@@ -35,7 +35,11 @@ import java.util.List;
  */
 public class SearchUserResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -4598476899156498718L;
+
     private List<User> users;
+
+    private Long numOfUsers;
 
     public void setUsers(List<User> users) {
         this.users = users;
@@ -48,4 +52,11 @@ public class SearchUserResponse extends AbstractProvisioningResponse {
         return users;
     }
 
+    public Long getNumOfUsers() {
+        return numOfUsers;
+    }
+
+    public void setNumOfUsers(Long numOfUsers) {
+        this.numOfUsers = numOfUsers;
+    }
 }

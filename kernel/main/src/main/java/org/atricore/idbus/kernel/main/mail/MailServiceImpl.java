@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author: sgonzalez@atriocore.com
@@ -24,9 +26,8 @@ public class MailServiceImpl implements MailService {
 
     private List<MailSender> senders = new ArrayList<MailSender>();
 
-    public class SendEmail {
-
-    }
+    // TODO : Configure
+    private ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public void send(String config, String from, String to, String subject, String message, String contentType) {
         for (MailSender mailSender : senders) {
@@ -38,7 +39,14 @@ public class MailServiceImpl implements MailService {
     }
 
     public void sendAsync(String config, String from, String to, String subject, String message, String contentType) {
-        throw new UnsupportedOperationException("not implemented");
+
+        for (MailSender mailSender : senders) {
+            if (mailSender.getName().equals(config)) {
+                SendAsync s = new SendAsync(mailSender, from, to, subject, message, contentType);
+                executor.submit(s);
+                break;
+            }
+        }
     }
 
     // ---------------------------------------------------------------------------------------
@@ -70,5 +78,36 @@ public class MailServiceImpl implements MailService {
 
     public void setSenders(List<MailSender> senders) {
         this.senders = senders;
+    }
+
+
+    public class SendAsync implements Runnable {
+
+        private MailSender sender;
+
+        private String from;
+        private String to;
+        private String subject;
+        private String message;
+        private String contentType;
+
+        public SendAsync(MailSender sender, String from, String to, String subject, String message, String contentType) {
+            this.sender = sender;
+            this.from = from;
+            this.to = to;
+            this.subject = subject;
+            this.message = message;
+            this.contentType = contentType;
+
+        }
+
+        @Override
+        public void run() {
+            try {
+                sender.send(from, to , subject, message, contentType);
+            } catch (Exception e) {
+                logger.error("Error sending email async [to: "+to+"] " + e.getMessage(), e);
+            }
+        }
     }
 }

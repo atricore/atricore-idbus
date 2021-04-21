@@ -1,15 +1,15 @@
 package org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.pwdreset;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.StringValue;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
-import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
-import org.atricore.idbus.kernel.main.provisioning.spi.request.AbstractProvisioningRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.ResetPasswordRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
@@ -20,45 +20,58 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUserna
  */
 public class VerifyPwdResetPage extends BasePage {
 
+    private static final Log logger = LogFactory.getLog(VerifyPwdResetPage.class);
+
+    private PwdResetState state;
+
     public VerifyPwdResetPage() throws Exception {
         this(null);
     }
 
     public VerifyPwdResetPage(PageParameters parameters) throws Exception {
         super(parameters);
-
-        SSOIdPApplication app = (SSOIdPApplication) getApplication();
-
-        //String username = parameters.get("username").toString();
-        String transactionId = parameters.get("transactionId").toString();
-        ResetPasswordRequest req = (ResetPasswordRequest) app.getProvisioningTarget().lookupTransactionRequest(transactionId);
-
-        FindUserByUsernameRequest userReq = new FindUserByUsernameRequest();
-        userReq.setUsername(req.getUser().getUserName());
-
-        FindUserByUsernameResponse userResp = app.getProvisioningTarget().findUserByUsername(userReq);
-        User user = userResp.getUser();
-        // This is a problem, we cannot registration this user again, should we notify the user ?
-
-        // TODO : Take it from the IdP/Connector ?!
-
-        String hashAlgorithm = app.getIdentityProvider().getProvisioningTarget().getHashAlgorithm();
-        String hashEncoding = app.getIdentityProvider().getProvisioningTarget().getHashEncoding();
-
-        VerifyPwdResetPanel verifyPwdResetPanel =
-                new VerifyPwdResetPanel("verifyPwdReset", user, hashAlgorithm, hashEncoding);
-
-        add(verifyPwdResetPanel);
+        StringValue t = parameters.get("transactionId");
+        if (t == null) {
+            throw new RestartResponseAtInterceptPageException(resolvePage("ERROR/SESSION"));
+        }
+        state = new PwdResetState(t.toString());
 
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        SSOWebSession session = (SSOWebSession) getSession();
-        if (session.isAuthenticated())
-            throw new RestartResponseAtInterceptPageException(resolvePage("SS/PROFILE"));
 
+        try {
+            SSOIdPApplication app = (SSOIdPApplication) getApplication();
+
+            ResetPasswordRequest req = (ResetPasswordRequest) app.getProvisioningTarget().lookupTransactionRequest(state.getTransactionId());
+
+            User user = null;
+            if (req != null) {
+                FindUserByUsernameRequest userReq = new FindUserByUsernameRequest();
+                userReq.setUsername(req.getUser().getUserName());
+                FindUserByUsernameResponse userResp = app.getProvisioningTarget().findUserByUsername(userReq);
+                user = userResp.getUser();
+                state.setUser(user);
+            }
+
+            // RFU
+            String hashAlgorithm = app.getIdentityProvider().getProvisioningTarget().getHashAlgorithm();
+            String hashEncoding = app.getIdentityProvider().getProvisioningTarget().getHashEncoding();
+
+            VerifyPwdResetPanel verifyPwdResetPanel =
+                    new VerifyPwdResetPanel("verifyPwdReset", state);
+
+            add(verifyPwdResetPanel);
+
+            SSOWebSession session = (SSOWebSession) getSession();
+            if (session.isAuthenticated())
+                throw new RestartResponseAtInterceptPageException(resolvePage("SS/PROFILE"));
+
+        } catch (ProvisioningException e) {
+            logger.error(e.getMessage(), e);
+        }
 
     }
 }

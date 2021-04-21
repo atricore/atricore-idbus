@@ -5,6 +5,8 @@ import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenRequestType;
 import org.atricore.idbus.common.oauth._2_0.protocol.AccessTokenResponseType;
+import org.atricore.idbus.common.oauth._2_0.protocol.SendPasswordlessLinkRequestType;
+import org.atricore.idbus.common.oauth._2_0.protocol.SendPasswordlessLinkResponseType;
 import org.atricore.idbus.common.oauth._2_0.wsdl.OAuthPortType;
 
 /**
@@ -12,54 +14,33 @@ import org.atricore.idbus.common.oauth._2_0.wsdl.OAuthPortType;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class AccessTokenRequestor {
+public class AccessTokenRequestor extends AbstractWSClient {
 
-    private String clientId;
-
-    private String clientSecret;
-
-    private String endpoint;
-
-    private OAuthPortType wsClient;
-
-    public AccessTokenRequestor(String clientId, String clientSecret, String endpoint) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.endpoint = endpoint;
-        this.wsClient = doMakeWsClient();
+    public AccessTokenRequestor(String clientId, String clientSecret, String endpoint, String wsdlLocation) {
+        super(clientId, clientSecret, endpoint, wsdlLocation);
     }
 
     public String requestTokenForUsernamePassword(String username, String password) throws Exception {
 
         // Build OAuth2 AccessToken request
         AccessTokenRequestType req = new AccessTokenRequestType();
-        req.setClientId(clientId);
-        req.setClientSecret(clientSecret);
+        req.setClientId(getClientId());
+        req.setClientSecret(getClientSecret());
         req.setUsername(username);
         req.setPassword(password);
 
         // Request a Token
-        AccessTokenResponseType res = wsClient.accessTokenRequest(req);
+        AccessTokenResponseType res = getWsClient().accessTokenRequest(req);
 
         if (res.getError() != null) {
-            throw new Exception("Cannot get access token: " + res.getError().value() + " ["+res.getErrorDescription()+"]");
+            String errMsg = "Cannot get access token: " + res.getError().value() + " ["+res.getErrorDescription()+"]";
+            if (res.getSsoPolicyEnforcements() != null && res.getSsoPolicyEnforcements().size() > 0) {
+                throw new OAuth2ClientException(errMsg, res.getSsoPolicyEnforcements());
+            }
+            throw new Exception(errMsg);
         }
 
         return res.getAccessToken();
-    }
-
-    protected OAuthPortType doMakeWsClient() {
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-
-        factory.getInInterceptors().add(new LoggingInInterceptor());
-        factory.getOutInterceptors().add(new LoggingOutInterceptor());
-        factory.setServiceClass(OAuthPortType.class);
-        factory.setAddress(endpoint);
-
-        OAuthPortType client = (OAuthPortType) factory.create();
-
-        return client;
-
     }
 
 }

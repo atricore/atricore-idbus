@@ -64,7 +64,7 @@ public class AuthenticatorImpl implements Authenticator {
         Subject s = new Subject();
 
         List<AuthenticationScheme> schemes = getSchemes(schemeName);
-        Set<SSOPolicyEnforcementStatement> ssoPolicies = new HashSet<SSOPolicyEnforcementStatement>();
+        Set<PolicyEnforcementStatement> ssoPolicies = new HashSet<PolicyEnforcementStatement>();
         String lastPrincipal = null;
 
         for (AuthenticationScheme scheme : schemes) {
@@ -109,7 +109,7 @@ public class AuthenticatorImpl implements Authenticator {
 
     /**
      * A prototype instance of the used authentication scheme is injected.
-     * This isntance will be cloned for each authentication process.
+     * This instance will be cloned for each authentication process.
      */
     public void setAuthenticationSchemes(AuthenticationScheme[] as) {
         _as = new ArrayList<AuthenticationScheme>();

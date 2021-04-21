@@ -4,6 +4,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinitio
 
 public class UpdateUserAttributeResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -5198476899156498718L;
+
     private UserAttributeDefinition userAttribute;
 
     public UserAttributeDefinition getUserAttribute() {

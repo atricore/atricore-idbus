@@ -1,9 +1,12 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
-import org.atricore.idbus.kernel.main.provisioning.domain.Account;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This represents a destination to provision identity and mediation information (when available)
@@ -40,8 +43,8 @@ public interface ProvisioningTarget {
      * Is Schema management available, true when schema management is supported
      * by this instance.
      */
-    @Deprecated
     boolean isSchemaManagementAvailable();
+
 
     //<--------------- Groups -------------------->
 
@@ -71,7 +74,13 @@ public interface ProvisioningTarget {
     RemoveUserResponse removeUser(RemoveUserRequest userRequest)
             throws ProvisioningException;
 
+    RemoveUsersResponse removeUsers(RemoveUsersRequest usersRequest) throws ProvisioningException;
+
     AddUserResponse addUser(AddUserRequest userRequest)
+            throws ProvisioningException;
+
+    // Why!
+    List<User> addUsers(List<User> users)
             throws ProvisioningException;
 
     PrepareAddUserResponse prepareAddUser(AddUserRequest userRequest)
@@ -86,22 +95,23 @@ public interface ProvisioningTarget {
     FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest)
             throws ProvisioningException;
 
-
     ListUsersResponse listUsers(ListUsersRequest userRequest)
             throws ProvisioningException;
 
     SearchUserResponse searchUsers(SearchUserRequest userRequest)
             throws ProvisioningException;
 
+    Collection<String> findUserNames(List<String> usernames)
+            throws ProvisioningException;
+
     UpdateUserResponse updateUser(UpdateUserRequest userRequest)
+            throws ProvisioningException;
+
+    UpdateUsersResponse updateUsers(UpdateUsersRequest usersRequest)
             throws ProvisioningException;
 
     GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest)
     		throws ProvisioningException;
-
-    ListUserAccountsResponse listUserAccounts(ListUserAccountsRequest request) throws ProvisioningException;
-
-    ListResourcesResponse listResources(ListResourcesRequest requesst) throws ProvisioningException;
 
     SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest)
             throws ProvisioningException;

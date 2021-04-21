@@ -6,6 +6,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class ConfirmAddUserRequest extends AddUserRequest {
 
+    private static final long serialVersionUID = -1639068098156498718L;
+
     private String transactionId;
 
     public String getTransactionId() {

@@ -29,13 +29,16 @@ import javax.xml.namespace.QName;
  */
 public interface SSOMetadataConstants {
 
+    final static QName MetadataService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "MetadataService");
+
+    final static QName PayloadResolutionService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "PayloadResolutionService");
 
     final static QName SPInitiatedSingleSignOnService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnService");
 
     final static QName SPInitiatedSingleLogoutService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleLogoutService");
 
     final static QName IDPInitiatedSingleLogoutService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "IDPInitiatedSingleLogoutService");
-    
+
     final static QName SPInitiatedManageNameIDService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedManageNameIDService");
 
     final static QName AssertIdentityWithSimpleAuthenticationService_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "AssertIdentityWithSimpleAuthenticationService");
@@ -55,6 +58,8 @@ public interface SSOMetadataConstants {
 
 
     final static QName SPInitiatedSingleSignOnServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleSignOnServiceProxy");
+
+    final static QName SPInitiatedAuthnServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedAuthnServiceProxy");
 
     final static QName SPInitiatedSingleLogoutServiceProxy_QNAME = new QName("urn:org:atricore:idbus:sso:metadata", "SPInitiatedSingleLogoutServiceProxy");
 

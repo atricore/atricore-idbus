@@ -25,6 +25,7 @@ import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.assertion.EncryptedElementType;
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.assertion.ObjectFactory;
+import oasis.names.tc.saml._2_0.metadata.KeyDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
@@ -39,19 +40,28 @@ import org.apache.xml.security.utils.Base64;
 import org.apache.xml.security.utils.EncryptionConstants;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolver;
-import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
+import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
+import org.w3._2000._09.xmldsig_.KeyInfoType;
+import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3._2001._04.xmlenc_.*;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
@@ -60,351 +70,512 @@ import java.util.Iterator;
  * @org.apache.xbean.XBean element="samlr2-encrypter"
  */
 public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
-    private static final Log logger = LogFactory.getLog( XmlSecurityEncrypterImpl.class );
+    private static final Log logger = LogFactory.getLog(XmlSecurityEncrypterImpl.class);
 
     private String jceProviderName;
     private String symmetricKeyAlgorithmURI;
     private String kekAlgorithmURI;
     private SSOKeyResolver keyResolver;
 
-    public void setJceProviderName ( String jceProviderName ) {
+    public void setJceProviderName(String jceProviderName) {
         this.jceProviderName = jceProviderName;
     }
 
-    public String getSymmetricKeyAlgorithmURI () {
+    public String getSymmetricKeyAlgorithmURI() {
         return symmetricKeyAlgorithmURI;
     }
 
     /*
-     * @org.apache.xbean.Property alias="symmetric-key-algorithm"
+     * Default encryption algorithm.  Can be modified for each encryption.
      */
-    public void setSymmetricKeyAlgorithmURI ( String symmetricKeyAlgorithmURI ) {
+    public void setSymmetricKeyAlgorithmURI(String symmetricKeyAlgorithmURI) {
         this.symmetricKeyAlgorithmURI = symmetricKeyAlgorithmURI;
     }
 
-    public String getKekAlgorithmURI () {
+    public String getKekAlgorithmURI() {
         return kekAlgorithmURI;
     }
 
-    public void setKekAlgorithmURI ( String kekAlgorithmURI ) {
+    public void setKekAlgorithmURI(String kekAlgorithmURI) {
         this.kekAlgorithmURI = kekAlgorithmURI;
     }
 
-    public SSOKeyResolver getKeyResolver () {
+    public SSOKeyResolver getKeyResolver() {
         return keyResolver;
     }
 
     /**
-     * @org.apache.xbean.Property alias="key-resolver" nestedType="org.atricore.idbus.capabilities.sso.SSOKeyResolver"
+     *
      */
-    public void setKeyResolver ( SSOKeyResolver keyResolver ) {
+    public void setKeyResolver(SSOKeyResolver keyResolver) {
         this.keyResolver = keyResolver;
     }
 
     static {
         org.apache.xml.security.Init.init();
     }
+    /**
+     * Encrypt an Assertion, the encryption will verify if the target SP has specified an algorithm.  Otherwise
+     * it will use the provided (dataEncryptionAlgorithm)
+     *
+     * @param assertion to be encrypted
+     * @param key target SP key descriptor, if available.
+     * @param defaultDataEncryptionAlgorithm default encryption algorithm
+     *
+     * @return a SAML encrypted element.
+     *
+     * @throws SamlR2EncrypterException     */
+    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key, String defaultDataEncryptionAlgorithm ) throws SamlR2EncrypterException {
+        if (keyResolver != null)
+            return encrypt(assertion, key, defaultDataEncryptionAlgorithm, keyResolver);
 
-    public EncryptedElementType encrypt ( AssertionType assertion ) throws SamlR2EncrypterException {
-        if( keyResolver != null )
-            return encrypt( assertion, keyResolver );
-
-        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
+        throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
     }
 
-    public EncryptedElementType encrypt ( AssertionType assertion, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
-        // Marshall the Assertion object as a DOM tree:
-        if ( logger.isDebugEnabled() )
-            logger.debug( "Marshalling SAMLR2 Assertion to DOM Tree [" + assertion.getID() + "]" );
+    /**
+     * Encrypt an Assertion, the encryption will verify if the target SP has specified an algorithm.  Otherwise
+     * it will use the provided (dataEncryptionAlgorithm)
+     *
+     * @param assertion to be encrypted
+     * @param key target SP key descriptor, if available.
+     * @param defaultDataEncryptionAlgorithm default encryption algorithm
+     * @param keyResolver IDP key resolver
+     *
+     * @return a SAML encrypted element.
+     *
+     * @throws SamlR2EncrypterException
+     */
+    public EncryptedElementType encrypt(AssertionType assertion, KeyDescriptorType key, String defaultDataEncryptionAlgorithm, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
 
-        org.w3c.dom.Document doc = createNewDocument();
+        try {
+            // Marshall the Assertion object as a DOM tree:
+            if (logger.isDebugEnabled())
+                logger.debug("Marshalling SAML 2 Assertion to DOM Tree [" + assertion.getID() + "]");
 
-        ObjectFactory of = new ObjectFactory();
+            // Create DOM Document with Assertion
+            ObjectFactory of = new ObjectFactory();
 
-        JAXBElement<AssertionType> jaxbAssertion =
-                new JAXBElement<AssertionType>(
-                        new QName( SAMLR2Constants.SAML_ASSERTION_NS, "Assertion" ),
-                        AssertionType.class,
-                        assertion );
+            Document doc = XmlUtils.marshalSamlR2AssertionAsDom(assertion);
 
-        marshal( jaxbAssertion, doc );
+            if (logger.isDebugEnabled())
+                logger.debug("Obtaining encryption Key for assertion " + assertion.getID());
 
-        Key encriptionKey = generateDataEncryptionKey();
-        EncryptedDataType encData = encryptElement( doc, encriptionKey, false );
-        EncryptedKeyType encKey = encryptKey( doc, encriptionKey, keyResolver );
+            // Generate a symmetric encryption key to encrypt DATA (assertion) using algorithm/key-size from other provider's MD descriptor
 
-        EncryptedElementType eet = of.createEncryptedElementType();
-        eet.setEncryptedData( encData );
-        eet.getEncryptedKey().add( encKey );
+            // Verify if any of the SPs encription methods is supported
+            String dataEncryptionAlgorithm = null;
+            int expectedKeySize = 0;
+            boolean useDefaultAlg = false;
+            int defaultKeySize = 0;
+            int keySize = 0;
+            if (key.getEncryptionMethod() != null) {
+                List<EncryptionMethodType> encMethods = key.getEncryptionMethod();
+                for(EncryptionMethodType encMethod : encMethods) {
 
-        return eet;
-    }
+                    if (!isSupported(encMethod.getAlgorithm()))  {
+                        logger.debug("Ignoring target SP encryption algorithm ["+dataEncryptionAlgorithm+"], not supported");
+                        continue;
+                    }
 
-    public AssertionType decryptAssertion ( EncryptedElementType encryptedAssertion ) throws SamlR2EncrypterException {
-        if( keyResolver != null )
-            return decryptAssertion( encryptedAssertion, keyResolver );
+                    String alg = encMethod.getAlgorithm();
+                    int ks = 0;
 
-        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
-    }
+                    for (Object o : encMethod.getContent()) {
+                        if (o instanceof JAXBElement) {
+                            JAXBElement e = (JAXBElement) o;
+                            if (e.getValue() instanceof BigInteger) {
+                                ks = ((BigInteger) e.getValue()).intValue();
+                            }
+                        }
+                    }
 
-    public AssertionType decryptAssertion ( EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
-        org.w3c.dom.Document doc = createNewDocument();
+                    if (ks <= 0)
+                        ks = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
 
-        JAXBElement<EncryptedElementType> jaxbAssertion =
-                new JAXBElement<EncryptedElementType>(
-                        new QName( SAMLR2Constants.SAML_ASSERTION_NS, "EncryptedAssertion" ),
-                        EncryptedElementType.class,
-                        encryptedAssertion );
+                    // Take the first one.
+                    if (dataEncryptionAlgorithm == null) {
+                        dataEncryptionAlgorithm = alg;
+                        keySize = ks;
+                        if (logger.isDebugEnabled())
+                            logger.debug("Selecting SP supported enc-algorithm [" + alg + "]");
+                    }
 
-        marshal( jaxbAssertion, doc );
+                    // Get default as recommended
+                    if (defaultDataEncryptionAlgorithm != null && defaultDataEncryptionAlgorithm.equals(alg)) {
+                        defaultKeySize = ks;
+                        useDefaultAlg = true;
+                        if (logger.isDebugEnabled())
+                            logger.debug("Selecting SP supported enc-algorithm [" + alg + "] as recommended");
+                    }
 
-        Node assertionelement = decryptAssertion( doc, keyResolver );
+                }
+            }
 
-        JAXBElement<AssertionType> assertion =  (JAXBElement<AssertionType>)unmarshal( assertionelement );
+            // If no algorithm is found/supported, use default (could cause problems)
+            if (useDefaultAlg || (dataEncryptionAlgorithm == null && defaultDataEncryptionAlgorithm != null)) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using selected enc-algorithm [" + defaultDataEncryptionAlgorithm + "], none provided/supported in key " + key);
+                dataEncryptionAlgorithm = defaultDataEncryptionAlgorithm;
+                keySize = defaultKeySize;
+            }
 
-        return assertion.getValue();
-    }
+            if (dataEncryptionAlgorithm == null) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Using configured enc-algorithm [" + getSymmetricKeyAlgorithmURI() + "], none provided/supported in key " + key);
+                dataEncryptionAlgorithm = getSymmetricKeyAlgorithmURI();
+                keySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
+            }
 
-    public EncryptedElementType encrypt ( RequestAbstractType request ) throws SamlR2EncrypterException {
-        if( keyResolver != null )
-            return encrypt( request, keyResolver );
+            expectedKeySize = JCEMapper.getKeyLengthFromURI(dataEncryptionAlgorithm);
 
-        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
-    }
+            if (logger.isDebugEnabled())
+                logger.debug("Creating data-enc-key [key-size]" + dataEncryptionAlgorithm + " [" + keySize + "]");
 
-    public EncryptedElementType encrypt ( RequestAbstractType request, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
-        throw new UnsupportedOperationException( "Not implemented!" );
-    }
+            // TODO : CACHE Keys for SPs for some time to improve performance.
+            Key encryptionKey = generateDataEncryptionKey(dataEncryptionAlgorithm, keySize);
 
-    public EncryptedElementType encrypt ( StatusResponseType response ) throws SamlR2EncrypterException {
-        if( keyResolver != null )
-            return encrypt( response, keyResolver );
+            if (logger.isDebugEnabled())
+                logger.debug("Encrypt assertion " + assertion.getID());
 
-        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
-    }
+            EncryptedDataType encData = encryptElement(doc, encryptionKey, dataEncryptionAlgorithm, false);
 
-    public EncryptedElementType encrypt ( StatusResponseType response, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
-        throw new UnsupportedOperationException( "Not implemented!" );
-    }
+            if (logger.isDebugEnabled())
+                logger.debug("Encrypt Key " + assertion.getID());
 
-    protected EncryptedDataType encryptElement ( Document ownerDocument, Key encryptionKey,
-                                                 boolean encryptContentMode ) throws SamlR2EncrypterException {
-        if ( ownerDocument == null ) {
-            logger.error( "Document for encryption was null" );
-            throw new SamlR2EncrypterException( "Document was null" );
+            // Encrypt the symmetric key using provider's PUBLIC key
+            byte[] cert = getCertificate(key);
+
+            if (cert == null)
+                throw new SamlR2EncrypterException("No X.509 encryption certificate found");
+
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            X509Certificate x509Cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(cert));
+            PublicKey publicKey = x509Cert.getPublicKey();
+            EncryptedKeyType encKey = encryptKey(doc, encryptionKey, publicKey);
+
+            EncryptedElementType eet = of.createEncryptedElementType();
+            eet.setEncryptedData(encData);
+            eet.getEncryptedKey().add(encKey);
+
+            return eet;
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException(e);
         }
-        if ( encryptionKey == null ) {
-            logger.error( "Encryption key for key encryption was null" );
-            throw new SamlR2EncrypterException( "Encryption key was null" );
+    }
+
+    public AssertionType decryptAssertion(EncryptedElementType encryptedAssertion) throws SamlR2EncrypterException {
+        if (keyResolver != null)
+            return decryptAssertion(encryptedAssertion, keyResolver);
+
+        throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+    }
+
+    public Document decryptAssertionAsDOM(EncryptedElementType encryptedAssertion) throws SamlR2EncrypterException {
+        if (keyResolver != null)
+            return decryptAssertionAsDOM(encryptedAssertion, keyResolver);
+
+        throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+    }
+
+
+    public AssertionType decryptAssertion(EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+        try {
+            Document decryptedDoc = decryptAssertionAsDOM(encryptedAssertion, keyResolver);
+            AssertionType assertion = XmlUtils.unmarshalSamlR2Assertion(decryptedDoc);
+            return assertion;
+
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException(e);
+        }
+    }
+
+    @Override
+    public Document decryptAssertionAsDOM(EncryptedElementType encryptedAssertion, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+        try {
+            org.w3c.dom.Document doc = XmlUtils.marshalSamlR2EncryptedAssertionAsDom(encryptedAssertion);
+            Document decryptedDoc = decryptAssertion(doc);
+
+            // Replace Encrypted Assertion with the Decrypted value
+            Node assertionNode = decryptedDoc.getElementsByTagNameNS(
+                    "urn:oasis:names:tc:SAML:2.0:assertion",
+                    "Assertion").item(0);
+
+            Node encryptedElement = decryptedDoc.getElementsByTagNameNS(
+                    "urn:oasis:names:tc:SAML:2.0:assertion",
+                    "EncryptedAssertion").item(0);
+            if (assertionNode == null) {
+                logger.error("Decryption error, assertion node is empty");
+                throw new SamlR2EncrypterException("Decryption error, assertion node is empty");
+            }
+            encryptedElement.removeChild(assertionNode);
+            decryptedDoc.replaceChild(assertionNode, encryptedElement);
+
+            return decryptedDoc;
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException(e.getMessage(), e);
+        }
+    }
+
+    protected Document decryptAssertion(Document document) throws SamlR2EncrypterException {
+        try {
+            if (keyResolver == null)
+                throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+
+            org.w3c.dom.Element encryptedDataElement =
+                    (org.w3c.dom.Element) document.getElementsByTagNameNS(
+                            EncryptionConstants.EncryptionSpecNS,
+                            EncryptionConstants._TAG_ENCRYPTEDDATA).item(0);
+
+            // TODO : Verify our MD, to make sure that the encryption used was the one we requested!
+
+            Key kek = loadKeyEncryptionKey(document, keyResolver);
+
+            XMLCipher xmlCipher = XMLCipher.getInstance();
+            xmlCipher.init(XMLCipher.DECRYPT_MODE, kek);
+
+            Document decryptedDoc = xmlCipher.doFinal(document, encryptedDataElement);
+
+            return decryptedDoc;
+
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException(e);
+        }
+    }
+
+    public EncryptedElementType encrypt(RequestAbstractType request, KeyDescriptorType key) throws SamlR2EncrypterException {
+        if (keyResolver != null)
+            return encrypt(request, key, keyResolver);
+
+        throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+    }
+
+    public EncryptedElementType encrypt(RequestAbstractType request, KeyDescriptorType key, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    public EncryptedElementType encrypt(StatusResponseType response, KeyDescriptorType key) throws SamlR2EncrypterException {
+        if (keyResolver != null)
+            return encrypt(response, key, keyResolver);
+
+        throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+    }
+
+    public EncryptedElementType encrypt(StatusResponseType response, KeyDescriptorType key, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    protected EncryptedDataType encryptElement(Document ownerDocument, Key encryptionKey, String encAlgorithm,
+                                               boolean encryptContentMode) throws SamlR2EncrypterException {
+        if (ownerDocument == null) {
+            logger.error("Document for encryption is null");
+            throw new SamlR2EncrypterException("Document is null");
+        }
+        if (encryptionKey == null) {
+            logger.error("Encryption key for key encryption is null");
+            throw new SamlR2EncrypterException("Encryption key is null");
         }
 
         XMLCipher xmlCipher;
         try {
-            if ( jceProviderName != null ) {
-                xmlCipher = XMLCipher.getProviderInstance( getSymmetricKeyAlgorithmURI(), jceProviderName );
+            if (jceProviderName != null) {
+                xmlCipher = XMLCipher.getProviderInstance(encAlgorithm, jceProviderName);
             } else {
-                xmlCipher = XMLCipher.getInstance( getSymmetricKeyAlgorithmURI() );
+                xmlCipher = XMLCipher.getInstance(encAlgorithm);
             }
-            xmlCipher.init( XMLCipher.ENCRYPT_MODE, encryptionKey );
-        } catch ( XMLEncryptionException e ) {
-            logger.error( "Error initializing cipher instance on key encryption", e );
-            throw new SamlR2EncrypterException( "Error initializing cipher instance on key encryption", e );
+            xmlCipher.init(XMLCipher.ENCRYPT_MODE, encryptionKey);
+        } catch (XMLEncryptionException e) {
+            logger.error("Error initializing cipher instance on key encryption", e);
+            throw new SamlR2EncrypterException("Error initializing cipher instance on key encryption", e);
         }
 
         try {
-            xmlCipher.doFinal( ownerDocument, ownerDocument.getDocumentElement(), encryptContentMode );
-        } catch ( Exception e ) {
-            logger.error( "Error encrypting Document", e );
-            throw new SamlR2EncrypterException( "Error encrypting Docuemnt", e );
+            xmlCipher.doFinal(ownerDocument, ownerDocument.getDocumentElement(), encryptContentMode);
+        } catch (Exception e) {
+            logger.error("Error encrypting Document", e);
+            throw new SamlR2EncrypterException("Error encrypting Docuemnt", e);
         }
 
-        JAXBElement<EncryptedDataType> encElement = (JAXBElement<EncryptedDataType>) unmarshal( ownerDocument.getDocumentElement() );
-        return encElement.getValue();
+        try {
+            return XmlUtils.unmarshalSamlR2EncryptedAssertion(ownerDocument);
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException(e);
+        }
     }
 
-    protected EncryptedKeyType encryptKey ( Document doc, Key symmetricKey, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
+    protected EncryptedKeyType encryptKey(Document doc, Key symmetricKey, PublicKey publiKey) throws SamlR2EncrypterException {
         EncryptedKey encKey;
         try {
-            XMLCipher keyCipher = XMLCipher.getInstance( getKekAlgorithmURI() );
-            keyCipher.init( XMLCipher.WRAP_MODE, keyResolver.getCertificate().getPublicKey() );
-            encKey = keyCipher.encryptKey( doc, symmetricKey );
-        } catch ( XMLEncryptionException e ) {
-            throw new SamlR2EncrypterException( "Encryption Error generating encrypted key", e );
-        } catch ( SSOKeyResolverException e ) {
-            throw new SamlR2EncrypterException( "Encryption Error retrieving private key", e );
+            XMLCipher keyCipher = XMLCipher.getInstance(getKekAlgorithmURI());
+            keyCipher.init(XMLCipher.WRAP_MODE, publiKey);
+            encKey = keyCipher.encryptKey(doc, symmetricKey);
+        } catch (XMLEncryptionException e) {
+            throw new SamlR2EncrypterException("Encryption Error generating encrypted key", e);
         }
 
 
         EncryptedKeyType ekt = new EncryptedKeyType();
-        ekt.setCarriedKeyName( encKey.getCarriedName() );
+        ekt.setCarriedKeyName(encKey.getCarriedName());
         CipherDataType cdt = new CipherDataType();
         try {
-            cdt.setCipherValue( Base64.decode( encKey.getCipherData().getCipherValue().getValue() ) );
-        } catch ( Base64DecodingException e ) {
-            throw new SamlR2EncrypterException( "Error decoding key cipher value", e );
+            cdt.setCipherValue(Base64.decode(encKey.getCipherData().getCipherValue().getValue()));
+        } catch (Base64DecodingException e) {
+            throw new SamlR2EncrypterException("Error decoding key cipher value", e);
         }
-        ekt.setCipherData( cdt );
-        ekt.setEncoding( encKey.getEncoding() );
+        ekt.setCipherData(cdt);
+        ekt.setEncoding(encKey.getEncoding());
         EncryptionMethodType emt = new EncryptionMethodType();
-        emt.setAlgorithm( encKey.getEncryptionMethod().getAlgorithm() );
-        ekt.setEncryptionMethod( emt );
-        if ( encKey.getEncryptionProperties() != null ) {
+        emt.setAlgorithm(encKey.getEncryptionMethod().getAlgorithm());
+        ekt.setEncryptionMethod(emt);
+        if (encKey.getEncryptionProperties() != null) {
             EncryptionPropertiesType ept = new EncryptionPropertiesType();
-            ept.setId( encKey.getEncryptionProperties().getId() );
-            for ( Iterator iter = encKey.getEncryptionProperties().getEncryptionProperties(); iter.hasNext(); ) {
+            ept.setId(encKey.getEncryptionProperties().getId());
+            for (Iterator iter = encKey.getEncryptionProperties().getEncryptionProperties(); iter.hasNext(); ) {
                 EncryptionProperty prop = (EncryptionProperty) iter.next();
                 EncryptionPropertyType ep = new EncryptionPropertyType();
-                ep.setId( prop.getId() );
-                ep.setTarget( prop.getTarget() );
-                ept.getEncryptionProperty().add( ep );
+                ep.setId(prop.getId());
+                ep.setTarget(prop.getTarget());
+                ept.getEncryptionProperty().add(ep);
             }
-            ekt.setEncryptionProperties( ept );
+            ekt.setEncryptionProperties(ept);
         }
-        ekt.setId( encKey.getId() );
+        ekt.setId(encKey.getId());
 //        KeyInfoType kit = new KeyInfoType();
 //        kit.setId( encKey.getKeyInfo().getRegion() );
 //        kit.getContent().addAll( encKey.getKeyInfo(). )
 //        ekt.setKeyInfo(  );
-        ekt.setMimeType( encKey.getMimeType() );
-        ekt.setRecipient( encKey.getRecipient() );
+        ekt.setMimeType(encKey.getMimeType());
+        ekt.setRecipient(encKey.getRecipient());
 //        ekt.setReferenceList(  );
-        ekt.setType( encKey.getType() );
+        ekt.setType(encKey.getType());
         return ekt;
     }
 
-    protected Node decryptAssertion ( Document document, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
+    protected Document decryptAssertion(Document document, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         try {
             org.w3c.dom.Element encryptedDataElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(
                             EncryptionConstants.EncryptionSpecNS,
-                            EncryptionConstants._TAG_ENCRYPTEDDATA ).item( 0 );
+                            EncryptionConstants._TAG_ENCRYPTEDDATA).item(0);
 
+            // TODO : Verify our MD, to make sure that the encryption used was the one we requested!
 
-            Key kek = loadKeyEncryptionKey( document, keyResolver );
+            Key kek = loadKeyEncryptionKey(document, keyResolver);
 
             XMLCipher xmlCipher = XMLCipher.getInstance();
-            xmlCipher.init( XMLCipher.DECRYPT_MODE, kek );
+            xmlCipher.init(XMLCipher.DECRYPT_MODE, kek);
 
-            Document decDoc = xmlCipher.doFinal( document, encryptedDataElement );
+            Document decryptedDoc = xmlCipher.doFinal(document, encryptedDataElement);
 
-            Node assertionNode = decDoc.getElementsByTagNameNS(
+            Node assertionNode = decryptedDoc.getElementsByTagNameNS(
                     "urn:oasis:names:tc:SAML:2.0:assertion",
-                    "Assertion" ).item( 0 );
+                    "Assertion").item(0);
 
-            if (assertionNode == null )
-                throw new SamlR2EncrypterException( "No Assertion Node found in decrypted Document");
+            Element root = decryptedDoc.getDocumentElement();
+            if (assertionNode == null) {
+                logger.error("Decryption error, assertion node is empty");
+                throw new SamlR2EncrypterException("Decryption error, assertion node is empty");
+            }
+            root.removeChild(assertionNode);
+            decryptedDoc.replaceChild(assertionNode, root);
 
-            return assertionNode;
+            return decryptedDoc;
 
-        } catch ( Exception e ) {
-            throw new SamlR2EncrypterException( "Error decrypting Assertion data", e );
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException("Error decrypting Assertion data", e);
         }
     }
 
-    private Document createNewDocument () throws SamlR2EncrypterException {
+    protected Document createNewDocument() throws SamlR2EncrypterException {
         try {
             javax.xml.parsers.DocumentBuilderFactory dbf = javax.xml.parsers.DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware( true );
+            dbf.setNamespaceAware(true);
             javax.xml.parsers.DocumentBuilder db = dbf.newDocumentBuilder();
             return db.newDocument();
-        } catch ( ParserConfigurationException e ) {
-            throw new SamlR2EncrypterException( "Error parsing new XMLDocument", e );
+        } catch (ParserConfigurationException e) {
+            throw new SamlR2EncrypterException("Error parsing new XMLDocument", e);
         }
     }
 
-    private void marshal ( JAXBElement elem, Document doc ) throws SamlR2EncrypterException {
+    protected SecretKey generateDataEncryptionKey(String dataEncAlgorithmURI, int keySize) {
         try {
-            JAXBContext context = JAXBContext.newInstance( SAMLR2Constants.SAML_ASSERTION_PKG );
-            Marshaller m = context.createMarshaller();
-            m.marshal( elem, doc );
-        } catch ( JAXBException e ) {
-            throw new SamlR2EncrypterException( "Error parsing new XMLDocument", e );
-        }
-    }
+            if (logger.isTraceEnabled())
+                logger.trace("Using algorithm [" + dataEncAlgorithmURI + "]");
 
-    private Object unmarshal ( Node node ) throws SamlR2EncrypterException {
-        try {
-            JAXBContext context = JAXBContext.newInstance( SAMLR2Constants.SAML_ASSERTION_PKG );
-            Unmarshaller u = context.createUnmarshaller();
-            return u.unmarshal( node );
-        } catch ( JAXBException e ) {
-            throw new SamlR2EncrypterException( "Error unmarshalling node " + node.getNodeName(), e );
-        }
-    }
+            String jceAlgorithmName = JCEMapper.getJCEKeyAlgorithmFromURI(dataEncAlgorithmURI);
 
-    private SecretKey generateDataEncryptionKey () {
-        try {
-            logger.debug( "using uri algorithm [" + getSymmetricKeyAlgorithmURI() + "]" );
-            String jceAlgorithmName = JCEMapper.getJCEKeyAlgorithmFromURI( getSymmetricKeyAlgorithmURI() );
-            int keyLength = JCEMapper.getKeyLengthFromURI( getSymmetricKeyAlgorithmURI() );
-            logger.debug( "generating key with algorithm [" + jceAlgorithmName + ":" + keyLength + "]" );
-            KeyGenerator keyGenerator = KeyGenerator.getInstance( jceAlgorithmName );
-            keyGenerator.init( keyLength );
-            return keyGenerator.generateKey();
-        } catch ( NoSuchAlgorithmException e ) {
+            if (logger.isTraceEnabled())
+                logger.trace("Generating key [" + jceAlgorithmName + "] length:" + keySize);
+
+            KeyGenerator keyGenerator = KeyGenerator.getInstance(jceAlgorithmName);
+            keyGenerator.init(keySize);
+            SecretKey key = keyGenerator.generateKey();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Generated key [" + jceAlgorithmName + "] length:" + keySize);
+
+            return key;
+        } catch (NoSuchAlgorithmException e) {
             logger.error(e.getMessage(), e);
         }
         return null;
     }
 
-    private Key loadKeyEncryptionKey ( Document document, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
+    protected Key loadKeyEncryptionKey(Document document, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         try {
             org.w3c.dom.Element encryptedKeyElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(
                             EncryptionConstants.EncryptionSpecNS,
-                            EncryptionConstants._TAG_ENCRYPTEDKEY ).item( 0 );
+                            EncryptionConstants._TAG_ENCRYPTEDKEY).item(0);
             assert encryptedKeyElement != null : "No " + EncryptionConstants._TAG_ENCRYPTEDKEY + " Element found in Document";
 
             XMLCipher keyCipher = XMLCipher.getInstance();
-            keyCipher.init( XMLCipher.UNWRAP_MODE, keyResolver.getPrivateKey() );
-            EncryptedKey ek = keyCipher.loadEncryptedKey( document, encryptedKeyElement );
+            keyCipher.init(XMLCipher.UNWRAP_MODE, keyResolver.getPrivateKey());
+            EncryptedKey ek = keyCipher.loadEncryptedKey(document, encryptedKeyElement);
             assert ek != null : "No encryptedKey found";
 
             org.w3c.dom.Element encryptedDataElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(
                             EncryptionConstants.EncryptionSpecNS,
-                            EncryptionConstants._TAG_ENCRYPTEDDATA ).item( 0 );
+                            EncryptionConstants._TAG_ENCRYPTEDDATA).item(0);
             assert encryptedDataElement != null : "No " + EncryptionConstants._TAG_ENCRYPTEDDATA + " Element found in Document";
 
             org.w3c.dom.Element encryptionMethodElem =
                     (org.w3c.dom.Element) encryptedDataElement.getElementsByTagNameNS(
                             EncryptionConstants.EncryptionSpecNS,
-                            EncryptionConstants._TAG_ENCRYPTIONMETHOD ).item( 0 );
+                            EncryptionConstants._TAG_ENCRYPTIONMETHOD).item(0);
             assert encryptionMethodElem != null : "No " + EncryptionConstants._TAG_ENCRYPTIONMETHOD + " Element found in Document";
 
-            String algoritmUri = encryptionMethodElem.getAttribute( EncryptionConstants._ATT_ALGORITHM );
-            if(logger.isDebugEnabled())
-                logger.debug( "Encrypted Key algorithm: " + algoritmUri );
-            
-            return keyCipher.decryptKey( ek, algoritmUri );
-        } catch ( Exception e ) {
-            throw new SamlR2EncrypterException( "Error loading or decrypting kek", e );
+            String algoritmUri = encryptionMethodElem.getAttribute(EncryptionConstants._ATT_ALGORITHM);
+            if (logger.isDebugEnabled())
+                logger.debug("Encrypted Key algorithm: " + algoritmUri);
+
+            return keyCipher.decryptKey(ek, algoritmUri);
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException("Error loading or decrypting kek", e);
         }
     }
-    
-    public NameIDType decryptNameID ( EncryptedElementType encryptedNameID ) throws SamlR2EncrypterException {
-        if( keyResolver != null )
-            return decryptNameID( encryptedNameID, keyResolver );
 
-        throw new SamlR2EncrypterException( "No SSOKeyResolver found in configuration" );
-    }    
-    
-    public NameIDType decryptNameID ( EncryptedElementType encryptedNameID, SSOKeyResolver keyResolver ) throws SamlR2EncrypterException {
+    public NameIDType decryptNameID(EncryptedElementType encryptedNameID) throws SamlR2EncrypterException {
+        if (keyResolver != null)
+            return decryptNameID(encryptedNameID, keyResolver);
+
+        throw new SamlR2EncrypterException("No SSOKeyResolver found in configuration");
+    }
+
+    public NameIDType decryptNameID(EncryptedElementType encryptedNameID, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
         org.w3c.dom.Document doc = createNewDocument();
 
         JAXBElement<EncryptedElementType> jaxbNameID =
                 new JAXBElement<EncryptedElementType>(
-                        new QName( SAMLR2Constants.SAML_ASSERTION_NS, "EncryptedID" ),
+                        new QName(SAMLR2Constants.SAML_ASSERTION_NS, "EncryptedID"),
                         EncryptedElementType.class,
-                        encryptedNameID );
+                        encryptedNameID);
 
-        marshal( jaxbNameID, doc );
+        // TODO : marshal(jaxbNameID, doc);
 
-        Node nameIDElement = decryptNameID( doc, keyResolver );
+        Node nameIDElement = decryptNameID(doc, keyResolver);
 
-        JAXBElement<NameIDType> nameID =  (JAXBElement<NameIDType>)unmarshal( nameIDElement );
-
-        return nameID.getValue();
+        throw new UnsupportedOperationException("decryptNameID not supported");
     }
 
     protected Node decryptNameID(Document document, SSOKeyResolver keyResolver) throws SamlR2EncrypterException {
@@ -412,28 +583,88 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
             org.w3c.dom.Element encryptedDataElement =
                     (org.w3c.dom.Element) document.getElementsByTagNameNS(
                             EncryptionConstants.EncryptionSpecNS,
-                            EncryptionConstants._TAG_ENCRYPTEDDATA ).item( 0 );
+                            EncryptionConstants._TAG_ENCRYPTEDDATA).item(0);
 
 
-            Key kek = loadKeyEncryptionKey( document, keyResolver );
+            Key kek = loadKeyEncryptionKey(document, keyResolver);
 
             XMLCipher xmlCipher = XMLCipher.getInstance();
-            xmlCipher.init( XMLCipher.DECRYPT_MODE, kek );
+            xmlCipher.init(XMLCipher.DECRYPT_MODE, kek);
 
-            Document decDoc = xmlCipher.doFinal( document, encryptedDataElement );
+            Document decDoc = xmlCipher.doFinal(document, encryptedDataElement);
 
             Node nameIDNode = decDoc.getElementsByTagNameNS(
                     "urn:oasis:names:tc:SAML:2.0:assertion",
-                    "NameID" ).item( 0 );
+                    "NameID").item(0);
 
-            if (nameIDNode == null )
-                throw new SamlR2EncrypterException( "No NameID Node found in decrypted Document");
+            if (nameIDNode == null)
+                throw new SamlR2EncrypterException("No NameID Node found in decrypted Document");
 
             return nameIDNode;
 
-        } catch ( Exception e ) {
-            throw new SamlR2EncrypterException( "Error decrypting NameID data", e );
+        } catch (Exception e) {
+            throw new SamlR2EncrypterException("Error decrypting NameID data", e);
         }
-	}    
-	
+    }
+
+    protected boolean isSupported(String encAlgorithmURI) {
+        return JCEMapper.getAlgorithmClassFromURI(encAlgorithmURI) != null;
+    }
+
+    protected int getKeySize(EncryptionMethodType encMethod) {
+        int keySize = 0;
+        if (encMethod.getContent() != null) {
+            for (Object e : encMethod.getContent()) {
+                if (e instanceof JAXBElement) {
+                    JAXBElement jaxbElement = (JAXBElement) e;
+                    if (jaxbElement.getName() != null && jaxbElement.getName().getLocalPart().endsWith("KeySize")) {
+                        Object v = jaxbElement.getValue();
+
+                        if (v != null) {
+                            if (v instanceof BigInteger)
+                                keySize = ((BigInteger) v).intValue();
+                            else if (v instanceof String)
+                                keySize = Integer.parseInt((String)v);
+                            else if (v instanceof Integer)
+                                keySize = (Integer)v;
+                            else if (v instanceof Long)
+                                keySize = ((Long)v).intValue();
+                            else
+                                logger.error("Unknown keySize value type " + v.getClass());
+                        }
+
+                    }
+                }
+            }
+        }
+        return keySize;
+    }
+
+    protected byte[] getCertificate(KeyDescriptorType key) {
+        KeyInfoType keyInfo = key.getKeyInfo();
+
+        PublicKey publicKey = null;
+        if (keyInfo.getContent() != null) {
+
+            for (Object o : keyInfo.getContent()) {
+
+                if (o instanceof JAXBElement) {
+                    JAXBElement e = (JAXBElement) o;
+                    if (e.getValue() instanceof X509DataType) {
+                        X509DataType x509data = (X509DataType) e.getValue();
+                        for (Object x509dataContent : x509data.getX509IssuerSerialOrX509SKIOrX509SubjectName()) {
+                            if (x509dataContent instanceof JAXBElement) {
+                                JAXBElement x509cert = (JAXBElement) x509dataContent;
+                                if (x509cert.getName().getLocalPart().equals("X509Certificate")) {
+                                    return (byte[]) x509cert.getValue();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
 }

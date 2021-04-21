@@ -16,6 +16,8 @@ public interface GenericDAO<T, PK> {
 
     T save(T object);
 
+    Collection<T> saveAll(Collection<T> objects);
+
     void delete(PK id);
 
     T detachCopy(T object, int fetchDepth);

@@ -1,8 +1,10 @@
 package org.atricore.idbus.kernel.authz.command
 
 import org.apache.karaf.shell.console.OsgiCommandSupport
-import reflect.BeanProperty
+
 import org.atricore.idbus.kernel.authz.config.AuthorizationConfiguration
+
+import scala.beans.BeanProperty
 
 
 class AuthzCommandSupport extends OsgiCommandSupport {

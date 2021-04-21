@@ -31,6 +31,10 @@ import javax.xml.namespace.QName;
  */
 public enum SSOService {
 
+    MetadataService(SSOMetadataConstants.MetadataService_QNAME),
+
+    PayloadResolutionService(SSOMetadataConstants.PayloadResolutionService_QNAME),
+
     SingleSignOnService(SSOMetadataConstants.SingleSignOnService_QNAME),
 
     SingleLogoutService(SSOMetadataConstants.SingleLogoutService_QNAME),
@@ -67,6 +71,8 @@ public enum SSOService {
     SPInitiatedManageNameIDService(SSOMetadataConstants.SPInitiatedManageNameIDService_QNAME),
 
     SPInitiatedSingleSignOnServiceProxy(SSOMetadataConstants.SPInitiatedSingleSignOnServiceProxy_QNAME),
+
+    SPInitiatedAuthnServiceProxy(SSOMetadataConstants.SPInitiatedAuthnServiceProxy_QNAME),
 
     SPInitiatedSingleLogoutServiceProxy(SSOMetadataConstants.SPInitiatedSingleLogoutServiceProxy_QNAME),
 

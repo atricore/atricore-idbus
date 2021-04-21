@@ -53,6 +53,14 @@
         <part name="body" element="oauth2p:AccessTokenResponse"/>
     </message>
 
+    <message name="SendPasswordlessLinkRequestMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkRequest"/>
+    </message>
+
+    <message name="SendPasswordlessLinkResponseMessage">
+        <part name="body" element="oauth2p:SendPasswordlessLinkResponse"/>
+    </message>
+
 
     <portType name="OAuthPortType">
 
@@ -70,6 +78,12 @@
                          message="tns:AccessTokenResponseMessage"/>
         </operation>
 
+        <operation name="SendPasswordlessLinkRequest">
+            <input name="SendPasswordlessLinkRequestInput"
+                   message="tns:SendPasswordlessLinkRequestMessage"/>
+            <output name="SendPasswordlessLinkResponseOutput"
+                    message="tns:SendPasswordlessLinkResponseMessage"/>
+        </operation>
 
     </portType>
     
@@ -100,6 +114,19 @@
                 <soap:body use="literal"/>
             </output>
         </operation>
+
+        <operation name="SendPasswordlessLinkRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="SendPasswordlessLinkRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SendPasswordlessLinkResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
 
     </binding>
 

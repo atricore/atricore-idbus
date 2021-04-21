@@ -3,6 +3,8 @@ package org.atricore.idbus.capabilities.sso.main.select.internal;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
 import org.atricore.idbus.common.sso._1_0.protocol.SelectEntityRequestType;
 
+import java.util.Deque;
+
 /**
  *
  */
@@ -16,7 +18,7 @@ public class EntitySelectionState implements java.io.Serializable {
 
     private String selectedCotMember;
 
-    private String previousCotMember;
+    private Deque<String> previousCotMembers;
 
     public ClaimSet getUserClaims() {
         return userClaims;
@@ -58,11 +60,11 @@ public class EntitySelectionState implements java.io.Serializable {
         this.nextSelectorEndpointIdx = nextSelectorEndpointIdx;
     }
 
-    public String getPreviousCotMember() {
-        return previousCotMember;
+    public Deque<String> getPreviousCotMembers() {
+        return previousCotMembers;
     }
 
-    public void setPreviousCotMember(String previousCotMember) {
-        this.previousCotMember = previousCotMember;
+    public void setPreviousCotMembers(Deque<String> previousCotMembers) {
+        this.previousCotMembers = previousCotMembers;
     }
 }

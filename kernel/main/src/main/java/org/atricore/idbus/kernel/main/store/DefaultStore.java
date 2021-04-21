@@ -1,6 +1,10 @@
 package org.atricore.idbus.kernel.main.store;
 
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordCredentialProvider;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
@@ -10,45 +14,68 @@ import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * Created by sgonzalez on 3/20/15.
+ * Default Identity Store
  */
 public class DefaultStore extends AbstractStore {
 
-    private IdentityPartition partition;
+    private static Log logger = LogFactory.getLog(DefaultStore.class);
 
+    private IdentityPartition partition;
 
     public IdentityPartition getPartition() {
         return partition;
+    }
+
+    private List<String> credentialNames = new ArrayList();
+
+    public DefaultStore() {
+
+    }
+
+    public List<String> getCredentialNames() {
+        return credentialNames;
+    }
+
+    public void setCredentialNames(List<String> credentialNames) {
+        this.credentialNames = credentialNames;
     }
 
     public void setPartition(IdentityPartition partition) {
         this.partition = partition;
     }
 
+    /**
+     * Credentials vary upon authentication mechanism.
+     *
+     * A set of properties can be configured to be loaded as credentials.
+     *
+     * @param key the key used to retrieve credentials from store.
+     * @param cp
+     * @return
+     * @throws SSOIdentityException
+     */
     public Credential[] loadCredentials(CredentialKey key, CredentialProvider cp) throws SSOIdentityException {
 
         try {
-
             User user = partition.findUserByUserName(key.toString());
-            // TODO : Support other type of credentials !
-
-            Credential usrCred = cp.newCredential("username", user.getUserName());
-            Credential pwdCred = cp.newCredential("password", user.getUserPassword());
-            Credential saltCred = null;
-            if (user.getSalt() != null)
-                saltCred = cp.newCredential("salt", user.getSalt());
-
-            return saltCred == null ? new Credential[]{usrCred, pwdCred} : new Credential[]{usrCred, pwdCred, saltCred};
-
+            return cp.newCredentials(user);
         } catch (UserNotFoundException e) {
-            return new Credential[0];
+            throw new NoSuchUserException(key.toString());
         } catch (ProvisioningException e) {
             throw new SSOIdentityException(e);
         }
+
+
     }
+
+
 
     public BaseUser loadUser(UserKey key) throws NoSuchUserException, SSOIdentityException {
 
@@ -97,19 +124,19 @@ public class DefaultStore extends AbstractStore {
 
         // First Name
         if (jdoUser.getFirstName() != null) {
-            SSONameValuePair firstName = new SSONameValuePair("firstName", jdoUser.getFirstName());
+            SSONameValuePair firstName = new SSONameValuePair("given_name", jdoUser.getFirstName());
             ssoUser.addProperty(firstName);
         }
 
         // Last Name
         if (jdoUser.getSurename() != null) {
-            SSONameValuePair lastName = new SSONameValuePair("lastName", jdoUser.getSurename());
+            SSONameValuePair lastName = new SSONameValuePair("family_name", jdoUser.getSurename());
             ssoUser.addProperty(lastName);
         }
 
         // Common Name
         if (jdoUser.getCommonName() != null) {
-            SSONameValuePair commonName = new SSONameValuePair("commonName", jdoUser.getCommonName());
+            SSONameValuePair commonName = new SSONameValuePair("name", jdoUser.getCommonName());
             ssoUser.addProperty(commonName);
         }
 
@@ -121,8 +148,26 @@ public class DefaultStore extends AbstractStore {
 
         // Language
         if (jdoUser.getLanguage() != null) {
-            SSONameValuePair language = new SSONameValuePair("language", jdoUser.getLanguage());
+            SSONameValuePair language = new SSONameValuePair("locale", jdoUser.getLanguage());
             ssoUser.addProperty(language);
+        }
+
+        // Telephone Number
+        if (jdoUser.getTelephoneNumber() != null) {
+            SSONameValuePair telephoneNumber = new SSONameValuePair("phone_number", jdoUser.getTelephoneNumber());
+            ssoUser.addProperty(telephoneNumber);
+        }
+
+        // Street Address
+        if (jdoUser.getStreetAddress() != null) {
+            SSONameValuePair streetAddress = new SSONameValuePair("streetAddress", jdoUser.getStreetAddress());
+            ssoUser.addProperty(streetAddress);
+        }
+
+        // Postal Address
+        if (jdoUser.getPostalAddress() != null) {
+            SSONameValuePair postalAddress = new SSONameValuePair("postalAddress", jdoUser.getPostalAddress());
+            ssoUser.addProperty(postalAddress);
         }
 
         // -----------------------------------------------------------
@@ -143,6 +188,17 @@ public class DefaultStore extends AbstractStore {
             SSONameValuePair p = new SSONameValuePair("accountExpirationDate", jdoUser.getAccountExpirationDate().toString());
             ssoUser.addProperty(p);
         }
+
+        if (jdoUser.getLastAuthentication() != null) {
+            SSONameValuePair p = new SSONameValuePair("lastAuthentication", jdoUser.getLastAuthentication().toString());
+            ssoUser.addProperty(p);
+        }
+
+        if (jdoUser.getFailedLogins() != null) {
+            SSONameValuePair p = new SSONameValuePair("failedLogins", jdoUser.getFailedLogins() + "");
+            ssoUser.addProperty(p);
+        }
+
 
         if (jdoUser.getPasswordExpirationDate() != null) {
             SSONameValuePair p = new SSONameValuePair("passwordExpirationDate", jdoUser.getPasswordExpirationDate().toString());

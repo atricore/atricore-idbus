@@ -61,12 +61,11 @@ public class HttpLogMessageBuilder implements LogMessageBuilder {
 
             StringBuffer logMsg = new StringBuffer(1024);
 
-            logMsg.append("<http-request method=\"").append(hreq.getMethod()).append("\"").
-                    append("\n\t url=\"").append(hreq.getRequestURL()).append("\"").
-                    append("\n\t content-type=\"").append(hreq.getContentType()).append("\"").
-                    append("\n\t content-length=\"").append(hreq.getContentLength()).append("\"").
-                    append("\n\t content-encoding=\"").append(hreq.getCharacterEncoding()).append("\"").
-                    append(">");
+            logMsg.append(" http-request-method=\"").append(hreq.getMethod()).append("\"").
+                    append(" url=\"").append(hreq.getRequestURL()).append("\"").
+                    append(" content-type=\"").append(hreq.getContentType()).append("\"").
+                    append(" content-length=\"").append(hreq.getContentLength()).append("\"").
+                    append(" content-encoding=\"").append(hreq.getCharacterEncoding()).append("\"");
 
             Enumeration headerNames = hreq.getHeaderNames();
 
@@ -74,31 +73,26 @@ public class HttpLogMessageBuilder implements LogMessageBuilder {
                 String headerName = (String) headerNames.nextElement();
                 Enumeration headers = hreq.getHeaders(headerName);
 
-                logMsg.append("\n\t<header name=\"").append(headerName).append("\">");
+                logMsg.append(" header-name=\"").append(headerName).append("\"");
 
                 while (headers.hasMoreElements()) {
                     String headerValue = (String) headers.nextElement();
-                    logMsg.append("\n\t\t<header-value>").append(headerValue).append("</header-value>");
+                    logMsg.append(" header-value=\"").append(headerValue).append("\"");
                 }
-
-                logMsg.append("\n\t</header>");
 
             }
 
             Enumeration params = hreq.getParameterNames();
             while (params.hasMoreElements()) {
                 String param = (String) params.nextElement();
-                logMsg.append("\n\t<parameter name=\"").append(param).append("\">");
-                logMsg.append("\n\t\t\t<value>").append(hreq.getParameter(param)).append("</value>");
-                logMsg.append("\n\t</parameter>");
+                logMsg.append(" parameter-name=\"").append(param).append("\"");
+                logMsg.append(" parameter-value=\"").append(hreq.getParameter(param)).append("\"");
             }
-
-            logMsg.append("\n</http-request>");
 
             return logMsg.toString();
         } else {
             StringBuffer logMsg = new StringBuffer(1024);
-            logMsg.append("\t<http-response />");
+            logMsg.append("http-response");
             return logMsg.toString();
         }
     }

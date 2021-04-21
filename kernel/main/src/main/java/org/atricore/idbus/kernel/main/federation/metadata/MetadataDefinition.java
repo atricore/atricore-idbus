@@ -30,6 +30,8 @@ public class MetadataDefinition<E> implements java.io.Serializable {
 
     private E definition;
 
+    private E strictDefinition;
+
     public String getId() {
         return id;
     }
@@ -38,11 +40,25 @@ public class MetadataDefinition<E> implements java.io.Serializable {
         this.id = id;
     }
 
+    /**
+     * General definition, may contain non-normative elements.
+     */
     public E getDefinition() {
         return definition;
     }
 
     public void setDefinition(E definition) {
         this.definition = definition;
+    }
+
+    /**
+     * Strict (normative) MD definition.
+     */
+    public E getStrictDefinition() {
+        return strictDefinition;
+    }
+
+    public void setStrictDefinition(E strictDefinition) {
+        this.strictDefinition = strictDefinition;
     }
 }

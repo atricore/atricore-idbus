@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.support.core;
 
+import java.io.Serializable;
 import java.security.Key;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
@@ -30,7 +31,7 @@ import java.security.cert.Certificate;
  *         User: ajadzinsky
  *         Date: Jun 9, 2009
  */
-public interface SSOKeyResolver {
+public interface SSOKeyResolver extends Serializable {
 
     Certificate getCertificate () throws SSOKeyResolverException;
 

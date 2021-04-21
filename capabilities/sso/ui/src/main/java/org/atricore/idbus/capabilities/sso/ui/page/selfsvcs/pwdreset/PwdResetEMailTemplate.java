@@ -41,11 +41,9 @@ public class PwdResetEMailTemplate extends WebPage {
 
         Url url  = RequestCycle.get().getRequest().getClientUrl();
 
-        //String link = url.getProtocol() + "://" +
-        //        url.getHost() + (url.getPort() != 443 && url.getPort() != 80 ? ":" + url.getPort() + "" : "") +
-        //        path;
-
-        String link = "https://josso.atricore.com" + path;
+        String link = url.getProtocol() + "://" +
+                url.getHost() + (url.getPort() != 443 && url.getPort() != 80 ? ":" + url.getPort() + "" : "") +
+                path;
 
         add(new ExternalLink("pwdResetLink", link));
 

@@ -48,4 +48,11 @@ public abstract class AbstractStore implements IdentityStore, CredentialStore {
         }
     }
 
+    public boolean isUpdatePasswordEnabled() {
+        return false;
+    }
+
+    public void updatePassword(UserKey key, String currentPassword, String newPassword) throws SSOIdentityException {
+        throw new UnsupportedOperationException("Unsupported Identity Store Operation [updatePassword]");
+    }
 }

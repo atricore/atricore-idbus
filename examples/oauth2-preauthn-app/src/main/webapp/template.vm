@@ -1,0 +1,10 @@
+<html>
+<body>
+<h3>Hello $username</h3>
+<p>You requested an authentication link, please click <a href="$authnURL">LOGIN</a> to access your application.
+</p>
+<p>
+    <br/>targetSP :$targetSP
+</p>
+</body>
+</html>

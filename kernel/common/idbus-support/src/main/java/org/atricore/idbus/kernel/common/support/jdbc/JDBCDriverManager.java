@@ -1,5 +1,6 @@
 package org.atricore.idbus.kernel.common.support.jdbc;
 
+import com.mchange.v2.c3p0.DataSources;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.common.support.osgi.ExternalResourcesClassLoader;
@@ -7,6 +8,7 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileFilter;
 import java.net.URL;
@@ -146,15 +148,30 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
         this.configuredDrivers = configuredDrivers;
     }
 
+
+    public DataSource getPooledDataSource(DataSource ds, Map overrideProps) throws JDBCManagerException {
+        try {
+            return DataSources.pooledDataSource(ds, overrideProps);
+        } catch (SQLException e) {
+            throw new JDBCManagerException(e);
+        }
+    }
+
+    public DataSource getDataSource( String driverClass, String url,
+                                     Properties connectionProperties,
+                                     Collection<String> driverClassPath ) throws JDBCManagerException {
+        return new DriverManagerDataSource(driverClass, url, connectionProperties, driverClassPath, this);
+    }
+
     public Connection getConnection( String driverClass, String url,
 			Properties connectionProperties, Collection<String> driverClassPath ) throws JDBCManagerException {
         try {
 
             if (driverClass == null || "".equals(driverClass))
-                throw new JDBCManagerException("Driver class canont be null or empty");
+                throw new JDBCManagerException("Driver class cannot be null or empty");
 
             if (url == null || "".equals(url))
-                throw new JDBCManagerException("Connection URL canont be null or empty");
+                throw new JDBCManagerException("Connection URL cannot be null or empty");
 
             if ( logger.isTraceEnabled())
                 logger.trace( "Request JDBC Connection: driverClass="
@@ -177,7 +194,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
                                               Collection<String> driverClassPath)
             throws SQLException, JDBCManagerException {
 
-        // no driverinfo extension for driverClass connectionFactory       
+        // no driverinfo extension for driverClass connectionFactory
         // no JNDI Data Source URL defined, or
         // not able to get a JNDI data source connection,
         // use the JDBC DriverManager instead to get a JDBC connection
@@ -189,7 +206,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
 
             ds = new DriverDescriptor();
 
-            ds.setName("Dyamically added driver : " + driverClass);
+            ds.setName("Dynamically added driver : " + driverClass);
             ds.setDriverclassName(driverClass);
             ds.setJarFileNames(classPath);
             ds.setUrl(url);

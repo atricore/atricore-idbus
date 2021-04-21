@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.main.binding;
 
+import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.camel.Exchange;
@@ -29,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.util.XmlUtils;
+import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
@@ -36,9 +38,14 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.w3._1999.xhtml.Html;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -125,6 +132,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
     /**
      * Copy back a SAMLR2Message to the incomming exchange (HTTP)
+     *
      * @param samlOut
      * @param exchange
      */
@@ -152,14 +160,18 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             boolean isResponse = false;
 
             String relayState = out.getRelayState();
+            NameIDType issuer = null;
 
             if (out.getContent() instanceof RequestAbstractType) {
                 msgName = "SAMLRequest";
                 msgValue = XmlUtils.marshalSamlR2Request((RequestAbstractType) out.getContent(), element, true);
+                issuer = ((RequestAbstractType) out.getContent()).getIssuer();
             } else if (out.getContent() instanceof StatusResponseType) {
                 isResponse = true;
                 msgName = "SAMLResponse";
                 msgValue = XmlUtils.marshalSamlR2Response((StatusResponseType) out.getContent(), element, true);
+
+                issuer = ((StatusResponseType) out.getContent()).getIssuer();
 
                 StatusResponseType samlResponse = (StatusResponseType) out.getContent();
                 if (samlResponse.getInResponseTo() != null) {
@@ -170,7 +182,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
                                 ", forcing " + relayState);
                     }
                 }
-                
+
             } else if (out.getContent() instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
                 // Marshal SAML 1.1 Response
                 isResponse = true;
@@ -188,7 +200,6 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             // ------------------------------------------------------------
 
             String targetLocation = this.buildHttpTargetLocation(httpIn, ed, isResponse);
-
             Html post = null;
 
             if (logger.isDebugEnabled())
@@ -202,19 +213,54 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",
                     new String[]{"org.w3._1999.xhtml"});
 
-            // ------------------------------------------------------------
-            // Prepare HTTP Resposne
-            // ------------------------------------------------------------
-            copyBackState(out.getState(), exchange);
 
-            httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
-            httpOut.getHeaders().put("Pragma", "no-cache");
-            httpOut.getHeaders().put("http.responseCode", 200);
-            httpOut.getHeaders().put("Content-Type", "text/html");
-            handleCrossOriginResourceSharing(exchange);
+            boolean redirectForPayload = redirectForPayload(httpIn, issuer, targetLocation);
+            String redirectPayloadLocation = null;
+            String uuid = null;
+            if (redirectForPayload) {
+                uuid = UUIDGenerator.generateJDKId();
+                redirectPayloadLocation = redirectPayloadLocation(uuid);
+                redirectForPayload = redirectPayloadLocation != null;
+            }
 
-            ByteArrayInputStream baos = new ByteArrayInputStream (marshalledHttpResponseBody.getBytes());
-            httpOut.setBody(baos);
+            if (!redirectForPayload) {
+
+                // ------------------------------------------------------------
+                // Prepare HTTP Resposne
+                // ------------------------------------------------------------
+                copyBackState(out.getState(), exchange);
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 200);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+                handleCrossOriginResourceSharing(exchange);
+
+                ByteArrayInputStream baos = new ByteArrayInputStream(marshalledHttpResponseBody.getBytes());
+                httpOut.setBody(baos);
+
+            } else {
+
+                MediationState state = out.getState();
+
+                state.setLocalVariable(uuid, marshalledHttpResponseBody);
+
+                // ------------------------------------------------------------
+                // Prepare HTTP Resposne
+                // ------------------------------------------------------------
+                copyBackState(out.getState(), exchange);
+
+                httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                httpOut.getHeaders().put("Pragma", "no-cache");
+                httpOut.getHeaders().put("http.responseCode", 302);
+                httpOut.getHeaders().put("Content-Type", "text/html");
+                httpOut.getHeaders().put("Location", redirectPayloadLocation);
+
+                httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_FOLLOW_REDIRECT, "false");
+                httpOut.getHeaders().put(IDBusHttpConstants.HTTP_HEADER_IDBUS_FOLLOW_REDIRECT, "false");
+
+                handleCrossOriginResourceSharing(exchange);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -222,4 +268,46 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
     }
 
+    protected String redirectPayloadLocation(String uuid) {
+        for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
+            if (endpoint.getType().equals(SSOService.PayloadResolutionService.toString())) {
+                return channel.getLocation() + endpoint.getLocation() + "?uuid=" + uuid;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Since this is used by our JS UI, we will send a redirect to load the payload.
+     *
+     * @param issuer
+     * @param targetLocation
+     * @return
+     */
+    protected boolean redirectForPayload(Message httpIn, NameIDType issuer, String targetLocation) {
+
+        if (issuer == null) {
+            return false;
+        }
+
+        if (httpIn.getHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_PROCESS_UI) == null)
+            return false;
+
+        try {
+            URI issuerURI = new URI(issuer.getValue());
+            URI targetURI = new URI(targetLocation);
+
+            if (issuerURI.getPort() != targetURI.getPort() ||
+                    !issuerURI.getHost().equals(targetURI.getHost()) ||
+                    !issuerURI.getScheme().equals(targetURI.getScheme()))
+                return true;
+
+            return !targetURI.getPath().startsWith("/IDBUS");
+
+        } catch (URISyntaxException e) {
+            return false;
+        }
+    }
 }
+
+

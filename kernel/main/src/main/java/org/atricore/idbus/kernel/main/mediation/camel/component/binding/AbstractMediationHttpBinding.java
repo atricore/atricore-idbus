@@ -23,8 +23,11 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
@@ -49,6 +52,7 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -61,7 +65,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     private static DateFormat cookieDf = null;
 
     static {
-        cookieDf = new SimpleDateFormat("dd MMM yyyy kk:mm:ss z");
+        cookieDf = new SimpleDateFormat("EEE, dd-MMM-yyyy kk:mm:ss z");
         cookieDf.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
@@ -70,10 +74,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     }
 
     public void copyFaultMessageToExchange(CamelMediationMessage fault, Exchange exchange) {
-        // Store error and redirect to an error display page!
+        this.copyFaultMessageToExchange(fault, exchange, 200);
+    }
+
+    public void copyFaultMessageToExchange(CamelMediationMessage fault, Exchange exchange, int httpResponseCode) {
 
         String errorUrl = getChannel().getIdentityMediator().getErrorUrl();
 
+        // Store error and redirect to an error display page!
         errorUrl = buildHttpTargetLocation(exchange.getIn(),
                 new EndpointDescriptorImpl("idbus-error-page",
                         "ErrorUIService",
@@ -106,15 +114,73 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
                 try {
                     AbstractCamelMediator mediator = (AbstractCamelMediator) getChannel().getIdentityMediator();
-                    Artifact a = mediator.getArtifactQueueManager().pushMessage(fault.getMessage());
 
-                    errorUrl += "?IDBusErrArt=" + a.getContent();
+                    ErrorBinding errorBinding = ErrorBinding.ARTIFACT;
+                    if (StringUtils.isNotBlank(mediator.getErrorBinding())) {
+                        errorBinding = ErrorBinding.asEnum(mediator.getErrorBinding());
+                    }
 
-                    if (logger.isDebugEnabled())
-                        logger.debug("Configured error URL " + errorUrl + ".  Redirecting.");
+                    if (ErrorBinding.JSON.equals(errorBinding)) {
+                        // Create JSON response
+                        // TODO : Add error details (may be a JSON string )
+                        IdentityMediationFault err = fault.getMessage().getFault();
+                        String stackTrace = getStackTrace(err);
+                        String jsonError = "{\n" +
+                                "  \"status_code\": " + getJsonValue(err.getFaultCode()) + ",\n" +
+                                "  \"secondary_status_code\": " + getJsonValue(err.getSecFaultCode()) + ",\n" +
+                                "  \"status_details_code\": " + getJsonValue(err.getStatusDetails()) + ",\n" +
+                                "  \"message\": " + getJsonValue((err.getFault() != null ? err.getFault().getMessage() : err.getMessage())) + ",\n" +
+                                "  \"stack_trace\": " + getJsonValue(stackTrace) + "\n" +
+                                "}";
 
-                    httpOut.getHeaders().put("http.responseCode", 302);
-                    httpOut.getHeaders().put("Location", errorUrl);
+                        Html htmlErr = createHtmlPostMessage(errorUrl, fault.getMessage().getRelayState(), "JOSSOError",
+                                CipherUtil.encodeBase64(jsonError.getBytes("UTF-8")));
+                        String htmlStr = this.marshal(htmlErr, "http://www.w3.org/1999/xhtml", "html",
+                                new String[]{"org.w3._1999.xhtml"});
+
+                        httpOut.getHeaders().put("Cache-Control", "no-cache, no-store");
+                        httpOut.getHeaders().put("Pragma", "no-cache");
+                        httpOut.getHeaders().put("http.responseCode", 200);
+                        httpOut.getHeaders().put("Content-Type", "text/html");
+
+                        ByteArrayInputStream baos = new ByteArrayInputStream(htmlStr.getBytes());
+                        httpOut.setBody(baos);
+
+                    } else if (ErrorBinding.GET.equals(errorBinding)) {
+
+                        IdentityMediationFault err = fault.getMessage().getFault();
+
+                        errorUrl += errorUrl.contains("?") ? "&" : "?";
+                        errorUrl += "status_code=" + err.getFaultCode();
+
+                        if (err.getSecFaultCode() != null)
+                            errorUrl += "&secondary_status_code=" + err.getSecFaultCode();
+
+                        if (err.getStatusDetails() != null)
+                            errorUrl += "&status_details=" + err.getStatusDetails();
+
+                        if (err.getErrorDetails() !=  null)
+                            errorUrl += "&error_details=" + err.getErrorDetails();
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Configured error URL " + errorUrl + ".  Redirecting.");
+
+                        httpOut.getHeaders().put("http.responseCode", 302);
+                        httpOut.getHeaders().put("Location", errorUrl);
+
+                    } else {
+                        // Artifact binding
+                        Artifact a = mediator.getArtifactQueueManager().pushMessage(fault.getMessage());
+
+                        errorUrl += "?IDBusErrArt=" + a.getContent();
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Configured error URL " + errorUrl + ".  Redirecting.");
+
+                        httpOut.getHeaders().put("http.responseCode", 302);
+                        httpOut.getHeaders().put("Location", errorUrl);
+                    }
+
                     return;
                 } catch (Exception e) {
                     logger.error("Cannot forward error to error URL:" + errorUrl, e);
@@ -132,7 +198,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         if (logger.isDebugEnabled())
             logger.debug("No configured error URL. Generating error page.");
 
-        httpOut.getHeaders().put("http.responseCode", 200);
+        httpOut.getHeaders().put("http.responseCode", httpResponseCode);
         Html htmlErr = this.createHtmlErrorPage(fault.getMessage());
         try {
             String htmlStr = this.marshal(htmlErr, "http://www.w3.org/1999/xhtml", "html",
@@ -220,11 +286,11 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                     Date exp = new Date(expiration);
                     String expirationStr = cookieDf.format(exp);
                     exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                            state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
+                            state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "HttpOnly; Path=/;Expires=" + expirationStr);
                 } else {
                     // Session cookie
                     exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                        state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "Path=/");
+                        state.getRemoteVariable(name) + ";" + (secureCookies ? "Secure;" : "") + "HttpOnly; Path=/");
                 }
 
             }
@@ -233,14 +299,23 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         for (String name : state.getRemovedRemoteVarNames()) {
             // Removed
-            Date exp = new Date(0);
-            String expirationStr = cookieDf.format(exp);
+            long exp = state.getRemovedRemoteVarExpiration(name);
+            String expirationStr = cookieDf.format(new Date(exp > 0 ? exp : 0));
             exchange.getOut().getHeaders().put("org.atricore.idbus.http.Set-Cookie." + name,
-                    "-" + ";" + (secureCookies ? "Secure;" : "") + "Path=/;Expires=" + expirationStr);
+                    "-" + ";" + (secureCookies ? "Secure;" : "") + "HttpOnly; Path=/;Expires=" + expirationStr);
         }
+
     }
 
     protected MediationState createMediationState(Exchange exchange) {
+        return createMediationState(exchange, null);
+    }
+
+    /**
+     * Useful if parameters must be read from a POST before creating the state
+     */
+    protected MediationState createMediationState(Exchange exchange, Map<String, String> requestParams) {
+
 
         if (logger.isDebugEnabled())
             logger.debug("Creating Mediation State from Exchange " + exchange.getExchangeId());
@@ -314,8 +389,15 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
                 String varName = headerName.substring("org.atricore.idbus.http.Cookie.".length());
                 String varValue = exchange.getIn().getHeader(headerName, String.class);
 
-                logger.debug("Remote Variable from HTTP Cookie (" + headerName + ") " + varName + "=" + varValue);
-                state.setRemoteVariable(varName, varValue);
+                String expStr = (String) headers.get(varName + ".maxAge");
+                long exp = 0;
+                if (expStr != null)
+                    exp = Long.parseLong(expStr);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Remote Variable from HTTP Cookie (" + headerName + ") " + varName + "=" + varValue + " exp["+exp+"]");
+
+                state.setRemoteVariable(varName, varValue, exp);
             }
 
         }
@@ -324,9 +406,10 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         try {
 
             java.util.Map<String, String> params = getParameters(exchange.getIn().getHeader("org.apache.camel.component.http.query", String.class));
-
             if (exchange.getIn().getHeader("http.requestMethod").equals("POST"))
                 params.putAll(getParameters((InputStream) exchange.getIn().getBody()));
+            if (requestParams != null)
+                params.putAll(requestParams);
 
             state.setTransientVars(params);
 
@@ -354,11 +437,27 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         return buildHttpTargetLocation(httpData, ed, false);
     }
 
-
     /**
      * This will add the necessary CORS headers to the HTTP response when CORS is requested.
      */
     protected void handleCrossOriginResourceSharing(Exchange exchange) {
+        IdentityMediationUnit unit = this.channel.getUnitContainer().getUnit();
+        // TODO : Populate this from the console, at the moment the list is always empty!
+        Set<String> allowedOrigins = (Set<String>) unit.getMediationProperty("binding.http.cors.origins");
+        handleCrossOriginResourceSharing(exchange, allowedOrigins);
+    }
+
+    /**
+     * This will add the necessary CORS headers to the HTTP response when CORS is requested.
+     */
+    protected void handleCrossOriginResourceSharing(Exchange exchange, Set<String> allowedOrigins) {
+        handleCrossOriginResourceSharing(exchange, allowedOrigins, null, null);
+    }
+
+    protected void handleCrossOriginResourceSharing(Exchange exchange,
+                                                    Set<String> allowedOrigins,
+                                                    Set<String> allowedMethods,
+                                                    Set<String> allowedHeaders) {
         Message httpOut = exchange.getOut();
         Message httpIn = exchange.getIn();
 
@@ -368,15 +467,13 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
             // External application is requesting cross origin support:
 
-            Boolean allowAll = Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.cors.allowAll", "false"));
+            Boolean allowAll = getConfigurationContext() != null ?
+                    Boolean.parseBoolean(getConfigurationContext().getProperty("binding.http.cors.allowAll", "false")) : false;
 
             if (logger.isTraceEnabled())
                 logger.trace("User-Agent requesting cross origin support for " + origin);
 
             boolean allow = false;
-            IdentityMediationUnit unit = this.channel.getUnitContainer().getUnit();
-            // TODO : Populate this from the console, at the moment the list is always empty!
-            Set<String> allowedOrigins = (Set<String>) unit.getMediationProperty("binding.http.cors.origins");
 
             if (allowedOrigins != null && allowedOrigins.size() > 0 && allowedOrigins.contains(origin)) {
                 if (logger.isTraceEnabled())
@@ -395,9 +492,37 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             }
 
             if (allow) {
+
+                // Allow Origin
                 httpOut.getHeaders().put("Access-Control-Allow-Origin", origin);
-                httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
-                httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+
+                // Allow Methods
+                if (allowedMethods != null) {
+                    String allowedMethodsStr = "";
+                    String prefix = "";
+                    for (String allowedMethod : allowedMethods) {
+                        allowedMethodsStr += prefix + allowedMethod;
+                        prefix = ", ";
+                    }
+                    httpOut.getHeaders().put("Access-Control-Allow-Methods", allowedMethodsStr);
+                } else {
+                    httpOut.getHeaders().put("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                }
+
+                // Allog Headers
+                if (allowedHeaders != null) {
+                    String allowedHeaderStr = "";
+                    String prefix = "";
+                    for (String allowedHeader : allowedHeaders) {
+                        allowedHeaderStr += prefix + allowedHeader;
+                        prefix = ", ";
+                    }
+                    httpOut.getHeaders().put("Access-Control-Allow-Headers", allowedHeaderStr);
+                } else {
+                    httpOut.getHeaders().put("Access-Control-Allow-Headers", "Content-Type, *");
+                }
+
+                // Allow Credentials
                 httpOut.getHeaders().put("Access-Control-Allow-Credentials", "true");
             }
         }
@@ -467,7 +592,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         form.setEnctype("application/x-www-form-urlencoded");
 
         {
-            // Noscript paragraph
+            // No script paragraph
 
             P paragraph = new P();
             paragraph.setTitle("Note: Since your browser does not support JavaScript, you must press the Continue button once to proceed.");  // TODO : i18n
@@ -598,7 +723,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         // Title :
         Title title = new Title();
-        title.setContent("JOSSO 2 - Processing ..."); // TODO : i18n
+        String customTitle = getConfigurationContext().getProperty("idbus.protocol.page.title");
+        if (customTitle != null) {
+            title.setContent(customTitle);
+        } else {
+            title.setContent("JOSSO 2 - Processing ..."); // TODO : i18n
+        }
         head.getContent().add(title);
 
         html.setHead(head);
@@ -625,9 +755,14 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         Head head = new Head();
         html.setHead(head);
         {
-            Title t = new Title();
-            t.setContent("JOSSO 2 - Error"); // TODO : i18n
-            head.getContent().add(t);
+            Title title = new Title();
+            String customTitle = getConfigurationContext().getProperty("idbus.protocol.page.title");
+            if (customTitle != null) {
+                title.setContent(customTitle);
+            } else {
+                title.setContent("JOSSO 2 - ERROR"); // TODO : i18n
+            }
+            head.getContent().add(title);
 
         }
 
@@ -706,6 +841,8 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         if (httpMsgBody == null) {
             return new HashMap<String, String>();
         }
+
+        httpMsgBody.reset();
 
         // Parse HTTP MSG BODY
         byte[] buf = new byte[2048];
@@ -805,6 +942,30 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
     }
 
+    protected String getStackTrace(IdentityMediationFault fault) {
+        String stackTrace = null;
+        Throwable cause = fault;
+        Throwable rootCause = cause;
+        while (cause != null) {
+            rootCause = cause;
+            cause = cause.getCause();
+        }
+        Writer errorWriter = new StringWriter();
+        PrintWriter errorPrintWriter = new PrintWriter(errorWriter);
+        if (rootCause != null) {
+            rootCause.printStackTrace(errorPrintWriter);
+            stackTrace = errorWriter.toString();
+        }
+        return stackTrace;
+    }
+
+    protected String getJsonValue(String value) {
+        String jsonValue = null;
+        if (value != null) {
+            jsonValue = "\"" + StringEscapeUtils.escapeJavaScript(value) + "\"";
+        }
+        return jsonValue;
+    }
 }
 
 

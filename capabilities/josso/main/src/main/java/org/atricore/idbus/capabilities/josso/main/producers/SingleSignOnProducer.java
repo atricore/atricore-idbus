@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoAuthnContext;
 import org.atricore.idbus.capabilities.josso.main.JossoConstants;
 import org.atricore.idbus.capabilities.josso.main.JossoException;
+import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.common.sso._1_0.protocol.CredentialType;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
@@ -85,10 +86,6 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         String idpAliasB64 = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_IDPALIAS_VAR);
         String idpAlias = null;
 
-        // This may be an authentication request that provides user credentials for BASIC authentication
-        String username = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_USERNAME_VAR);
-        String password = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_PASSWORD_VAR);
-
         JossoAuthnContext authnCtx = (JossoAuthnContext) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:capabilities:josso:authnCtx:" + appId);
 
         // Decode IDP Alias, if any
@@ -115,7 +112,6 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         EndpointDescriptor destination = resolveSPInitiatedSSOEndpointDescriptor(exchange, spBindingChannel);
 
         // Create SP AuthnRequest
-        // TODO : Support on_error ?
         SPInitiatedAuthnRequestType request = buildAuthnRequest(exchange, idpAlias);
 
         // Create context information
@@ -152,11 +148,17 @@ public class SingleSignOnProducer extends AbstractJossoProducer {
         req.setID(uuidGenerator.generateId());
 
         String cmd = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_CMD_VAR);
+        // TODO : Support multiple values, like SAML ?!
+        String authnCtxClass = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_AUTHN_CTX_VAR);
 
-        req.setPassive(cmd != null && cmd.equals("login_optional"));
+        if (cmd != null && cmd.equals("login_optional"))
+            req.setPassive(true);
+
+        req.setForceAuthn(cmd != null && cmd.equals("login_force"));
+        req.setAuthnCtxClass(authnCtxClass);
 
         RequestAttributeType idpAliasAttr = new RequestAttributeType();
-        idpAliasAttr.setName("atricore_idp_alias");
+        idpAliasAttr.setName(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR);
         idpAliasAttr.setValue(idpAlias);
         req.getRequestAttribute().add(idpAliasAttr);
 

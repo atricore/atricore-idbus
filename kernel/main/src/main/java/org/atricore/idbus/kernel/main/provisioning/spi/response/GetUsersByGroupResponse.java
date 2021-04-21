@@ -29,6 +29,8 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
  */
 public class GetUsersByGroupResponse extends AbstractProvisioningResponse {
 
+    private static final long serialVersionUID = -2998476899156498718L;
+
     private User[] users;
 
     public User[] getUsers() {

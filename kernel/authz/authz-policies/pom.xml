@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel.authorization</groupId>
         <artifactId>authorization</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel.authz</groupId>
@@ -33,10 +33,14 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Require-Bundle>
                             org.atricore.idbus.kernel.authz.core,
-                            org.atricore.idbus.bundles.scala-library-v2_9_1
+                            org.scala-lang.scala-library; bundle-version=${scala.version},
                         </Require-Bundle>
                         <Export-Package>
                             .
+                            <Import-Package>
+                                scala.*;version=${scala.version},
+                                *
+                            </Import-Package>
                         </Export-Package>
                     </instructions>
                 </configuration>

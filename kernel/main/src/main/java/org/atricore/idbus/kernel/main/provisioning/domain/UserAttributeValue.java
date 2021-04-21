@@ -39,6 +39,12 @@ public class UserAttributeValue implements Serializable {
         this.value = value;
     }
 
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : super.hashCode();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -50,10 +56,5 @@ public class UserAttributeValue implements Serializable {
             return id.equals(that.id);
 
         return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : super.hashCode();
     }
 }

@@ -13,8 +13,13 @@ public interface MetadataDefinitionIntrospector {
             throws CircleOfTrustManagerException;
 
     MetadataEntry searchEntityDefinition(MetadataDefinition metadataDefinition,
-                                                            String memberAlias)
+                                                            String memberAlias, boolean strict)
             throws CircleOfTrustManagerException;
+
+    MetadataEntry searchEntityDefinition(MetadataDefinition metadataDefinition,
+                                         String memberAlias)
+            throws CircleOfTrustManagerException;
+
 
     MetadataEntry searchEntityRoleDefinition(MetadataDefinition metadataDefinition,
                                                                 String memberAlias,

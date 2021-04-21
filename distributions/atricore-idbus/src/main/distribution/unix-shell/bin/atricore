@@ -20,6 +20,7 @@
 
 DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
+IDBUS_CLEANUP="true"
 
 #
 # Check/Set up some easily accessible MIN/MAX params for JVM mem usage
@@ -31,7 +32,7 @@ if [ "x$JAVA_MIN_MEM" = "x" ]; then
 fi
 
 if [ "x$JAVA_MAX_MEM" = "x" ]; then
-    JAVA_MAX_MEM=1024M
+    JAVA_MAX_MEM=768M
     export JAVA_MAX_MEM
 fi
 
@@ -268,7 +269,7 @@ setupDefaults() {
 
     #Set the JVM_VENDOR specific JVM flags
     if [ "$JVM_VENDOR" = "SUN" ]; then
-        DEFAULT_JAVA_OPTS="-server $DEFAULT_JAVA_OPTS -Dcom.sun.management.jmxremote"
+        DEFAULT_JAVA_OPTS="-server $DEFAULT_JAVA_OPTS"
     elif [ "$JVM_VENDOR" = "IBM" ]; then
         if $os400; then
             DEFAULT_JAVA_OPTS="$DEFAULT_JAVA_OPTS"
@@ -299,19 +300,30 @@ setupDefaults() {
 
 
 cleanUp() {
-    rm -rf $KARAF_BASE/data/activemq-idbus
-    rm -rf $KARAF_BASE/data/tmp
+    if [ "x$IDBUS_CLEANUP" != "x" ]; then
+        cleanUpAll
+    else
+        cleanUpFast
+    fi
+}
 
+cleanUpAll() {
+    rm -rf $KARAF_BASE/data/activemq-idbus
+    rm -rf $KARAF_BASE/data/tmp/
+    mkdir -p $KARAF_BASE/data/tmp
+    warn "Clearing OSGi plug-ins cache ..." 
     # Clear persistent state
     rm -rf $KARAF_BASE/data/ehcache
-
     # Clear bundles cache
     rm -rf $KARAF_BASE/data/cache
+    
 }
 
 cleanUpFast() {
     rm -rf $KARAF_BASE/data/activemq-idbus
     rm -rf $KARAF_BASE/data/tmp
+    mkdir -p $KARAF_BASE/data/tmp
+    warn "Keeping OSGi plug-ins cache ..." 
 }
 
 
@@ -350,9 +362,6 @@ init() {
     setupMonitoringOptions
 
     # Clean up state from previous runs
-
-    # For faster restart on production servers
-    # cleanUpFast
     cleanUp
 
 }
@@ -377,7 +386,7 @@ run() {
             shift
             ;;
         'clean')
-            rm -Rf $KARAF_DATA
+            cleanUpAll
             shift
             ;;
     esac
@@ -389,7 +398,18 @@ run() {
         CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
     fi
     cd $KARAF_BASE
-    exec $JAVA $JAVA_OPTS -Dmidpoint.home="${KARAF_BASE}/data/provisioning/midpoint" -Djava.io.tmpdir="${KARAF_BASE}/data/tmp" -Djava.endorsed.dirs="${JAVA_HOME}/jre/lib/endorsed:${JAVA_HOME}/lib/endorsed:${KARAF_HOME}/lib/endorsed" -Djava.ext.dirs="${JAVA_HOME}/jre/lib/ext:${JAVA_HOME}/lib/ext:${KARAF_HOME}/lib/ext" -Dkaraf.instances="${KARAF_HOME}/instances" -Dkaraf.home="$KARAF_HOME" -Dkaraf.base="$KARAF_BASE" -Dkaraf.data="$KARAF_DATA" -Djava.util.logging.config.file=$KARAF_BASE/etc/java.util.logging.properties -Dderby.system.home=$KARAF_DATA/derby $OPTS -classpath "$CLASSPATH" $MAIN "$@"
+    exec $JAVA $JAVA_OPTS \
+      -Djava.io.tmpdir="${KARAF_BASE}/data/tmp" \
+      -Djava.endorsed.dirs="${JAVA_HOME}/jre/lib/endorsed:${JAVA_HOME}/lib/endorsed:${KARAF_HOME}/lib/endorsed" \
+      -Djava.ext.dirs="${JAVA_HOME}/jre/lib/ext:${JAVA_HOME}/lib/ext:${KARAF_HOME}/lib/ext" \
+      -Dkaraf.instances="${KARAF_HOME}/instances" \
+      -Dkaraf.home="$KARAF_HOME" \
+      -Dkaraf.base="$KARAF_BASE" \
+      -Dkaraf.data="$KARAF_DATA" \
+      -Djava.util.logging.config.file=$KARAF_BASE/etc/java.util.logging.properties \
+      -Dderby.connection.requireAuthentication=TRUE \
+      -Dderby.system.home=$KARAF_DATA/derby \
+      $OPTS -classpath "$CLASSPATH" $MAIN "$@"
 }
 
 main() {

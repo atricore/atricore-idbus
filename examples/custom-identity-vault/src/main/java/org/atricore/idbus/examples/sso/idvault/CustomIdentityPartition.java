@@ -11,8 +11,8 @@ import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.lang.Override;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by sgonzalez on 3/16/15.
@@ -30,7 +30,7 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public Group findGroupByOid(String oid) throws ProvisioningException {
+    public Group findGroupById(String id) throws ProvisioningException {
         return null;
     }
 
@@ -60,7 +60,7 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public void deleteGroup(String oid) throws ProvisioningException {
+    public void deleteGroup(String id) throws ProvisioningException {
 
     }
 
@@ -70,12 +70,22 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
-    public void deleteUser(String oid) throws ProvisioningException {
+    public List<User> addUsers(List<User> users) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(String id) throws ProvisioningException {
 
     }
 
     @Override
-    public User findUserByOid(String oid) throws ProvisioningException {
+    public void deleteUsers(List<User> users) throws ProvisioningException {
+
+    }
+
+    @Override
+    public User findUserById(String id) throws ProvisioningException {
         return null;
     }
 
@@ -95,13 +105,28 @@ public class CustomIdentityPartition extends AbstractIdentityPartition
     }
 
     @Override
+    public List<User> updateUsers(List<User> users) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
     public Collection<User> getUsersByGroup(Group group) throws ProvisioningException {
         return null;
     }
 
     @Override
-    public long getUserCount() throws ProvisioningException {
-        return 0;
+    public Collection<User> findUsers(UserSearchCriteria searchCriteria, long fromResult, long resultCount, String sortColumn, boolean sortAscending) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public Long findUsersCount(UserSearchCriteria searchCriteria) throws ProvisioningException {
+        return null;
+    }
+
+    @Override
+    public Collection<String> findUserNames(List<String> usernames) throws ProvisioningException {
+        return null;
     }
 
     @Override

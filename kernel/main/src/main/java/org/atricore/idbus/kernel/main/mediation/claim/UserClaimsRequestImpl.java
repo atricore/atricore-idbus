@@ -5,6 +5,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -19,6 +20,7 @@ public class UserClaimsRequestImpl implements UserClaimsRequest {
     private String lastErrorId;
     private String lastErrorMsg;
     private Map<String, java.io.Serializable> attrs = new HashMap<String, Serializable>();
+    private Locale locale;
 
     public UserClaimsRequestImpl(String id, Channel issuerChannel, IdentityMediationEndpoint issuerEndpoint) {
         this.id = id;
@@ -33,26 +35,32 @@ public class UserClaimsRequestImpl implements UserClaimsRequest {
         this.relayState = relayState;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getRelayState() {
         return relayState;
     }
 
+    @Override
     public Channel getIssuerChannel() {
         return issuerChannel;
     }
 
+    @Override
     public IdentityMediationEndpoint getIssuerEndpoint() {
         return issuerEndpoint;
     }
 
+    @Override
     public String getLastErrorId() {
         return lastErrorId;
     }
 
+    @Override
     public String getLastErrorMsg() {
         return lastErrorMsg;
     }
@@ -65,13 +73,22 @@ public class UserClaimsRequestImpl implements UserClaimsRequest {
         this.lastErrorMsg = lastErrorMsg;
     }
 
+    @Override
     public Object getAttribute(String key) {
         return attrs.get(key);
     }
 
+    @Override
     public void setAttribute(String key, Object value) {
         attrs.put(key, (Serializable) value);
     }
 
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
 
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
 }

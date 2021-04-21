@@ -38,7 +38,7 @@ trait BasicOAuth2Directives extends Logging {
   def requestOAuth2AccessToken(clientId : String, clientSecret : String, endpoint : String, username : String, password : String) =
     filter1 {
       ctx =>
-        val requestor = new AccessTokenRequestor(clientId, clientSecret, endpoint)
+        val requestor = new AccessTokenRequestor(clientId, clientSecret, endpoint, null) // TODO : Add configuration option ?
         Pass(requestor.requestTokenForUsernamePassword(username, password))
     }
 

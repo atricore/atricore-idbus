@@ -1,9 +1,11 @@
 package org.atricore.idbus.kernel.main.mediation.state;
 
 import net.sf.ehcache.*;
+import net.sf.ehcache.distribution.RMICacheManagerPeerProvider;
 import net.sf.ehcache.event.CacheEventListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.bundles.ehcache.distribution.DynamicRMICacheManagerPeerProvider;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.BeansException;
@@ -12,9 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +37,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     private Cache cache;
 
-    private UUIDGenerator idGen = new UUIDGenerator();
+    private UUIDGenerator idGen = new UUIDGenerator(true);
 
     private boolean forceNonDirtyStorage;
 
@@ -57,6 +57,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     private ScheduledThreadPoolExecutor stpe;
 
+    private Set<String> rmiUrls = new HashSet<String>();
 
     public EHCacheProviderStateManagerImpl() {
     }
@@ -131,6 +132,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public void destroy() throws Exception {
         if (init) {
+            unregisterPeers();
             cacheManager.removeCache(cacheName);
             init = false;
             stpe.shutdown();
@@ -142,6 +144,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
         if (init)
             return;
 
+        // Use the thread classloader (appliance classloader) instead of STS bundle classloader
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -153,6 +156,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
             } else {
                 logger.info("Cache does not exists '"+cacheName+"', adding it");
                 cacheManager.addCache(cacheName);
+                registerPeers();
             }
 
             cache = cacheManager.getCache(cacheName);
@@ -187,6 +191,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public void store(ProviderStateContext ctx, LocalState s) {
 
+        // Use the thread classloader (appliance classloader) instead of STS bundle classloader
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -208,19 +213,19 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
                 for (String alternativeKeyName : state.getAlternativeIdNames()) {
 
-                    String alternativeKey = ctx.getProvider().getName() + ":" +
-                            state.getAlternativeKey(alternativeKeyName);
-
-                    Element alternativeElement = new Element(alternativeKey, key);
-                    cache.put(alternativeElement);
-                    if (logger.isTraceEnabled())
-                        logger.trace("LocalState instance stored for alternative key " + alternativeElement.getKey());
+                    for (String altKey : state.getAlternativeKeys(alternativeKeyName)) {
+                        String nsAltKey = ctx.getProvider().getName() + ":" + altKey;
+                        Element alternativeElement = new Element(nsAltKey, key);
+                        cache.put(alternativeElement);
+                        if (logger.isTraceEnabled())
+                            logger.trace("LocalState instance stored for alternative key " + alternativeElement.getKey());
+                    }
                 }
 
                 for (String removedKey : state.getRemovedKeys()) {
                     cache.remove(ctx.getProvider().getName() + ":" +removedKey);
                     if (logger.isTraceEnabled())
-                        logger.trace("LocalState instance removed for alternative key " + removedKey);
+                        logger.trace("LocalState instance removed for alternative key " + ctx.getProvider().getName() + ":");
                 }
 
                 state.clearState();
@@ -237,6 +242,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
 
     public LocalState retrieve(ProviderStateContext ctx, String keyName, String key) {
 
+        // Use the thread classloader (appliance classloader) instead of STS bundle classloader
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
@@ -295,22 +301,25 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
     }
 
     protected Element retrieveElement(String key) {
-        Element e = cache.get(key);
-        if (e == null) {
 
-            int retry = 0;
-            while (e == null && retry <= receiveRetries) {
-                // Wait and try again, maybe state is on the road :)
-                if (logger.isTraceEnabled())
-                    logger.trace("Cache miss, wait for " + 500 + " ms");
+            Element e = cache.get(key);
+            if (e == null) {
 
-                try { Thread.sleep(500); } catch (InterruptedException ie ) { /* Ignore this */ }
-                e = cache.get(key);
-                retry ++;
+                int retry = 0;
+                while (e == null && retry < receiveRetries) {
+                    // Wait and try again, maybe state is on the road :)
+                    if (logger.isTraceEnabled())
+                        logger.trace("Cache miss, wait for " + 500 + " ms");
+
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ie) { /* Ignore this */ }
+                    e = cache.get(key);
+                    retry++;
+                }
             }
-        }
 
-        return e;
+            return e;
     }
 
     /**
@@ -318,11 +327,13 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
      */
     protected void refreshState(ProviderStateContext ctx, EHCacheLocalStateImpl state) {
         for (String alternativeIdName : state.getAlternativeIdNames()) {
-            String alternativeKey = ctx.getProvider().getName() + ":" + state.getAlternativeKey(alternativeIdName);
-            // Just to refresh the access time ...
-            cache.get(alternativeKey);
-            if (logger.isTraceEnabled())
-                logger.trace("Accessed LocalState alternative key " + alternativeKey);
+            for (String altKey : state.getAlternativeKeys(alternativeIdName)) {
+                String nsAltKey = ctx.getProvider().getName() + ":" + altKey;
+                // Just to refresh the access time ...
+                cache.get(nsAltKey);
+                if (logger.isTraceEnabled())
+                    logger.trace("Accessed LocalState alternative key " + nsAltKey);
+            }
         }
     }
 
@@ -341,10 +352,12 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                     logger.trace("Removed LocalState instance for key " + key);
 
                 for (String alternativeIdName : state.getAlternativeIdNames()) {
-                    String alternativeKey = ctx.getProvider().getName() + ":" + state.getAlternativeKey(alternativeIdName);
-                    cache.remove(alternativeKey);
-                    if (logger.isTraceEnabled())
-                        logger.trace("Removed LocalState instance for alternative key " + alternativeKey);
+                    for (String altKey : state.getAlternativeKeys(alternativeIdName)) {
+                        String nsAltKey = ctx.getProvider().getName() + ":" + altKey;
+                        cache.remove(nsAltKey);
+                        if (logger.isTraceEnabled())
+                            logger.trace("Removed LocalState instance for alternative key " + nsAltKey);
+                    }
                 }
 
             } else {
@@ -529,18 +542,61 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 // -------------------------------------------------
                 cache.evictExpiredElements();
                 cache.getKeysWithExpiryCheck();
+                //cache.flush();
                 long execTime = now - System.currentTimeMillis();
 
                 if (execTime > 1000)
                     logger.warn("Provider state manager cache [" + cache.getName() + "] needs tuning. getKeysWithExpiryCheck(): exec=" + execTime + "ms");
 
                 if (logger.isTraceEnabled())
-                    logger.trace("Evicted (aprox) " + (size - cache.getSize()) + " elements from " + cache.getName());
+                    logger.trace("Evicted (aprox) " + (size - cache.getSize()) + " elements from " + cache.getName() + ". Current cache size is " + cache.getSize());
 
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
+
+    protected void registerPeers() {
+
+        RMICacheManagerPeerProvider peerProvider =
+                (RMICacheManagerPeerProvider) cacheManager.getCacheManagerPeerProvider("RMI");
+
+        // Not a clustered environment
+        if (peerProvider == null)
+            return;
+
+        if (peerProvider instanceof DynamicRMICacheManagerPeerProvider) {
+            DynamicRMICacheManagerPeerProvider dynamicPeerProvider = (DynamicRMICacheManagerPeerProvider) peerProvider;
+            Collection<String> remoteHosts = dynamicPeerProvider.listRemoteHosts();
+            for (String remoteHost : remoteHosts) {
+                String rmiUrl = "//" + remoteHost + "/" + cacheName;
+                logger.info("Registering remote cache : " + rmiUrl);
+                dynamicPeerProvider.registerPeer(rmiUrl);
+            }
+        }
+
+    }
+
+    protected void unregisterPeers() {
+
+        RMICacheManagerPeerProvider peerProvider =
+                (RMICacheManagerPeerProvider) cacheManager.getCacheManagerPeerProvider("RMI");
+
+        // Not a clustered environment
+        if (peerProvider == null)
+            return;
+
+        if (peerProvider instanceof DynamicRMICacheManagerPeerProvider) {
+            DynamicRMICacheManagerPeerProvider dynamicPeerProvider = (DynamicRMICacheManagerPeerProvider) peerProvider;
+            Collection<String> remoteHosts = dynamicPeerProvider.listRemoteHosts();
+            for (String remoteHost : remoteHosts) {
+                String rmiUrl = "//" + remoteHost + "/" + cacheName;
+                logger.info("Unregistering remote cache : " + rmiUrl);
+                dynamicPeerProvider.unregisterPeer(rmiUrl);
+            }
+        }
+    }
+
 
 }

@@ -28,6 +28,8 @@ import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import oasis.names.tc.saml._2_0.protocol.StatusDetailType;
+import oasis.names.tc.saml._2_0.protocol.StatusType;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +43,7 @@ import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.SSOResponseException;
 import org.atricore.idbus.capabilities.sso.support.core.StatusCode;
 import org.atricore.idbus.capabilities.sso.support.core.StatusDetails;
@@ -51,10 +54,9 @@ import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signatur
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOMetadataConstants;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
-import org.atricore.idbus.common.sso._1_0.protocol.CurrentEntityRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
-import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
-import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
+import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.authn.SecurityTokenImpl;
@@ -71,12 +73,14 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
+import org.atricore.idbus.kernel.main.session.SSOSessionContext;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 import org.w3._2001._04.xmlenc_.EncryptedType;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.security.auth.Subject;
@@ -84,6 +88,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
+import java.security.Principal;
 import java.util.*;
 
 /**
@@ -96,13 +101,15 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    private UUIDGenerator sessionUuidGenerator = new UUIDGenerator(true);
+
     public AssertionConsumerProducer(AbstractCamelEndpoint endpoint) throws Exception {
         super(endpoint);
     }
 
     @Override
     protected void doProcess(CamelMediationExchange exchange) throws Exception {
-        // Incomming message
+        // Incoming message
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         if (in.getMessage().getContent() instanceof ResponseType) {
@@ -121,7 +128,8 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-        state.setAttribute("SAMLR2Signer", mediator.getSigner());
+        //state.setAttribute("SAMLR2Signer", mediator.getSigner());
+        state.setAttribute("SAMLR2Signer-channel", channel.getName());
 
         // Originally received Authn request from binding channel
         // When using IdP initiated SSO, this will be null!
@@ -159,7 +167,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Handle Proxy Mode
         // ------------------------------------------------------
 
-        validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
+        response = validateResponse(authnRequest, response, in.getMessage().getRawContent(), state);
         //
         if (mediator.isVerifyUniqueIDs())
             mediator.getIdRegistry().register(response.getID());
@@ -167,17 +175,17 @@ public class AssertionConsumerProducer extends SSOProducer {
         String issuerAlias = response.getIssuer().getValue();
 
         // Response is valid, check received status!
-        StatusCode status = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
+        StatusCode statusCode = StatusCode.asEnum(response.getStatus().getStatusCode().getValue());
         StatusCode secStatus = response.getStatus().getStatusCode().getStatusCode() != null ?
                 StatusCode.asEnum(response.getStatus().getStatusCode().getStatusCode().getValue()) : null;
 
         if (logger.isDebugEnabled())
-            logger.debug("Received status code " + status.getValue() +
-                (secStatus != null ? "/" + secStatus.getValue() : ""));
+            logger.debug("Received status code " + statusCode.getValue() +
+                    (secStatus != null ? "/" + secStatus.getValue() : ""));
 
-        if (status.equals(StatusCode.TOP_RESPONDER) &&
-            secStatus != null &&
-            secStatus.equals(StatusCode.NO_PASSIVE)) {
+        if (statusCode.equals(StatusCode.TOP_RESPONDER) &&
+                secStatus != null &&
+                secStatus.equals(StatusCode.NO_PASSIVE)) {
 
             // Automatic Login failed
             if (logger.isDebugEnabled())
@@ -189,9 +197,9 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
 
             Properties auditProps = new Properties();
-            auditProps.put("idpAlias", issuerAlias);
+            auditProps.put("federatedProvider", issuerAlias);
             auditProps.put("passive", "true");
-            recordInfoAuditTrail("SP-SSOR", ActionOutcome.FAILURE, null, exchange, auditProps);
+            recordInfoAuditTrail(Action.SP_SSOR.getValue(), ActionOutcome.FAILURE, null, exchange, auditProps);
 
             // Send a 'no-passive' status response
             SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, null, destination);
@@ -204,9 +212,20 @@ public class AssertionConsumerProducer extends SSOProducer {
             return;
 
 
-        } else if (!status.equals(StatusCode.TOP_SUCCESS)) {
+        } else if (!statusCode.equals(StatusCode.TOP_SUCCESS)) {
+
+            StatusType status = response.getStatus();
+            StatusDetailType details = status.getStatusDetail();
+
+
+            throw new IdentityMediationFault(statusCode.getValue(),
+                    (secStatus != null ? secStatus.getValue() : null),
+                    response.getStatus().getStatusMessage(),
+                    getErrorDetails(status),
+                    null);
+            /*
             throw new SSOException("Unexpected IDP Status Code " + status.getValue() +
-                    (secStatus != null ? "/" + secStatus.getValue() : ""));
+                    (secStatus != null ? "/" + secStatus.getValue() : "")); */
 
         }
 
@@ -223,12 +242,48 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
 
 
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
         AccountLinkLifecycle accountLinkLifecycle = fChannel.getAccountLinkLifecycle();
 
         // ------------------------------------------------------------------
         // Build IDP Subject from response
         // ------------------------------------------------------------------
         Subject idpSubject = buildSubjectFromResponse(response);
+
+        // This is a no longer valid sec. ctx. (optional, may not be available) Is the previous valid SecCtx
+        SPSecurityContext lastSecCtx =
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_LAST_SECURITY_CTX");
+
+        Map<String, Object> ctx = new HashMap<String, Object>();
+
+        // Remote IP Address
+        ctx.put(AccountLinkEmitter.REMOTE_ADDRESS, exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress"));
+
+        // Last Linked Subject
+        Subject lastLinkedSubject = null;
+        if (lastSecCtx != null && lastSecCtx.getSubject() != null) {
+            // We have a previous valid subject
+            if (logger.isDebugEnabled())
+                logger.debug("Found previous linked subject ");
+            lastLinkedSubject = lastSecCtx.getSubject();
+            ctx.put(AccountLinkEmitter.LAST_LINKED_SUBJECT, lastLinkedSubject);
+        }
+
+        Subject lastUnlinkedIdPSubject = (Subject) state.getLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubject");
+        CircleOfTrustMemberDescriptor lastUnlinkedIdP = (CircleOfTrustMemberDescriptor) state.getLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubjectIdP");
+
+        // Last Un-linked Subject/IdP
+        if (lastUnlinkedIdPSubject != null) {
+            // We have a previous unlinked
+            if (logger.isDebugEnabled())
+                logger.debug("Found previous unlinked subject ");
+            ctx.put(AccountLinkEmitter.LAST_UNLINKED_IDP_SUBJECT, lastUnlinkedIdPSubject);
+            ctx.put(AccountLinkEmitter.LAST_UNLINKED_IDP, lastUnlinkedIdP);
+        }
+
+        CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
+        ctx.put(AccountLinkEmitter.IDP, idp);
 
         AccountLink acctLink = null;
         AccountLinkEmitter accountLinkEmitter = fChannel.getAccountLinkEmitter();
@@ -237,125 +292,193 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.trace("Account Link Emitter Found for Channel [" + fChannel.getName() + "]");
 
         // Emit account link information
-        acctLink = accountLinkEmitter.emit(idpSubject);
+        String errorDetails = null;
+        try {
+            acctLink = accountLinkEmitter.emit(idpSubject, ctx);
+        } catch (AccountLinkageException e) {
+            errorDetails = e.getErrorDetails();
+
+            logger.debug("Error: " + e.getError() + " : " + e.getErrorDetails(), e);
+
+            // TODO : Handle the error locally, or forward it to the application (add option in cosole, for now based on error type)
+
+            if (e.getError() == AccountLinkageException.DUPLICATE_ID) {
+
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        StatusCode.AUTHN_FAILED.getValue(),
+                        StatusDetails.DUPLICATED_USER_ID.getValue(),
+                        errorDetails, e);
+
+            } else if (e.getError() == AccountLinkageException.USED_ID) {
+
+                throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                        StatusCode.AUTHN_FAILED.getValue(),
+                        StatusDetails.USED_USER_ID.getValue(),
+                        errorDetails, e);
+
+            }
+
+        }
 
         if (logger.isDebugEnabled())
             logger.debug("Emitted Account Link [" +
                     (acctLink != null ? "[" + acctLink.getId() + "]" + acctLink.getLocalAccountNameIdentifier() : "null") +
                     "] [" + fChannel.getName() + "] " +
-                    " for IDP Subject [" + idpSubject + "]" );
+                    " for IDP Subject [" + idpSubject + "]");
+
+        SPAuthnResponseType ssoResponse = null;
 
         if (acctLink == null) {
+
+            // Build error sso response, include unlinked IDP Subject
+
+            // Store unlinked subject
+            state.setLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubject", idpSubject);
+            state.setLocalVariable("urn:org:atricore:idbus:capabilities:samlr2:unlinkedSubjectIdP", idp);
+
+            ssoResponse = new SPAuthnResponseType();
+
+            ssoResponse.setFailed(true);
+            ssoResponse.setID(uuidGenerator.generateId());
+            ssoResponse.setInReplayTo(ssoRequest.getID());
+            ssoResponse.setPrimaryErrorCode(StatusCode.TOP_REQUESTER.getValue());
+            ssoResponse.setSecondaryErrorCode(StatusDetails.NO_ACCOUNT_LINK.getValue());
+
+            ssoResponse.setIssuer(((FederationChannel) channel).getFederatedProvider().getName());
+
+            org.atricore.idbus.common.sso._1_0.protocol.SubjectType st = new org.atricore.idbus.common.sso._1_0.protocol.SubjectType();
+
+            if (errorDetails != null) {
+                ssoResponse.setErrorDetails(errorDetails);
+            }
+
+
+            Collection<SubjectNameID> ids = idpSubject.getPrincipals(SubjectNameID.class);
+
+            if (ids != null && ids.size() == 1) {
+
+                SubjectNameID id = ids.iterator().next();
+
+                SubjectNameIDType a = new SubjectNameIDType();
+                a.setName(id.getName());
+                a.setFormat(NameIDFormat.UNSPECIFIED.getValue());
+                a.setLocalName(id.getLocalName());
+                a.setNameQualifier(id.getNameQualifier());
+                a.setLocalNameQualifier(id.getLocalNameQualifier());
+
+                st.getAbstractPrincipal().add(a);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Unlinked subject [" + id.getName() + "] ");
+
+                ssoResponse.setSubject(st);
+            }
 
             logger.error("No Account Link for Channel [" + fChannel.getName() + "] " +
                     " Response [" + response.getID() + "]");
 
-            throw new IdentityMediationFault(StatusCode.TOP_REQUESTER.getValue(),
-                    null,
-                    StatusDetails.NO_ACCOUNT_LINK.getValue(),
-                    idpSubject.toString(), null);
-        }
+        } else {
 
-        // ------------------------------------------------------------------
-        // fetch local account for subject, if any
-        // ------------------------------------------------------------------
-        Subject localAccountSubject = accountLinkLifecycle.resolve(acctLink);
-        if (logger.isTraceEnabled())
-            logger.trace("Account Link [" + acctLink.getId() + "] resolved to " +
-                     "Local Subject [" + localAccountSubject + "] ");
-
-        Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
-
-        // having both remote and local accounts information, is now time to apply custom identity mapping rules
-        if (fChannel.getIdentityMapper() != null) {
-            IdentityMapper im = fChannel.getIdentityMapper();
-
+            // ------------------------------------------------------------------
+            // fetch local account for subject, if any
+            // ------------------------------------------------------------------
+            Subject localAccountSubject = accountLinkLifecycle.resolve(acctLink);
             if (logger.isTraceEnabled())
-                logger.trace("Using identity mapper : " + im.getClass().getName());
+                logger.trace("Account Link [" + acctLink.getId() + "] resolved to " +
+                        "Local Subject [" + localAccountSubject + "] ");
 
-            federatedSubject = im.map(idpSubject, localAccountSubject );
+            Subject federatedSubject = localAccountSubject; // if no identity mapping, the local account subject is used
+
+            // having both remote and local accounts information, is now time to apply custom identity mapping rules
+            if (fChannel.getIdentityMapper() != null) {
+                IdentityMapper im = fChannel.getIdentityMapper();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Using identity mapper : " + im.getClass().getName());
+
+                String remoteAddress = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+                Set<Principal> additionalPrincipals = new HashSet<Principal>();
+                SubjectAttribute ipAddress = new SubjectAttribute("remoteIpAddress", remoteAddress);
+                additionalPrincipals.add(ipAddress);
+
+                federatedSubject = im.map(idpSubject, localAccountSubject, additionalPrincipals);
+
+            }
+
+            // Add IDP Name to federated Subject
+            if (logger.isDebugEnabled())
+                logger.debug("IDP Subject [" + idpSubject + "] mapped to Subject [" + federatedSubject + "] " +
+                        "through Account Link [" + acctLink.getId() + "]");
+
+            // ---------------------------------------------------
+            // Create/Update SP Security context and session
+            // ---------------------------------------------------
+
+            // We must have an assertion
+            SPSecurityContext spSecurityCtx = updateSPSecurityContext(exchange,
+                    (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
+                    idp,
+                    acctLink,
+                    federatedSubject,
+                    idpSubject,
+                    (AssertionType) response.getAssertionOrEncryptedAssertion().get(0));
+
+            Properties auditProps = new Properties();
+            auditProps.put("federatedProvider", spSecurityCtx.getIdpAlias());
+            auditProps.put("idpSession", spSecurityCtx.getIdpSsoSession());
+
+            Set<SubjectNameID> principals = federatedSubject.getPrincipals(SubjectNameID.class);
+            SubjectNameID principal = null;
+            if (principals.size() == 1) {
+                principal = principals.iterator().next();
+            }
+            recordInfoAuditTrail(Action.SP_SSOR.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+
+            Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(fChannel.getFederatedProvider(),
+                    SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
+
+            ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, spSecurityCtx, destination);
+
+
         }
-
-        // Add IDP Name to federated Subject
-        if (logger.isDebugEnabled())
-            logger.debug("IDP Subject [" + idpSubject + "] mapped to Subject [" + federatedSubject + "] " +
-                     "through Account Link [" + acctLink.getId() + "]" );
-
-        // ---------------------------------------------------
-        // Create SP Security context and session!
-        // ---------------------------------------------------
-
-        CircleOfTrustMemberDescriptor idp = resolveIdp(exchange);
-
-        // We must have an assertion!
-        SPSecurityContext spSecurityCtx = createSPSecurityContext(exchange,
-                (ssoRequest != null && ssoRequest.getReplyTo() != null ? ssoRequest.getReplyTo() : null),
-                idp,
-                acctLink,
-                federatedSubject,
-                idpSubject,
-                (AssertionType) response.getAssertionOrEncryptedAssertion().get(0));
-
-        Properties auditProps = new Properties();
-        auditProps.put("idpAlias", spSecurityCtx.getIdpAlias());
-        auditProps.put("idpSession", spSecurityCtx.getIdpSsoSession());
-
-        Set<SubjectNameID> principals = federatedSubject.getPrincipals(SubjectNameID.class);
-        SubjectNameID principal = null;
-        if (principals.size() == 1) {
-            principal = principals.iterator().next();
-        }
-        recordInfoAuditTrail("SP-SSOR", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
-
-        Collection<CircleOfTrustMemberDescriptor> availableIdPs = getCotManager().lookupMembersForProvider(fChannel.getFederatedProvider(),
-                SSOMetadataConstants.IDPSSODescriptor_QNAME.toString());
-
-        SPAuthnResponseType ssoResponse = buildSPAuthnResponseType(exchange, ssoRequest, spSecurityCtx, destination);
-
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
 
         // ---------------------------------------------------
         // We must tell our Entity selector about the IdP we're using.  It's considered a selection.
         // ---------------------------------------------------
-        if (availableIdPs.size() > 1) {
 
-            EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
+        EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
 
-            if (idpSelectorCallbackEndpoint != null) {
+        if (idpSelectorCallbackEndpoint != null) {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Sending Current Selected IdP request, callback location : " + idpSelectorCallbackEndpoint);
+            if (logger.isDebugEnabled())
+                logger.debug("Sending Current Selected IdP request, callback location : " + idpSelectorCallbackEndpoint);
 
-                // Store destination and response
-                CurrentEntityRequestType entityRequest = new CurrentEntityRequestType();
+            // Store destination and response
+            CurrentEntityRequestType entityRequest = new CurrentEntityRequestType();
 
-                entityRequest.setID(uuidGenerator.generateId());
-                entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
-                entityRequest.setEntityId(idp.getAlias());
+            entityRequest.setID(uuidGenerator.generateId());
+            entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
+            entityRequest.setEntityId(idp.getAlias());
 
-                entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
-                        idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
+            entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
+                    idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
 
-                String idpSelectorLocation = ((SSOSPMediator) mediator).getIdpSelector();
+            String idpSelectorLocation = ((SSOSPMediator) mediator).getIdpSelector();
 
-                EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
-                        "IDPSelectorEndpoint",
-                        "EntitySelector",
-                        SSOBinding.SSO_ARTIFACT.toString(),
-                        idpSelectorLocation,
-                        null);
+            EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
+                    "IDPSelectorEndpoint",
+                    "EntitySelector",
+                    SSOBinding.SSO_ARTIFACT.toString(),
+                    idpSelectorLocation,
+                    null);
 
-                out.setMessage(new MediationMessageImpl(entityRequest.getID(),
-                        entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
+            out.setMessage(new MediationMessageImpl(entityRequest.getID(),
+                    entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
 
-                state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
-                state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
 
-                return;
-            } else {
-                if (logger.isDebugEnabled())
-                    logger.debug("Multipel IdPs found, but no callback idp selection service is avaiable");
-            }
+            return;
         }
 
         // ---------------------------------------------------
@@ -374,19 +497,19 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         try {
 
-            if(logger.isDebugEnabled())
+            if (logger.isDebugEnabled())
                 logger.debug("Looking for " + SSOService.IdPSelectorCallbackService.toString() + " on channel " + fChannel.getName());
 
             for (IdentityMediationEndpoint endpoint : fChannel.getEndpoints()) {
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+                    logger.debug("Processing endpoint : " + endpoint.getType() + "[" + endpoint.getBinding() + "]");
 
                 if (endpoint.getType().equals(SSOService.IdPSelectorCallbackService.toString())) {
 
                     if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                         // This is the endpoint we're looking for
-                        return  fChannel.getIdentityMediator().resolveEndpoint(fChannel, endpoint);
+                        return fChannel.getIdentityMediator().resolveEndpoint(fChannel, endpoint);
                     }
                 }
             }
@@ -396,7 +519,6 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         return null;
     }
-
 
 
     /**
@@ -413,7 +535,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         // Publish IdP Metadata
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ed);
-        idPlanExchange.setProperty(VAR_COT_MEMBER, ((IdPChannel)channel).getMember());
+        idPlanExchange.setProperty(VAR_COT_MEMBER, ((IdPChannel) channel).getMember());
         idPlanExchange.setProperty(VAR_SSO_AUTHN_REQUEST, ssoAuthRequest);
 
         if (spSecurityContext != null)
@@ -456,6 +578,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     private Subject buildSubjectFromResponse(ResponseType response) {
 
+        // Some attributes are IdP generated, and they don't depend on the actual mapping policy. (i.e. idpName, etc).
+        Map<String, SubjectAttribute> subjectAttrs = new HashMap<String, SubjectAttribute>();
+
         Subject outSubject = new Subject();
 
         String issuerAlias = response.getIssuer().getValue();
@@ -468,7 +593,7 @@ public class AssertionConsumerProducer extends SSOProducer {
             if (response.getAssertionOrEncryptedAssertion().get(0) instanceof AssertionType) {
                 assertion = (AssertionType) response.getAssertionOrEncryptedAssertion().get(0);
             } else {
-                throw new RuntimeException("Response should be already decripted!");
+                throw new RuntimeException("Response should be already decrypted!");
             }
 
             // store subject identification information
@@ -476,16 +601,16 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                 List subjectContentItems = assertion.getSubject().getContent();
 
-                for (Object o: subjectContentItems) {
+                for (Object o : subjectContentItems) {
 
                     JAXBElement subjectContent = (JAXBElement) o;
 
-                    if (subjectContent.getValue() instanceof NameIDType ) {
+                    if (subjectContent.getValue() instanceof NameIDType) {
 
                         NameIDType nameId = (NameIDType) subjectContent.getValue();
                         // Create Subject ID Attribute
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding NameID to IDP Subject {"+nameId.getSPNameQualifier()+"}" + nameId.getValue() +  ":" + nameId.getFormat());
+                            logger.debug("Adding NameID to IDP Subject {" + nameId.getSPNameQualifier() + "}" + nameId.getValue() + ":" + nameId.getFormat());
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectNameID(nameId.getValue(),
@@ -496,7 +621,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     } else if (subjectContent.getValue() instanceof BaseIDAbstractType) {
                         // TODO : Can we do something with this ?
-                        throw new IllegalArgumentException("Unsupported Subject BaseID type "+ subjectContent.getValue() .getClass().getName());
+                        throw new IllegalArgumentException("Unsupported Subject BaseID type " + subjectContent.getValue().getClass().getName());
 
                     } else if (subjectContent.getValue() instanceof EncryptedType) {
                         throw new IllegalArgumentException("Response should be already decripted!");
@@ -515,12 +640,12 @@ public class AssertionConsumerProducer extends SSOProducer {
             // store subject user attributes
             List<StatementAbstractType> stmts = assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement();
             if (logger.isDebugEnabled())
-                logger.debug("Found " + stmts.size() + " statements") ;
+                logger.debug("Found " + stmts.size() + " statements");
 
             for (StatementAbstractType stmt : stmts) {
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Processing statement " + stmts) ;
+                    logger.debug("Processing statement " + stmts);
 
                 if (stmt instanceof AttributeStatementType) {
 
@@ -529,7 +654,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                     List attrs = attrStmt.getAttributeOrEncryptedAttribute();
 
                     if (logger.isDebugEnabled())
-                        logger.debug("Found " + attrs.size() + " attributes in attribute statement") ;
+                        logger.debug("Found " + attrs.size() + " attributes in attribute statement");
 
                     for (Object attrOrEncAttr : attrs) {
 
@@ -539,81 +664,74 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                             List<Object> attributeValues = attr.getAttributeValue();
 
+                            String name = attr.getName();
+
                             if (logger.isDebugEnabled())
-                                logger.debug("Processing attribute " + attr.getName()) ;
+                                logger.debug("Processing attribute " + name);
+
 
                             for (Object attributeValue : attributeValues) {
 
-                                if (logger.isDebugEnabled())
-                                    logger.debug("Processing attribute value " + attributeValue);
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Processing attribute value " + attributeValue);
 
                                 if (attributeValue instanceof String) {
 
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding String Attribute Statement to IDP Subject " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 attr.getAttributeValue());
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
+                                    SubjectAttribute sAttr =
+                                            getNextSubjectAttr(subjectAttrs, name,
                                                     (String) attributeValue
-                                            )
+                                            );
 
-                                    );
+                                    if (sAttr != null)
+                                        outSubject.getPrincipals().add(sAttr);
 
                                 } else if (attributeValue instanceof Integer) {
 
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding Integer Attribute Value to IDP Subject " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 attr.getAttributeValue());
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
-                                                    (Integer) attributeValue
-                                            )
 
-                                    );
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name,
+                                            (Integer) attributeValue);
+                                    outSubject.getPrincipals().add(sAttr);
+
 
                                 } else if (attributeValue instanceof Element) {
                                     Element e = (Element) attributeValue;
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding Attribute Statement to IDP Subject from DOM Element " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 e.getTextContent());
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
-                                                    e.getTextContent()
-                                            )
-
-                                    );
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name, e.getTextContent());
+                                    if (sAttr != null)
+                                        outSubject.getPrincipals().add(sAttr);
 
 
                                 } else if (attributeValue == null) {
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("Adding String Attribute Statement to IDP Subject " +
-                                                attr.getName() + ":" +
+                                                name + ":" +
                                                 attr.getNameFormat() + "=" +
                                                 "null");
                                     }
 
-                                    outSubject.getPrincipals().add(
-                                            new SubjectAttribute(
-                                                    attr.getName(),
-                                                    ""
-                                            )
-
-                                    );
+                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name, "");
+                                    if (sAttr != null)
+                                        outSubject.getPrincipals().add(sAttr);
 
                                 } else {
                                     logger.error("Unknown Attribute Value type " + attributeValue.getClass().getName());
@@ -635,9 +753,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     for (JAXBElement<?> authnContext : authnContextItems) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Context to IDP Subject " +
+                            logger.debug("Adding Authentication Context to IDP Subject " +
                                     authnContext.getValue() + ":" +
-                                    SubjectAuthenticationAttribute.Name.AUTHENTICATION_CONTEXT) ;
+                                    SubjectAuthenticationAttribute.Name.AUTHENTICATION_CONTEXT);
                         }
 
                         outSubject.getPrincipals().add(
@@ -647,13 +765,20 @@ public class AssertionConsumerProducer extends SSOProducer {
                                 )
                         );
 
+                        SubjectAttribute authnCtxAttr = getNextSubjectAttr(subjectAttrs,
+                                "urn:org:atricore:idbus:sso:sp:authnCtxClass",
+                                (String) authnContext.getValue());
+
+                        if (authnCtxAttr != null)
+                            outSubject.getPrincipals().add(authnCtxAttr);
+
                     }
 
                     if (authnStmt.getAuthnInstant() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getAuthnInstant().toString() + ":" +
-                                    SubjectAuthenticationAttribute.Name.AUTHENTICATION_INSTANT) ;
+                                    SubjectAuthenticationAttribute.Name.AUTHENTICATION_INSTANT);
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectAuthenticationAttribute(
@@ -666,9 +791,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSessionIndex() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSessionIndex() + ":" +
-                                    SubjectAuthenticationAttribute.Name.SESSION_INDEX) ;
+                                    SubjectAuthenticationAttribute.Name.SESSION_INDEX);
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectAuthenticationAttribute(
@@ -680,9 +805,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSessionNotOnOrAfter() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSessionNotOnOrAfter().toString() + ":" +
-                                    SubjectAuthenticationAttribute.Name.SESSION_NOT_ON_OR_AFTER) ;
+                                    SubjectAuthenticationAttribute.Name.SESSION_NOT_ON_OR_AFTER);
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectAuthenticationAttribute(
@@ -694,9 +819,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSubjectLocality() != null && authnStmt.getSubjectLocality().getAddress() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSubjectLocality().getAddress() + ":" +
-                                    SubjectAuthenticationAttribute.Name.SUBJECT_LOCALITY_ADDRESS) ;
+                                    SubjectAuthenticationAttribute.Name.SUBJECT_LOCALITY_ADDRESS);
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectAuthenticationAttribute(
@@ -709,9 +834,9 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                     if (authnStmt.getSubjectLocality() != null && authnStmt.getSubjectLocality().getDNSName() != null) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Adding Authentiation Attribute to IDP Subject " +
+                            logger.debug("Adding Authentication Attribute to IDP Subject " +
                                     authnStmt.getSubjectLocality().getDNSName() + ":" +
-                                    SubjectAuthenticationAttribute.Name.SUBJECT_LOCALITY_DNSNAME) ;
+                                    SubjectAuthenticationAttribute.Name.SUBJECT_LOCALITY_DNSNAME);
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectAuthenticationAttribute(
@@ -732,7 +857,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                             if (logger.isDebugEnabled()) {
                                 logger.debug("Adding Authz Decision Action NS to IDP Subject " +
                                         action.getNamespace() + ":" +
-                                        SubjectAuthorizationAttribute.Name.ACTION_NAMESPACE) ;
+                                        SubjectAuthorizationAttribute.Name.ACTION_NAMESPACE);
                             }
                             outSubject.getPrincipals().add(
                                     new SubjectAuthorizationAttribute(
@@ -746,7 +871,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                             if (logger.isDebugEnabled()) {
                                 logger.debug("Adding Authz Decision Action Value to IDP Subject " +
                                         action.getValue() + ":" +
-                                        SubjectAuthorizationAttribute.Name.ACTION_VALUE) ;
+                                        SubjectAuthorizationAttribute.Name.ACTION_VALUE);
                             }
                             outSubject.getPrincipals().add(
                                     new SubjectAuthorizationAttribute(
@@ -762,7 +887,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Adding Authz Decision Action to IDP Subject " +
                                     authzStmt.getDecision().value() + ":" +
-                                    SubjectAuthorizationAttribute.Name.DECISION) ;
+                                    SubjectAuthorizationAttribute.Name.DECISION);
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectAuthorizationAttribute(
@@ -776,7 +901,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                         if (logger.isDebugEnabled()) {
                             logger.debug("Adding Authz Decision Action to IDP Subject " +
                                     authzStmt.getResource() + ":" +
-                                    SubjectAuthorizationAttribute.Name.RESOURCE) ;
+                                    SubjectAuthorizationAttribute.Name.RESOURCE);
                         }
                         outSubject.getPrincipals().add(
                                 new SubjectAuthorizationAttribute(
@@ -797,17 +922,65 @@ public class AssertionConsumerProducer extends SSOProducer {
             logger.warn("No Assertion present within Response [" + response.getID() + "]");
         }
 
-        SubjectAttribute idpAliasAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
-        SubjectAttribute idpNameAttr = new SubjectAttribute("urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
+        // Add IDP Information as subject attributes.
+        SubjectAttribute idpAliasAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
+        SubjectAttribute idpNameAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
 
         outSubject.getPrincipals().add(idpNameAttr);
         outSubject.getPrincipals().add(idpAliasAttr);
 
         if (outSubject != null && logger.isDebugEnabled()) {
-            logger.debug("IDP Subject:" + outSubject) ;
+            logger.debug("IDP Subject:" + outSubject);
         }
 
         return outSubject;
+    }
+
+    protected SubjectAttribute getNextSubjectAttr(Map<String, SubjectAttribute> subjectAttrs, String name, Integer value) {
+        return getNextSubjectAttr(subjectAttrs, name, value != null ? value.toString() : "");
+    }
+
+    protected SubjectAttribute getNextSubjectAttr(Map<String, SubjectAttribute> subjectAttrs, String name, String value) {
+
+        // Roles are multi-valued
+        boolean multiValued = false;
+        // TODO : This depends on the attribute profile, make it dynamic!
+        if (name.equals(DCEPACAttributeDefinition.GROUPS.getValue()) ||
+                name.equals("groups") ||
+                name.equals(DCEPACAttributeDefinition.GROUP.getValue())) {
+            multiValued = true;
+        }
+
+        // Check if the name has been used
+        SubjectAttribute old = subjectAttrs.get(name);
+
+        int i = 0;
+        boolean found = false;
+        while (old != null) {
+
+            if (old.getValue().equals(value))
+                found = true;
+
+            i++;
+            old = subjectAttrs.get(name + "_" + i);
+        }
+
+        String newName = i > 0 ? name + "_" + i : name;
+
+        SubjectAttribute attr = null;
+        if (multiValued) {
+            // Multi-valued attributes are added only once!
+            if (!found) {
+                attr = new SubjectAttribute(name, value);
+                subjectAttrs.put(newName, attr);
+            }
+
+        } else {
+            attr = new SubjectAttribute(newName, value);
+            subjectAttrs.put(newName, attr);
+        }
+
+        return attr;
     }
 
 
@@ -827,18 +1000,18 @@ public class AssertionConsumerProducer extends SSOProducer {
         IDPSSODescriptorType idpMd = null;
 
         // Request can be null for IDP initiated SSO
-    	EndpointDescriptor endpointDesc;
-		try {
-			endpointDesc = channel.getIdentityMediator().resolveEndpoint(channel, endpoint);
+        EndpointDescriptor endpointDesc;
+        try {
+            endpointDesc = channel.getIdentityMediator().resolveEndpoint(channel, endpoint);
 
-		} catch (IdentityMediationException e1) {
+        } catch (IdentityMediationException e1) {
             logger.error(e1.getMessage(), e1);
-			throw new SSOResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.RESOURCE_NOT_RECOGNIZED,
                     StatusDetails.INTERNAL_ERROR,
                     "Cannot resolve endpoint descriptor", e1);
-		}
+        }
 
         try {
             idpAlias = response.getIssuer().getValue();
@@ -863,7 +1036,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
 
 
-        if  (idpMd == null) {
+        if (idpMd == null) {
 
             logger.debug("No IDP Metadata found");
             // Unknown IDP!
@@ -878,73 +1051,73 @@ public class AssertionConsumerProducer extends SSOProducer {
         // --------------------------------------------------------
 
         // Destination
-    	//saml2 binding, sections 3.4.5.2 & 3.5.5.2
-    	if(response.getDestination() != null) {
+        //saml2 binding, sections 3.4.5.2 & 3.5.5.2
+        if (response.getDestination() != null) {
 
             //saml2 core, section 3.2.2
             String location = endpointDesc.getResponseLocation();
-            if (location ==null)
+            if (location == null)
                 location = endpointDesc.getLocation();
 
-    		if(!response.getDestination().equals(location)){
-    			throw new SSOResponseException(response,
+            if (!response.getDestination().equals(location)) {
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_DESTINATION);
-    		}
+            }
 
-    	} else if(response.getSignature() != null &&
+        } else if (response.getSignature() != null &&
                 (!endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) &&
-                 !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()) &&
-                 !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())
+                        !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue()) &&
+                        !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())
                 )) {
 
             // If message is signed, the destination is mandatory!
             //saml2 binding, sections 3.4.5.2 & 3.5.5.2
-    		throw new SSOResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.NO_DESTINATION);
 
-    	} else if(endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) &&
-                 state.getTransientVariable("Signature") != null) {
+        } else if (endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) &&
+                state.getTransientVariable("Signature") != null) {
 
             // If message is signed, the destination is mandatory!
             //saml2 binding, sections 3.4.5.2 & 3.5.5.2
-    		throw new SSOResponseException(response,
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,
                     StatusDetails.NO_DESTINATION);
-    	}
+        }
 
         // IssueInstant
 		/*
-		   -  required 
-		   -  check that the response time is not before request time (use UTC) 
+		   -  required
+		   -  check that the response time is not before request time (use UTC)
 		   -  check that time difference is not bigger than X
 		   */
-    	if(response.getIssueInstant() == null){
-    		throw new SSOResponseException(response,
+        if (response.getIssueInstant() == null) {
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_ISSUE_INSTANT);
 
-    	} else if(request != null) {
+        } else if (request != null) {
 
             long responseIssueInstant = response.getIssueInstant().toGregorianCalendar().getTimeInMillis();
             long requestIssueInstant = request.getIssueInstant().toGregorianCalendar().getTimeInMillis();
 
             long tolerance = mediator.getTimestampValidationTolerance();
             // You can't have a request emitted before 'tolerance' millisenconds
-           	if(responseIssueInstant - requestIssueInstant <= tolerance * -1) {
-    			throw new SSOResponseException(response,
+            if (responseIssueInstant - requestIssueInstant <= tolerance * -1) {
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_ISSUE_INSTANT,
                         response.getIssueInstant().toGregorianCalendar().toString() +
-                                    " earlier than request issue instant.");
+                                " earlier than request issue instant.");
 
-    		} else {
+            } else {
 
 
                 long ttl = mediator.getRequestTimeToLive();
@@ -953,32 +1126,32 @@ public class AssertionConsumerProducer extends SSOProducer {
                 long req = request.getIssueInstant().toGregorianCalendar().getTime().getTime();
 
                 if (logger.isDebugEnabled())
-                    logger.debug("TTL : " + res + " - " +  req + " = " + (res - req));
+                    logger.debug("TTL : " + res + " - " + req + " = " + (res - req));
 
                 // If 0, response does not expires!
-    			if(ttl > 0 && response.getIssueInstant().toGregorianCalendar().getTime().getTime()
-    					- request.getIssueInstant().toGregorianCalendar().getTime().getTime() > ttl) {
+                if (ttl > 0 && response.getIssueInstant().toGregorianCalendar().getTime().getTime()
+                        - request.getIssueInstant().toGregorianCalendar().getTime().getTime() > ttl) {
 
-    				throw new SSOResponseException(response,
+                    throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                             StatusDetails.INVALID_ISSUE_INSTANT,
                             response.getIssueInstant().toGregorianCalendar().toString() +
                                     " expired after " + ttl + "ms");
-    			} 
-    		}
+                }
+            }
 
-    	}
+        }
 
         // Version, saml2 core, section 3.2.2
-    	if(response.getVersion() == null) {
-    		throw new SSOResponseException(response,
+        if (response.getVersion() == null) {
+            throw new SSOResponseException(response,
                     StatusCode.TOP_VERSION_MISSMATCH,
                     null,
                     StatusDetails.INVALID_VERSION);
-    	}
+        }
 
-        if (!response.getVersion().equals(SAML_VERSION)){
+        if (!response.getVersion().equals(SAML_VERSION)) {
 
             throw new SSOResponseException(response,
                     StatusCode.TOP_VERSION_MISSMATCH,
@@ -986,12 +1159,12 @@ public class AssertionConsumerProducer extends SSOProducer {
                     StatusDetails.UNSUPPORTED_VERSION,
                     response.getVersion());
         }
-    	
+
         // InResponseTo, saml2 core, section 3.2.2
-    	// Request can be null for IDP initiated SSO
+        // Request can be null for IDP initiated SSO
 
 
-    	if(request != null && response.getInResponseTo() != null) {
+        if (request != null && response.getInResponseTo() != null) {
             // A second IDP-initiated request might have been triggered after an SP-initiated one.
             // The response for the IDP-initiated request should be honoured even if does not correspond with the
             // first authentication request. This condition is triggered in the identity confirmation usage scenario.
@@ -1012,41 +1185,41 @@ public class AssertionConsumerProducer extends SSOProducer {
                         request.getID() + "/ " + response.getInResponseTo());
             }
 
-    	}
+        }
 
         // Status.StatusDetails
-    	if(response.getStatus() != null) {
-    		if(response.getStatus().getStatusCode() != null) {
+        if (response.getStatus() != null) {
+            if (response.getStatus().getStatusCode() != null) {
 
-    			if(StringUtils.isEmpty(response.getStatus().getStatusCode().getValue()) 
-    					|| !isStatusCodeValid(response.getStatus().getStatusCode().getValue())){
+                if (StringUtils.isEmpty(response.getStatus().getStatusCode().getValue())
+                        || !isStatusCodeValid(response.getStatus().getStatusCode().getValue())) {
 
-    				throw new SSOResponseException(response,
+                    throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                             StatusDetails.INVALID_STATUS_CODE,
                             response.getStatus().getStatusCode().getValue());
-    			}
-    		} else {
-    			throw new SSOResponseException(response,
+                }
+            } else {
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_STATUS_CODE);
-    		}
-    	} else {
-    		throw new SSOResponseException(response,
+            }
+        } else {
+            throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.NO_STATUS);
-    	}
-    	
-		// XML Signature, saml2 core, section 5 (always validate response signatures
+        }
+
+        // XML Signature, saml2 core, section 5 (always validate response signatures
         // HTTP-Redirect binding does not support embedded signatures
         if (!endpoint.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue())) {
 
             // If there are no assertions, response MUST be signed
             if (response.getSignature() == null &&
-               (response.getAssertionOrEncryptedAssertion() == null || response.getAssertionOrEncryptedAssertion().size() == 0)) {
+                    (response.getAssertionOrEncryptedAssertion() == null || response.getAssertionOrEncryptedAssertion().size() == 0)) {
                 // Redirect binding does not have signature elements!
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
@@ -1110,26 +1283,41 @@ public class AssertionConsumerProducer extends SSOProducer {
         // Validate also assertion contained in response!
         // --------------------------------------------------------
         AssertionType assertion = null;
+        EncryptedElementType encryptedAssertion = null;
+        boolean encrypted = false;
 
-        // Decrypt if encrypted 
+        // Decrypt if encrypted
         List assertionObjects = response.getAssertionOrEncryptedAssertion();
         for (Object assertionObject : assertionObjects) {
-			if(assertionObject instanceof AssertionType){
-				assertion = (AssertionType) assertionObject;								
-			} else if(assertionObject instanceof EncryptedElementType){
+            if (assertionObject instanceof AssertionType) {
+                assertion = (AssertionType) assertionObject;
+                encrypted = false;
+            } else if (assertionObject instanceof EncryptedElementType) {
 
-				try {
-					assertion = encrypter.decryptAssertion((EncryptedElementType)assertionObject);
-				} catch (SamlR2EncrypterException e) {
+                try {
+                    // Decrypt the assertion
+                    encryptedAssertion = (EncryptedElementType) assertionObject;
+                    assertion = encrypter.decryptAssertion(encryptedAssertion);
+                    response.getAssertionOrEncryptedAssertion().clear();
+                    response.getAssertionOrEncryptedAssertion().add(assertion);
+                    encrypted = true;
+
+                } catch (SamlR2EncrypterException e) {
                     logger.error(e.getMessage(), e);
-					throw new SSOResponseException(response,
+                    throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_ENCRYPTION, e);
-				}
-			}
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    throw new SSOResponseException(response,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_ASSERTION_ENCRYPTION, e);
+                }
+            }
 
-			// XML Signature, saml core, section 5
+            // XML Signature, saml core, section 5
             /* NOT WORKING OK ... */
 
             SPSSODescriptorType saml2SpMd = null;
@@ -1148,14 +1336,14 @@ public class AssertionConsumerProducer extends SSOProducer {
 
 
             // If the response does not have a signature, assertions MUST be signed, otherwise relay on MD configuration to require a signature
-            if(
-               // Do we required signed assertions ?
-               (saml2SpMd.getWantAssertionsSigned() != null && saml2SpMd.getWantAssertionsSigned()) ||
-               // Does response have a signature for bindings that require it ?
-               (response.getSignature() == null && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue())) ||
-               // Does redirect binding have an outbound signature ?
-               (state.getTransientVariable("Signature") == null && endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()))
-              ) {
+            if (
+                // Do we required signed assertions ?
+                    (saml2SpMd.getWantAssertionsSigned() != null && saml2SpMd.getWantAssertionsSigned()) ||
+                            // Does response have a signature for bindings that require it ?
+                            (response.getSignature() == null && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_LOCAL.getValue()) && !endpointDesc.getBinding().equals(SSOBinding.SAMLR2_ARTIFACT.getValue())) ||
+                            // Does redirect binding have an outbound signature ?
+                            (state.getTransientVariable("Signature") == null && endpointDesc.getBinding().equals(SSOBinding.SAMLR2_REDIRECT.getValue()))
+            ) {
 
                 if (assertion.getSignature() == null) {
                     throw new SSOResponseException(response,
@@ -1164,110 +1352,123 @@ public class AssertionConsumerProducer extends SSOProducer {
                             StatusDetails.INVALID_ASSERTION_SIGNATURE);
                 }
 
-				try {
-
+                try {
+                    // If the assertion was encrypted, validate the decrypted value's signature
                     if (originalResponse != null)
-                        signer.validateDom(idpMd, originalResponse, assertion.getID());
+                        if (!encrypted)
+                            signer.validateDom(idpMd, originalResponse, assertion.getID());
+                        else {
+                            try {
+                                Document decryptedDoc = encrypter.decryptAssertionAsDOM(encryptedAssertion);
+                                signer.validateDom(idpMd, decryptedDoc, assertion.getID());
+                            } catch (SamlR2EncrypterException e) {
+                                logger.error(e.getMessage(), e);
+                                throw new SSOResponseException(response,
+                                        StatusCode.TOP_REQUESTER,
+                                        StatusCode.REQUEST_DENIED,
+                                        StatusDetails.INVALID_ASSERTION_ENCRYPTION, e);
+                            }
+                        }
                     else
                         signer.validate(idpMd, assertion);
 
-				} catch (SamlR2SignatureValidationException e) {
+                } catch (SamlR2SignatureValidationException e) {
                     logger.error(e.getMessage(), e);
-					throw new SSOResponseException(response,
+                    throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_SIGNATURE, e);
-				} catch (SamlR2SignatureException e) {
+                } catch (SamlR2SignatureException e) {
                     logger.error(e.getMessage(), e);
-					throw new SSOResponseException(response,
+                    throw new SSOResponseException(response,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_ASSERTION_SIGNATURE, e);
-				}
-			}
+                }
+            }
 
 
-        // Conditions
-			// - optional
+            // Conditions
+            // - optional
 
-	        validateAssertionConditions(response, assertion.getConditions());
+            validateAssertionConditions(response, assertion.getConditions());
 
-	        // Subject, saml2 core, sections 2.3.3 & 2.7.2
-			if(assertion.getSubject() != null){
-				for (JAXBElement object : assertion.getSubject().getContent()) {
-					Object subjectContent = object.getValue();
-					if(subjectContent instanceof SubjectConfirmationType){
-						SubjectConfirmationType subConf = (SubjectConfirmationType)subjectContent;
-						if(subConf.getMethod() == null){
-							throw new SSOResponseException(response,
+            // Subject, saml2 core, sections 2.3.3 & 2.7.2
+            if (assertion.getSubject() != null) {
+                for (JAXBElement object : assertion.getSubject().getContent()) {
+                    Object subjectContent = object.getValue();
+                    if (subjectContent instanceof SubjectConfirmationType) {
+                        SubjectConfirmationType subConf = (SubjectConfirmationType) subjectContent;
+                        if (subConf.getMethod() == null) {
+                            throw new SSOResponseException(response,
                                     StatusCode.TOP_REQUESTER,
                                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                                     StatusDetails.NO_METHOD);
-						}
-						
-						// saml2 core, section 2.4.1.2
-						if(subConf.getSubjectConfirmationData() != null){
-							SubjectConfirmationDataType scData = subConf.getSubjectConfirmationData(); 
-							if(assertion.getConditions() != null){
-								logger.debug("scData.getNotBefore(): " + scData.getNotBefore());
-								logger.debug("assertion.getConditions().getNotBefore()" + assertion.getConditions().getNotBefore());
-								if(scData.getNotBefore() != null && assertion.getConditions().getNotBefore() != null
-										&& scData.getNotBefore().normalize().compare(assertion.getConditions().getNotBefore().normalize()) < 0){
+                        }
+
+                        // saml2 core, section 2.4.1.2
+                        if (subConf.getSubjectConfirmationData() != null) {
+                            SubjectConfirmationDataType scData = subConf.getSubjectConfirmationData();
+                            if (assertion.getConditions() != null) {
+                                logger.debug("scData.getNotBefore(): " + scData.getNotBefore());
+                                logger.debug("assertion.getConditions().getNotBefore()" + assertion.getConditions().getNotBefore());
+                                if (scData.getNotBefore() != null && assertion.getConditions().getNotBefore() != null
+                                        && scData.getNotBefore().normalize().compare(assertion.getConditions().getNotBefore().normalize()) < 0) {
                                     logger.warn("SubjectConfirmationData.NotBefore value SHOULD not be earlier than Conditions.NotBefore.");
-									// TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotBefore value SHOULD not be earlier than Conditions.NotBefore.");
-								}
-								logger.debug("scData.getNotOnOrAfter(): " + scData.getNotOnOrAfter());
-								logger.debug("assertion.getConditions().getNotOnOrAfter()" + assertion.getConditions().getNotOnOrAfter());
-								if(scData.getNotOnOrAfter() != null && assertion.getConditions().getNotOnOrAfter() != null
-										&& scData.getNotOnOrAfter().normalize().compare(assertion.getConditions().getNotOnOrAfter().normalize()) > 0){
-									// TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotOnOrAfter value SHOULD not be later than Conditions.NotOnOrAfter.");
+                                    // TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotBefore value SHOULD not be earlier than Conditions.NotBefore.");
+                                }
+                                logger.debug("scData.getNotOnOrAfter(): " + scData.getNotOnOrAfter());
+                                logger.debug("assertion.getConditions().getNotOnOrAfter()" + assertion.getConditions().getNotOnOrAfter());
+                                if (scData.getNotOnOrAfter() != null && assertion.getConditions().getNotOnOrAfter() != null
+                                        && scData.getNotOnOrAfter().normalize().compare(assertion.getConditions().getNotOnOrAfter().normalize()) > 0) {
+                                    // TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotOnOrAfter value SHOULD not be later than Conditions.NotOnOrAfter.");
                                     logger.warn("SubjectConfirmationData.NotOnOrAfter value SHOULD not be later than Conditions.NotOnOrAfter.");
 
-								}
-							}
-							if(scData.getNotBefore() != null && scData.getNotOnOrAfter() != null
-									&& scData.getNotOnOrAfter().normalize().compare(scData.getNotBefore().normalize()) < 0){
-								// TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
+                                }
+                            }
+                            if (scData.getNotBefore() != null && scData.getNotOnOrAfter() != null
+                                    && scData.getNotOnOrAfter().normalize().compare(scData.getNotBefore().normalize()) < 0) {
+                                // TODO : Should be configurable : throw new SSOResponseException("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
                                 logger.warn("SubjectConfirmationData.NotBefore value SHOULD be earlier than SubjectConfirmationData.NotOnOrAfter.");
-								
-							}
-						}
-						
-					}
-				}
-								
-			} else if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() == null 
-						|| assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().size() == 0){
-				throw new SSOResponseException(response,
+
+                            }
+                        }
+
+                    }
+                }
+
+            } else if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() == null
+                    || assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().size() == 0) {
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_SUBJECT);
-			} else if (getAuthnStatements(assertion).size() != 0){
-				throw new SSOResponseException(response,
+            } else if (getAuthnStatements(assertion).size() != 0) {
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NO_SUBJECT);
-			}
-			
-	        // AuthnStatement, saml2 core, section 2.7.2
-	        List<AuthnStatementType> authnStatementList = getAuthnStatements(assertion);
-	        if(authnStatementList.size() != 0){
-				for (AuthnStatementType statement : authnStatementList) {
-					if(statement.getAuthnInstant() == null){
-						throw new SSOResponseException(response,
+            }
+
+            // AuthnStatement, saml2 core, section 2.7.2
+            List<AuthnStatementType> authnStatementList = getAuthnStatements(assertion);
+            if (authnStatementList.size() != 0) {
+                for (AuthnStatementType statement : authnStatementList) {
+                    if (statement.getAuthnInstant() == null) {
+                        throw new SSOResponseException(response,
                                 StatusCode.TOP_REQUESTER,
                                 StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                                 StatusDetails.NO_AUTHN_INSTANT);
-					}
-					if(statement.getAuthnContext() == null){
+                    }
+                    if (statement.getAuthnContext() == null) {
                         throw new SSOResponseException(response,
                                 StatusCode.TOP_REQUESTER,
                                 StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                                 StatusDetails.NO_AUTHN_CONTEXT);
-					}
-				}
-	        }	        
-		}
+                    }
+                }
+            }
+        }
 
 
         if (mediator.isVerifyUniqueIDs() &&
@@ -1292,32 +1493,32 @@ public class AssertionConsumerProducer extends SSOProducer {
         if (conditions == null)
             return;
 
-        long tolerance = ((AbstractSSOMediator)channel.getIdentityMediator()).getTimestampValidationTolerance();
-		Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        long tolerance = ((AbstractSSOMediator) channel.getIdentityMediator()).getTimestampValidationTolerance();
+        Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
-		if(conditions.getConditionOrAudienceRestrictionOrOneTimeUse() == null
-				&& conditions.getNotBefore() == null && conditions.getNotOnOrAfter() == null){
-			return;
-		}
+        if (conditions.getConditionOrAudienceRestrictionOrOneTimeUse() == null
+                && conditions.getNotBefore() == null && conditions.getNotOnOrAfter() == null) {
+            return;
+        }
 
-		logger.debug("Current time (UTC): " + utcCalendar.toString());
+        logger.debug("Current time (UTC): " + utcCalendar.toString());
 
-		XMLGregorianCalendar notBeforeUTC = null;
-		XMLGregorianCalendar notOnOrAfterUTC = null;
+        XMLGregorianCalendar notBeforeUTC = null;
+        XMLGregorianCalendar notOnOrAfterUTC = null;
 
-		if(conditions.getNotBefore() != null){
-			//normalize to UTC			
-			logger.debug("Conditions.NotBefore: " + conditions.getNotBefore());
+        if (conditions.getNotBefore() != null) {
+            //normalize to UTC
+            logger.debug("Conditions.NotBefore: " + conditions.getNotBefore());
 
-			notBeforeUTC = conditions.getNotBefore().normalize();
-			logger.debug("Conditions.NotBefore normalized: " + notBeforeUTC.toString());
-			
-			if(!notBeforeUTC.isValid()){
-				throw new SSOResponseException(response,
+            notBeforeUTC = conditions.getNotBefore().normalize();
+            logger.debug("Conditions.NotBefore normalized: " + notBeforeUTC.toString());
+
+            if (!notBeforeUTC.isValid()) {
+                throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.INVALID_UTC_VALUE, notBeforeUTC.toString());
-			} else {
+            } else {
 
                 Calendar notBefore = notBeforeUTC.toGregorianCalendar();
                 notBefore.add(Calendar.MILLISECOND, (int) tolerance * -1);
@@ -1325,20 +1526,20 @@ public class AssertionConsumerProducer extends SSOProducer {
                 if (utcCalendar.before(notBefore))
 
                     throw new SSOResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.INVALID_ATTR_NAME_OR_VALUE,
-                        StatusDetails.NOT_BEFORE_VIOLATED,
-                        notBeforeUTC.toString());
-			}
-		}
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.INVALID_ATTR_NAME_OR_VALUE,
+                            StatusDetails.NOT_BEFORE_VIOLATED,
+                            notBeforeUTC.toString());
+            }
+        }
 
         // Make sure that the NOT ON OR AFTER is not violated, give a five minutes tolerance (should be configurable)
-		if(conditions.getNotOnOrAfter() != null){
-			//normalize to UTC
-			logger.debug("Conditions.NotOnOrAfter: " + conditions.getNotOnOrAfter().toString());
-			notOnOrAfterUTC = conditions.getNotOnOrAfter().normalize();
-			logger.debug("Conditions.NotOnOrAfter normalized: " + notOnOrAfterUTC.toString());
-			if(!notOnOrAfterUTC.isValid()){
+        if (conditions.getNotOnOrAfter() != null) {
+            //normalize to UTC
+            logger.debug("Conditions.NotOnOrAfter: " + conditions.getNotOnOrAfter().toString());
+            notOnOrAfterUTC = conditions.getNotOnOrAfter().normalize();
+            logger.debug("Conditions.NotOnOrAfter normalized: " + notOnOrAfterUTC.toString());
+            if (!notOnOrAfterUTC.isValid()) {
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
@@ -1352,21 +1553,21 @@ public class AssertionConsumerProducer extends SSOProducer {
 
                 if (utcCalendar.after(notOnOrAfter))
                     throw new SSOResponseException(response,
-                        StatusCode.TOP_REQUESTER,
-                        StatusCode.INVALID_ATTR_NAME_OR_VALUE,
-                        StatusDetails.NOT_ONORAFTER_VIOLATED, notOnOrAfterUTC.toString());
-			}
-		}
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.INVALID_ATTR_NAME_OR_VALUE,
+                            StatusDetails.NOT_ONORAFTER_VIOLATED, notOnOrAfterUTC.toString());
+            }
+        }
 
 
-		if(notBeforeUTC != null && notOnOrAfterUTC != null
-				&& notOnOrAfterUTC.compare(notBeforeUTC) <= 0) {
+        if (notBeforeUTC != null && notOnOrAfterUTC != null
+                && notOnOrAfterUTC.compare(notBeforeUTC) <= 0) {
 
             throw new SSOResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                     StatusDetails.INVALID_CONDITION, "'Not On or After' earlier that 'Not Before'");
-		}
+        }
 
         // Our SAMLR2 Enityt ID should be part of the audience
         CircleOfTrustMemberDescriptor sp = this.getCotMemberDescriptor();
@@ -1381,37 +1582,37 @@ public class AssertionConsumerProducer extends SSOProducer {
         } else
             throw new SSOException("Unsupported Metadata type " + md + ", SAML 2 Metadata expected");
 
-		if(conditions.getConditionOrAudienceRestrictionOrOneTimeUse() != null){
-			boolean audienceRestrictionValid = false;
-			boolean spInAllAudiences = false;
-			boolean initState = true;
-			for (ConditionAbstractType conditionAbs : conditions.getConditionOrAudienceRestrictionOrOneTimeUse()) {
-				if(conditionAbs instanceof AudienceRestrictionType){
-					AudienceRestrictionType audienceRestriction = (AudienceRestrictionType) conditionAbs;
-					if(audienceRestriction.getAudience() != null){
-						boolean spInAudience = false;
-						for (String audience : audienceRestriction.getAudience()) {
-							if(audience.equals(md.getEntityID())){
-								spInAudience = true;
-								break;
-							}
-						}
-						spInAllAudiences = (initState ? spInAudience : spInAllAudiences && spInAudience );
-						initState = false;
-					}
-				}
-				audienceRestrictionValid = audienceRestrictionValid || spInAllAudiences;
-			}
-			if(!audienceRestrictionValid){
-				logger.error("SP is not in Audience list.");
+        if (conditions.getConditionOrAudienceRestrictionOrOneTimeUse() != null) {
+            boolean audienceRestrictionValid = false;
+            boolean spInAllAudiences = false;
+            boolean initState = true;
+            for (ConditionAbstractType conditionAbs : conditions.getConditionOrAudienceRestrictionOrOneTimeUse()) {
+                if (conditionAbs instanceof AudienceRestrictionType) {
+                    AudienceRestrictionType audienceRestriction = (AudienceRestrictionType) conditionAbs;
+                    if (audienceRestriction.getAudience() != null) {
+                        boolean spInAudience = false;
+                        for (String audience : audienceRestriction.getAudience()) {
+                            if (audience.equals(md.getEntityID())) {
+                                spInAudience = true;
+                                break;
+                            }
+                        }
+                        spInAllAudiences = (initState ? spInAudience : spInAllAudiences && spInAudience);
+                        initState = false;
+                    }
+                }
+                audienceRestrictionValid = audienceRestrictionValid || spInAllAudiences;
+            }
+            if (!audienceRestrictionValid) {
+                logger.error("SP is not in Audience list.");
                 throw new SSOResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.INVALID_ATTR_NAME_OR_VALUE,
                         StatusDetails.NOT_IN_AUDIENCE);
-			}
-		}		
-		
-	}
+            }
+        }
+
+    }
 
     private Calendar getSessionNotOnOrAfter(AssertionType assertion) {
 
@@ -1434,19 +1635,19 @@ public class AssertionConsumerProducer extends SSOProducer {
 
         return null;
     }
-    
-    private List<AuthnStatementType> getAuthnStatements(AssertionType assertion){
-    	ArrayList<AuthnStatementType> statementsList = new ArrayList<AuthnStatementType>();
-    	
-		if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() != null 
-				&& assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().size() != 0){
-			for (Object statement : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
-				if(statement instanceof AuthnStatementType){
-					statementsList.add((AuthnStatementType)statement);
-				}
-			}
-		}    	
-    	return statementsList;
+
+    private List<AuthnStatementType> getAuthnStatements(AssertionType assertion) {
+        ArrayList<AuthnStatementType> statementsList = new ArrayList<AuthnStatementType>();
+
+        if (assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement() != null
+                && assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().size() != 0) {
+            for (Object statement : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
+                if (statement instanceof AuthnStatementType) {
+                    statementsList.add((AuthnStatementType) statement);
+                }
+            }
+        }
+        return statementsList;
     }
 
     protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
@@ -1470,7 +1671,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     }
 
-    protected SPSecurityContext createSPSecurityContext(CamelMediationExchange exchange,
+    protected SPSecurityContext updateSPSecurityContext(CamelMediationExchange exchange,
                                                         String requester,
                                                         CircleOfTrustMemberDescriptor idp,
                                                         AccountLink acctLink,
@@ -1480,75 +1681,20 @@ public class AssertionConsumerProducer extends SSOProducer {
             throws SSOException {
 
         if (logger.isDebugEnabled())
-            logger.debug("Creating new SP Security Context for subject " + federatedSubject);
+            logger.debug("Updating SP Security Context for subject " + federatedSubject);
 
         IdPChannel idPChannel = (IdPChannel) channel;
         SSOSessionManager ssoSessionManager = idPChannel.getSessionManager();
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        // Remove previous security context if any
-
-        SPSecurityContext secCtx =
-                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-
-        if (secCtx != null) {
-
-            if (logger.isDebugEnabled())
-                logger.debug("Invalidating old sso session " + secCtx.getSessionIndex());
-            try {
-                ssoSessionManager.invalidate(secCtx.getSessionIndex());
-            } catch (NoSuchSessionException e) {
-                // Ignore this ...
-                if (logger.isDebugEnabled())
-                    logger.debug("Invalidating already expired sso session " + secCtx.getSessionIndex());
-
-            } catch (SSOSessionException e) {
-                throw new SSOException(e);
-            }
-
-        }
-
-        // Get Subject ID (username ?)
-        SubjectNameID nameId = null;
-        Set<SubjectNameID> nameIds = federatedSubject.getPrincipals(SubjectNameID.class);
-
-        if (nameIds != null && nameIds.size() > 0) {
-            nameId = nameIds.iterator().next();
-            if (logger.isTraceEnabled())
-                logger.trace("Using Subject ID " + nameId.getName() + "[" + nameId.getFormat() + "] ");
-
-            /* Old logic, serched for UNSPECIFIED Subject Name ID:
-            for (SubjectNameID i : nameIds) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("Checking Subject ID " + i.getName() + "["+i.getFormat()+"] ");
-
-                // TODO : Support other name ID formats !!!
-                if (i.getFormat() == null || i.getFormat().equals(NameIDFormat.UNSPECIFIED.getValue())) {
-                    nameId = i;
-                    break;
-                }
-            } */
-        }
-
-        if (nameId == null) {
-            logger.error("No suitable Subject Name Identifier (SubjectNameID) found");
-            throw new SSOException("No suitable Subject Name Identifier (SubjectNameID) found");
-        }
-
-        String idpSessionIndex = null;
-        Collection<SubjectAuthenticationAttribute> authnAttrs = idpSubject.getPrincipals(SubjectAuthenticationAttribute.class);
-        for (SubjectAuthenticationAttribute authnAttr : authnAttrs) {
-            if (authnAttr.getName().equals(SubjectAuthenticationAttribute.Name.SESSION_INDEX.name())) {
-                idpSessionIndex = authnAttr.getValue();
-                break;
-            }
-        }
-
+        // Get authentication information from the assertion:
+        String newIdpSessionIndex = null;
         AuthnCtxClass authnCtx = null;
         for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
             if (stmt instanceof AuthnStatementType) {
                 AuthnStatementType authnStmt = (AuthnStatementType) stmt;
+
+                newIdpSessionIndex = authnStmt.getSessionIndex();
 
                 for (JAXBElement e : authnStmt.getAuthnContext().getContent()) {
                     if (e.getName().getLocalPart().equals("AuthnContextClassRef")) {
@@ -1560,65 +1706,130 @@ public class AssertionConsumerProducer extends SSOProducer {
             }
         }
 
-        // Create a new Security Context
-        secCtx = new SPSecurityContext();
-        
+        SPSecurityContext secCtx =
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+
+        boolean createNewSession = false;
+        String spSsoSessionId = null;
+
+        if (secCtx != null) {
+
+            String currentIdPSession = secCtx.getIdpSsoSession();
+            spSsoSessionId = secCtx.getSessionIndex();
+
+            if (spSsoSessionId == null || (currentIdPSession != null && !currentIdPSession.equals(newIdpSessionIndex))) {
+
+                createNewSession = true;
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Invalidating old SP sso session " + secCtx.getSessionIndex());
+
+                try {
+                    ssoSessionManager.invalidate(secCtx.getSessionIndex());
+                } catch (NoSuchSessionException e) {
+                    // Ignore this ...
+                    if (logger.isDebugEnabled())
+                        logger.debug("Invalidated already expired sso session " + secCtx.getSessionIndex());
+
+                } catch (SSOSessionException e) {
+                    throw new SSOException(e);
+                }
+            } else {
+
+                try {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Accessing SP sso session " + spSsoSessionId);
+                    ssoSessionManager.accessSession(spSsoSessionId);
+                } catch (NoSuchSessionException e) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Accessesd invalid SP sso session " + spSsoSessionId);
+                    createNewSession = true;
+                } catch (SSOSessionException e) {
+                    throw new SSOException(e);
+                }
+
+            }
+        } else {
+            // Create a new Security Context
+            createNewSession = true;
+            secCtx = new SPSecurityContext();
+        }
+
+        // Get Subject ID (username ?)
+        SubjectNameID nameId = null;
+        Set<SubjectNameID> nameIds = federatedSubject.getPrincipals(SubjectNameID.class);
+
+        if (nameIds != null && nameIds.size() > 0) {
+            nameId = nameIds.iterator().next();
+            if (logger.isTraceEnabled())
+                logger.trace("Using Subject ID " + nameId.getName() + "[" + nameId.getFormat() + "] ");
+        }
+
+        if (nameId == null) {
+            logger.error("No suitable Subject Name Identifier (SubjectNameID) found");
+            throw new SSOException("No suitable Subject Name Identifier (SubjectNameID) found");
+        }
+
+        // Set context properties
         secCtx.setIdpAlias(idp.getAlias());
-        secCtx.setIdpSsoSession(idpSessionIndex);
+        secCtx.setIdpSsoSession(newIdpSessionIndex);
         secCtx.setSubject(federatedSubject);
         secCtx.setAccountLink(acctLink);
         secCtx.setRequester(requester);
         secCtx.setAuthnCtxClass(authnCtx);
 
-        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
+        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(sessionUuidGenerator.generateId(), secCtx);
 
-        try {
-            // Create new SSO Session
+        if (createNewSession) {
+            try {
+                // Create new local SP SSO Session
 
-            // Take session timeout from the assertion, if available.
-            Calendar sessionExpiration = getSessionNotOnOrAfter(assertion);
-            long sessionTimeout = 0;
-
-            if (sessionExpiration != null) {
-                sessionTimeout = (sessionExpiration.getTimeInMillis() - System.currentTimeMillis()) / 1000L;
-            }
-
-            String ssoSessionId = (sessionTimeout > 0 ?
-                ssoSessionManager.initiateSession(nameId.getName(), token, (int) sessionTimeout) : // Request session timeout
-                ssoSessionManager.initiateSession(nameId.getName(), token));                       // Use default session timeout
-
-            if (logger.isTraceEnabled())
-                    logger.trace("Created SP SSO Session with id " + ssoSessionId);
-
-            // Update security context with SSO Session ID
-            secCtx.setSessionIndex(ssoSessionId);
-
-            Set<SubjectAuthenticationAttribute> attrs = idpSubject.getPrincipals(SubjectAuthenticationAttribute.class);
-            String idpSsoSessionId = null;
-            for (SubjectAuthenticationAttribute attr : attrs) {
-                // Session index
-                if (attr.getName().equals(SubjectAuthenticationAttribute.Name.SESSION_INDEX.name())) {
-                    idpSsoSessionId = attr.getValue();
-                    break;
+                // Take session timeout from the assertion, if available.
+                Calendar sessionExpiration = getSessionNotOnOrAfter(assertion);
+                long sessionTimeout = 0;
+                if (sessionExpiration != null) {
+                    sessionTimeout = (sessionExpiration.getTimeInMillis() - System.currentTimeMillis()) / 1000L;
                 }
+
+                String remoteAddress = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+
+                SSOSessionContext sessionCtx = new SSOSessionContext();
+                sessionCtx.setSubject(federatedSubject);
+                sessionCtx.setProperty("org.atricore.idbus.http.RemoteAddress", remoteAddress);
+
+                spSsoSessionId = (sessionTimeout > 0 ?
+                        ssoSessionManager.initiateSession(nameId.getName(), token, sessionCtx, (int) sessionTimeout) : // Request session timeout
+                        ssoSessionManager.initiateSession(nameId.getName(), token, sessionCtx));                       // Use default session timeout
+
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Created SP SSO Session with id " + spSsoSessionId);
+
+            } catch (SSOSessionException e) {
+                throw new SSOException(e);
             }
 
-            // SubjectAuthenticationAttribute.Name.SESSION_NOT_ON_OR_AFTER
-
-            if (logger.isDebugEnabled())
-                logger.debug("Created SP security context " + secCtx);
-
-            in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
-            in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
-            in.getMessage().getState().getLocalState().addAlternativeId("idpSsoSessionId", idpSsoSessionId);
-
-            if (logger.isTraceEnabled())
-                logger.trace("Stored SP Security Context in " + getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-            
-            return secCtx;
-        } catch (SSOSessionException e) {
-            throw new SSOException(e);
         }
+
+        // Update security context with SSO Session ID
+        secCtx.setSessionIndex(spSsoSessionId);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Updated SP security context " + secCtx);
+
+        in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+
+        in.getMessage().getState().getLocalState().removeAlternativeIds("ssoSessionId");
+        in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
+
+        in.getMessage().getState().getLocalState().removeAlternativeIds("idpSsoSessionId");
+        in.getMessage().getState().getLocalState().addAlternativeId("idpSsoSessionId", secCtx.getIdpSsoSession());
+
+        if (logger.isTraceEnabled())
+            logger.trace("Stored SP Security Context in " + getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+
+        return secCtx;
+
 
     }
 

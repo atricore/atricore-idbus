@@ -107,7 +107,7 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         if (response.getSessionIndex() == null) {
             // No session was found for automatic login, go back without artifact!
 
-            if (req == null || !req.isPassive()) {
+            if (req == null || req.getPassive() ==null || !req.getPassive()) {
                 // Error!
                 logger.error("No Session Index received but passive authentication was not requested!");
                 throw new JossoException("No Session Index received but passive authentication was not requested!");
@@ -115,12 +115,17 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
 
         } else {
             aa = new JossoAuthenticationAssertionImpl(response.getID(),
-                response.getSessionIndex(), toSubject(response.getSubject()));
+                response.getSessionIndex(), toSubject(response.getSubject(), response.getSubjectAttributes()));
 
-            // Add an alternative identifier to local state:
-
+            // Add an alternative identifier to local state (discard old values):
+            state.getLocalState().removeAlternativeIds("ssoSessionId");
             state.getLocalState().addAlternativeId("ssoSessionId", response.getSessionIndex());
+
+            state.getLocalState().removeAlternativeIds("assertionId");
             state.getLocalState().addAlternativeId("assertionId", aa.getId());
+
+            if (logger.isDebugEnabled())
+                logger.debug("Storing Assertion ID/Session ID " + aa.getId() + "/" + response.getSessionIndex());
 
             // We've issued a new assertion, record some stats
             mediator.increaseUnresolvedAssertionsCount();
@@ -157,10 +162,10 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         }
 
         // Validate in-reply-to
-        if (response.getInReplayTo() == null ||
+        if (response.getInReplayTo() != null &&
                 !request.getID().equals(response.getInReplayTo())) {
             throw new JossoException("Response is not a reply to " +
-                    request.getID() + " ["+(response.getInReplayTo() == null ? "<null>" : response.getInReplayTo())+"]");
+                    request.getID() + " [" + response.getInReplayTo() + "]");
 
         }
 

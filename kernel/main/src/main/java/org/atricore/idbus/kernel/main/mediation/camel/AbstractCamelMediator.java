@@ -60,6 +60,7 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
     private String warningUrl;
 
     private String dashboardUrl;
+    private String errorBinding;
 
     protected CamelContext context;
 
@@ -383,6 +384,14 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     public void setDashboardUrl(String dashboardUrl) {
         this.dashboardUrl = dashboardUrl;
+    }
+
+    public String getErrorBinding() {
+        return errorBinding;
+    }
+
+    public void setErrorBinding(String errorBinding) {
+        this.errorBinding = errorBinding;
     }
 
     protected RouteBuilder createIdPRoutes(SPChannel SPChannel) throws Exception  {

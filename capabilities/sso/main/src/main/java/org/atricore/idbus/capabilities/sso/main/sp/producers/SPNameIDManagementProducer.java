@@ -233,18 +233,22 @@ public class SPNameIDManagementProducer extends SSOProducer {
 
                     for (EndpointType idpMnidEndpoint : idpSsoRole.getManageNameIDService()) {
 
-                        SSOBinding b = SSOBinding.asEnum(idpMnidEndpoint.getBinding());
-                        if (b.equals(preferredBinding))
-                            return idpMnidEndpoint;
+                        try {
+                            SSOBinding b = SSOBinding.asEnum(idpMnidEndpoint.getBinding());
+                            if (b.equals(preferredBinding))
+                                return idpMnidEndpoint;
 
-                        if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
-                            artEndpoint = idpMnidEndpoint;
+                            if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
+                                artEndpoint = idpMnidEndpoint;
 
-                        if (b.equals(SSOBinding.SAMLR2_POST))
-                            postEndpoint = idpMnidEndpoint;
+                            if (b.equals(SSOBinding.SAMLR2_POST))
+                                postEndpoint = idpMnidEndpoint;
 
-                        if (defaultEndpoint == null)
-                            defaultEndpoint = idpMnidEndpoint;
+                            if (defaultEndpoint == null)
+                                defaultEndpoint = idpMnidEndpoint;
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Ignoring unsupported binding " + idpMnidEndpoint.getBinding() + " for endpoint " + idpMnidEndpoint.getLocation());
+                        }
                     }
 
                     if (artEndpoint != null)

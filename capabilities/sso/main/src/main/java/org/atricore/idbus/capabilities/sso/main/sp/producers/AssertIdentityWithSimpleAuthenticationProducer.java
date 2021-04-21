@@ -63,6 +63,8 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    private UUIDGenerator sessionUuidGenerator = new UUIDGenerator(true);
+
     private static final Log logger = LogFactory.getLog(AssertIdentityWithSimpleAuthenticationProducer.class);
 
     public AssertIdentityWithSimpleAuthenticationProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
@@ -268,9 +270,6 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
             exchange.setOut(out);
 
-
-
-
         }
 
 
@@ -357,9 +356,13 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
-                        if (b.equals(SSOBinding.SAMLR2_SOAP))
-                            defaultEndpoint = idpSsoEndpoint;
+                        try {
+                            SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
+                            if (b.equals(SSOBinding.SAMLR2_SOAP))
+                                defaultEndpoint = idpSsoEndpoint;
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Ignoring unsupported binding " + idpSsoEndpoint.getBinding() + " for endpoint " + idpSsoEndpoint.getLocation());
+                        }
 
                     }
                     return defaultEndpoint;
@@ -499,11 +502,11 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SSOProducer 
         secCtx.setAccountLink(acctLink);
         secCtx.setRequester(requester);
         secCtx.setAuthnCtxClass(AuthnCtxClass.PASSWORD_AUTHN_CTX);
-        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(uuidGenerator.generateId(), secCtx);
+        SecurityToken<SPSecurityContext> token = new SecurityTokenImpl<SPSecurityContext>(sessionUuidGenerator.generateId(), secCtx);
 
         try {
             // Create new SSO Session
-            String ssoSessionId = ssoSessionManager.initiateSession(nameId.getName(), token);
+            String ssoSessionId = ssoSessionManager.initiateSession(nameId.getName(), token, null);
 
             // Update security context with SSO Session nameId
             secCtx.setSessionIndex(ssoSessionId);

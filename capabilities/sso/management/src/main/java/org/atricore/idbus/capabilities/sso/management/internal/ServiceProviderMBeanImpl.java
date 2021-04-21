@@ -123,7 +123,8 @@ public class ServiceProviderMBeanImpl extends AbstractProviderMBean implements S
             IdPChannel channel = (IdPChannel) serviceProvider.getChannel();
             SSOSessionManager mgr = channel.getSessionManager();
 
-            return mgr.getStatsCurrentSessions();
+            //return mgr.getStatsCurrentSessions();
+            return mgr.getSessionCount();
         } catch (Exception e) {
             logger.error("Cannot find SSO Sessions count");
             return -1;

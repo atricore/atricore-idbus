@@ -38,4 +38,5 @@ public interface IdentityArtifact<E> {
 
     void replaceContent(E newContent);
 
+    void setNested(IdentityArtifact nested);
 }

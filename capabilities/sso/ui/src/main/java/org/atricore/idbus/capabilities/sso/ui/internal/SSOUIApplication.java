@@ -48,8 +48,7 @@ public class SSOUIApplication extends BaseWebApplication {
     }
 
     @Override
-    protected void preInit() {
-        super.preInit();
+    protected void preInit() { super.preInit();
     }
 
     @Override
@@ -69,6 +68,12 @@ public class SSOUIApplication extends BaseWebApplication {
         addPageMount("ERROR/404", PageExpiredErrorPage.class);
         addPageMount("ERROR/SESSION", SessionExpiredPage.class);
         addPageMount("IDPS", SelectIdPPage.class);
+    }
+
+    @Override
+    public void refreshBranding() {
+        super.refreshBranding();
+
     }
 
     /**

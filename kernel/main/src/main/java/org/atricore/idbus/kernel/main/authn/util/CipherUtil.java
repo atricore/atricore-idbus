@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.kernel.main.authn.util;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.*;
@@ -30,13 +31,54 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
 public class CipherUtil {
+
+    private static final Random rnd = new SecureRandom();
+
+    /**
+     * Creates a base64 encoded string for the hashed value
+     *
+     * @param value
+     * @return
+     */
+    public static String createHash(String value, String hashAlgorithm) throws NoSuchAlgorithmException {
+
+        if (hashAlgorithm != null  && "BCRYPT".equalsIgnoreCase(hashAlgorithm)) {
+            // Set the cost to a fixed 12 for now.
+            return BCrypt.withDefaults().hashToString(12, value.toCharArray());
+        }
+
+        // calculate the hash and apply the encoding.
+        byte[] hash;
+        // Hash algorithm is optional
+        MessageDigest digest = MessageDigest.getInstance(hashAlgorithm);
+        hash = digest.digest(value.getBytes());
+        return CipherUtil.encodeBase64(hash);
+
+
+
+    }
+
+    /**
+     * Gets a new salt value
+     *
+     * @param length
+     * @return
+     */
+    public static String getNextSalt(int length) {
+        byte[] salt = new byte[length];
+        rnd.nextBytes(salt);
+        return CipherUtil.encodeBase64(salt);
+    }
 
     /**
      * This generates a 128 AES key.
@@ -72,7 +114,7 @@ public class CipherUtil {
     }
 
     /**
-     * Decrypts the given text using AES 
+     * Decrypts the given text using AES
      */
     public static String decryptAES(String base64text, String base64Key) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         byte[] key = decodeBase64 (base64Key);
@@ -91,7 +133,7 @@ public class CipherUtil {
     /**
      * Base64 encoding.  Charset ISO-8859-1 is assumed.
      */
-    public static String encodeBase64(byte[] bytes) throws UnsupportedEncodingException {
+    public static String encodeBase64(byte[] bytes) {
         byte[] enc = Base64.encodeBase64(bytes);
         return new String(enc);
     }
@@ -99,7 +141,7 @@ public class CipherUtil {
     /**
      * Base64 encoding.  Charset ISO-8859-1 is assumed.
      */
-    public static byte[] decodeBase64(String text) throws UnsupportedEncodingException {
+    public static byte[] decodeBase64(String text) {
         byte[] bin = Base64.decodeBase64(text.getBytes());
         return bin;
     }
@@ -139,7 +181,7 @@ public class CipherUtil {
      */
     public static void writeBase64Encoded(Writer writer, byte[] bytes) throws IOException {
         BufferedWriter bw = new BufferedWriter(writer);
-        
+
         byte[] enc = Base64.encodeBase64(bytes);
 	    char[] buf = new char[64];
 

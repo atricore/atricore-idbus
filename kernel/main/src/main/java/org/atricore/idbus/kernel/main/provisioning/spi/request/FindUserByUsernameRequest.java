@@ -30,6 +30,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class FindUserByUsernameRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -3039068098156498718L;
+
     private String username;
 
     public FindUserByUsernameRequest(String username) {

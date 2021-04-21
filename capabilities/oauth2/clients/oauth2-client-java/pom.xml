@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
         <artifactId>oauth2</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
     <artifactId>org.atricore.idbus.capabilities.oauth2.client</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Atricore IDBus :: Capability : Java OAuth2 Client</name>
 
@@ -41,17 +41,16 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.oauth2</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>1.5.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.oauth2</groupId>
             <artifactId>org.atricore.idbus.capabilities.oauth2.common</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>1.5.1-SNAPSHOT</version>
         </dependency>
 
-
-        <dependency>
+	<dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-bindings-soap</artifactId>
             <version>${cxf.version}</version>
@@ -105,7 +104,7 @@
                     <artifactId>jsr181</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+	</dependency>
     </dependencies>
 
     <build>
@@ -115,9 +114,6 @@
                 <version>2.2-beta-5</version>
                 <configuration>
                     <archive>
-                        <manifest>
-                            <mainClass>com.atricore.samples.oauth2.client.OAuth2Sample</mainClass>
-                        </manifest>
                         <manifestEntries>
                             <Class-Path>.</Class-Path>
                         </manifestEntries>
@@ -142,8 +138,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <maxmem>256M</maxmem>
                 </configuration>
             </plugin>

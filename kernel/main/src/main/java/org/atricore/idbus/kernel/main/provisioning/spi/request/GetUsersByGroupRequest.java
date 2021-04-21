@@ -27,6 +27,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class GetUsersByGroupRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -3139068098156498718L;
+
     private String group;
 
     public String getGroup() {

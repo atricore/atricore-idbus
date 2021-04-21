@@ -30,4 +30,6 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class ListGroupRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -3339068098156498718L;
+
 }

@@ -82,6 +82,23 @@
                   ref="samlr2-sign-response-action"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
 
+    <!-- Sign SAMLR2 Response Assertion Action -->
+    <bean name="samlr2-sign-response-assertion-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.sso.main.common.plans.actions.SignResponseAssertionAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-sign-response-assertion-action"
+                  ref="samlr2-sign-response-assertion-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Encrypt SAMLR2 Response Action -->
+    <bean name="samlr2-encrypt-response-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.sso.main.common.plans.actions.EncryptResponseContentAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-encrypt-response-action"
+                  ref="samlr2-encrypt-response-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+
     <!-- Initialize SAMLR2 SLO Request -->
     <bean name="samlr2-initialize-slo-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
         <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.sso.main.sp.plans.actions.InitializeLogoutRequestAction"/>

@@ -24,8 +24,13 @@ package org.atricore.idbus.capabilities.sso.main.common.plans.actions;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.AbstractSSOAssertionAction;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.sp.IDPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -39,6 +44,12 @@ public class SignAssertionAction extends AbstractSSOAssertionAction {
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
 
+
+        //ChannelConfiguration cfg = executionContext.getContextInstance().getVariable(VAR_CHANNEL_CONFIG);
+
+        //String signatureHash = cfg instanceof IDPChannelConfiguration ?
+        //        ((IDPChannelConfiguration) cfg).getSignatureHash() : ((SPChannelConfiguration) cfg).getSignatureHash();
+
         AssertionType assertion = (AssertionType) out.getContent();
         SamlR2Signer signer =
                 (SamlR2Signer) executionContext.getContextInstance().getTransientVariable(VAR_SAMLR2_SIGNER);
@@ -46,7 +57,7 @@ public class SignAssertionAction extends AbstractSSOAssertionAction {
         if (logger.isDebugEnabled())
             logger.debug("Signing assertion " + assertion.getID() + " with signer " + signer);
         
-        assertion = signer.sign(assertion);
+        assertion = signer.sign(assertion, "SHA256");
         out.replaceContent(assertion);
 
     }

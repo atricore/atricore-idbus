@@ -42,8 +42,8 @@
                 <value>samlr2-emitter-initialize-token-process-fragment</value>
                 <value>samlr2-emitter-build-authn-assertion-subject-process-fragment</value>
                 <value>samlr2-emitter-build-authn-assertion-content-info-process-fragment</value>
-                <value>samlr2-emitter-encrypt-assertion-attributes-process-fragment</value>
                 <value>samlr2-emitter-sign-assertion-process-fragment</value>
+                <value>samlr2-emitter-encrypt-assertion-attributes-process-fragment</value>
                 <value>samlr2-emitter-validate-assertion-process-fragment</value>
                 <value>samlr2-emitter-encrypt-assertion-process-fragment</value>
             </list>

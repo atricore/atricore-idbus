@@ -3,8 +3,6 @@ package org.ops4j.pax.web.service.jetty.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.SessionManager;
-import org.mortbay.jetty.servlet.HashSessionManager;
 import org.mortbay.jetty.servlet.SessionHandler;
 import org.ops4j.pax.web.service.jetty.spi.SessionHandlerBuilder;
 import org.ops4j.pax.web.service.spi.model.Model;
@@ -28,9 +26,11 @@ public class DefaultSessionHandlerBuilder implements SessionHandlerBuilder {
 
         if (LOG.isTraceEnabled())
             LOG.trace("Building Default SessionHandler ");
-        
+
         // Default JETTY Session Handler
         DefaultSessionManager sm = new DefaultSessionManager();
+        sm.setHttpOnly(true);
+        sm.setIdManager(new DefaultSessionIdManager());
         sm.setSecureCookies(secureCookies);
 
         return new SessionHandler(sm);

@@ -26,9 +26,10 @@ private static final Log LOG = LogFactory.getLog( JettyServerImpl.class );
 
     private final JettyServerWrapper m_server;
 
-    JettyServerImpl( final ServerModel serverModel, final SessionHandlerBuilder sessionHandlerBuilder)
+    JettyServerImpl( final ServerModel serverModel, final SessionHandlerBuilder sessionHandlerBuilder, final Properties kernelProps)
     {
-        m_server = new JettyServerWrapper(serverModel, sessionHandlerBuilder);
+        m_server = new JettyServerWrapper(serverModel, sessionHandlerBuilder, kernelProps);
+        m_server.setSendServerVersion(false);
     }
 
     public void start()
@@ -50,6 +51,7 @@ private static final Log LOG = LogFactory.getLog( JettyServerImpl.class );
         {
             LOG.error( e );
         }
+
     }
 
     public void stop()
@@ -92,6 +94,8 @@ private static final Log LOG = LogFactory.getLog( JettyServerImpl.class );
     {
         m_server.configureContext( attributes, sessionTimeout, sessionCookie, sessionUrl, workerName );
     }
+
+
 
     public void addServlet( final ServletModel model )
     {

@@ -50,6 +50,7 @@ public class CxfLogMessageBuilder implements LogMessageBuilder {
 
         // TODO !
 
+
         return "";
     }
 }

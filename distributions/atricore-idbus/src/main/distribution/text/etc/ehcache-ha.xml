@@ -2,6 +2,14 @@
 
     <diskStore path="${karaf.base}/data/ehcache"/>
 
+    <!-- ================================================================================ -->
+    <!--                       !!! WARNING !!!!                                           -->
+    <!--                                                                                  -->
+    <!-- MAKE SURE THAT ALL NODES HAVE THE HOSTNAME PROPERLY PUBLISHED IN THE DNS ENTRIES -->
+    <!-- RUN THE FOLLOWING UNIX COMMAND, AND USE THAT VALUE IN DNS ENTRIES: $ hostname    -->
+    <!--                                                                                  -->
+    <!-- ================================================================================ -->
+
     <!-- Discover Cache peers using RMI Multicast -->
     <cacheManagerPeerProviderFactory
             class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
@@ -11,19 +19,21 @@
             propertySeparator=","
             />
 
-    <!-- Discover Cache peers using JMS
-    <cacheManagerPeerProviderFactory
-            class="net.sf.ehcache.distribution.jms.JMSCacheManagerPeerProviderFactory"
-            properties="initialContextFactoryName=org.atricore.idbus.bundles.ehcache.distribution.jms.EHCacheActiveMQInitialContextFactory,
-                providerURL=tcp://localhost:61217,
-                replicationTopicConnectionFactoryBindingName=TopicConnectionFactory,
-                getQueueConnectionFactoryBindingName=QueueConnectionFactory,
-                replicationTopicBindingName=Topic/IDBUS/EHCacheReplication,
-                getQueueBindingName=Queue/IDBUS/EHCacheReplication,
-                listenToTopic=true"
-            propertySeparator=","
-            />
+    <!--
+    Discover Cache peers using RMI host:port list
+
+    NOTE: the port must match the cacheManagerPeerListenerFactory's  'port'  property on the target node
+    NOTE: the target node 'hostname' will be used, as informed by the remote peer.  Regardless of the host value in the URL
+
     -->
+    <!--cacheManagerPeerProviderFactory
+            class="org.atricore.idbus.bundles.ehcache.distribution.IdBusRMICacheManagerPeerProviderFactory"
+            properties="peerDiscovery=dynamic,
+                        remoteHosts=sso2.local:40001"
+            propertySeparator=","
+            /-->
+
+
 
     <!-- Listen Cache peers using RMI -->
     <cacheManagerPeerListenerFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
@@ -33,7 +43,7 @@
             eternal="false"
             timeToIdleSeconds="3600"
             timeToLiveSeconds="3600"
-            overflowToDisk="true"
+            overflowToDisk="false"
             diskPersistent="false">
         <!-- Replicate cache elements using JMS
         <cacheEventListenerFactory class="net.sf.ehcache.distribution.jms.JMSCacheReplicatorFactory"

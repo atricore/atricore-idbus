@@ -22,10 +22,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.EventListener;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -36,6 +33,8 @@ public class ConfigurableHttpServiceContext extends Context
 {
 
     private static final Log LOG = LogFactory.getLog( ConfigurableHttpServiceContext.class );
+
+    private static final String PROPERTY_DISPLAY_ERROR_DEBUG_INFO = "binding.http.displayErrorDebugInfo";
 
     /**
      * Context attributes.
@@ -53,7 +52,8 @@ public class ConfigurableHttpServiceContext extends Context
                         final Map<String, Object> attributes,
                         final String contextName,
                         final HttpContext httpContext,
-                        final AccessControlContext accessControllerContext )
+                        final AccessControlContext accessControllerContext,
+                        final Properties kernelProps)
     {
         super( server, "/" + contextName, sessionHandler, null, null, null);
 
@@ -64,7 +64,11 @@ public class ConfigurableHttpServiceContext extends Context
 
         _scontext = new SContext();
         setServletHandler( new HttpServiceServletHandler( httpContext ) );
-        setErrorHandler( new ErrorPageErrorHandler() );
+
+        ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
+        String displayErrorDebugInfo = kernelProps.getProperty(PROPERTY_DISPLAY_ERROR_DEBUG_INFO);
+        errorHandler.setShowStacks(displayErrorDebugInfo != null && Boolean.parseBoolean(displayErrorDebugInfo));
+        setErrorHandler(errorHandler);
     }
 
     @Override

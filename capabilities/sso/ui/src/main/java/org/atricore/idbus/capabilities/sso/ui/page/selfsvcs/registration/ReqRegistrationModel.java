@@ -8,8 +8,6 @@ import java.io.Serializable;
  */
 public class ReqRegistrationModel implements Serializable {
 
-    private String email;
-
     private String username;
 
     private String firstName;
@@ -61,13 +59,5 @@ public class ReqRegistrationModel implements Serializable {
 
     public void setCompany(String company) {
         this.company = company;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 }

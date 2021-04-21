@@ -1,7 +1,6 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOAttributePermission;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOAttributeType;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroupAttributeDefinition;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeDefinition;
@@ -9,6 +8,7 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttribu
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeValueDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeDefinitionDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeValueDAO;
+import org.atricore.idbus.kernel.main.provisioning.domain.AttributePermission;
 import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
 import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
@@ -19,7 +19,6 @@ import org.atricore.idbus.kernel.main.provisioning.impl.AbstractSchemaManager;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.orm.jdo.JdoObjectRetrievalFailureException;
-import org.springframework.transaction.IllegalTransactionStateException;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -34,8 +33,6 @@ import java.util.List;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOSchemaManager extends AbstractSchemaManager {
-    
-    private static final Log logger = LogFactory.getLog(JDOSchemaManager.class);
 
     private JDOUserAttributeDefinitionDAO usrAttrDefDao;
 
@@ -69,7 +66,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -91,24 +88,24 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (JdoObjectRetrievalFailureException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(attrDef.getId());
         } catch (JDOObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(attrDef.getId());
         } catch (NucleusObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(attrDef.getId());
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
 //    @Transactional
-    public void deleteUserAttribute(String oid) throws ProvisioningException {
+    public void deleteUserAttribute(String attributeId) throws ProvisioningException {
 
-        long id = Long.parseLong(oid);
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -121,24 +118,24 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             }
             transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
 //    @Transactional
-    public UserAttributeDefinition findUserAttributeById(String oid) throws ProvisioningException {
+    public UserAttributeDefinition findUserAttributeById(String attributeId) throws ProvisioningException {
 
-        long id = Long.parseLong(oid);
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -149,21 +146,21 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserAttributeNotFoundException(id);
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new UserAttributeNotFoundException(id);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -180,12 +177,12 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toUserAttribute(jdoUserAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new UserAttributeNotFoundException(name);
             throw new ProvisioningException(e);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -202,7 +199,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toUserAttributes(jdoUserAttributes);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -220,7 +217,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -242,24 +239,24 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (JdoObjectRetrievalFailureException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(attrDef.getId());
         } catch (JDOObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(attrDef.getId());
         } catch (NucleusObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(attrDef.getId());
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
 //    @Transactional
-    public void deleteGroupAttribute(String oid) throws ProvisioningException {
+    public void deleteGroupAttribute(String attributeId) throws ProvisioningException {
 
-        long id = Long.parseLong(oid);
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -272,24 +269,24 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             }
             transactionManager.commit(status);
         } catch (JdoObjectRetrievalFailureException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
 
 //    @Transactional
-    public GroupAttributeDefinition findGroupAttributeById(String oid) throws ProvisioningException {
+    public GroupAttributeDefinition findGroupAttributeById(String attributeId) throws ProvisioningException {
 
-        long id = Long.parseLong(oid);
+        long id = Long.parseLong(attributeId);
 
         DefaultTransactionDefinition txDef = new DefaultTransactionDefinition();
         TransactionStatus status = transactionManager.getTransaction(txDef );
@@ -300,21 +297,21 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupAttributeNotFoundException(id);
             throw new ProvisioningException(e);
         } catch (JdoObjectRetrievalFailureException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (NucleusObjectNotFoundException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new GroupAttributeNotFoundException(id);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -331,12 +328,12 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (IncorrectResultSizeDataAccessException e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             if (e.getActualSize() == 0)
                 throw new GroupAttributeNotFoundException(name);
             throw new ProvisioningException(e);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -353,7 +350,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             transactionManager.commit(status);
             return toGroupAttributes(jdoGroupAttributes);
         } catch (Exception e) {
-            try { transactionManager.rollback(status); } catch (IllegalTransactionStateException te) { logger.warn (e.getMessage()); }
+            transactionManager.rollback(status);
             throw new ProvisioningException(e);
         }
     }
@@ -373,6 +370,16 @@ public class JDOSchemaManager extends AbstractSchemaManager {
                                                     UserAttributeDefinition userAttribute) {
 
         jdoUserAttribute.setType(JDOAttributeType.fromValue(userAttribute.getType().toString()));
+        if(userAttribute.getUserPermission() != null)
+            jdoUserAttribute.setUserPermission(JDOAttributePermission.fromValue(userAttribute.getUserPermission().toString()));
+        else
+            jdoUserAttribute.setUserPermission(JDOAttributePermission.WRITE);
+
+        if(userAttribute.getAdminPermission() != null)
+            jdoUserAttribute.setAdminPermission(JDOAttributePermission.fromValue(userAttribute.getAdminPermission().toString()));
+        else
+            jdoUserAttribute.setAdminPermission(JDOAttributePermission.WRITE);
+
         jdoUserAttribute.setName(userAttribute.getName());
         jdoUserAttribute.setDescription(userAttribute.getDescription());
         jdoUserAttribute.setMultivalued(userAttribute.isMultivalued());
@@ -386,6 +393,17 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
         userAttribute.setId(jdoUserAttribute.getId() + "");
         userAttribute.setType(AttributeType.fromValue(jdoUserAttribute.getType().toString()));
+
+        if (jdoUserAttribute.getUserPermission() != null)
+            userAttribute.setUserPermission(AttributePermission.fromValue(jdoUserAttribute.getUserPermission().toString()));
+        else
+            userAttribute.setUserPermission(AttributePermission.WRITE);
+
+        if (jdoUserAttribute.getAdminPermission() != null)
+            userAttribute.setAdminPermission(AttributePermission.fromValue(jdoUserAttribute.getAdminPermission().toString()));
+        else
+            userAttribute.setAdminPermission(AttributePermission.WRITE);
+
         userAttribute.setName(jdoUserAttribute.getName());
         userAttribute.setDescription(jdoUserAttribute.getDescription());
         userAttribute.setMultivalued(jdoUserAttribute.getMultivalued());
@@ -406,7 +424,8 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
     protected JDOGroupAttributeDefinition toJDOGroupAttribute(GroupAttributeDefinition groupAttribute) {
         JDOGroupAttributeDefinition jdoGroupAttribute = toJDOGroupAttribute(new JDOGroupAttributeDefinition(), groupAttribute);
-        jdoGroupAttribute.setId(Long.parseLong(groupAttribute.getId()));
+        if (groupAttribute.getId() != null)
+            jdoGroupAttribute.setId(Long.parseLong(groupAttribute.getId()));
         return jdoGroupAttribute;
     }
 

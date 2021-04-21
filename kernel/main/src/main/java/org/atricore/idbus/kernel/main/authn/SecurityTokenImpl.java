@@ -33,6 +33,7 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
     private String serializedContent;
     private long issueInstant;
     private long expiresOn;
+    private boolean isAuthenticationGrant = false;
 
 
     public SecurityTokenImpl(String id, T content) {
@@ -65,22 +66,27 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
         this.expiresOn = -1;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public T getContent() {
         return content;
     }
 
+    @Override
     public String getNameIdentifier() {
         return nameIdentifier;
     }
 
+    @Override
     public String getSerializedContent() {
         return serializedContent;
     }
 
+    @Override
     public long getIssueInstant() {
         return issueInstant;
     }
@@ -105,12 +111,21 @@ public class SecurityTokenImpl<T> implements SecurityToken<T> {
         this.issueInstant = issueInstant;
     }
 
-
+    @Override
     public long getExpiresOn() {
         return expiresOn;
     }
 
     public void setExpiresOn(long expiresOn) {
         this.expiresOn = expiresOn;
+    }
+
+    @Override
+    public boolean isAuthenticationGrant() {
+        return isAuthenticationGrant;
+    }
+
+    public void setIsAuthenticationGrant(boolean isAuthenticationGrant) {
+        this.isAuthenticationGrant = isAuthenticationGrant;
     }
 }

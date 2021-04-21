@@ -421,6 +421,14 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
      * The member alias must match a MD Definition ID.
      */
     public MetadataEntry findEntityMetadata(String memberAlias) throws CircleOfTrustManagerException {
+        return findEntityMetadata(memberAlias, false);
+    }
+
+
+        /**
+         * The member alias must match a MD Definition ID.
+         */
+    public MetadataEntry findEntityMetadata(String memberAlias, boolean strict) throws CircleOfTrustManagerException {
 
         if (memberAlias == null)
             throw new NullPointerException("Member Alias cannot be null");
@@ -431,7 +439,7 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
         }
 
         MetadataDefinition md = definitions.get(member.getAlias());
-        return this.searchEntityDefinition(member, md, memberAlias);
+        return this.searchEntityDefinition(member, md, memberAlias, strict);
     }
 
     public MetadataEntry findEntityRoleMetadata(String memberAlias, String entityRole) throws CircleOfTrustManagerException {
@@ -524,9 +532,19 @@ public class CircleOfTrustManagerImpl implements CircleOfTrustManager, Initializ
                                                             String memberAlias)
             throws CircleOfTrustManagerException {
 
-            return member.getMetadataIntrospector().searchEntityDefinition(metadataDefinition, memberAlias);
+            return member.getMetadataIntrospector().searchEntityDefinition(metadataDefinition, memberAlias, false);
 
     }
+
+    protected MetadataEntry searchEntityDefinition(CircleOfTrustMemberDescriptor member,
+                                                   MetadataDefinition metadataDefinition,
+                                                   String memberAlias, boolean strict)
+            throws CircleOfTrustManagerException {
+
+        return member.getMetadataIntrospector().searchEntityDefinition(metadataDefinition, memberAlias, strict);
+
+    }
+
 
     protected MetadataEntry searchEntityRoleDefinition(CircleOfTrustMemberDescriptor member,
                                                                 MetadataDefinition metadataDefinition,

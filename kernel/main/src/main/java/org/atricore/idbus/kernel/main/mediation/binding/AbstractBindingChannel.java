@@ -34,6 +34,8 @@ public abstract class AbstractBindingChannel extends AbstractChannel implements 
 
     private FederatedLocalProvider provider;
 
+    private String defaultServiceURL;
+
     public FederatedLocalProvider getFederatedProvider() {
         return provider;
     }
@@ -46,4 +48,12 @@ public abstract class AbstractBindingChannel extends AbstractChannel implements 
         return provider;
     }
 
+    @Override
+    public String getDefaultServiceURL() {
+        return defaultServiceURL;
+    }
+
+    public void setDefaultServiceURL(String defaultServiceURL) {
+        this.defaultServiceURL = defaultServiceURL;
+    }
 }

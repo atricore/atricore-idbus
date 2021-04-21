@@ -58,6 +58,12 @@ public class ImpersonateUserAuthScheme  extends AbstractAuthenticationScheme {
         return new SimplePrincipal(getImpersonatedUsername(_inputCredentials));
     }
 
+    @Override
+    public Principal getInputPrincipal() {
+        return getPrincipal();
+    }
+
+
     public Principal getPrincipal(Credential[] credentials) {
         return new SimplePrincipal(getImpersonatedUsername(credentials));
     }

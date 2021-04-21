@@ -21,11 +21,10 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
-import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,9 +36,11 @@ public interface CredentialClaimsRequest extends ClaimsRequest {
 
     Channel getClaimsChannel();
 
-    Set<SSOPolicyEnforcementStatement> getSsoPolicyEnforcements();
+    Set<PolicyEnforcementStatement> getSsoPolicyEnforcements();
 
     String getSkin();
     
     String getPreauthenticationSecurityToken();
+
+    Map<String, Object> getParams();
 }

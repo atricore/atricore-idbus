@@ -52,11 +52,6 @@ public class DashboardPanel extends Panel {
         columns.add(new PropertyColumn<PartnerAppModel, String>(new Model<String>("Type"), "displayName") {
 
             @Override
-            public String getCssClass() {
-                return "gt-avatar";
-            }
-
-            @Override
             public void populateItem(Item<ICellPopulator<PartnerAppModel>> cellItem, String componentId,
                                      IModel<PartnerAppModel> model) {
 
@@ -75,6 +70,7 @@ public class DashboardPanel extends Panel {
 
         });
 
+        /*
         columns.add(new PropertyColumn<PartnerAppModel, String>(new Model<String>(" "), "displayName") {
             @Override
             public void populateItem(Item<ICellPopulator<PartnerAppModel>> cellItem, String componentId,
@@ -84,7 +80,7 @@ public class DashboardPanel extends Panel {
             }
 
         });
-
+        */
 
         DataTable dataTable = new DefaultDataTable<PartnerAppModel, String>("ssoApps", columns, new PartnerAppDataProvider(apps), 8);
 

@@ -47,6 +47,10 @@ public class DefaultSecurityTokenAuthenticator extends AbstractSecurityTokenAuth
 
     private static Log logger = LogFactory.getLog(DefaultSecurityTokenAuthenticator.class);
 
+    public DefaultSecurityTokenAuthenticator() {
+        super("DEFAULT");
+    }
+
     public boolean canAuthenticate(Object requestToken) {
         return false;
     }

@@ -24,17 +24,17 @@ package org.atricore.idbus.kernel.main.authn.scheme;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.Credential;
-import org.atricore.idbus.kernel.main.authn.CredentialKey;
-import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStoreKeyAdapter;
+import org.xmlsoap.schemas.ws._2004._09.policy.Policy;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -62,7 +62,10 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
 
     // The credentials provided by the user as input.
     protected Credential[] _inputCredentials;
+    protected Credential[] _knownCredentials;
     protected String _name;
+
+    protected Set<PolicyEnforcementStatement> _policies = new HashSet<PolicyEnforcementStatement>();
 
     public AbstractAuthenticationScheme() {
         _credentialProvider = doMakeCredentialProvider();
@@ -73,16 +76,19 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
      *
      * @param userCredentials
      */
+    @Override
     public void initialize(Credential[] userCredentials, Subject s) {
         _inputCredentials = userCredentials;
         _subject = s;
         _authenticated = false;
         _credentialProvider = doMakeCredentialProvider();
+        _policies.clear();
     }
 
     /**
      * Confirms the authentication process, populates the Subject with Principal and Credentials information.
      */
+    @Override
     public void confirm() {
 
         // Only add security information if authentication was successful.
@@ -99,7 +105,7 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
         Credential[] pc = null;
 
         // Populate the Subject
-        Set principals = _subject.getPrincipals();
+        Set<Principal> principals = _subject.getPrincipals();
         principals.add(principal);
 
         // Private credentials :
@@ -125,18 +131,36 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Cancels the authentication process.
      */
+    @Override
     public void cancel() {
         if (logger.isDebugEnabled())
             logger.debug("[cancel()], ok");
         setAuthenticated(false);
     }
 
+    @Override
     public Credential newCredential(String name, Object value) {
+        if (_credentialProvider == null)
+            return null;
+
         return _credentialProvider.newCredential(name, value);
     }
 
+    @Override
     public Credential newEncodedCredential(String name, Object value) {
+        if (_credentialProvider == null)
+            return null;
+
         return _credentialProvider.newEncodedCredential(name, value);
+    }
+
+    @Override
+    public Credential[] newCredentials(User user) {
+        if (_credentialProvider == null)
+            return null;
+
+        return _credentialProvider.newCredentials(user);
+
     }
 
     // ------------------------------------------------------------------------------
@@ -162,13 +186,18 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Utility to load credentials from the store.
      *
-     * @return the array of konw credentials associated with the authenticated Principal.
+     * @return the array of known credentials associated with the authenticated Principal.
      * @throws SSOAuthenticationException if an error occures while accessing the store.
      */
     protected Credential[] getKnownCredentials() throws SSOAuthenticationException {
         try {
-            CredentialKey key = getCredentialStoreKeyAdapter().getKeyForPrincipal(getPrincipal());
-            return _credentialStore.loadCredentials(key, this);
+            CredentialKey key = getCredentialStoreKeyAdapter().getKeyForPrincipal(getInputPrincipal());
+            _knownCredentials =  _credentialStore.loadCredentials(key, this);
+            if (_knownCredentials == null || _knownCredentials.length == 0) {
+                _policies.add(new AccountNotFoundAuthnPolicy(_inputCredentials));
+            }
+
+            return _knownCredentials;
         } catch (SSOIdentityException e) {
             throw new SSOAuthenticationException(e.getMessage(), e);
         }
@@ -182,21 +211,30 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
         return _credentialStoreKeyAdapter;
     }
 
+    @Override
     public void setCredentialStore(CredentialStore c) {
         _credentialStore = c;
     }
 
+    @Override
     public void setCredentialStoreKeyAdapter(CredentialStoreKeyAdapter a) {
         _credentialStoreKeyAdapter = a;
     }
 
-    public Set<SSOPolicyEnforcementStatement> getSSOPolicies() {
-        return _subject.getPrincipals(SSOPolicyEnforcementStatement.class);
+    @Override
+    public Set<PolicyEnforcementStatement> getSSOPolicies() {
+        Set<PolicyEnforcementStatement> policies = new HashSet<PolicyEnforcementStatement>();
+
+        policies.addAll(_policies);
+        policies.addAll(_subject.getPrincipals(PolicyEnforcementStatement.class));
+
+        return policies;
     }
 
     /**
      * Clones this authentication scheme.
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -225,11 +263,13 @@ public abstract class AbstractAuthenticationScheme implements AuthenticationSche
     /**
      * Obtains the Authentication Scheme name
      */
+    @Override
     public String getName() {
         return _name;
     }
 
 
+    @Override
     public int getPriority() {
         return priority;
     }

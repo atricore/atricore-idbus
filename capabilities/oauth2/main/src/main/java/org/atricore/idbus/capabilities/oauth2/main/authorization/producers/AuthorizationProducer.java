@@ -42,8 +42,10 @@ public class AuthorizationProducer extends AbstractCamelProducer<CamelMediationE
 
     protected void doProcessAuthorizationRequest(CamelMediationExchange exchange, AuthorizationRequestType authnRequest) throws Exception {
 
+        // TODO : Trigger claims request to obtain authorization
+
         // TODO : Trigger SSO Process by sending an authn request to SP-Binding endpoint.
-        // TODO : We need to diferenciated AUTHZ-ACS from SSO-ACS .... ?!
+        // TODO : We need to differentiate AUTHZ-ACS from SSO-ACS .... ?!
 
         SPInitiatedAuthnRequestType spAuthnReq = null;
 

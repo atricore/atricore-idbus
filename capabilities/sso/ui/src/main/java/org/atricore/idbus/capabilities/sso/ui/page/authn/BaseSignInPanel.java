@@ -26,12 +26,23 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.handler.RedirectRequestHandler;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
+import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
+import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
+import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
+import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Convenience Panel to be implemented by concrete sign-in panels.
@@ -68,6 +79,47 @@ public class BaseSignInPanel extends Panel {
         getRequestCycle().scheduleRequestHandlerAfterCurrent(new RedirectRequestHandler(claimsConsumerUrl));
     }
 
+    protected EndpointDescriptor resolveClaimsEndpoint(SSOCredentialClaimsRequest requestCredential, Set<String> authnCtxs) throws IdentityMediationException {
+
+        for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
+            // Look for unspecified claim endpoint using Artifacc binding
+            if (authnCtxs.contains(endpoint.getType()) &&
+                    SSOBinding.SSO_ARTIFACT.getValue().equals(endpoint.getBinding())) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Resolved claims endpoint " + endpoint);
+
+                return new EndpointDescriptorImpl(endpoint.getName(),
+                        endpoint.getType(),
+                        endpoint.getBinding(),
+                        requestCredential.getClaimsChannel().getLocation() + endpoint.getLocation(),
+                        endpoint.getResponseLocation() != null ?
+                                requestCredential.getClaimsChannel().getLocation() + endpoint.getResponseLocation() : null);
+
+            }
+        }
+
+        return null;
+
+    }
+
+    protected EndpointDescriptor resolve2FAClaimsEndpoint(SSOCredentialClaimsRequest requestCredential) throws IdentityMediationException {
+
+        Set<String> authnCtxs = new HashSet<String>();
+        authnCtxs.add(AuthnCtxClass.TELEPHONY_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.PERSONAL_TELEPHONY_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.HOTP_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.TIME_SYNC_TOKEN_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.MTFC_AUTHN_CTX.getValue());
+        authnCtxs.add(AuthnCtxClass.MTFU_AUTHN_CTX.getValue());
+
+        return resolveClaimsEndpoint(requestCredential, authnCtxs);
+
+
+    }
+
+
+
     protected EndpointDescriptor resolveClaimsEndpoint(SSOCredentialClaimsRequest requestCredential, AuthnCtxClass authnCtx) throws IdentityMediationException {
 
         for (IdentityMediationEndpoint endpoint : requestCredential.getClaimsChannel().getEndpoints()) {
@@ -103,4 +155,28 @@ public class BaseSignInPanel extends Panel {
         return null;
     }
 
+    protected void recordInfoAuditTrail(String action, ActionOutcome actionOutcome, String principal) {
+        BaseWebApplication app = (BaseWebApplication) getApplication();
+        IdentityProvider idp = app.getIdentityProvider();
+        if (idp != null) {
+            AbstractSSOMediator mediator = (AbstractSSOMediator) app.getIdentityProvider().getDefaultFederationService().getChannel().getIdentityMediator();
+            AuditingServer aServer = mediator.getAuditingServer();
+
+            Properties props = new Properties();
+            String providerName = app.getIdentityProvider().getName();
+            props.setProperty("provider", providerName);
+
+            String remoteAddr = ((HttpServletRequest) getWebRequest().getContainerRequest()).getRemoteAddr();
+            if (remoteAddr != null) {
+                props.setProperty("remoteAddress", remoteAddr);
+            }
+
+            String sessionId = getSession().getId();
+            if (sessionId != null) {
+                props.setProperty("httpSession", sessionId);
+            }
+
+            aServer.processAuditTrail(mediator.getAuditCategory(), "INFO", action, actionOutcome, principal, new Date(), null, props);
+        }
+    }
 }

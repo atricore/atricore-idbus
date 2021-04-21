@@ -40,4 +40,6 @@ public interface IdPChannel extends FederationChannel {
 
     Channel getProxy();
 
+    boolean isEnableProxyExtension();
+
 }

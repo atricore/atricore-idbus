@@ -99,15 +99,14 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
 
             } else if (content instanceof SSOCredentialClaimsRequest) {
 
-                logMsg.append("<SSOClaimsRequest>\n");
+                logMsg.append("SSOClaimsRequest>:");
                 logMsg.append(content.toString());
-                logMsg.append("\n</SSOClaimsRequest>");
 
 
             } else if (content instanceof SSOCredentialClaimsResponse) {
-                logMsg.append("<SSOClaimsResponse>\n");
+                logMsg.append(" SSOClaimsResponse:");
                 logMsg.append(content.toString());
-                logMsg.append("\n</SSOClaimsResponse>");
+
 
             } else if (content instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
                 logMsg.append(XmlUtils.marshalSamlR11Response((oasis.names.tc.saml._1_0.protocol.ResponseType) content, false));

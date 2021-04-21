@@ -69,7 +69,7 @@ if "%KARAF_DATA%" == "" (
 )
 
 set LOCAL_CLASSPATH=%CLASSPATH%
-set DEFAULT_JAVA_OPTS=-server -Xmx1024M -XX:MaxPermSize=512M -Dderby.system.home="%KARAF_DATA%\derby" -Dderby.storage.fileSyncTransactionLog=true -Dcom.sun.management.jmxremote
+set DEFAULT_JAVA_OPTS=-server -Xmx1024M -XX:MaxPermSize=512M -Dderby.connection.requireAuthentication=TRUE -Dderby.system.home="%KARAF_DATA%\derby" -Dderby.storage.fileSyncTransactionLog=true -Dcom.sun.management.jmxremote
 set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
 set DEFAULT_JAVA_DEBUG_OPTS=-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
 set DEFAULT_IDBUS_MONITORING_OPTS=-Dnewrelic.bootstrap_classpath=true -javaagent:"%KARAF_HOME%\newrelic\newrelic.jar"
@@ -220,6 +220,7 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     rmdir /S /Q %KARAF_BASE%\data\tmp\ 2> nul
     rmdir /S /Q %KARAF_BASE%\data\ehcache\ 2> nul
     rmdir /S /Q %KARAF_BASE%\data\cache\ 2> nul
+    mkdir %KARAF_BASE%\data\tmp\ 2> nul
 
 
     SET OPTS=-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true
@@ -254,7 +255,10 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     goto :RUN_LOOP
 
 :EXECUTE_CLEAN
-    rmdir /S /Q %KARAF_DATA%
+    rmdir /S /Q %KARAF_BASE%\data\tmp\ 2> nul
+    rmdir /S /Q %KARAF_BASE%\data\ehcache\ 2> nul
+    rmdir /S /Q %KARAF_BASE%\data\cache\ 2> nul
+    mkdir %KARAF_BASE%\data\tmp\ 2> nul
     shift
     goto :RUN_LOOP
 
@@ -263,7 +267,7 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
     rem Execute the Java Virtual Machine
     cd %KARAF_BASE%
-    "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Dmidpoint.home="%KARAF_BASE%\data\provisioning\midpoint" -Djava.io.tmpdir="%KARAF_BASE%\data\tmp" -Djava.endorsed.dirs="%JAVA_HOME%\jre\lib\endorsed;%JAVA_HOME%\lib\endorsed;%KARAF_HOME%\lib\endorsed" -Djava.ext.dirs="%JAVA_HOME%\jre\lib\ext;%JAVA_HOME%\lib\ext;%KARAF_HOME%\lib\ext" -Dkaraf.instances="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Dkaraf.data="%KARAF_DATA%" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" %MAIN% %ARGS%
+    "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Djava.io.tmpdir="%KARAF_BASE%\data\tmp" -Djava.endorsed.dirs="%JAVA_HOME%\jre\lib\endorsed;%JAVA_HOME%\lib\endorsed;%KARAF_HOME%\lib\endorsed" -Djava.ext.dirs="%JAVA_HOME%\jre\lib\ext;%JAVA_HOME%\lib\ext;%KARAF_HOME%\lib\ext" -Dkaraf.instances="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Dkaraf.data="%KARAF_DATA%" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" %MAIN% %ARGS%
 
 rem # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

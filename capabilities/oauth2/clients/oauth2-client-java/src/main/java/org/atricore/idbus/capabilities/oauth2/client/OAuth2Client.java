@@ -20,6 +20,8 @@ public class OAuth2Client implements ConfigurationConstants {
 
     protected AccessTokenRequestor requestor;
 
+    protected PasswordlessLinkClient pwdlessLinkClient;
+
     private boolean init;
 
     public OAuth2Client(String configPath) {
@@ -50,7 +52,17 @@ public class OAuth2Client implements ConfigurationConstants {
             requestor = new AccessTokenRequestor(
                     config.getProperty(CLIENT_ID),
                     config.getProperty(CLIENT_SECRET),
-                    config.getProperty(AUTHN_ENDPOINT));
+                    config.getProperty(AUTHN_ENDPOINT),
+                    config.getProperty(WSDL_LOCATION));
+
+            requestor.setLogMessages(Boolean.parseBoolean(config.getProperty(LOG_MESSAGES, "false")));
+
+            pwdlessLinkClient = new PasswordlessLinkClient(config.getProperty(CLIENT_ID),
+                    config.getProperty(CLIENT_SECRET),
+                    config.getProperty(PWDLESSLINK_ENDPOINT),
+                    config.getProperty(WSDL_LOCATION));
+
+            pwdlessLinkClient.setLogMessages(Boolean.parseBoolean(config.getProperty(LOG_MESSAGES, "false")));
 
             init = true;
         } catch (IOException e) {
@@ -66,6 +78,16 @@ public class OAuth2Client implements ConfigurationConstants {
         return requestor;
     }
 
+
+    public PasswordlessLinkClient getSendPasswordlessLinkClient() throws OAuth2ClientException {
+        if (!init) {
+            throw new OAuth2ClientException("OAuth2 client not initialized");
+        }
+
+        return pwdlessLinkClient;
+    }
+
+
     /**
      * Requests an authorization token for the given username and password.
      */
@@ -74,6 +96,31 @@ public class OAuth2Client implements ConfigurationConstants {
         try {
             String accessToken = getAccessTokenRequestor().requestTokenForUsernamePassword(usr, pwd);
             return accessToken;
+        } catch (OAuth2ClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OAuth2ClientException(e);
+        }
+    }
+
+
+    public void sendPasswordlessLink(String username, String targetSP) throws OAuth2ClientException {
+
+        try {
+            getSendPasswordlessLinkClient().sendPasswordlessLink(username, targetSP, null);
+        } catch (OAuth2ClientException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new OAuth2ClientException(e);
+        }
+    }
+
+    public void sendPasswordlessLink(String username, String targetSP, Properties properties) throws OAuth2ClientException {
+
+        try {
+            getSendPasswordlessLinkClient().sendPasswordlessLink(username, targetSP, properties);
+        } catch (OAuth2ClientException e) {
+            throw e;
         } catch (Exception e) {
             throw new OAuth2ClientException(e);
         }
@@ -221,6 +268,39 @@ public class OAuth2Client implements ConfigurationConstants {
     }
 
     /**
+     * Builds a pre-authentication Url for the given access token.
+     *
+     * This method calls the requestToken method.
+     *
+     * @oaran relayState as received with the pre-authn token request.
+     * @param accessToken oauth2 access token
+     */
+    public String buildIdPPreAuthnResponseUrlForSP(String relayState, String accessToken, String spAlias) throws OAuth2ClientException {
+
+        try {
+            String idpPreAuthn = config.getProperty(IDP_PREAUTHN_RESPONSE_ENDPOINT);
+
+            // TODO : Relay on SsoPreauthTokenSvcBinding in the future
+            String preauthUrl =
+                    String.format("%s?atricore_security_token=%s&scope=preauth-token",
+                            idpPreAuthn,
+                            URLEncoder.encode(accessToken, "UTF-8")
+                    );
+
+            if (relayState != null)
+                preauthUrl += "&relay_state=" + relayState;
+
+            if (spAlias != null)
+                preauthUrl += "&atricore_sp_alias=" + spAlias;
+
+            return preauthUrl;
+        } catch (UnsupportedEncodingException e) {
+            throw new OAuth2ClientException(e);
+        }
+
+    }
+
+    /**
      * Builds a pre-authentication Url for the given username and password.
      *
      * This method calls the requestToken method.
@@ -245,14 +325,13 @@ public class OAuth2Client implements ConfigurationConstants {
         }
     }
 
-
     protected Properties loadConfig() throws IOException, OAuth2ClientException {
 
         if (configPath == null)
             configPath = "/oauth2.properties";
 
         Properties props = new Properties();
-        InputStream is = getClass().getResourceAsStream("/oauth2.properties");
+        InputStream is = getClass().getResourceAsStream(configPath);
         if (is == null)
             throw new OAuth2ClientException("Configuration not found for " + configPath);
 

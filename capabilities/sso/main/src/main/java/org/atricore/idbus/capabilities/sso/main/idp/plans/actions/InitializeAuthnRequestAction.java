@@ -69,16 +69,29 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         RequestedAuthnContextType reqAuthnCtx = null;
 
         String securityToken = null;
+        Boolean rememberMe = null;
+        Boolean forceAuthn = false;
         if (ssoAuthnReq instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthnReq = (PreAuthenticatedIDPInitiatedAuthnRequestType) ssoAuthnReq;
             securityToken = preAuthnReq.getSecurityToken();
+            rememberMe = preAuthnReq.getRememberMe();
 
             // TODO : check if token must be resolved
 
             reqAuthnCtx = new RequestedAuthnContextType();
             reqAuthnCtx.getAuthnContextClassRef().add(preAuthnReq.getAuthnCtxClass());
+            forceAuthn = true;
             log.trace("Issuing SAML2 Authentication Request for Preauthenticated Token [" + securityToken  + "] and " +
                       "Authentication Context Class " + preAuthnReq.getAuthnCtxClass());
+        } else {
+            for (RequestAttributeType a : ssoAuthnReq.getRequestAttribute()) {
+                if (a.getName().equals("force_authn")) {
+                    forceAuthn = Boolean.valueOf(a.getValue());
+                } else if (a.getName().equals("authn_ctx_class")) {
+                    reqAuthnCtx = new RequestedAuthnContextType();
+                    reqAuthnCtx.getAuthnContextClassRef().add(a.getValue());
+                }
+            }
         }
         
         AuthnRequestType authn = (AuthnRequestType) out.getContent();
@@ -121,10 +134,10 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         // Scoping [optional]
 
         // ForceAuthn [optional] --> re-establish identity
-        authn.setForceAuthn(false);
+        authn.setForceAuthn(forceAuthn);
 
         // IsPassive [optional] --> automatic login!
-        authn.setIsPassive(ssoAuthnReq != null && ssoAuthnReq.isPassive());
+        authn.setIsPassive(ssoAuthnReq.isPassive());
 
         // AssertionConsumerServiceIndex [optional] --> from our springmetadata/endponit
         // AssertionConsumerServiceURL [optional] --> from our springmetadata/endpoint
@@ -136,24 +149,65 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
 
         SPSSODescriptorType destinationSPMetadata = (SPSSODescriptorType) entity.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().get(0);
 
-        IndexedEndpointType acEndpoint = null;
+        IndexedEndpointType defaultACSEndpoint = null;
+        IndexedEndpointType requestedACSEndpoint = null;
 
-        // select first ACS endpoint
-        acEndpoint = destinationSPMetadata.getAssertionConsumerService().get(0);
+
+        // Go through the metadata and select the ACS endpoint as follow:
+        // 1. Matches the requested ACS
+        // 2. Matches the requested protocol binding
+        // 3. Is the default ACS
+        // 4. Has the lower idx
+
+        String protocolBinding = ssoAuthnReq.getProtocolBinding();
+        String acsUrl = ssoAuthnReq.getAssertionConsumerServiceURL();
+        for (IndexedEndpointType ace : destinationSPMetadata.getAssertionConsumerService()) {
+
+            if (protocolBinding != null && protocolBinding.equals(ace.getBinding())) {
+                requestedACSEndpoint = ace;
+                if (logger.isDebugEnabled())
+                    logger.debug("Selected ACS endpoint [" + requestedACSEndpoint.getLocation() + "] based on protocol binding [" + protocolBinding + "] for " + entity.getEntityID());
+                break;
+            } else if (acsUrl != null) {
+                if (acsUrl.equals(ace.getLocation())) {
+                    requestedACSEndpoint = ace;
+                    if (logger.isDebugEnabled())
+                        logger.debug("Selected ACS endpoint (Location) [" + requestedACSEndpoint.getLocation() + "] based on ACS URL [" + acsUrl + "] for " + entity.getEntityID());
+                    break;
+                }
+
+            } else if (ace.getIsDefault() != null && ace.getIsDefault()) {
+                defaultACSEndpoint = ace;
+            } else if (defaultACSEndpoint == null) {
+                // Don't have a default, use the lower index ACS as default
+                defaultACSEndpoint = ace;
+            } else if ((defaultACSEndpoint.getIsDefault() == null || !defaultACSEndpoint.getIsDefault())) {
+                if (defaultACSEndpoint.getIndex() > ace.getIndex())
+                    defaultACSEndpoint = ace;
+            }
+
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Selected default ACS endpoint [" + defaultACSEndpoint.getLocation() + "] for " + entity.getEntityID());
+
+        if (requestedACSEndpoint == null)
+            requestedACSEndpoint = defaultACSEndpoint;
 
         if (logger.isTraceEnabled())
             logger.trace("Resolved ACS endpoint " +
-                    acEndpoint.getLocation() + "/" +
-                    acEndpoint.getBinding());
+                    requestedACSEndpoint.getLocation() + "/" +
+                    requestedACSEndpoint.getBinding() + " for " + entity.getEntityID());
 
-        assert acEndpoint != null : "Cannot resolve Assertion Consumer Service Endpoint for Destination SP : " + destinationSPMetadata.getID();
+        assert requestedACSEndpoint != null : "Cannot resolve Assertion Consumer Service Endpoint for Destination SP : " + destinationSPMetadata.getID();
 
-        authn.setAssertionConsumerServiceURL(acEndpoint.getLocation());
-        authn.setProtocolBinding(acEndpoint.getBinding()); 
+        authn.setAssertionConsumerServiceURL(requestedACSEndpoint.getLocation());
+        authn.setProtocolBinding(requestedACSEndpoint.getBinding());
 
         // Attach Security Token (in case any has been supplied)
         if (securityToken != null) {
             ((PreAuthenticatedAuthnRequestType) authn).setSecurityToken(securityToken);
+            ((PreAuthenticatedAuthnRequestType) authn).setRememberMe(rememberMe);
         }
 
         // AttributeConsumingServiceIndex [optional]
@@ -188,9 +242,13 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
             log.debug("Selected IdP channel " + idpChannel.getName());
 
         if (incomingEndpoint != null) {
-            incomingEndpointBinding  = SSOBinding.asEnum(incomingEndpoint.getBinding());
-            if (log.isTraceEnabled())
-                log.trace("Incomming endpoint " + incomingEndpoint);
+            try {
+                incomingEndpointBinding = SSOBinding.asEnum(incomingEndpoint.getBinding());
+                if (log.isTraceEnabled())
+                    log.trace("Incomming endpoint " + incomingEndpoint);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Ignoring unsupported binding " + incomingEndpoint.getBinding() + " for endpoint " + incomingEndpoint);
+            }
         }
 
         // Look for the ACS endpoint configured in the IdP channel
@@ -342,22 +400,28 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         } else {
 
             // Try to get SP Alias from request:
-            String spAlias = mediator.getPreferredSpAlias();
+            String preferredSpAlias = mediator.getPreferredSpAlias();
+            String spAlias = null;
+            String spId = null;
             CircleOfTrustManager cotManager = spChannel.getFederatedProvider().getCotManager();
 
             if (ssoAuthnReq != null) {
                 for (RequestAttributeType a : ssoAuthnReq.getRequestAttribute()) {
                     if (a.getName().equals("atricore_sp_id")) {
                         // get cot manager
-                        spDescr = cotManager.lookupMemberById(a.getValue());
+                        spId = a.getValue();
+                        spDescr = cotManager.lookupMemberById(spId);
                         break;
                     }
 
                     if (a.getName().equals("atricore_sp_alias")) {
-                        String decodedAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
+
+                        spAlias = a.getValue();
                         spDescr = cotManager.lookupMemberByAlias(a.getValue());
-                        if (spDescr == null)
-                            spDescr = cotManager.lookupMemberByAlias(decodedAlias);
+                        if (spDescr == null) {
+                            spAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
+                            spDescr = cotManager.lookupMemberByAlias(spAlias);
+                        }
                         break;
                     }
 
@@ -365,13 +429,19 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                 }
             }
 
-            if (spDescr == null)
-                spDescr = cotManager.lookupMemberByAlias(spAlias);
-
+            if (spDescr == null) {
+                spDescr = cotManager.lookupMemberByAlias(preferredSpAlias);
+            }
             if (logger.isTraceEnabled())
-                logger.trace("Using Preferred SP Alias " + spAlias);
+                logger.trace("Using Preferred SP Alias " + preferredSpAlias);
 
             if (spDescr == null) {
+
+                String sp = spId;
+                if (sp == null) sp = spAlias;
+                if (sp == null) sp = preferredSpAlias;
+
+                logger.error("Cannot find SP for alias or id " + sp + " SP Channel " + spChannel.getName());
                 throw new SSOException("Cannot find SP for AuthnRequest ");
             }
 
@@ -379,7 +449,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("Resolved SP " + (spDescr != null ? spDescr.getAlias() : "NULL"));
+            logger.debug("Resolved SP (SP Channel:"+spChannel.getName()+") " + (spDescr != null ? spDescr.getAlias() : "NULL"));
 
         return spDescr;
     }

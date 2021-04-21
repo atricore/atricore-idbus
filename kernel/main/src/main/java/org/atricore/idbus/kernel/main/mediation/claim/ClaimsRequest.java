@@ -4,6 +4,7 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  */
@@ -20,6 +21,8 @@ public interface ClaimsRequest extends Serializable {
     Channel getIssuerChannel();
 
     IdentityMediationEndpoint getIssuerEndpoint();
+
+    Locale getLocale();
 
 
 }

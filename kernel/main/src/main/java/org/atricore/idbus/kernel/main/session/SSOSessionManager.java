@@ -31,6 +31,7 @@ import org.atricore.idbus.kernel.main.session.service.SSOSessionStats;
 import org.atricore.idbus.kernel.main.store.session.SessionStore;
 
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * SSO Session Manager Business interface.
@@ -48,21 +49,12 @@ public interface SSOSessionManager extends java.io.Serializable {
     void setSecurityDomainName(String securityDomainName);
 
     /**
-     * Initiates a new session given an assertion. The session id is returned.
-     *
-     * @return the new session identifier.
-     * @throws TooManyOpenSessionsException if the number of open sessions is exceeded.
-     */
-    String initiateSession(String username)
-            throws SSOSessionException, TooManyOpenSessionsException;
-
-    /**
      * Initiates a new session given a security token. The session id is returned.
      *
      * @return the new session identifier.
      * @throws TooManyOpenSessionsException if the number of open sessions is exceeded.
      */
-    String initiateSession(String username, SecurityToken securityToken)
+    String initiateSession(String username, SecurityToken securityToken, SSOSessionContext ctx)
             throws SSOSessionException, TooManyOpenSessionsException;
 
     /**
@@ -72,7 +64,7 @@ public interface SSOSessionManager extends java.io.Serializable {
      * @return the new session identifier.
      * @throws TooManyOpenSessionsException if the number of open sessions is exceeded.
      */
-    String initiateSession(String username, SecurityToken securityToken, int sessionTimeout)
+    String initiateSession(String username, SecurityToken securityToken, SSOSessionContext ctx, int sessionTimeout)
             throws SSOSessionException, TooManyOpenSessionsException;
 
 

@@ -55,6 +55,10 @@ public class JDOUser implements Serializable {
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
     private Boolean preventNewSession;
+    private Date lastAuthentication;
+    private Date accountCreationDate;
+    private Date accountModificationDate;
+    private Integer failedLogins;
 
 //<--- Security Password---->
     private Boolean allowUserToChangePassword;
@@ -63,6 +67,7 @@ public class JDOUser implements Serializable {
     private Date passwordExpirationDate;
     private Boolean notifyPasswordExpiration;
     private Integer daysBeforeExpiration;
+    private Date lastPasswordChangeDate;
 
 //<--- Security Set Password---->
     private String userPassword;
@@ -71,14 +76,11 @@ public class JDOUser implements Serializable {
     private Boolean emailNewPasword;
     private String salt;
 
-//<--- Access Control ---->
+    //<--- Access Control ---->
     private JDOAcl[] acls;
 
 //<--- Extended Attributes ---->
     private JDOUserAttributeValue[] attrs;
-
-//<--- Provisioning Attributes ---->
-    private String changeLog; //
 
     public Long getId() {
         return id;
@@ -328,6 +330,38 @@ public class JDOUser implements Serializable {
         this.accountExpirationDate = accountExpirationDate;
     }
 
+    public Date getLastAuthentication() {
+        return lastAuthentication;
+    }
+
+    public void setLastAuthentication(Date lastAuthentication) {
+        this.lastAuthentication = lastAuthentication;
+    }
+
+    public Date getAccountCreationDate() {
+        return accountCreationDate;
+    }
+
+    public void setAccountCreationDate(Date accountCreationDate) {
+        this.accountCreationDate = accountCreationDate;
+    }
+
+    public Date getAccountModificationDate() {
+        return accountModificationDate;
+    }
+
+    public void setAccountModificationDate(Date accountModificationDate) {
+        this.accountModificationDate = accountModificationDate;
+    }
+
+    public Integer getFailedLogins() {
+        return failedLogins;
+    }
+
+    public void setFailedLogins(Integer failedLogins) {
+        this.failedLogins = failedLogins;
+    }
+
     public Boolean isLimitSimultaneousLogin() {
         return limitSimultaneousLogin;
     }
@@ -432,6 +466,14 @@ public class JDOUser implements Serializable {
         this.daysBeforeExpiration = daysBeforeExpiration;
     }
 
+    public Date getLastPasswordChangeDate() {
+        return lastPasswordChangeDate;
+    }
+
+    public void setLastPasswordChangeDate(Date lastPasswordChangeDate) {
+        this.lastPasswordChangeDate = lastPasswordChangeDate;
+    }
+
     public String getUserPassword() {
         return userPassword;
     }
@@ -486,14 +528,6 @@ public class JDOUser implements Serializable {
 
     public void setAcls(JDOAcl[] acls) {
         this.acls = acls;
-    }
-
-    public String getChangeLog() {
-        return changeLog;
-    }
-
-    public void setChangeLog(String changeLog) {
-        this.changeLog = changeLog;
     }
 
     @Override

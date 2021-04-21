@@ -8,6 +8,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using System.Configuration;
 using Atricore.OAuth2Protocol;
+using Atricore.OAuth2Protocol.AccessTokenRequestor;
 
 
 namespace Atricore.OAuth2Client
@@ -15,7 +16,9 @@ namespace Atricore.OAuth2Client
     public class OAuth2Client
     {
 
-        private OAuth2Protocol.AccessTokenRequestor.OAuthPortTypeClient client;
+        private OAuthPortTypeClient client;
+
+        private OAuthPortTypeClient pwdlessClient;
 
         private String clientId;
 
@@ -24,6 +27,9 @@ namespace Atricore.OAuth2Client
         public void init()
         {
             string authorizationServerEndpoint = ConfigurationManager.AppSettings["authorizationServerEndpoint"];
+
+            string pwdlessAuthnServerEndpoint = ConfigurationManager.AppSettings["passworldessAuthnServerEndpoint"];
+
             clientId = ConfigurationManager.AppSettings["clientId"];
             clientSecret = ConfigurationManager.AppSettings["clientSecret"];
             string endpointTransportGuarantee = ConfigurationManager.AppSettings["endpointTransportGuarantee"];
@@ -41,8 +47,10 @@ namespace Atricore.OAuth2Client
             messageElement.MessageVersion = MessageVersion.CreateVersion(EnvelopeVersion.Soap11, AddressingVersion.None);
             CustomBinding binding = new CustomBinding(messageElement, transportElement);
             EndpointAddress endpoint = new EndpointAddress(new Uri(authorizationServerEndpoint));
+            EndpointAddress pwdlessEndpoint = new EndpointAddress(new Uri(pwdlessAuthnServerEndpoint));
 
-            client = new OAuth2Protocol.AccessTokenRequestor.OAuthPortTypeClient(binding, endpoint);
+            client = new OAuthPortTypeClient(binding, endpoint);
+            pwdlessClient = new OAuthPortTypeClient(binding, pwdlessEndpoint);
 
             if (disableCertificateValidation)
                 System.Net.ServicePointManager.ServerCertificateValidationCallback = ((sender, certificate, chain, sslPolicyErrors) => true);
@@ -50,12 +58,12 @@ namespace Atricore.OAuth2Client
 
         public String requestToken(String usr, String pwd) 
         {
-            OAuth2Protocol.AccessTokenRequestor.AccessTokenRequestType atreq = new OAuth2Protocol.AccessTokenRequestor.AccessTokenRequestType();
+            AccessTokenRequestType atreq = new AccessTokenRequestType();
             atreq.clientId = clientId;
             atreq.clientSecret = clientSecret;
             atreq.username = usr;
             atreq.password = pwd;
-            OAuth2Protocol.AccessTokenRequestor.AccessTokenResponseType atrsp = new OAuth2Protocol.AccessTokenRequestor.AccessTokenResponseType();
+            AccessTokenResponseType atrsp = new AccessTokenResponseType();
             atrsp = client.AccessTokenRequest(atreq);
             String accessToken = atrsp.accessToken;
 
@@ -63,6 +71,58 @@ namespace Atricore.OAuth2Client
                 throw new OAuth2ClientException(atrsp.error + " : " + atrsp.error_description);
 
             return accessToken;
+        }
+
+        /**
+         *  Send a passwordless authentication message to the user.
+         *  
+         * @username user identifier
+         * @targetSP target service provider alias
+         */
+        public void sendPasswordlessLink(String username, String targetSP)
+        {
+
+            sendPasswordlessLink(username, targetSP, null);
+        }
+
+        /**
+         *  Send a passwordless authentication message to the user, specifying properties to be used to build the message.
+         *  
+         * @username user identifier
+         * @targetSP target service provider alias
+         * @properties additional properties
+         */
+        public void sendPasswordlessLink(String username, String targetSP, Dictionary<string, string> properties)
+        {
+            SendPasswordlessLinkRequestType pwdAuthnReq = new SendPasswordlessLinkRequestType();
+            pwdAuthnReq.clientId = clientId;
+            pwdAuthnReq.clientSecret = clientSecret;
+            pwdAuthnReq.username = username;
+            pwdAuthnReq.targetSP = targetSP;
+
+            if (properties != null)
+            {
+
+                TemplatePropertyType[] tProps = new  TemplatePropertyType[properties.Count];
+                int i = 0;
+                foreach (KeyValuePair<string, string> property in properties) 
+                {
+                    TemplatePropertyType tProp = new TemplatePropertyType();
+                    tProp.name = property.Key;
+                    tProp.values = new string[] { property.Value };
+                    tProps[i] = tProp;
+                    i++;
+                }
+
+                pwdAuthnReq.properties = tProps;
+            }
+
+            SendPasswordlessLinkResponseType pwdAutrhnRes = pwdlessClient.SendPasswordlessLinkRequest(pwdAuthnReq);
+
+            if (pwdAutrhnRes.statusCode == null || !pwdAutrhnRes.statusCode.Equals("200")) 
+            {
+                throw new OAuth2ClientException(pwdAutrhnRes.error + " : " + pwdAutrhnRes.error_description);
+            }
         }
 
         /**
@@ -127,15 +187,15 @@ namespace Atricore.OAuth2Client
         }
 
         /**
-                 * Builds a pre-authentication Url for the given username and password.
-                 *
-                 * This method calls the requestToken method.
-                 *
-                 * @oaran relayState as received with the pre-authn token request.
-                 * @param spAlias SAML SP ALias, null if no specific SP is required or known.
-                 * @param usr the username used to issue the access token
-                 * @param pwd the password used to issue the access token
-                 */
+         * Builds a pre-authentication Url for the given username and password.
+         *
+         * This method calls the requestToken method.
+         *
+         * @oaran relayState as received with the pre-authn token request.
+         * @param spAlias SAML SP ALias, null if no specific SP is required or known.
+         * @param usr the username used to issue the access token
+         * @param pwd the password used to issue the access token
+         */
         public String buildIdPInitPreAuthnUrlForToken(String accessToken, String spAlias)
         {
 

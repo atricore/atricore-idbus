@@ -26,20 +26,22 @@ import oasis.names.tc.saml._2_0.assertion.AttributeStatementType;
 import oasis.names.tc.saml._2_0.assertion.AttributeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
-import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
-import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.SamlR2AttributeProfileMapper;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenProcessingContext;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.springframework.context.ApplicationContext;
+import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
 import javax.security.auth.Subject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -57,133 +59,27 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSSOAssertionAct
         AssertionType assertion = (AssertionType) out.getContent();
 
         // Do we have a SSOUser ?
-        SecurityTokenProcessingContext stsCtx = (SecurityTokenProcessingContext) executionContext.getContextInstance().getTransientVariable(WSTConstants.VAR_EMISSION_CTX);
+        SecurityTokenProcessingContext stsCtx =
+                (SecurityTokenProcessingContext) executionContext.getContextInstance().getTransientVariable(WSTConstants.VAR_EMISSION_CTX);
+
+        SamlR2SecurityTokenEmissionContext samlCtx =
+                (SamlR2SecurityTokenEmissionContext) executionContext.getContextInstance().getVariable(RST_CTX);
+
         Subject s = (Subject) executionContext.getContextInstance().getVariable(WSTConstants.SUBJECT_PROP);
-        Set<SSOUser> ssoUsers = s.getPrincipals(SSOUser.class);
-        if (ssoUsers == null || ssoUsers.size() != 1)
-            throw new RuntimeException("Subject must contain a SSOUser principal");
 
-        SSOUser ssoUser = ssoUsers.iterator().next();
-        AttributeType attrPrincipal = new AttributeType();
-        attrPrincipal.setName(DCEPACAttributeDefinition.PRINCIPAL.getValue());
-        attrPrincipal.setNameFormat(AttributeNameFormat.URI.getValue());
-        attrPrincipal.getAttributeValue().add(ssoUser.getName());
+        String mapperName = samlCtx.getAttributeProfile();
+        SamlR2AttributeProfileMapper mapper = resolveMapper(mapperName);
 
-        // This will add SSO User properties as attribute statements.
-        List<AttributeType> attrProps = new ArrayList<AttributeType>();
-        if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
+        // Map subject to saml attributes
+        Collection<AttributeType> attrs = mapper.toAttributes(s, samlCtx);
 
-            // TODO : We could group some properties as multi valued attributes like, privileges!
-            for (SSONameValuePair property : ssoUser.getProperties()) {
-                AttributeType attrProp = new AttributeType();
-                attrProp.setName(SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + property.getName());
-                attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
-                attrProp.getAttributeValue().add(property.getValue());
-
-                attrProps.add(attrProp);
-            }
-        }
-
-        // Groups
-        Set<SSORole> ssoRoles = s.getPrincipals(SSORole.class);
-
-        // Additional tokens
-        List<AttributeType> attrTokens = new ArrayList<AttributeType>();
         for (SecurityToken otherToken : stsCtx.getEmittedTokens()) {
-            if (otherToken.getSerializedContent() != null &&
-                otherToken.getNameIdentifier() != null) {
-
-                // Token Value
-                {
-                    // This should be properly encoded !!
-                    AttributeType attrToken = new AttributeType();
-
-                    if (otherToken.getNameIdentifier() != null) {
-                        if (otherToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
-                            attrToken.setFriendlyName("OAUTH2");
-                        } else {
-                            attrToken.setFriendlyName(otherToken.getNameIdentifier());
-                        }
-
-                    }
-
-                    // Token by name identifier
-                    attrToken.setName(otherToken.getNameIdentifier());
-                    attrToken.setNameFormat(AttributeNameFormat.URI.getValue());
-                    attrToken.getAttributeValue().add(otherToken.getSerializedContent());
-
-                    attrTokens.add(attrToken);
-                }
-
-                // Token ID
-                {
-                    AttributeType attrTokenById = new AttributeType();
-
-                    if (otherToken.getNameIdentifier() != null) {
-                        if (otherToken.getNameIdentifier().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE)) {
-                            attrTokenById.setFriendlyName("OAUTH2_ID");
-                        } else {
-                            attrTokenById.setFriendlyName(otherToken.getNameIdentifier() + "_ID");
-                        }
-                    }
-
-                    // Token by name identifier
-                    attrTokenById.setName(otherToken.getNameIdentifier() + "_ID");
-                    attrTokenById.setNameFormat(AttributeNameFormat.URI.getValue());
-                    attrTokenById.getAttributeValue().add(otherToken.getId());
-
-                    attrTokens.add(attrTokenById);
-                }
-            } else {
-                logger.debug("Ignoring token " + otherToken.getNameIdentifier());
-            }
-
+            attrs.addAll(mapper.toAttributes(otherToken));
         }
-
-        AttributeType attrRole = new AttributeType();
-        // TODO : Make SAML Attribute profile configurable
-        attrRole.setName(DCEPACAttributeDefinition.GROUPS.getValue());
-        attrRole.setNameFormat(AttributeNameFormat.URI.getValue());
-        for(SSORole role : ssoRoles)
-            attrRole.getAttributeValue().add( role.getName() );
-
-        // SSO Enforced policies
-        // TODO : Can we use SAML Authn context information ?!
-        List<AttributeType> attrPolicies = new ArrayList<AttributeType>();
-        Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = s.getPrincipals(SSOPolicyEnforcementStatement.class);
-        for (SSOPolicyEnforcementStatement ssoPolicyEnforcement : ssoPolicyEnforcements) {
-            AttributeType attrPolicy = new AttributeType();
-
-            attrPolicy.setFriendlyName(ssoPolicyEnforcement.getName());
-            attrPolicy.setName(ssoPolicyEnforcement.getNs() + ":" + ssoPolicyEnforcement.getName());
-            attrPolicy.setNameFormat(AttributeNameFormat.URI.getValue());
-
-            if (ssoPolicyEnforcement.getValues().size() > 0) {
-                for (Object v : ssoPolicyEnforcement.getValues())
-                    attrPolicy.getAttributeValue().add(v);
-            }
-
-            attrPolicies.add(attrPolicy);
-        }
-
 
         // Create attribute statements
         AttributeStatementType attributeStatement = new AttributeStatementType();
-        attributeStatement.getAttributeOrEncryptedAttribute().add(attrRole);
-        attributeStatement.getAttributeOrEncryptedAttribute().add(attrPrincipal);
-
-        if (attrTokens.size() > 0)
-            for (AttributeType attrToken : attrTokens)
-                attributeStatement.getAttributeOrEncryptedAttribute().add(attrToken);
-
-        if (attrProps.size() > 0) {
-            for (AttributeType attrProp : attrProps)
-                attributeStatement.getAttributeOrEncryptedAttribute().add(attrProp);
-        }
-
-        if (attrPolicies.size() > 0)
-            for (AttributeType attrPolicy : attrPolicies)
-                attributeStatement.getAttributeOrEncryptedAttribute().add(attrPolicy);
+        attributeStatement.getAttributeOrEncryptedAttribute().addAll(attrs);
 
         // Assembly all
         assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().add( attributeStatement );

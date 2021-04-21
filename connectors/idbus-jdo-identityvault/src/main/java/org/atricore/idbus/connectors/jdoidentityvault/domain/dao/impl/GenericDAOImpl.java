@@ -36,6 +36,10 @@ public abstract class GenericDAOImpl<T, PK extends Serializable>
         return (T) getJdoTemplate().makePersistent(object);
     }
 
+    public Collection<T> saveAll(Collection<T> objects) {
+        return (Collection<T>) getJdoTemplate().makePersistentAll(objects);
+    }
+
     public void delete(PK id) {
         getJdoTemplate().deletePersistent(this.findById(id));
     }

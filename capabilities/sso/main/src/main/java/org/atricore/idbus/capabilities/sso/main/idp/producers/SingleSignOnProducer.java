@@ -18,26 +18,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-/*
- * Atricore IDBus
- *
- * Copyright (c) 2009, Atricore Inc.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
 
 package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
@@ -45,11 +25,11 @@ import oasis.names.tc.saml._1_0.assertion.AudienceRestrictionConditionType;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.assertion.SubjectType;
 import oasis.names.tc.saml._2_0.idbus.PreAuthenticatedAuthnRequestType;
+import oasis.names.tc.saml._2_0.idbus.SPEntryType;
+import oasis.names.tc.saml._2_0.idbus.SPListType;
 import oasis.names.tc.saml._2_0.idbus.SecTokenAuthnRequestType;
 import oasis.names.tc.saml._2_0.metadata.*;
-import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
-import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import oasis.names.tc.saml._2_0.protocol.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,16 +42,21 @@ import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsRequest;
 import org.atricore.idbus.capabilities.sso.main.claims.SSOCredentialClaimsResponse;
 import org.atricore.idbus.capabilities.sso.main.common.AbstractSSOMediator;
+import org.atricore.idbus.capabilities.sso.main.common.ChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.sso.main.idp.IdentityProviderConstants;
+import org.atricore.idbus.capabilities.sso.main.idp.SPChannelConfiguration;
 import org.atricore.idbus.capabilities.sso.main.idp.SSOIDPMediator;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.sso.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.sso.main.select.spi.EntitySelectorConstants;
+import org.atricore.idbus.capabilities.sso.main.sp.IDPChannelConfiguration;
+import org.atricore.idbus.capabilities.sso.main.sp.SSOSPMediator;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.SSOConstants;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.capabilities.sso.support.core.*;
@@ -79,20 +64,24 @@ import org.atricore.idbus.capabilities.sso.support.core.encryption.SamlR2Encrypt
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2SignatureValidationException;
 import org.atricore.idbus.capabilities.sso.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
 import org.atricore.idbus.capabilities.sso.support.metadata.SSOService;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.kernel.auditing.core.Action;
 import org.atricore.idbus.kernel.auditing.core.ActionOutcome;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel;
@@ -102,12 +91,10 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequest;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementRequestImpl;
 import org.atricore.idbus.kernel.main.mediation.policy.PolicyEnforcementResponse;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.*;
+import org.atricore.idbus.kernel.main.session.SSOSessionContext;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
-import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.atricore.idbus.kernel.planning.*;
@@ -115,6 +102,7 @@ import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
+import org.w3c.dom.Node;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenResponseType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestSecurityTokenType;
 import org.xmlsoap.schemas.ws._2005._02.trust.RequestedSecurityTokenType;
@@ -127,6 +115,8 @@ import java.math.BigInteger;
 import java.security.Principal;
 import java.util.*;
 
+import static org.atricore.idbus.capabilities.sts.main.WSTConstants.*;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SingleSignOnProducer.java 1359 2009-07-19 16:57:57Z sgonzalez $
@@ -135,7 +125,29 @@ public class SingleSignOnProducer extends SSOProducer {
 
     private static final Log logger = LogFactory.getLog(SingleSignOnProducer.class);
 
+    // JOSSO proxied attributes in JOSSO 2 profile
+    private static final String[] proxiedNames = {
+            "idpName",
+            "idpAlias",
+            "authnCtxClass",
+            "oasis_wss_oauth2_token_profile_1_1#OAUTH2.0",
+            "oasis_wss_oauth2_token_profile_1_1#RM_OAUTH2.0",
+            "atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0",
+            "atricore_wss_oidc_access_token_profile_1_1#JWT1.0",
+            "atricore_wss_oidc_id_token_profile_1_1#JWT1.0",
+            "urn:org:atricore:idbus:sso:sp:",
+            "org:atricore:idbus:sso:sp:",
+            "urn:atricore:org:wss:atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0",
+            "urn:atricore:org:wss:atricore_wss_oidc_access_token_profile_1_1#JWT1.0",
+            "urn:atricore:org:wss:atricore_wss_oidc_id_token_profile_1_1#JWT1.0",
+            "urn:atricore:org:wss:atricore_wss_oidc_authz_code_profile_1_1#OAUTH2.0_ID",
+            "urn:atricore:org:wss:atricore_wss_oidc_access_token_profile_1_1#JWT1.0_ID",
+            "urn:atricore:org:wss:atricore_wss_oidc_id_token_profile_1_1#JWT1.0_ID",
+    };
+
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
+
+    protected static final UUIDGenerator sessionUuidGenerator  = new UUIDGenerator(true);
 
     public SingleSignOnProducer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) throws Exception {
         super(endpoint);
@@ -149,7 +161,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
         // May be used later by HTTP-Redirect binding!
         AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
-        in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        //in.getMessage().getState().setAttribute("SAMLR2Signer", mediator.getSigner());
+        in.getMessage().getState().setAttribute("SAMLR2Signer-channel", channel.getName());
 
         long s = System.currentTimeMillis();
         String metric = mediator.getMetricsPrefix() + "/Sso/Transactions/";
@@ -254,7 +267,8 @@ public class SingleSignOnProducer extends SSOProducer {
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseFormat", idpInitiatedAuthnRequest.getPreferredResponseFormat());
 
-            CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
+            //CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
+            CircleOfTrustMemberDescriptor idp = ((FederationChannel) channel).getMember();
             logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
@@ -274,6 +288,14 @@ public class SingleSignOnProducer extends SSOProducer {
             // Get SPInitiated authn request, if any!
             IDPInitiatedAuthnRequestType ssoAuthnRequest =
                     (IDPInitiatedAuthnRequestType) ((CamelMediationMessage) exchange.getIn()).getMessage().getContent();
+
+            if (ssoAuthnRequest.getRequestAttribute() != null)
+                for (RequestAttributeType attr : ssoAuthnRequest.getRequestAttribute()) {
+                    if (attr.getName().equals(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR)) {
+                        in.getMessage().getState().setLocalVariable(
+                                "urn:org:atricore:idbus:sso:protocol:requestedidp", attr.getValue());
+                    }
+                }
 
             AuthnRequestType authnRequest = buildIdPInitiatedAuthnRequest(exchange, ssoAuthnRequest, idp, ed, (FederationChannel) channel);
 
@@ -304,12 +326,11 @@ public class SingleSignOnProducer extends SSOProducer {
     * This procedure will handle preauthenticated IdP-initiated (aka IdP unsolicited response) requests.
     */
     protected void doProcessPreAuthenticatedIDPInitiantedSSO(CamelMediationExchange exchange,
-                                                             PreAuthenticatedIDPInitiatedAuthnRequestType PreAuthIdpInitiatedAuthnRequest) throws SSOException {
+                                                             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthIdpInitiatedAuthnRequest) throws SSOException {
 
 
         logger.debug("Processing PreAuthenticated IDP Initiated Single Sign-On with " +
-                PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format"
-        );
+                preAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat() + " preferred Response Format");
 
         try {
 
@@ -320,17 +341,20 @@ public class SingleSignOnProducer extends SSOProducer {
             // Resolve target IDP for relaying the Authentication Request
             // ------------------------------------------------------
 
-            logger.debug("Received Security Token [" + PreAuthIdpInitiatedAuthnRequest.getSecurityToken() + "]");
+            if (logger.isDebugEnabled())
+                logger.debug("Received Security Token [" + preAuthIdpInitiatedAuthnRequest.getSecurityToken() + "]");
 
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseMode", "unsolicited");
 
             in.getMessage().getState().setLocalVariable(
                     "urn:org:atricore:idbus:sso:protocol:responseFormat",
-                    PreAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
+                    preAuthIdpInitiatedAuthnRequest.getPreferredResponseFormat());
 
-            CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
-            logger.debug("Using IdP " + idp.getAlias());
+            CircleOfTrustMemberDescriptor idp = ((FederationChannel) channel).getMember();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
             EndpointType idpSsoEndpoint = resolveIdpSsoEndpoint(idp);
@@ -345,7 +369,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // ------------------------------------------------------
             // Create PreAuthenticatedAuthnRequest using identity plan
             // ------------------------------------------------------
-            PreAuthenticatedAuthnRequestType preauthAuthnRequest = buildPreAuthIdPInitiatedAuthnRequest(exchange, idp, ed, (FederationChannel) channel);
+            PreAuthenticatedAuthnRequestType preauthAuthnRequest = buildPreAuthenticatedAuthnRequest(exchange, idp, ed, (FederationChannel) channel);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP
@@ -396,6 +420,8 @@ public class SingleSignOnProducer extends SSOProducer {
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
+        SPChannel spChannel = (SPChannel) channel;
+
         String responseMode = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseMode");
         String responseFormat = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseFormat");
 
@@ -411,6 +437,8 @@ public class SingleSignOnProducer extends SSOProducer {
         // Validate AuthnRequest
         validateRequest(authnRequest, in.getMessage().getRawContent(), in.getMessage().getState());
 
+        Locale locale = getLocaleFromAuthRequest(authnRequest);
+
         // -----------------------------------------------------------------------------
         // Keep track of request IDs
         // -----------------------------------------------------------------------------
@@ -422,20 +450,73 @@ public class SingleSignOnProducer extends SSOProducer {
         // Validate SSO Session
         // -----------------------------------------------------------------------------
         boolean isSsoSessionValid = false;
-        if (secCtx != null && secCtx.getSessionIndex() != null) {
+
+        if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Forcing authentication for request " + authnRequest.getID());
+
+            // Discard current SSO Session
+            isSsoSessionValid = false;
+            if (secCtx != null && secCtx.getSessionIndex() != null) {
+                sessionMgr.invalidate(secCtx.getSessionIndex());
+            }
+
+        } else if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
+            // This means that we MUST destroy any previous session, it's like 'forcing' authn
+
+            isSsoSessionValid = false;
+            if (secCtx != null && secCtx.getSessionIndex() != null) {
+                sessionMgr.invalidate(secCtx.getSessionIndex());
+            }
+
+        } else if (secCtx != null && secCtx.getSessionIndex() != null) {
+
             try {
                 sessionMgr.accessSession(secCtx.getSessionIndex());
                 isSsoSessionValid = true;
-
                 if (logger.isDebugEnabled())
                     logger.debug("SSO Session is valid : " + secCtx.getSessionIndex());
-
             } catch (NoSuchSessionException e) {
-
                 if (logger.isDebugEnabled())
                     logger.debug("SSO Session is not valid : " + secCtx.getSessionIndex() + " " + e.getMessage(), e);
-
             }
+
+            // Check with remote IdP
+            if (spChannel.isProxyModeEnabled()) {
+                // We need to check the session with the proxied IdP
+                try {
+
+                    // Send SP SSO Access Session, using SOAP Binding
+                    BindingChannel spBindingChannel = (BindingChannel) spChannel.getProxy();
+                    if (spBindingChannel == null) {
+                        logger.error("No SP Binding channel found for channel " + channel.getName());
+                        throw new SSOException("No proxy channel configured");
+                    }
+
+                    EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
+                    if (ed != null) {
+                        SPSessionHeartBeatResponseType resp = performIdPProxySessionHeartBeat(exchange, secCtx);
+                        if (resp.isValid()) {
+                            if(!isSsoSessionValid) {
+                                // Our session expired, but the remote one did not.
+                                logger.debug("Local session expired, but remote one did not");
+                                isSsoSessionValid = false;
+                            }
+                        } else {
+                            // Set local session to invalid!
+                            logger.debug("Remote session expired, invalidate current session");
+                            isSsoSessionValid = false;
+                        }
+                    }
+                } catch (SSOException e) {
+                    logger.error(e.getMessage(), e);
+                    isSsoSessionValid = false;
+                }
+                if (logger.isDebugEnabled())
+                    logger.debug("Proxy SSO Session is "+(isSsoSessionValid ? "" : "not" + " valid : ") + secCtx.getSessionIndex());
+            }
+
         }
 
         // IF SSO Session is not valid, create a new authn state object
@@ -450,52 +531,161 @@ public class SingleSignOnProducer extends SSOProducer {
             if (logger.isTraceEnabled())
                 logger.trace("Using existing AuthnState, if any");
 
+            // Clear endpoint information
             authnState = getAuthnState(exchange);
+            authnState.setCurrentIdConfirmationEndpoint(null);
+            authnState.setCurrentIdConfirmationEndpointTryCount(0);
+            authnState.setCurrentClaimsEndpoint(null);
+            authnState.setCurrentClaimsEndpointTryCount(0);
         }
 
         authnState.setAuthnRequest(authnRequest);
         authnState.setReceivedRelayState(relayState);
         authnState.setResponseMode(responseMode);
         authnState.setResponseFormat(responseFormat);
+        authnState.setLocale(locale);
 
-        if (authnRequest.getForceAuthn() != null && authnRequest.getForceAuthn()) {
+        in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+        in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
 
-            if (logger.isDebugEnabled())
-                logger.debug("Forcing authentication for request " + authnRequest.getID());
-
-            isSsoSessionValid = false;
-            // Discard current SSO Session
-        }
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state", authnState);
 
         if (!isSsoSessionValid) {
-
-            SPChannel spChannel = (SPChannel) channel;
 
             // ------------------------------------------------------
             // Handle proxy mode
             // ------------------------------------------------------
             if (spChannel.isProxyModeEnabled()) {
 
-                Channel proxyChannel = spChannel.getProxy();
+                // If this is a pre-authn request, the target IdP must be a local federated provider!
+                if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
 
-                EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
+                    // SP Proxy (connected to internal IdP)
+                    IdPChannel idpChannelProxy = null;
+                    BindingChannel bChannel = (BindingChannel) spChannel.getProxy();
+                    ServiceProvider spProxy = (ServiceProvider) bChannel.getProvider();
+                    FederationService spProxySvc = spProxy.getDefaultFederationService();
 
-                logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
-                        proxyEndpoint.getLocation());
+                    if (logger.isTraceEnabled())
+                        logger.trace("Processing PreAuthenticatedAuthnRequest as proxy: " +
+                                "binding-channel ["+ bChannel.getName()+"] " +
+                                "sp-proxy [" + spProxy.getName() + "] " +
+                                "sp-proxy-svc [" + spProxySvc.getName() + "]");
 
-                SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest);
+                    // Internal/Proxied IdP
+                    IdentityProvider idp = null;
+                    String idpAlias = ((SSOSPMediator) bChannel.getIdentityMediator()).getPreferredIdpAlias();
 
-                in.getMessage().getState().setLocalVariable(
-                        "urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
+                    // Look for the target IdP in an overridden channel
+                    for (FederationChannel fChannel : spProxySvc.getOverrideChannels()) {
+                        if (fChannel.getTargetProvider() == null) {
+                            logger.error("Channel MUST have a target provider " + fChannel.getName());
+                            continue;
+                        }
 
-                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
-                        authnProxyRequest,
-                        "AuthnProxyRequest",
-                        relayState,
-                        proxyEndpoint,
-                        in.getMessage().getState()));
+                        FederatedProvider fp = fChannel.getTargetProvider();
 
-                exchange.setOut(out);
+                        for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
+                            if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
+                                if (fp instanceof IdentityProvider) {
+                                    idp = (IdentityProvider) fp;
+                                    idpChannelProxy = (IdPChannel) fChannel;
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Found Target IdP [" + idp.getName() + "] for SP Proxy [" +
+                                                spProxy.getName() + "] in overridden channel [" + idpChannelProxy.getName() + "]");
+                                    break;
+                                } else {
+                                    logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                    throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                }
+
+                            }
+                        }
+
+                        if (idp != null)
+                            break;
+                    }
+
+
+                    // Look for target IdP in default channel:
+                    if (idp == null) {
+                        for (FederatedProvider fp : spProxySvc.getChannel().getTrustedProviders()) {
+                            // Default SP Channel on trusted provider, MUST be a local IdP
+
+                            for (CircleOfTrustMemberDescriptor member : fp.getAllMembers()) {
+                                if (member.getAlias() != null && member.getAlias().equals(idpAlias)) {
+                                    if (fp instanceof IdentityProvider) {
+                                        idp = (IdentityProvider) fp;
+                                        idpChannelProxy = (IdPChannel) spProxySvc.getChannel();
+                                        if (logger.isDebugEnabled())
+                                            logger.debug("Found Target IdP [" + idp.getName() + "] for SP Proxy [" +
+                                                    spProxy.getName() + "] in  default channel [" + idpChannelProxy.getName() + "]");
+                                        break;
+                                    } else {
+                                        logger.error("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                        throw new SSOException("Preferred IdP " + idpAlias + " is not local, cannot use Proxied pre-authn requests");
+                                    }
+
+                                }
+                            }
+
+                            if (idp != null)
+                                break;
+                        }
+
+                    }
+
+                    // Resolve IDP init endpoint
+                    EndpointDescriptor proxyEndpoint = resolveIDPInitiatedSSOProxyEndpointDescriptor(exchange, spProxy, idp);
+
+                    // Send IdP initiated pre-authn request (using proxy SP as response-to
+                    PreAuthenticatedIDPInitiatedAuthnRequestType authnProxyRequest = buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(
+                            exchange,
+                            idpChannelProxy.getMember(),  // Use IDP channel alias!
+                            (PreAuthenticatedAuthnRequestType) authnRequest);
+
+                    in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
+                    in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:IDPInitiatedAuthnRequest", authnProxyRequest);
+
+                    out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                            authnProxyRequest,
+                            "PreAuthenticatedIDPInitiatedAuthnRequest",
+                            relayState,
+                            proxyEndpoint,
+                            in.getMessage().getState()));
+
+                    exchange.setOut(out);
+                    return;
+
+                } else {
+
+                    Channel proxyChannel = spChannel.getProxy();
+                    EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
+
+                    logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
+                            proxyEndpoint.getLocation());
+
+                    // Get requested IDP and clear the variable
+                    SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest,
+                            (String) in.getMessage().getState().getLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp"));
+                    in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
+                    in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
+
+
+                    out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                            authnProxyRequest,
+                            "AuthnProxyRequest",
+                            relayState,
+                            proxyEndpoint,
+                            in.getMessage().getState()));
+
+                    exchange.setOut(out);
+                    return;
+                }
+
+
             } else {
                 // ------------------------------------------------------------------------------
                 // Handle Invalid SSO Session
@@ -519,17 +709,14 @@ public class SingleSignOnProducer extends SSOProducer {
                     EndpointDescriptor ed = resolveSpAcsEndpoint(exchange, authnRequest);
 
                     ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
-
-                    out.setMessage(new MediationMessageImpl(response.getID(),
-                            response, "Response", relayState, ed, in.getMessage().getState()));
-
-                    exchange.setOut(out);
+                    sendSaml2Response(exchange, relayState, response, ed);
                     return;
 
                 }
 
                 // TODO : Use a plan authnreq to claimsreq
-                logger.debug("Selected claims endpoint : " + claimEndpoint);
+                if (logger.isDebugEnabled())
+                    logger.debug("Selected claims endpoint : " + claimEndpoint);
 
                 // Create Claims Request
                 SSOCredentialClaimsRequest claimsRequest = null;
@@ -543,6 +730,8 @@ public class SingleSignOnProducer extends SSOProducer {
                             claimChannel,
                             uuidGenerator.generateId(),
                             preAuthnRequest.getSecurityToken());
+                    if (preAuthnRequest.getRememberMe() != null && preAuthnRequest.getRememberMe())
+                        claimsRequest.getParams().put("remember_me", "true");
                 } else {
                     claimsRequest = new SSOCredentialClaimsRequest(
                             authnRequest.getID(),
@@ -552,14 +741,52 @@ public class SingleSignOnProducer extends SSOProducer {
                             uuidGenerator.generateId());
                 }
 
+                if (locale != null)
+                    claimsRequest.setLocale(locale);
+
                 // Send our state ID as relay
                 claimsRequest.setRelayState(mediationState.getLocalState().getId());
 
                 // Send SP relay state
                 claimsRequest.setTargetRelayState(in.getMessage().getRelayState());
 
-                if (authnRequest.getIssuer() != null)
+                if (authnRequest.getIssuer() != null) {
                     claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
+                }
+
+                // Proxy extensions override default issuer:
+                if (authnRequest.getExtensions() != null) {
+                    // We have extensions:
+                    oasis.names.tc.saml._2_0.protocol.ExtensionsType ext = authnRequest.getExtensions();
+                    List<Object> any = ext.getAny();
+                    if(any != null)
+                        for (Object o : any) {
+                            if (o instanceof JAXBElement) {
+                                JAXBElement e = (JAXBElement) o;
+                                if (e.getValue() instanceof SPListType) {
+                                    SPListType spList = (SPListType) e.getValue();
+
+                                    if (spList != null && spList.getSPEntry() != null && spList.getSPEntry().size() > 0) {
+
+                                        SPEntryType sp = spList.getSPEntry().get(0);
+                                        String providerId = sp.getProviderID();
+
+                                        if (spList.getSPEntry().size() > 1)
+                                            logger.error("Too many SPs listed, using first " + providerId);
+
+                                        if (providerId != null) {
+                                            if (logger.isDebugEnabled())
+                                                logger.debug("Overriding SP alis with extension " + providerId);
+                                            claimsRequest.setSpAlias(providerId);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                }
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Sending SP Alias with claims request [" + claimsRequest.getId() + "] " + claimsRequest.getSpAlias() != null ? claimsRequest.getSpAlias() : "NULL");
 
                 // Set requested authn class
                 claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
@@ -608,18 +835,29 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx.setMember(resolveProviderDescriptor(authnRequest.getIssuer()));
             // TODO !!! : securityTokenEmissionCtx.setRoleMetadata(null);
             authnState.setAuthnRequest(authnRequest);
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
+
             securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(secCtx.getSessionIndex());
             securityTokenEmissionCtx.setSsoSession(sessionMgr.getSession(secCtx.getSessionIndex()));
             securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
             securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
             securityTokenEmissionCtx.setSpAcs(ed);
+            securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
+            securityTokenEmissionCtx.setSpChannelConfig((SPChannelConfiguration) mediator.getChannelConfig(channel.getName()));
 
             // Add any proxy principals available
             if (secCtx.getProxyPrincipals() != null)
                 securityTokenEmissionCtx.getProxyPrincipals().addAll(secCtx.getProxyPrincipals());
 
-            securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx);
+            try {
+                securityTokenEmissionCtx = emitAssertionFromPreviousSession(exchange, securityTokenEmissionCtx, authnRequest, secCtx, (SPChannel) channel);
+            } catch (SecurityTokenAuthenticationFailure e) {
+                throw buildFault(e);
+            }
 
             if (logger.isDebugEnabled())
                 logger.debug("Created SAMLR2 Assertion " + securityTokenEmissionCtx.getAssertion().getID() +
@@ -637,21 +875,16 @@ public class SingleSignOnProducer extends SSOProducer {
                     sp,
                     ed);
 
+            // Now we mark this IdP as the selected one
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response;
-
                 saml11Response = transformSamlR2ResponseToSaml11(response);
-
-                out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
-                        saml11Response, "Response", relayState, ed, in.getMessage().getState()));
-
+                sendSaml11Response(exchange, relayState, saml11Response, ed);
             } else {
                 // SAML R2 is used by default
-                out.setMessage(new MediationMessageImpl(response.getID(),
-                        response, "Response", relayState, ed, in.getMessage().getState()));
+                sendSaml2Response(exchange, relayState, response, ed);
             }
 
-            exchange.setOut(out);
         }
 
     }
@@ -665,81 +898,7 @@ public class SingleSignOnProducer extends SSOProducer {
      */
     @Deprecated
     public void doProcessAssertIdentityWithBasicAuth(CamelMediationExchange exchange, SecTokenAuthnRequestType authnRequest) throws Exception {
-
-        if (true)
-            throw new UnsupportedOperationException("Please, use pre-authentication service instead");
-
-        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-
-        AuthenticationState authnState = this.getAuthnState(exchange);
-
-        NameIDType issuer = authnRequest.getIssuer();
-        CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(issuer);
-        // Resolve SP endpoint
-        EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
-
-        // -------------------------------------------------------
-        // Build STS Context
-        // -------------------------------------------------------
-        // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
-        // It will transport back the Subject wich is not supported by the WST protocol
-        SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
-        // Send extra information to STS, using the emission context
-
-        securityTokenEmissionCtx.setMember(sp);
-        // TODO : Resolve SP SAMLR2 Role springmetadata
-
-        securityTokenEmissionCtx.setRoleMetadata(null);
-        securityTokenEmissionCtx.setAuthnState(authnState);
-        securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
-        securityTokenEmissionCtx.setIssuerMetadata(sp.getMetadata());
-        securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
-        securityTokenEmissionCtx.setSpAcs(ed);
-
-        UsernameTokenType usernameToken = new UsernameTokenType();
-        AttributedString usernameString = new AttributedString();
-        usernameString.setValue(authnRequest.getUsername());
-
-        usernameToken.setUsername(usernameString);
-        usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), authnRequest.getPassword());
-        usernameToken.getOtherAttributes().put(new QName(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue()), "TRUE");
-
-        CredentialClaim credentialClaim = new CredentialClaimImpl(AuthnCtxClass.PASSWORD_AUTHN_CTX.getValue(), usernameToken);
-        ClaimSet claims = new ClaimSetImpl();
-        claims.addClaim(credentialClaim);
-
-        SamlR2SecurityTokenEmissionContext cxt = emitAssertionFromClaims(exchange, securityTokenEmissionCtx, claims, sp);
-        AssertionType assertion = cxt.getAssertion();
-        Subject authnSubject = cxt.getSubject();
-
-        logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
-                (authnRequest != null ? authnRequest.getID() : "<NULL>"));
-
-        // Create a new SSO Session
-        IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
-
-        // Associate the SP with the new session, including relay state!
-        // TODO : Instead of authnRequest, use metadata to get issuer!
-
-        secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
-
-        // Build a response for the SP
-        ResponseType response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
-
-        // Set the SSO Session var
-        // State not supported in SOAP yet in.getMessage().getState().setLocalVariable(channel.getFederatedProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
-        // State not supported in SOAP yet in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
-
-        // --------------------------------------------------------------------
-        // Send Authn Response to SP
-        // --------------------------------------------------------------------
-
-        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-        out.setMessage(new MediationMessageImpl(response.getID(),
-                response, "Response", authnState.getReceivedRelayState(), ed, null));
-
-        exchange.setOut(out);
-
+        throw new UnsupportedOperationException("Please, use pre-authentication service instead");
     }
 
     /**
@@ -810,8 +969,10 @@ public class SingleSignOnProducer extends SSOProducer {
 
             securityTokenEmissionCtx.setRoleMetadata(null);
             securityTokenEmissionCtx.setAuthnState(authnState);
-            securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+            securityTokenEmissionCtx.setSessionIndex(sessionUuidGenerator.generateId());
             securityTokenEmissionCtx.setSpAcs(ed);
+            securityTokenEmissionCtx.setAttributeProfile(((SPChannel) channel).getAttributeProfile());
+            securityTokenEmissionCtx.setSpChannelConfig((SPChannelConfiguration) ((SSOIDPMediator)channel.getIdentityMediator()).getChannelConfig(channel.getName()));
 
             // ----------------------------------------------------------------------------------------
             // Authenticate the user, send a RequestSecurityToken to the Security Token Service (STS)
@@ -821,15 +982,17 @@ public class SingleSignOnProducer extends SSOProducer {
             securityTokenEmissionCtx = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
-                    sp);
+                    sp,
+                    (SPChannel) channel);
 
             AssertionType assertion = securityTokenEmissionCtx.getAssertion();
             Subject authnSubject = securityTokenEmissionCtx.getSubject();
 
-            SimplePrincipal principal = authnSubject.getPrincipals(SimplePrincipal.class).iterator().next();
+            // Get Principal
+            Principal principal = getPrincipal(authnSubject);
 
             if (logger.isDebugEnabled())
-                logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
+                logger.debug("New Assertion " + assertion.getID() + " ["+principal.getName()+"] emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
             // Generate audit trail
@@ -840,7 +1003,8 @@ public class SingleSignOnProducer extends SSOProducer {
             auditProps.put("attempt", authnState.getSsoAttepmts() + "");
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
-            recordInfoAuditTrail("SSO", ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+            auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
+            recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
 
             if (((IdentityProvider)getProvider()).isIdentityConfirmationEnabled()) {
                 // --------------------------------------------------------------------
@@ -920,6 +1084,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // Set the SSO Session var
             in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+            in.getMessage().getState().getLocalState().removeAlternativeIds(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
             in.getMessage().getState().getLocalState().addAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, secCtx.getSessionIndex());
 
             // --------------------------------------------------------------------
@@ -929,14 +1094,26 @@ public class SingleSignOnProducer extends SSOProducer {
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
                 SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
-                saml11Response = signer.sign(saml11Response);
+
+                ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
+
+                String digest = null;
+                if (cfg instanceof SPChannelConfiguration) {
+                    digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+                } else if (cfg instanceof IDPChannelConfiguration) {
+                    digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+                } else {
+                    digest = "SHA256";
+                }
+
+                saml11Response = signer.sign(saml11Response, digest);
             }
 
             // Clear the current authentication state
             clearAuthnState(exchange);
 
             // If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
-            List<SSOPolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
+            List<PolicyEnforcementStatement> stmts = getPolicyEnforcementStatements(assertion);
 
             if (stmts != null && stmts.size() > 0) {
 
@@ -967,7 +1144,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 per.getStatements().addAll(stmts);
 
-
                 out.setMessage(new MediationMessageImpl(
                         per.getId(),
                         per,
@@ -979,23 +1155,10 @@ public class SingleSignOnProducer extends SSOProducer {
             }
 
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Sending SAML 1.1 Response");
-
-                out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
-                        saml11Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml11Response(exchange, authnState.getReceivedRelayState(), saml11Response, ed);
             } else {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Sending SAML 2.0 Response");
-
-                // SAML R2 is used by default
-                out.setMessage(new MediationMessageImpl(saml2Response.getID(),
-                        saml2Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml2Response(exchange, authnState.getReceivedRelayState(), saml2Response, ed);
             }
-
-            exchange.setOut(out);
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
@@ -1008,7 +1171,9 @@ public class SingleSignOnProducer extends SSOProducer {
             if (authnState.getCurrentAuthnCtxClass() != null)
                 auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
 
-            recordInfoAuditTrail("SSO", ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
+            auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
+
+            recordInfoAuditTrail(Action.SSO.getValue(), ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
 
             // The authentication failed, let's see what needs to be done.
 
@@ -1016,7 +1181,7 @@ public class SingleSignOnProducer extends SSOProducer {
             // If not, keep trying with other endpoints.
 
             // Set of policies enforced during authentication
-            Set<SSOPolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
+            Set<PolicyEnforcementStatement> ssoPolicyEnforcements = e.getSsoPolicyEnforcements();
 
             // Ask for more claims, using other auth schemes
             ClaimChannel claimChannel = selectNextClaimsEndpoint(authnState, exchange);
@@ -1033,11 +1198,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // This could be a response to a passive request ...
                 ResponseType response = buildSamlResponse(exchange, authnState, null, sp, ed);
-
-                out.setMessage(new MediationMessageImpl(response.getID(),
-                        response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
-
-                exchange.setOut(out);
+                sendSaml2Response(exchange, authnState.getReceivedRelayState(), response, ed);
                 return;
             }
 
@@ -1051,6 +1212,8 @@ public class SingleSignOnProducer extends SSOProducer {
                     claimChannel,
                     uuidGenerator.generateId());
 
+            claimsRequest.setLocale(authnState.getLocale());
+
             // We're retrying the same endpoint type, mark the authentication as failed
             if (prevClaimsEndpoint != null && prevClaimsEndpoint.getType().equals(claimEndpoint.getType()))
                 claimsRequest.setLastErrorId("AUTHN_FAILED");
@@ -1061,10 +1224,45 @@ public class SingleSignOnProducer extends SSOProducer {
             // Update authentication state
             claimsRequest.setRequestedAuthnCtxClass(authnRequest.getRequestedAuthnContext());
             authnState.setAuthnRequest(authnRequest);
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
 
             // Set SP information
             if (authnRequest.getIssuer() != null)
                 claimsRequest.setSpAlias(authnRequest.getIssuer().getValue());
+
+            // Proxy extensions override default issuer:
+            if (authnRequest.getExtensions() != null) {
+                // We have extensions:
+                oasis.names.tc.saml._2_0.protocol.ExtensionsType ext = authnRequest.getExtensions();
+                List<Object> any = ext.getAny();
+                if(any != null)
+                    for (Object o : any) {
+                        if (o instanceof JAXBElement) {
+                            JAXBElement jaxbExt = (JAXBElement) o;
+                            if (jaxbExt.getValue() instanceof SPListType) {
+                                SPListType spList = (SPListType) jaxbExt.getValue();
+
+                                if (spList != null && spList.getSPEntry() != null && spList.getSPEntry().size() > 0) {
+
+                                    SPEntryType spExt = spList.getSPEntry().get(0);
+                                    String providerId = spExt.getProviderID();
+
+                                    if (spList.getSPEntry().size() > 1)
+                                        logger.error("Too many SPs listed, using first " + providerId);
+
+                                    if (providerId != null) {
+                                        if (logger.isDebugEnabled())
+                                            logger.debug("Overriding SP alis with extension " + providerId);
+                                        claimsRequest.setSpAlias(providerId);
+                                    }
+                                }
+                            }
+                        }
+                    }
+            }
 
             // --------------------------------------------------------------------
             // Send claims request
@@ -1114,7 +1312,10 @@ public class SingleSignOnProducer extends SSOProducer {
         // This is IDP-Initiated , but we're acting as proxy
         CircleOfTrustMemberDescriptor sp = null;
         if (authnRequest == null) {
-            // Now authn-request, this is IDP initiated, the authnState is probably new.
+            // No authn-request, this is IDP initiated, the authnState is probably new.
+
+            // TODO: Use requested SP instead of target channel
+            // TODO : Check IDP initiated SSO
             SPChannel spChannel = (SPChannel) channel;
             sp = resolveProviderDescriptor(spChannel.getTargetProvider());
 
@@ -1131,11 +1332,17 @@ public class SingleSignOnProducer extends SSOProducer {
             a.setValue(sp.getAlias());
             idpInitReq.getRequestAttribute().add(a);
 
-            // This builds an authn request type in behalf of the original SP
+            // This builds an authn request type on behalf of the original SP
             authnRequest = buildIdPInitiatedAuthnRequest(exchange, idpInitReq, idpProxy, destination, spChannel);
 
             authnState.setResponseMode("unsolicited");
             authnState.setAuthnRequest(authnRequest);
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge"));
+            in.getMessage().getState().setLocalVariable(SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method",
+                    ProtocolUtils.getRequestExtAttribute(authnRequest, SSOConstants.OIDC_EXT_NAMESPACE + ":code_challenge_method"));
+
+
         } else {
             NameIDType issuer = authnRequest.getIssuer();
             sp = resolveProviderDescriptor(issuer);
@@ -1159,54 +1366,89 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // Resolve SP endpoint
             EndpointDescriptor ed = this.resolveSpAcsEndpoint(exchange, authnRequest);
+            // This is the SP Channel used to talk to the SP (even though it may not be the current channel)
+            CircleOfTrustMemberDescriptor targetSp = resolveProviderDescriptor(authnRequest.getIssuer());
+            SPChannel requiredSpChannel = (SPChannel) resolveSpChannel(targetSp);
 
-            AbstractSSOMediator mediator = (AbstractSSOMediator) channel.getIdentityMediator();
+            AbstractSSOMediator mediator = (AbstractSSOMediator) requiredSpChannel.getIdentityMediator();
 
-            List<SSOPolicyEnforcementStatement> stmts = null;
+            List<PolicyEnforcementStatement> stmts = null;
             AssertionType assertion = null;
 
-            if (proxyResponse.getSubject() == null) {
+            if (proxyResponse.getPrimaryErrorCode() != null || proxyResponse.getSubject() == null) {
+
                 // The authentication failed!
                 if (logger.isDebugEnabled())
                     logger.debug("Authentication failed, no subject received");
+
+                if (proxyResponse.getSubject() != null &&
+                        proxyResponse.getSecondaryErrorCode() != null &&
+                        StatusDetails.NO_ACCOUNT_LINK.toString().equals(proxyResponse.getSecondaryErrorCode())) {
+
+                    // We have a subject that could not be linked.  Store it, we could create a link later.
+                    logger.warn("Unlinked subject " + proxyResponse.getSubject());
+                }
+
             } else {
 
                 // -------------------------------------------------------
                 // Build STS Context
                 // -------------------------------------------------------
                 // The context will act as an alternative communication exchange between this producer (IDP) and the STS.
-                // It will transport back the Subject wich is not supported by the WST protocol
+                // It will transport back the Subject which is not supported by the WST protocol
                 SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx = new SamlR2SecurityTokenEmissionContext();
                 // Send extra information to STS, using the emission context
 
-                securityTokenEmissionCtx.setIssuerMetadata(((SPChannel) channel).getMember().getMetadata());
+                securityTokenEmissionCtx.setIssuerMetadata(requiredSpChannel.getMember().getMetadata());
                 securityTokenEmissionCtx.setMember(sp);
                 securityTokenEmissionCtx.setIdentityPlanName(getSTSPlanName());
-                // TODO : Resolve SP SAMLR2 Role springmetadata
-
                 securityTokenEmissionCtx.setRoleMetadata(null);
                 securityTokenEmissionCtx.setAuthnState(authnState);
-                securityTokenEmissionCtx.setSessionIndex(uuidGenerator.generateId());
+                securityTokenEmissionCtx.setSessionIndex(sessionUuidGenerator.generateId());
                 securityTokenEmissionCtx.setSpAcs(ed);
+                securityTokenEmissionCtx.setAttributeProfile(requiredSpChannel.getAttributeProfile());
+                securityTokenEmissionCtx.setSpChannelConfig((SPChannelConfiguration) mediator.getChannelConfig(requiredSpChannel.getName()));
 
                 // in order to request a security token we need to map the claims sent by the proxy to
                 // STS claims
                 List<AbstractPrincipalType> proxySubjectPrincipals = proxyResponse.getSubject().getAbstractPrincipal();
 
-                List<AbstractPrincipalType> proxyPrincipals = new ArrayList<AbstractPrincipalType>();
-
                 AuthnCtxClass authnCtx = null;
 
                 if (proxyResponse.getSubjectAttributes() != null) {
                     for (SubjectAttributeType attr : proxyResponse.getSubjectAttributes()) {
-                        if (attr.getName().equals("authnCtxClass")) {
+                        if (attr.getName().equals("authnCtxClass") ||
+                                attr.getName().equals("org:atricore:idbus:sso:sp:authnCtxClass") ||
+                                attr.getName().equals("urn:org:atricore:idbus:sso:sp:authnCtxClass")) {
                             try {
                                 authnCtx = AuthnCtxClass.asEnum(attr.getValue());
                                 if (logger.isDebugEnabled())
                                     logger.debug("Using authnCtxClass " + attr.getValue());
                                 break;
                             } catch (Exception e) {
-                                logger.error("Unknonw AuthnCtxClass type " + attr.getValue());
+                                logger.error("Unknown AuthnCtxClass type " + attr.getValue());
+                            }
+                        }
+                    }
+                }
+
+                if (authnCtx == null) {
+
+                    for (AbstractPrincipalType principal : proxySubjectPrincipals) {
+                        if (principal instanceof SubjectAttributeType) {
+                            SubjectAttributeType attr = (SubjectAttributeType) principal;
+                            if (attr.getName().equals("authnCtxClass") ||
+                                    attr.getName().equals("org:atricore:idbus:sso:sp:authnCtxClass") ||
+                                    attr.getName().equals("urn:org:atricore:idbus:sso:sp:authnCtxClass")) {
+                                try {
+                                    authnCtx = AuthnCtxClass.asEnum(attr.getValue());
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Using authnCtxClass " + attr.getValue());
+                                    break;
+                                } catch (Exception e) {
+                                    logger.error("Unknown AuthnCtxClass type " + attr.getValue());
+                                }
+
                             }
                         }
                     }
@@ -1214,7 +1456,8 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // Just in case
                 if (authnCtx == null) {
-                    authnCtx = AuthnCtxClass.PASSWORD_AUTHN_CTX;
+                    logger.warn("Using unspecified AuthnCtxClass, no value found in proxy response");
+                    authnCtx = AuthnCtxClass.UNSPECIFIED_AUTHN_CTX;
                 }
 
                 ClaimSet claims = new ClaimSetImpl();
@@ -1224,7 +1467,6 @@ public class SingleSignOnProducer extends SSOProducer {
 
                     if (next instanceof SubjectNameIDType) {
 
-                        // TODO : Perform some kind of identity mapping if necessary, email -> username, etc.
                         SubjectNameIDType nameId = (SubjectNameIDType) next;
 
                         AttributedString usernameString = new AttributedString();
@@ -1232,14 +1474,10 @@ public class SingleSignOnProducer extends SSOProducer {
                         usernameToken.setUsername(usernameString);
                         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), nameId.getName());
 
-                        // TODO : This is not accurate
-                        // TODO : We should honor the provided authn. context if any
                         usernameToken.getOtherAttributes().put(new QName(authnCtx.getValue()), "TRUE");
-
+                        usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
                         // Also update authentication state
                         authnState.setAuthnCtxClass(authnCtx);
-
-                        usernameToken.getOtherAttributes().put(new QName(Constants.PROXY_NS), "TRUE");
 
                         CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtx.getValue(), usernameToken);
                         claims.addClaim(credentialClaim);
@@ -1253,13 +1491,39 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (proxyResponse.getSubjectAttributes() != null)
                     securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectAttributes());
 
+                // Do some handling on special attributes:
+                for (AbstractPrincipalType principal : securityTokenEmissionCtx.getProxyPrincipals())  {
+
+                    if (principal instanceof SubjectAttributeType) {
+                        SubjectAttributeType attr = (SubjectAttributeType) principal;
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("["+ this.channelRef + ":" + this.endpointRef + "] ProxyPrincipal: " + attr.getName() + "=" + attr.getValue());
+
+                        // -----------------------------------------------------------
+                        // JOSSO proxied attributes in JOSSO 2 profile.  This attributes may
+                        // also be issued by the current IDP proxy, we don't want to override them.
+                        // -----------------------------------------------------------
+                        String name = attr.getName();
+                        if (markAsProxied(name))
+                            name = name + "_proxied";
+                        attr.setName(name);
+                        // -----------------------------------------------------------
+                    }
+                }
+                SamlR2SecurityTokenEmissionContext stsCtx = null;
                 if (proxyResponse.getSubjectRoles() != null)
                     securityTokenEmissionCtx.getProxyPrincipals().addAll(proxyResponse.getSubjectRoles());
 
-                SamlR2SecurityTokenEmissionContext stsCtx = emitAssertionFromClaims(exchange,
-                        securityTokenEmissionCtx,
-                        claims,
-                        sp);
+                try {
+                    stsCtx = emitAssertionFromClaims(exchange,
+                            securityTokenEmissionCtx,
+                            claims,
+                            sp,
+                            requiredSpChannel);
+                } catch (SecurityTokenAuthenticationFailure e) {
+                    throw buildFault(e);
+                }
 
                 assertion = stsCtx.getAssertion();
                 Subject authnSubject = stsCtx.getSubject();
@@ -1267,39 +1531,65 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                         (authnRequest != null ? authnRequest.getID() : "<NULL>"));
 
+                Properties auditProps = new Properties();
+                auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+                if (authnState.getCurrentAuthnCtxClass() != null)
+                    auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+
+                // Get Principal
+                Principal principal = getPrincipal(authnSubject);
+                auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
+                recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.SUCCESS, principal != null ? principal.getName() : null, exchange, auditProps);
+
                 // Create a new SSO Session
                 IdPSecurityContext secCtx = createSecurityContext(exchange, authnSubject, assertion, null);
-                secCtx.setPRoxyPrincipals(stsCtx.getProxyPrincipals());
+                secCtx.setProxyPrincipals(stsCtx.getProxyPrincipals());
+                secCtx.setIdpProxySessionIndex(proxyResponse.getSessionIndex());
 
                 // Associate the SP with the new session, including relay state!
                 // We already validated authn request issuer, so we can use it.
                 secCtx.register(authnRequest.getIssuer(), authnState.getReceivedRelayState());
 
                 // TODO : If subject contains SSOPolicy enforcement principals, we need to show them to the user before moving on ...
-                stmts = getPolicyEnforcementStatements(assertion);
+                //stmts = getPolicyEnforcementStatements(assertion);
 
                 // Set the SSO Session var
                 in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+                in.getMessage().getState().getLocalState().removeAlternativeIds(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
                 in.getMessage().getState().getLocalState().addAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, secCtx.getSessionIndex());
 
             }
 
-            // Build a response for the SP
-            ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed);
-            oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response = null;
+            authnState.setErrorMessage(proxyResponse.getSecondaryErrorCode());
+            authnState.setErrorDetails(proxyResponse.getErrorDetails());
 
+            // Build a response for the SP
+            ResponseType saml2Response = buildSamlResponse(exchange, authnState, assertion, sp, ed, requiredSpChannel);
+
+            oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response = null;
 
             // --------------------------------------------------------------------
             // Send Authn Response to SP
             // --------------------------------------------------------------------
 
-
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
-                saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
-                SamlR2Signer signer = ((SSOIDPMediator) channel.getIdentityMediator()).getSigner();
-                saml11Response = signer.sign(saml11Response);
-            }
 
+                ChannelConfiguration cfg = mediator.getChannelConfig(channel.getName());
+
+                String digest = null;
+                if (cfg instanceof SPChannelConfiguration) {
+                    digest = ((SPChannelConfiguration) cfg).getSignatureHash();
+                } else if (cfg instanceof IDPChannelConfiguration) {
+                    digest = ((IDPChannelConfiguration) cfg).getSignatureHash();
+                } else {
+                    digest = "SHA256";
+                }
+
+                saml11Response = transformSamlR2ResponseToSaml11(saml2Response);
+                SamlR2Signer signer = ((SSOIDPMediator) requiredSpChannel.getIdentityMediator()).getSigner();
+
+                saml11Response = signer.sign(saml11Response, digest);
+            }
 
             clearAuthnState(exchange);
 
@@ -1323,7 +1613,7 @@ public class SingleSignOnProducer extends SSOProducer {
                 EndpointDescriptor pweEd = new EndpointDescriptorImpl("PolicyEnforcementWarningService",
                         "PolicyEnforcementWarningService",
                         SSOBinding.SSO_ARTIFACT.getValue(),
-                        channel.getIdentityMediator().getWarningUrl(),
+                        requiredSpChannel.getIdentityMediator().getWarningUrl(),
                         null);
 
 
@@ -1342,21 +1632,26 @@ public class SingleSignOnProducer extends SSOProducer {
                 return;
             }
 
+            // Send the response
             if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
-                out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
-                        saml11Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml11Response(exchange, authnState.getReceivedRelayState(), saml11Response, ed);
             } else {
-                // SAML R2 is used by default
-                out.setMessage(new MediationMessageImpl(saml2Response.getID(),
-                        saml2Response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
+                sendSaml2Response(exchange, authnState.getReceivedRelayState(), saml2Response, ed);
             }
-
-            exchange.setOut(out);
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
             if (logger.isDebugEnabled())
                 logger.debug("Security Token authentication failure : " + e.getMessage(), e);
+
+            // Generate audit trail
+            Properties auditProps = new Properties();
+            auditProps.put("attempt", authnState.getSsoAttepmts() + "");
+            if (authnState.getCurrentAuthnCtxClass() != null)
+                auditProps.put("authnCtx", authnState.getCurrentAuthnCtxClass().getValue());
+            auditProps.put("federatedProvider", authnRequest.getIssuer().getValue());
+            recordInfoAuditTrail(Action.PXY_SSO.getValue(), ActionOutcome.FAILURE, e.getPrincipalName(), exchange, auditProps);
+
         }
 
 
@@ -1421,6 +1716,14 @@ public class SingleSignOnProducer extends SSOProducer {
                     "urn:oasis:names:tc:SAML:2.0:metadata:IDPSSODescriptor");
             saml2IdpMd = (IDPSSODescriptorType) idpMd.getEntry();
 
+            // Can this channel process requests from this SP ?!
+            FederationChannel spChannel = resolveSpChannel(getCotManager().lookupMemberByAlias(spAlias));
+            if (!spChannel.equals(channel)) {
+                logger.warn("SP is trusted, but using the wrong SP channel! " + spChannel.getName());
+            }
+
+
+
         } catch (CircleOfTrustManagerException e) {
             throw new SSORequestException(request,
                     StatusCode.TOP_REQUESTER,
@@ -1429,6 +1732,8 @@ public class SingleSignOnProducer extends SSOProducer {
                     request.getIssuer().getValue(),
                     e);
         }
+
+
 
         // SAML Want AuthnRequest signed has precedence over want requests signed
         boolean validateSignature = mediator.isValidateRequestsSignature();
@@ -1442,30 +1747,14 @@ public class SingleSignOnProducer extends SSOProducer {
 
                 // If no signature is present, throw an exception!
                 if (request.getSignature() == null)
-
                     throw new SSORequestException(request,
                             StatusCode.TOP_REQUESTER,
                             StatusCode.REQUEST_DENIED,
                             StatusDetails.INVALID_REQUEST_SIGNATURE);
-                try {
 
-                    if (originalRequest != null)
-                        signer.validateDom(saml2SpMd, originalRequest);
-                    else
-                        signer.validate(saml2SpMd, request);
+                // Validate signature.
+                validateAuthnRequestSignature(originalRequest, request, saml2IdpMd, saml2SpMd, signer);
 
-                } catch (SamlR2SignatureValidationException e) {
-                    throw new SSORequestException(request,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                } catch (SamlR2SignatureException e) {
-                    //other exceptions like JAXB, xml parser...
-                    throw new SSORequestException(request,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                }
             } else {
                 // HTTP-Redirect binding signature validation !
                 try {
@@ -1512,6 +1801,7 @@ public class SingleSignOnProducer extends SSOProducer {
      * This has the logic to select endpoints for claims collecting.
      */
     protected ClaimChannel selectNextClaimsEndpoint(AuthenticationState status, CamelMediationExchange exchange) {
+
 
         SSOIDPMediator idpMediator = (SSOIDPMediator) channel.getIdentityMediator();
         IdentityFlowContainer ifc = idpMediator.getIdentityFlowContainer();
@@ -1582,7 +1872,8 @@ public class SingleSignOnProducer extends SSOProducer {
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromPreviousSession(CamelMediationExchange exchange,
                                                                                   SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
                                                                                   AuthnRequestType authnRequest,
-                                                                                  IdPSecurityContext secCtx) throws Exception {
+                                                                                  IdPSecurityContext secCtx,
+                                                                                  SPChannel spChannel) throws Exception {
 
         // TODO : We need to use the STS ..., and get ALL the required tokens again.
         // TODO : Set in assertion AuthnCtxClass.PREVIOUS_SESSION_AUTHN_CTX
@@ -1638,11 +1929,12 @@ public class SingleSignOnProducer extends SSOProducer {
         securityTokenEmissionCtx = emitAssertionFromClaims(exchange,
                 securityTokenEmissionCtx,
                 claims,
-                securityTokenEmissionCtx.getMember());
+                securityTokenEmissionCtx.getMember(),
+                spChannel);
 
         AssertionType assertion = securityTokenEmissionCtx.getAssertion();
 
-        //Subject authnSubject = securityTokenEmissionCtx.getSubject();
+        updateOIDCState((CamelMediationMessage) exchange.getIn(), assertion);
 
         logger.debug("New Assertion " + assertion.getID() + " emitted form request " +
                 (authnRequest != null ? authnRequest.getID() : "<NULL>"));
@@ -1659,7 +1951,8 @@ public class SingleSignOnProducer extends SSOProducer {
     protected SamlR2SecurityTokenEmissionContext emitAssertionFromClaims(CamelMediationExchange exchange,
                                                                          SamlR2SecurityTokenEmissionContext securityTokenEmissionCtx,
                                                                          ClaimSet receivedClaims,
-                                                                         CircleOfTrustMemberDescriptor sp) throws Exception {
+                                                                         CircleOfTrustMemberDescriptor sp,
+                                                                         SPChannel spChannel) throws Exception {
 
         MessageQueueManager aqm = getArtifactQueueManager();
 
@@ -1671,7 +1964,7 @@ public class SingleSignOnProducer extends SSOProducer {
         // Queue this contenxt and send the artifact as RST context information
         Artifact emitterCtxArtifact = aqm.pushMessage(securityTokenEmissionCtx);
 
-        SecurityTokenService sts = ((SPChannel) channel).getSecurityTokenService();
+        SecurityTokenService sts = spChannel.getSecurityTokenService();
         // Send artifact id as RST context information, similar to relay state.
         RequestSecurityTokenType rst = buildRequestSecurityToken(receivedClaims, emitterCtxArtifact.getContent());
 
@@ -1697,12 +1990,13 @@ public class SingleSignOnProducer extends SSOProducer {
         securityTokenEmissionCtx.setAssertion(assertion);
         securityTokenEmissionCtx.setSubject(subject);
 
+        /*
         SSOUser ssoUser = null;
         Set<SimplePrincipal> p = subject.getPrincipals(SimplePrincipal.class);
         if (p != null && p.size() > 0) {
-            // We have a simple princiapl, Look for an SSOUser instance
+            // We have a simple principal, Look for an SSOUser instance
             SimplePrincipal user = p.iterator().next();
-            SSOIdentityManager identityMgr = ((SPChannel) channel).getIdentityManager();
+            SSOIdentityManager identityMgr = spChannel.getIdentityManager();
             if (identityMgr != null)
                 ssoUser = identityMgr.findUser(user.getName());
 
@@ -1713,18 +2007,9 @@ public class SingleSignOnProducer extends SSOProducer {
                 ssoUser = ssoUsers.iterator().next();
             }
         }
+        */
 
-        if (ssoUser != null) {
-            // Make some validations on the SSO user
-            for (SSONameValuePair nvp : ssoUser.getProperties()) {
-                if (nvp.getName().equalsIgnoreCase("accountDisabled")) {
-                    boolean disabled = Boolean.parseBoolean(nvp.getValue());
-                    if (disabled) {
-                        throw new SecurityTokenAuthenticationFailure("Account disabled");
-                    }
-                }
-            }
-        }
+        updateOIDCState((CamelMediationMessage) exchange.getIn(), assertion);
 
         // Return context with Assertion and Subject
         return securityTokenEmissionCtx;
@@ -1760,12 +2045,48 @@ public class SingleSignOnProducer extends SSOProducer {
         if (logger.isDebugEnabled())
             logger.debug("Using username : " + userId.getName());
 
+        // TODO : Customize timeouts based on context: Subject (username, roles), date/time, authn context, remote IP ... etc.
+
+        /*
+
+        TODO : Send this to init session ?!
+        Properties props = new Properties();
+
+
+        props.put("subject", authnSubject);
+        props.put("saml2Assertion", assertion);
+        props.put("saml2AuthnStmt", authnStmt);
+
+
+        */
+
+        String remoteAddress = (String) exchange.getIn().getHeader("org.atricore.idbus.http.RemoteAddress");
+
+        SSOSessionContext sessionCtx = new SSOSessionContext();
+        sessionCtx.setSubject(authnSubject);
+        sessionCtx.setProperty("org.atricore.idbus.http.RemoteAddress", remoteAddress);
+
         // Initiate SSO Session
-        String ssoSessionId = ((SPChannel) channel).getSessionManager().initiateSession(userId.getName(), st);
+        String ssoSessionId = ((SPChannel) channel).getSessionManager().initiateSession(userId.getName(), st, sessionCtx);
         assert ssoSessionId.equals(st.getId()) : "SSO Session Manager MUST use security token ID as session ID";
 
         boolean rememberMe = false;
-        if (claims != null) {
+
+        // Check if the remember me option is requested as part of an extension
+        AuthenticationState authnState = getAuthnState(exchange);
+        if (authnState != null) {
+            AuthnRequestType authnRequest = authnState.getAuthnRequest();
+            if (authnRequest instanceof PreAuthenticatedAuthnRequestType) {
+                rememberMe = ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() != null ?
+                        ((PreAuthenticatedAuthnRequestType) authnRequest).getRememberMe() : false;
+            }
+            // Reset claims endpoint information.
+            authnState.setCurrentClaimsEndpointTryCount(0);
+            authnState.setCurrentClaimsEndpoint(null);
+        }
+
+        // Check if the remember me option is requested as one of the claims
+        if (!rememberMe && claims != null) {
             for (Claim c : claims.getClaims()) {
                 if (c instanceof CredentialClaim) {
                     CredentialClaim cc = (CredentialClaim) c;
@@ -1774,32 +2095,28 @@ public class SingleSignOnProducer extends SSOProducer {
                         String rememberMeStr = ut.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
                         if (rememberMeStr != null)
                             rememberMe = Boolean.parseBoolean(rememberMeStr);
+                    } else if (cc.getValue() instanceof PasswordString) {
+                        PasswordString pt = (PasswordString) cc.getValue();
+                        String rememberMeStr = pt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                        if (rememberMeStr != null)
+                            rememberMe = Boolean.parseBoolean(rememberMeStr);
+                    } else if (cc.getValue() instanceof BinarySecurityTokenType) {
+                        BinarySecurityTokenType bt = (BinarySecurityTokenType) cc.getValue();
+                        String rememberMeStr = bt.getOtherAttributes().get(new QName(Constants.REMEMBERME_NS));
+                        if (rememberMeStr != null)
+                            rememberMe = Boolean.parseBoolean(rememberMeStr);
                     }
                 }
             }
         }
 
+        // Create RememberMe security token
         if (rememberMe) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Creating remember-me security contenxt information");
+                logger.debug("Creating remember-me security context information");
 
-            String preAuthnTokenId = null;
-
-            for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
-                if (stmt instanceof AttributeStatementType) {
-                    AttributeStatementType attrStmt = (AttributeStatementType) stmt;
-                    for (Object o : attrStmt.getAttributeOrEncryptedAttribute()) {
-                        // TODO : What if assertion is encrypted ?! (improve!)
-                        if (o instanceof AttributeType) {
-                            AttributeType attr = (AttributeType) o;
-                            if (attr.getName().equals(WSTConstants.WST_OAUTH2_TOKEN_TYPE + "_ID")) {
-                                preAuthnTokenId = (String) attr.getAttributeValue().get(0);
-                            }
-                        }
-                    }
-                }
-            }
+            String preAuthnTokenId = getAssertionValue(assertion, WSTConstants.WST_OAUTH2_RM_TOKEN_TYPE + "_ID");
 
             if (preAuthnTokenId != null) {
                 String varName = getProvider().getStateManager().getNamespace().toUpperCase() + "_" + getProvider().getName().toUpperCase() + "_RM";
@@ -1824,11 +2141,28 @@ public class SingleSignOnProducer extends SSOProducer {
                                              AssertionType assertion,
                                              CircleOfTrustMemberDescriptor sp,
                                              EndpointDescriptor spEndpoint) throws Exception {
+        return buildSamlResponse(exchange, authnState, assertion, sp, spEndpoint, channel);
+    }
+
+    /**
+     * Creates a new SAML Response for the given assertion
+     */
+    protected ResponseType buildSamlResponse(CamelMediationExchange exchange,
+                                             AuthenticationState authnState,
+                                             AssertionType assertion,
+                                             CircleOfTrustMemberDescriptor sp,
+                                             EndpointDescriptor spEndpoint,
+                                             Channel requiredChannel) throws Exception {
 
 
         // Build authnresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2AuthnRequestToSamlR2ResponsePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
+
+        if (requiredChannel != null) {
+            idPlanExchange.setProperty(VAR_CHANNEL, this.channel);
+            idPlanExchange.setProperty(VAR_COT_MEMBER, ((FederationChannel) requiredChannel).getMember());
+        }
 
         // Publish SP springmetadata
         idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, sp);
@@ -1836,6 +2170,7 @@ public class SingleSignOnProducer extends SSOProducer {
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, spEndpoint);
         idPlanExchange.setProperty(VAR_REQUEST, authnState.getAuthnRequest());
         idPlanExchange.setProperty(VAR_RESPONSE_MODE, authnState.getResponseMode());
+        idPlanExchange.setProperty(VAR_SAMLR2_AUTHN_STATE, authnState);
 
         // Create in/out artifacts
         IdentityArtifact<AuthnRequestType> in =
@@ -1910,13 +2245,80 @@ public class SingleSignOnProducer extends SSOProducer {
 
     }
 
+
+    protected PreAuthenticatedIDPInitiatedAuthnRequestType buildPreAuthenticatedIDPInitiatedAuthnProxyRequest(CamelMediationExchange exchange,
+                                                                                                              CircleOfTrustMemberDescriptor sp,
+                                                                                                              PreAuthenticatedAuthnRequestType authnRequest) {
+
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        MediationState state = in.getMessage().getState();
+
+        String relayState = state.getTransientVariable("RelayState");
+        String securityToken = state.getTransientVariable("atricore_security_token");
+
+        PreAuthenticatedIDPInitiatedAuthnRequestType idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
+        idpInitReq.setSecurityToken(securityToken);
+        idpInitReq.setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_CTX.getValue());
+
+        idpInitReq.setID(uuidGenerator.generateId());
+        idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
+
+        // Valid values are from SSOBinding
+        String bindingStr =  state.getTransientVariable("protocol_binding");
+        if (bindingStr != null) {
+            try {
+                SSOBinding binding = SSOBinding.asEnum(bindingStr);
+                idpInitReq.setProtocolBinding(binding.getValue());
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Using protocol binding: " + binding.getValue());
+
+            } catch (IllegalArgumentException e) {
+                logger.error ("Ignoring requested binding: " + e.getMessage());
+            }
+        }
+
+
+
+
+        // Alias or SP should be our SP proxy
+        // We can send several attributes within the request.
+        {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_sp_alias");
+            a.setValue(sp.getAlias());
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
+        if (authnRequest.getSecurityToken() != null)
+            idpInitReq.setSecurityToken(authnRequest.getSecurityToken());
+
+        if (authnRequest.getIsPassive() != null)
+            idpInitReq.setPassive(authnRequest.getIsPassive());
+
+        if (authnRequest.getRememberMe() != null)
+            idpInitReq.setRememberMe(authnRequest.getRememberMe());
+
+        if (authnRequest.getRequestedAuthnContext() != null) {
+            List<String> authnCtxs = authnRequest.getRequestedAuthnContext().getAuthnContextClassRef();
+            // TODO : Only support one for now!
+            if (authnCtxs.size() > 0)
+                idpInitReq.setAuthnCtxClass(authnCtxs.get(0));
+        }
+
+        return idpInitReq;
+    }
+
     /**
      * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
+     *
+     * IdP and SP channel used to connect to the target SP
      */
-    protected PreAuthenticatedAuthnRequestType buildPreAuthIdPInitiatedAuthnRequest(CamelMediationExchange exchange,
-                                                                                    CircleOfTrustMemberDescriptor idp,
-                                                                                    EndpointDescriptor ed,
-                                                                                    FederationChannel spChannel
+    protected PreAuthenticatedAuthnRequestType buildPreAuthenticatedAuthnRequest(CamelMediationExchange exchange,
+                                                                                 CircleOfTrustMemberDescriptor idp,
+                                                                                 EndpointDescriptor ed,
+                                                                                 FederationChannel spChannel
     ) throws IdentityPlanningException, SSOException {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
@@ -1958,16 +2360,16 @@ public class SingleSignOnProducer extends SSOProducer {
         return (PreAuthenticatedAuthnRequestType) idPlanExchange.getOut().getContent();
     }
 
-    protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(FederatedProvider sp) {
+    protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(FederatedProvider provider) {
 
-        FederatedLocalProvider spl = (FederatedLocalProvider) sp;
+        FederatedLocalProvider localSp = (FederatedLocalProvider) provider;
 
-        for (FederationChannel fChannel : spl.getChannels()) {
+        for (FederationChannel fChannel : localSp.getChannels()) {
             if (fChannel.getTargetProvider() != null) {
 
                 if (fChannel.getTargetProvider().getName().equals(((SPChannel) channel).getFederatedProvider().getName())) {
                     if (logger.isTraceEnabled())
-                        logger.trace("Selected SP Channel " + fChannel.getName() + " from provider " + sp);
+                        logger.trace("Selected SP Channel " + fChannel.getName() + " from provider " + provider);
 
                     return fChannel.getMember();
                 }
@@ -1975,10 +2377,10 @@ public class SingleSignOnProducer extends SSOProducer {
         }
 
         if (logger.isTraceEnabled())
-            logger.trace("Selected SP Channel " + spl.getChannel().getName() + " from provider " + sp);
+            logger.trace("Selected SP Channel " + localSp.getChannel().getName() + " from provider " + provider);
 
         // Use default channel
-        return spl.getChannel().getMember();
+        return localSp.getChannel().getMember();
     }
 
     protected CircleOfTrustMemberDescriptor resolveProviderDescriptor(NameIDType issuer) {
@@ -2096,6 +2498,9 @@ public class SingleSignOnProducer extends SSOProducer {
 
     }
 
+    /**
+     * @deprecated This should not be used, local
+     */
     protected CircleOfTrustMemberDescriptor resolveIdp(CamelMediationExchange exchange) throws SSOException {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
@@ -2115,7 +2520,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
             // TODO : [ENTITY-SEL] CHECK BASE 64 ENCODING AND ENTITY SELECTOR USAGE!
             if (a.getName().equals(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR))
-                idpAlias = new String(Base64.decodeBase64(a.getValue().getBytes()));
+                idpAlias = a.getValue();
         }
 
         if (idpAlias != null) {
@@ -2124,6 +2529,12 @@ public class SingleSignOnProducer extends SSOProducer {
                 logger.debug("Using IdP alias from request attribute " + idpAlias);
 
             idp = getCotManager().lookupMemberByAlias(idpAlias);
+            if (idp == null) {
+                // Try decoding the alias
+                idpAlias = new String(Base64.decodeBase64(idpAlias.getBytes()));
+                idp = getCotManager().lookupMemberByAlias(idpAlias);
+            }
+
             if (idp == null) {
                 throw new SSOException("No IDP found in circle of trust for received alias [" + idpAlias + "], verify your setup.");
             }
@@ -2201,15 +2612,19 @@ public class SingleSignOnProducer extends SSOProducer {
 
                     for (EndpointType idpSsoEndpoint : idpSsoRole.getSingleSignOnService()) {
 
-                        SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
-                        if (b.equals(preferredBinding))
-                            return idpSsoEndpoint;
+                        try {
+                            SSOBinding b = SSOBinding.asEnum(idpSsoEndpoint.getBinding());
+                            if (b.equals(preferredBinding))
+                                return idpSsoEndpoint;
 
-                        if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
-                            defaultEndpoint = idpSsoEndpoint;
+                            if (b.equals(SSOBinding.SAMLR2_ARTIFACT))
+                                defaultEndpoint = idpSsoEndpoint;
 
-                        if (defaultEndpoint == null)
-                            defaultEndpoint = idpSsoEndpoint;
+                            if (defaultEndpoint == null)
+                                defaultEndpoint = idpSsoEndpoint;
+                        } catch (IllegalArgumentException e) {
+                            logger.debug("Ignoring unsupported binding " + idpSsoEndpoint.getBinding() + " for endpoint " + idpSsoEndpoint.getLocation());
+                        }
                     }
                     return defaultEndpoint;
                 }
@@ -2266,12 +2681,14 @@ public class SingleSignOnProducer extends SSOProducer {
 
         for (Claim c : claims.getClaims()) {
 
+            // ignore other non-credential claims
             if (!(c instanceof CredentialClaim)) {
                 if (logger.isTraceEnabled())
                     logger.trace("Ignoring non-credential claim " + c);
                 continue;
             }
 
+            // verify token type
             CredentialClaim credentialClaim = (CredentialClaim) c;
 
             if (logger.isDebugEnabled())
@@ -2484,9 +2901,9 @@ public class SingleSignOnProducer extends SSOProducer {
         return saml11Response;
     }
 
-    protected List<SSOPolicyEnforcementStatement> getPolicyEnforcementStatements(AssertionType assertion) {
+    protected List<PolicyEnforcementStatement> getPolicyEnforcementStatements(AssertionType assertion) {
 
-        List<SSOPolicyEnforcementStatement> policyStatements = new ArrayList<SSOPolicyEnforcementStatement>();
+        List<PolicyEnforcementStatement> policyStatements = new ArrayList<PolicyEnforcementStatement>();
         List<StatementAbstractType> stmts = assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement();
 
         if (stmts == null)
@@ -2509,7 +2926,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                         // TODO : Make this 'dynamic' to decouple from specific policy types
                         AttributeType attr = (AttributeType) attrOrEncAttr;
-                        SSOPasswordPolicyEnforcement policy = null;
+                        PolicyEnforcementStatement policy = null;
 
                         if (attr.getName().startsWith(PasswordPolicyEnforcementWarning.NAMESPACE)) {
 
@@ -2532,6 +2949,18 @@ public class SingleSignOnProducer extends SSOProducer {
                                 logger.trace("Processing password policy error statement : " + attr.getFriendlyName());
 
                             policy = new PasswordPolicyEnforcementError(PasswordPolicyErrorType.fromName(attr.getFriendlyName()));
+
+                        } else if (attr.getName().startsWith(PolicyEnforcementWarning.NAMESPACE)) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Processing policy warning statement : " + attr.getFriendlyName());
+
+                            if (attr.getFriendlyName() != null) {
+                                policy = new PolicyEnforcementWarning(attr.getName().substring(0, attr.getName().lastIndexOf(attr.getFriendlyName()) - 1), attr.getFriendlyName());
+                            } else {
+                                policy = new PolicyEnforcementWarning(attr.getName().substring(0, attr.getName().lastIndexOf(":")), attr.getName().substring(attr.getName().lastIndexOf(":") + 1));
+                            }
+                            policy.getValues().addAll(attr.getAttributeValue());
 
                         } else {
                             // What other policies can we handle ?!?
@@ -2581,6 +3010,64 @@ public class SingleSignOnProducer extends SSOProducer {
         return null;
     }
 
+    /**
+     *
+     * @param exchange
+     * @param spProxy
+     * @return
+     * @throws SSOException
+     */
+    private EndpointDescriptor resolveIDPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
+                                                                             ServiceProvider spProxy,
+                                                                             IdentityProvider idp) throws SSOException {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Looking for " + SSOService.SingleSignOnService + "/" +
+                    SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.toString() + " at " + idp.getName());
+
+        // Internal/proxied IdP
+        SPChannel targetSpChannel = null;
+
+        // Look for the SP Channel this IdP uses to talk to us: idpChannelProxy.
+        // We have IdP with SPChannel, and SP with IdP channel
+        for (FederationChannel fChannel : idp.getDefaultFederationService().getOverrideChannels()) {
+
+            if (fChannel.getTargetProvider().getName().equals(spProxy.getName())) {
+                targetSpChannel = (SPChannel) fChannel;
+                break;
+            }
+        }
+
+        if (targetSpChannel == null) {
+            targetSpChannel = (SPChannel) idp.getDefaultFederationService().getChannel();
+        }
+
+        for (IdentityMediationEndpoint ed : targetSpChannel.getEndpoints()) {
+            if (ed.getBinding().equals(SSOBinding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue())) {
+                if (ed.getType().equals(SSOService.SingleSignOnService.toString())) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Found SSO IDP Initiated endpoint " + ed.getName());
+
+                    // WARN : Override locations not supported
+                    String location = targetSpChannel.getLocation() + ed.getLocation();
+                    String responseLocation = ed.getResponseLocation() != null ?
+                            targetSpChannel.getLocation() + ed.getResponseLocation() : null;
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Found SSO IDP Initiated endpoint [" + ed.getName() + "] location " + location);
+
+                    return new EndpointDescriptorImpl(ed.getName(), ed.getType(), ed.getBinding(),
+                            location, responseLocation);
+                }
+
+            }
+        }
+
+        throw new SSOException("No IDP Initiated SSO Endpoint (proxy) found for " + spProxy.getName());
+    }
+
+
     private EndpointDescriptor resolveSPInitiatedSSOProxyEndpointDescriptor(CamelMediationExchange exchange,
                                                                             Channel proxyChannel) throws SSOException {
 
@@ -2594,14 +3081,24 @@ public class SingleSignOnProducer extends SSOProducer {
                 if (logger.isTraceEnabled())
                     logger.trace("Processing endpoint : " + endpoint.getType() + "[" + endpoint.getBinding() + "] from " + proxyChannel.getName());
 
+                // We support two types of SP initated services, the old one has priority
                 if (endpoint.getType().equals(SSOService.SPInitiatedSingleSignOnServiceProxy.toString())) {
-
                     if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
                         if (logger.isDebugEnabled())
                             logger.debug("Found SP Initiated SSO Service endpoint : " + endpoint.getName());
                         // This is the endpoint we're looking for
                         return proxyChannel.getIdentityMediator().resolveEndpoint(proxyChannel, endpoint);
                     }
+                }
+
+                if (endpoint.getType().equals(SSOService.SPInitiatedAuthnServiceProxy.toString())) {
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        if (logger.isDebugEnabled())
+                            logger.debug("Found SP Initiated SSO Service endpoint : " + endpoint.getName());
+                        // This is the endpoint we're looking for
+                        return proxyChannel.getIdentityMediator().resolveEndpoint(proxyChannel, endpoint);
+                    }
+
                 }
             }
         } catch (IdentityMediationException e) {
@@ -2616,18 +3113,32 @@ public class SingleSignOnProducer extends SSOProducer {
      *
      * @return
      */
-    protected SPInitiatedAuthnRequestType buildAuthnProxyRequest(AuthnRequestType source) {
+    protected SPInitiatedAuthnRequestType buildAuthnProxyRequest(AuthnRequestType source, String idpAlias) {
 
         SPInitiatedAuthnRequestType target = new SPInitiatedAuthnRequestType();
         target.setID(uuidGenerator.generateId());
-        target.setPassive(source.getIsPassive() != null ? source.getIsPassive() : false);
-        target.setForceAuthn(source.getForceAuthn() != null ? source.getForceAuthn() : false);
+        target.setPassive(source.getIsPassive());
+        target.setForceAuthn(source.getForceAuthn());
+
+        if (source.getRequestedAuthnContext() != null) {
+            RequestedAuthnContextType requestedAuthnCtx = source.getRequestedAuthnContext();
+            if (requestedAuthnCtx.getAuthnContextClassRef() != null && requestedAuthnCtx.getAuthnContextClassRef().size() > 0)
+            // TODO : Support multiple
+            target.setAuthnCtxClass(requestedAuthnCtx.getAuthnContextClassRef().get(0));
+        }
+
+        if (idpAlias != null) {
+            RequestAttributeType idpAliasAttr = new RequestAttributeType();
+            idpAliasAttr.setName(EntitySelectorConstants.REQUESTED_IDP_ALIAS_ATTR);
+            idpAliasAttr.setValue(idpAlias);
+            target.getRequestAttribute().add(idpAliasAttr);
+        }
 
         if (source.getIssuer() != null) {
             NameIDType issuer = source.getIssuer();
-            // TODO : Other issuer values may be useful here
             target.setIssuer(issuer.getValue());
         }
+
         // Set our proxy endpoint here!
         EndpointDescriptor idpAcsProxy = resolveIdPProxyAcsEndpoint();
         if (idpAcsProxy != null)
@@ -2654,4 +3165,373 @@ public class SingleSignOnProducer extends SSOProducer {
         return null;
     }
 
+    /**
+     * TODO : Perform SAML 2 to SAML 1.1 transformation here
+     *
+     * @param exchange
+     * @param relayState
+     * @param ssoResponse
+     * @param destination
+     * @return
+     * @throws SSOException
+     */
+    protected boolean sendSaml11Response(CamelMediationExchange exchange,
+                                        String relayState,
+                                         oasis.names.tc.saml._1_0.protocol.ResponseType ssoResponse,
+                                        EndpointDescriptor destination) throws SSOException {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Sending SAML 1.1 Response");
+
+        return sendResponse(exchange, relayState, ssoResponse, destination);
+    }
+
+
+    protected boolean sendSaml2Response(CamelMediationExchange exchange,
+                                        String relayState,
+                                        ResponseType ssoResponse,
+                                        EndpointDescriptor destination) throws SSOException {
+        if (logger.isDebugEnabled())
+            logger.debug("Sending SAML 1.1 Response");
+
+        return sendResponse(exchange, relayState, ssoResponse, destination);
+
+    }
+
+    protected boolean sendResponse(CamelMediationExchange exchange,
+                                   String relayState,
+                                   Object ssoResponse,
+                                   EndpointDescriptor destination) throws SSOException {
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+
+        FederationChannel fChannel = (FederationChannel) channel;
+        MediationState state = in.getMessage().getState();
+
+        EndpointDescriptor idpSelectorCallbackEndpoint = resolveIdPSelectorCallbackEndpoint(exchange, fChannel);
+
+        if (idpSelectorCallbackEndpoint != null) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Sending Current Selected IdP request, callback location : " + idpSelectorCallbackEndpoint);
+
+            // Store destination and response
+            CurrentEntityRequestType entityRequest = new CurrentEntityRequestType();
+
+            entityRequest.setID(uuidGenerator.generateId());
+            entityRequest.setIssuer(getCotMemberDescriptor().getAlias());
+            entityRequest.setEntityId(fChannel.getMember().getAlias());
+
+            entityRequest.setReplyTo(idpSelectorCallbackEndpoint.getResponseLocation() != null ?
+                    idpSelectorCallbackEndpoint.getResponseLocation() : idpSelectorCallbackEndpoint.getLocation());
+
+            String idpSelectorLocation = ((SSOIDPMediator) channel.getIdentityMediator()).getIdpSelector();
+
+            if (idpSelectorLocation == null) {
+
+                out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                        ssoResponse, "Response", relayState, destination, in.getMessage().getState()));
+
+                exchange.setOut(out);
+
+                return false;
+            }
+
+            EndpointDescriptor entitySelectorEndpoint = new EndpointDescriptorImpl(
+                    "IDPSelectorEndpoint",
+                    "EntitySelector",
+                    SSOBinding.SSO_ARTIFACT.toString(),
+                    idpSelectorLocation,
+                    null);
+
+            out.setMessage(new MediationMessageImpl(entityRequest.getID(),
+                    entityRequest, "CurrentEntityRequest", null, entitySelectorEndpoint, in.getMessage().getState()));
+
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_VAR_TMP, ssoResponse);
+            state.setLocalVariable(SSOConstants.SSO_RESPONSE_ENDPOINT_VAR_TMP, destination);
+            if (relayState != null)
+                state.setLocalVariable(SSOConstants.SSO_RESPONSE_RELAYSTATE_VAR_TMP, relayState);
+
+            exchange.setOut(out);
+
+            return true;
+        }
+
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                ssoResponse, "Response", relayState, destination, in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+        // No request was issued
+        return false;
+    }
+
+    protected EndpointDescriptor resolveIdPSelectorCallbackEndpoint(CamelMediationExchange exchange,
+                                                                    FederationChannel fChannel) throws SSOException {
+
+        try {
+
+            if(logger.isDebugEnabled())
+                logger.debug("Looking for " + SSOService.IdPSelectorCallbackService.toString() + " on channel " + fChannel.getName());
+
+            for (IdentityMediationEndpoint endpoint : fChannel.getEndpoints()) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+
+                if (endpoint.getType().equals(SSOService.IdPSelectorCallbackService.toString())) {
+
+                    if (endpoint.getBinding().equals(SSOBinding.SSO_ARTIFACT.getValue())) {
+                        // This is the endpoint we're looking for
+                        return  fChannel.getIdentityMediator().resolveEndpoint(fChannel, endpoint);
+                    }
+                }
+            }
+        } catch (IdentityMediationException e) {
+            throw new SSOException(e);
+        }
+
+        return null;
+    }
+
+    protected Locale getLocaleFromAuthRequest(AuthnRequestType authnRequest){
+        if(authnRequest.getExtensions() != null) {
+
+            oasis.names.tc.saml._2_0.protocol.ExtensionsType ext = authnRequest.getExtensions();
+            List<Object> any = ext.getAny();
+
+            if (any == null) {
+                logger.trace("No extension's content in AuthnRequest");
+                return null;
+            }
+
+            for (Object o : any) {
+                // There are other extension types (i.e. SPList)
+                if (o instanceof org.w3c.dom.Node) {
+                    org.w3c.dom.Node n = (Node) o;
+                    String name = n.getLocalName();
+                    String localeCode = n.getTextContent();
+                    if (logger.isDebugEnabled())
+                        logger.debug("Using AuthnRequest locale ["+name+"]: " + localeCode);
+                }
+            }
+
+        } else {
+            logger.trace("No extensions element in AuthnRequest");
+        }
+
+        return null;
+    }
+
+    protected Principal getPrincipal(Subject authnSubject) {
+        Set<SimplePrincipal> principals = authnSubject.getPrincipals(SimplePrincipal.class);
+        if (principals != null && principals.size() > 0)
+            return principals.iterator().next();
+
+        Set<SSOUser> ssoUsers = authnSubject.getPrincipals(SSOUser.class);
+        if (ssoUsers != null && ssoUsers.size() > 0)
+            return ssoUsers.iterator().next();
+
+        return null;
+
+    }
+
+    protected SPSessionHeartBeatResponseType performIdPProxySessionHeartBeat(CamelMediationExchange exchange,
+                                                                             IdPSecurityContext secCtx) throws SSOException {
+
+        try {
+
+            SPChannel spChannel = (SPChannel) channel;
+
+            // Send SP SSO Access Session, using SOAP Binding
+            BindingChannel spBindingChannel = (BindingChannel) spChannel.getProxy();
+            if (spBindingChannel == null) {
+                logger.error("No SP Binding channel found for channel " + channel.getName());
+                throw new SSOException("No proxy channel configured");
+            }
+
+            EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
+            if (logger.isTraceEnabled())
+                logger.trace("Using SP Session Heart-Beat endpoint " + ed + " for partner " + spBindingChannel.getProvider().getName());
+
+            SPSessionHeartBeatRequestType heartBeatReq = new SPSessionHeartBeatRequestType();
+            heartBeatReq.setID(uuidGenerator.generateId());
+            heartBeatReq.setSsoSessionId(secCtx.getIdpProxySessionIndex());
+            heartBeatReq.setIssuer(spChannel.getProvider().getName());
+
+            // Send message to SP Binding Channel
+            SPSessionHeartBeatResponseType heartBeatRes =
+                    (SPSessionHeartBeatResponseType) spBindingChannel.getIdentityMediator().sendMessage(heartBeatReq, ed, channel);
+
+            return heartBeatRes;
+
+        } catch (IdentityMediationException e) {
+            throw new SSOException(e.getMessage(), e);
+        }
+
+    }
+
+    /**
+     * By default extact match is set to false.
+     *
+     * @param assertion
+     * @param attribute
+     * @return
+     */
+    protected String getAssertionValue(AssertionType assertion, String attribute) {
+        return getAssertionValue(assertion, attribute, false);
+    }
+
+    protected String getAssertionValue(AssertionType assertion, String attribute, boolean exactMatch) {
+
+        for (StatementAbstractType stmt : assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement()) {
+            if (stmt instanceof AttributeStatementType) {
+                AttributeStatementType attrStmt = (AttributeStatementType) stmt;
+                for (Object o : attrStmt.getAttributeOrEncryptedAttribute()) {
+                    if (o instanceof AttributeType) {
+                        AttributeType attr = (AttributeType) o;
+                        // The order is important!
+                        if (exactMatch) {
+                            if (attr.getName().equals(attribute))
+                                return (String) attr.getAttributeValue().get(0);
+                        } else
+                            if (attr.getName().startsWith(attribute)) {
+                                return (String) attr.getAttributeValue().get(0);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This will create state alternative keys based on OIDC tokens found in the assertion
+     *
+     * We need to update state for producers running in the IDP channel
+     *
+     * This could be part of the SAML binding ...
+     *
+     * @param in
+     * @param assertion
+     */
+    protected void updateOIDCState(CamelMediationMessage in, AssertionType assertion) {
+
+        MediationState state = in.getMessage().getState();
+
+        String authzCode = getAssertionValue(assertion, WST_OIDC_AUTHZ_CODE_TYPE + "_ID", true);
+        if (authzCode != null) {
+            state.getLocalState().addAlternativeId("code", authzCode);
+        }
+
+        String accessToken = getAssertionValue(assertion, WST_OIDC_ACCESS_TOKEN_TYPE, true);
+        if (accessToken != null) {
+            state.setLocalVariable(WST_OIDC_ACCESS_TOKEN_TYPE, accessToken);
+            state.getLocalState().addAlternativeId("access_token", accessToken);
+        }
+
+        String refreshToken = getAssertionValue(assertion, WST_OIDC_REFRESH_TOKEN_TYPE, true);
+        if (refreshToken != null) {
+            state.setLocalVariable(WST_OIDC_REFRESH_TOKEN_TYPE, refreshToken);
+            state.getLocalState().addAlternativeId("refresh_token", refreshToken);
+        }
+
+        String idToken = getAssertionValue(assertion, WST_OIDC_ID_TOKEN_TYPE, true);
+        if (idToken != null)
+            state.setLocalVariable(WST_OIDC_ID_TOKEN_TYPE, idToken);
+    }
+
+    /**
+     * Validates an Authentication Request
+     *
+     * @param originalRequest
+     * @param request
+     * @param saml2IdpMd
+     * @param saml2SpMd
+     * @param signer
+     * @throws SSORequestException
+     */
+    protected void validateAuthnRequestSignature(String originalRequest,
+                                                 AuthnRequestType request,
+                                                 IDPSSODescriptorType saml2IdpMd,
+                                                 SPSSODescriptorType saml2SpMd,
+                                                 SamlR2Signer signer)
+    throws SSORequestException {
+        Exception err = null;
+
+        // Try validating the signature with the SP Metadata.
+        try {
+            if (originalRequest != null)
+                signer.validateDom(saml2SpMd, originalRequest);
+            else
+                signer.validate(saml2SpMd, request);
+
+        } catch (SamlR2SignatureValidationException e) {
+            err = e;
+        } catch (SamlR2SignatureException e) {
+            err = e;
+        }
+
+        // Signature failed with SP information, try with IDP MD for IDP Initiated scenario ...
+        if (err != null) {
+            try {
+                if (originalRequest != null)
+                    signer.validateDom(saml2IdpMd, originalRequest);
+                else
+                    signer.validate(saml2IdpMd, request);
+                err = null; // Clear previous error, signature is good.
+            } catch (SamlR2SignatureValidationException e) {
+                // Keep old error (from SP MD)
+            } catch (SamlR2SignatureException e) {
+                // Keep old error (from SP MD)
+            }
+        }
+
+        // If we have an error, signal signature error.
+        if (err != null)
+            throw new SSORequestException(request,
+                StatusCode.TOP_REQUESTER,
+                StatusCode.REQUEST_DENIED,
+                StatusDetails.INVALID_RESPONSE_SIGNATURE, err);
+
+    }
+
+    protected boolean markAsProxied(String name) {
+        for (int i = 0; i < proxiedNames.length; i++) {
+            String proxiedName = proxiedNames[i];
+            if (proxiedName.equals(name))
+                return true;
+        }
+        return false;
+    }
+
+    protected IdentityMediationFault buildFault(SecurityTokenAuthenticationFailure e) {
+        if (e.getSsoPolicyEnforcements() != null &&
+                e.getSsoPolicyEnforcements().size() > 0) {
+
+            // Access denied!
+            String d = "";
+            String p = "";
+            for (PolicyEnforcementStatement policy : e.getSsoPolicyEnforcements()) {
+                d += p + policy.getQName().getNamespaceURI() + ":" + policy.getQName().getLocalPart();
+                p = ",";
+            }
+
+            return new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                    StatusCode.AUTHZ_FAILED.getValue(),
+                    d,
+                    e.getMessage(),
+                    null
+            );
+
+        } else {
+
+            return new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+                    StatusCode.AUTHN_FAILED.getValue(),
+                    null,
+                    e.getMessage(),
+                    e
+            );
+        }
+    }
 }

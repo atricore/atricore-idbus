@@ -292,7 +292,8 @@ public class IdentityProviderMBeanImpl extends AbstractProviderMBean
             SPChannel channel = (SPChannel) identityProvider.getChannel();
             SSOSessionManager mgr = channel.getSessionManager();
 
-            return mgr.getStatsCurrentSessions();
+            //return mgr.getStatsCurrentSessions();
+            return mgr.getSessionCount();
         } catch (Exception e) {
             logger.error("Cannot find SSO Sessions count");
             return -1;

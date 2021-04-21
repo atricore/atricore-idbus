@@ -163,9 +163,11 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
 
         String password = null;
         String username = null;
+        String userid = null;
         boolean rememberMe = false;
+        String authnSvc = null;
 
-        // Addapt received simple claims to SAMLR Required token
+        // Adapt received simple claims to SAMLR Required token
         for (Claim c : receivedClaims.getClaims()) {
 
             if (c instanceof CredentialClaim) {
@@ -174,8 +176,15 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
                 if (credentialClaim.getQualifier().equalsIgnoreCase("username"))
                     username = (String) c.getValue();
 
+                if (credentialClaim.getQualifier().equalsIgnoreCase("userid"))
+                    userid = (String) c.getValue();
+
                 if (credentialClaim.getQualifier().equalsIgnoreCase("password"))
                     password = (String) c.getValue();
+
+                if (credentialClaim.getQualifier().equalsIgnoreCase("authnSvc"))
+                    authnSvc = (String) c.getValue();
+
             } else if (c instanceof UserClaim) {
                 UserClaim userClaim = (UserClaim) c;
                 if (userClaim.getName().equalsIgnoreCase("rememberMe"))
@@ -198,12 +207,13 @@ public class UsernamePasswordClaimsProducer extends SSOProducer
         // Build a SAMLR2 Compatible Security token
         UsernameTokenType usernameToken = new UsernameTokenType ();
         AttributedString usernameString = new AttributedString();
-        usernameString.setValue( username );
+        usernameString.setValue( userid != null ? userid : username );  // Prefer userid
 
         usernameToken.setUsername( usernameString );
         usernameToken.getOtherAttributes().put(new QName(Constants.PASSWORD_NS), password );
         usernameToken.getOtherAttributes().put(new QName(authnCtxClass.getValue()), "TRUE");
         usernameToken.getOtherAttributes().put(new QName(Constants.REMEMBERME_NS), rememberMe ? "TRUE" : "FALSE");
+        usernameToken.getOtherAttributes().put(new QName(Constants.AUTHN_SOURCE), authnSvc != null ? authnSvc : null);
 
         CredentialClaim credentialClaim = new CredentialClaimImpl(authnCtxClass.getValue(), usernameToken);
         ClaimSet claims = new ClaimSetImpl();

@@ -154,6 +154,8 @@ trait IdentityFlowDSLTestSupport {
     Map("%s_SECURITY_CTX".format(spChannelName.toUpperCase) -> new IdPSecurityContext(null, null, null))
 
 
+
+
 }
 
 class MockComponent extends DefaultComponent[CamelMediationExchange] {
@@ -197,6 +199,12 @@ class MockCamelMediationExchange(camelContext: CamelContext = new DefaultCamelCo
 case class MockCamelIdentityFlowResponse(response : Option[IdentityFlowResponse], rejections : Option[Set[Rejection]]) extends DefaultMessage
 
 object MockProvisioningTarget extends ProvisioningTarget {
+
+
+  def addUsers(users: util.List[User]): util.List[User] = null
+
+  def findUserNames(usernames: util.List[String]): util.Collection[String] = null
+
   def getName: String = ""
 
   def init() {}
@@ -233,6 +241,8 @@ object MockProvisioningTarget extends ProvisioningTarget {
 
   def removeUser(userRequest: RemoveUserRequest): RemoveUserResponse = null
 
+  def removeUsers(usersRequest: RemoveUsersRequest): RemoveUsersResponse = null
+
   def addUser(userRequest: AddUserRequest): AddUserResponse = null
 
   def prepareAddUser(userRequest: AddUserRequest): PrepareAddUserResponse = null
@@ -254,6 +264,8 @@ object MockProvisioningTarget extends ProvisioningTarget {
   def searchUsers(userRequest: SearchUserRequest): SearchUserResponse = null
 
   def updateUser(userRequest: UpdateUserRequest): UpdateUserResponse = null
+
+  def updateUsers(usersRequest: UpdateUsersRequest): UpdateUsersResponse = null
 
   def getUsersByGroup(usersByGroupRequest: GetUsersByGroupRequest): GetUsersByGroupResponse = null
 
@@ -308,10 +320,6 @@ object MockProvisioningTarget extends ProvisioningTarget {
   def findSecurityTokensByExpiresOnBefore(findSecurityTokensByExpiresOnBeforeRequest: FindSecurityTokensByExpiresOnBeforeRequest): FindSecurityTokensByExpiresOnBeforeResponse = null
 
   def findSecurityTokensByIssueInstantBefore(findSecurityTokensByIssueInstantBeforeRequest: FindSecurityTokensByIssueInstantBeforeRequest): FindSecurityTokensByIssueInstantBeforeResponse = null
-
-  def listUserAccounts(request: ListUserAccountsRequest): ListUserAccountsResponse = null
-
-  def listResources(requesst: ListResourcesRequest): ListResourcesResponse = null
 }
 
 object MockMailService extends MailService {

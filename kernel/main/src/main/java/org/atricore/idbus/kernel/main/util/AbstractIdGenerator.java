@@ -58,6 +58,8 @@ public abstract class AbstractIdGenerator implements IdGenerator {
     private String _entropy;
     private Random _random;
 
+    private String _prefix;
+
     /**
      * The Java class name of the random number generator class to be used
      * when generating assertion identifiers.
@@ -222,4 +224,11 @@ public abstract class AbstractIdGenerator implements IdGenerator {
         _random = null;
     }
 
+    public void setPrefix(String prefix) {
+        this._prefix = prefix;
+    }
+
+    public String getPrefix() {
+        return _prefix;
+    }
 }

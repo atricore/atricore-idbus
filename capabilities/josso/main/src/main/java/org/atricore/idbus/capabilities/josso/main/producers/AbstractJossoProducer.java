@@ -26,6 +26,8 @@ import org.atricore.idbus.capabilities.josso.main.JossoMediator;
 import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
 import org.atricore.idbus.capabilities.josso.main.UnknownAppIdException;
 import org.atricore.idbus.capabilities.sso.support.core.util.ProtocolUtils;
+import org.atricore.idbus.common.sso._1_0.protocol.AbstractPrincipalType;
+import org.atricore.idbus.common.sso._1_0.protocol.SubjectAttributeType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
@@ -45,6 +47,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 import javax.security.auth.Subject;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -167,8 +170,8 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
         return ProtocolUtils.toSubjectType(subject);
     }
 
-    protected Subject toSubject(SubjectType subjectType) {
-        return ProtocolUtils.toSubject(subjectType);
+    protected Subject toSubject(SubjectType subjectType, List additionalAttrs) {
+        return ProtocolUtils.toSubject(subjectType, additionalAttrs);
     }
 
 }

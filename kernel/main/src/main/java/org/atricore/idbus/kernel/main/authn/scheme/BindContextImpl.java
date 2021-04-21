@@ -1,7 +1,7 @@
 package org.atricore.idbus.kernel.main.authn.scheme;
 
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.authn.SSOPasswordPolicyEnforcement;
-import org.atricore.idbus.kernel.main.authn.SSOPolicyEnforcementStatement;
 import org.atricore.idbus.kernel.main.store.identity.BindContext;
 
 import java.io.Serializable;
@@ -13,13 +13,18 @@ import java.util.List;
  */
 public class BindContextImpl implements BindContext, Serializable {
 
-    private List<SSOPolicyEnforcementStatement> ppolicies = new ArrayList<SSOPolicyEnforcementStatement>();
+    private List<PolicyEnforcementStatement> ppolicies = new ArrayList<PolicyEnforcementStatement>();
 
     public void addPasswordPolicyMessages(SSOPasswordPolicyEnforcement msg) {
         ppolicies.add(msg);
     }
 
-    public List<SSOPolicyEnforcementStatement> getSSOPolicies() {
+    public void addPolicyEnforcementStatement(PolicyEnforcementStatement msg) {
+        ppolicies.add(msg);
+    }
+
+
+    public List<PolicyEnforcementStatement> getSSOPolicies() {
         return ppolicies;
     }
 }

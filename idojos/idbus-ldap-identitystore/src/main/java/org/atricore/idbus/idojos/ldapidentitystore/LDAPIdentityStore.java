@@ -33,7 +33,6 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.*;
-import javax.naming.ldap.Control;
 import javax.naming.ldap.InitialLdapContext;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
@@ -171,6 +170,9 @@ public class LDAPIdentityStore extends AbstractStore  {
     private String _userPropertiesQueryString;
     private String _ldapSearchScope;
     private String _updateableCredentialAttribute;
+    private boolean _includeOperationalAttributes;
+
+    private String _referrals = "follow";
 
     // ----------------------------------------------------- Constructors
 
@@ -231,6 +233,9 @@ public class LDAPIdentityStore extends AbstractStore  {
 
             // Store User DN as a SSOUser property.
             String dn = selectUserDN(((SimpleUserKey) key).getId());
+            userProperties.add(new SSONameValuePair("dn", dn));
+
+            // For backward compatibility
             userProperties.add(new SSONameValuePair("josso.user.dn", dn));
 
             SSONameValuePair[] props = (SSONameValuePair[])
@@ -463,7 +468,7 @@ public class LDAPIdentityStore extends AbstractStore  {
                 String uidValue = uidAttr.get().toString();
 
                 if (uidValue != null) {
-                    dn = sr.getName() + "," + usersCtxDN;
+                    dn = sr.getNameInNamespace();
                     if (logger.isDebugEnabled())
                         logger.debug("Found user '" + principalUidAttrName + "=" + uidValue + "' for user '" + uid + "' DN=" + dn);
                 } else {
@@ -578,7 +583,11 @@ public class LDAPIdentityStore extends AbstractStore  {
 
                 for (int j = 0; j < credentialAttr.length; j++) {
 
-                    Object credentialObject = attrs.get(credentialAttr[j]).get();
+                    Attribute attr = attrs.get(credentialAttr[j]);
+                    if (attr == null)
+                        continue;
+
+                    Object credentialObject = attr.get();
                     String credentialName = (String) credentialQueryMap.get(credentialAttr[j]);
                     String credentialValue = null;
 
@@ -799,11 +808,11 @@ public class LDAPIdentityStore extends AbstractStore  {
             env.put(Context.SECURITY_CREDENTIALS, securityCredential);
 
         // always follow referrals transparently
-        env.put(Context.REFERRAL, "follow");
+        env.put(Context.REFERRAL, _referrals);
 
         // Logon into LDAP server
         if (logger.isDebugEnabled())
-            logger.debug("Logging into LDAP server, env=" + env);
+            logger.debug("Logging into LDAP server...");
 
         InitialLdapContext ctx = new InitialLdapContext(env, null);
 
@@ -879,6 +888,8 @@ public class LDAPIdentityStore extends AbstractStore  {
         SearchControls sc = new SearchControls();
         sc.setSearchScope(_ldapSearchScope == null || _ldapSearchScope.equalsIgnoreCase("ONELEVEL") ?
                 SearchControls.ONELEVEL_SCOPE : SearchControls.SUBTREE_SCOPE);
+        if (isIncludeOperationalAttributes())
+            sc.setReturningAttributes(new String[] { "*", "+" });
         return sc;
     }
 
@@ -1015,5 +1026,21 @@ public class LDAPIdentityStore extends AbstractStore  {
 
     public void setUpdateableCredentialAttribute ( String updateableCredentialAttribute ) {
         this._updateableCredentialAttribute = updateableCredentialAttribute;
+    }
+
+    public String getReferrals() {
+        return _referrals;
+    }
+
+    public void setReferrals(String referrals) {
+        this._referrals = referrals;
+    }
+
+    public boolean isIncludeOperationalAttributes() {
+        return _includeOperationalAttributes;
+    }
+
+    public void setIncludeOperationalAttributes(boolean includeOperationalAttributes) {
+        this._includeOperationalAttributes = includeOperationalAttributes;
     }
 }

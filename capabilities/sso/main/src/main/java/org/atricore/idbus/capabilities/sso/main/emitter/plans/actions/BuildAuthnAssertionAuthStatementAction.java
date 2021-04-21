@@ -26,12 +26,20 @@ import oasis.names.tc.saml._2_0.assertion.AuthnContextType;
 import oasis.names.tc.saml._2_0.assertion.AuthnStatementType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.AttributeProfileRegistry;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.SamlR2AttributeProfileMapper;
+import org.atricore.idbus.capabilities.sso.main.emitter.plans.actions.attributes.SamlR2AttributeProfileType;
 import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
+import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
+import org.osgi.framework.ServiceReference;
+import org.springframework.osgi.context.support.OsgiBundleXmlApplicationContext;
 
+import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
 import java.util.Date;
 
@@ -47,6 +55,12 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
 
     private static final Log logger = LogFactory.getLog(BuildAuthnAssertionAuthStatementAction.class);
 
+
+
+
+
+
+
     @Override
     protected void doExecute(IdentityArtifact in , IdentityArtifact out, ExecutionContext executionContext) {
         logger.debug("starting action");
@@ -57,6 +71,14 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
 
         SamlR2SecurityTokenEmissionContext ctx =
                 (SamlR2SecurityTokenEmissionContext) executionContext.getContextInstance().getVariable(RST_CTX);
+
+        Subject subject = (Subject) executionContext.getContextInstance().getVariable(WSTConstants.SUBJECT_PROP);
+
+        String mapperName = ctx.getAttributeProfile();
+        SamlR2AttributeProfileMapper mapper = resolveMapper(mapperName);
+        if (mapper == null) {
+            logger.error("No identity mapper found for " + ctx.getMember().getAlias());
+        }
 
         // Get user SSO Session information!
         AuthnStatementType authnStatement;
@@ -87,7 +109,7 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
             AuthnContextType authnContext = new AuthnContextType();
 
             JAXBElement<String> authnCtx= samlObjectFactory.createAuthnContextClassRef(
-                    ctx.getAuthnState().getCurrentAuthnCtxClass().getValue()
+                    mapper.toAuthnCtxClass(subject, ctx.getAuthnState().getCurrentAuthnCtxClass()).getValue()
             );
             authnContext.getContent().add(authnCtx);
             authnStatement.setAuthnContext(authnContext);
@@ -124,15 +146,19 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSSOAssertion
             AuthnContextType authnContext = new AuthnContextType();
 
             JAXBElement<String> authnCtx= samlObjectFactory.createAuthnContextClassRef(
-                authnCtxClass
+                    mapper.toAuthnCtxClass(subject, AuthnCtxClass.asEnum(authnCtxClass)).getValue()
             );
             authnContext.getContent().add(authnCtx);
             authnStatement.setAuthnContext(authnContext);
         }
+
+
 
         assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().add(authnStatement);
 
 
         logger.debug("ending action");
     }
+
+
 }

@@ -1,11 +1,10 @@
 package org.atricore.idbus.capabilities.sso.main;
 
-import oasis.names.tc.saml._2_0.metadata.EndpointType;
-import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
-import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.sso.support.binding.SSOBinding;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
@@ -71,9 +70,27 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
 
             Document doc = marshalDefinition(je);
 
+
             MetadataDefinition<Document> md = new MetadataDefinition<Document>();
             md.setDefinition(doc);
             md.setId(memberDescriptor.getId());
+
+            Document strictDoc = marshalDefinition(je);
+            md.setStrictDefinition(strictDoc);
+
+            MetadataEntry entry = searchEntityDefinition(md, memberDescriptor.getAlias(), true);
+
+            EntityDescriptorType samlMd = (EntityDescriptorType) entry.getEntry();
+
+            for (RoleDescriptorType roleDescriptor : samlMd.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+                if (roleDescriptor instanceof SPSSODescriptorType) {
+                    SPSSODescriptorType spDescriptor = (SPSSODescriptorType) roleDescriptor;
+                    prepareSPDescriptor(entry, spDescriptor);
+                } else if (roleDescriptor instanceof IDPSSODescriptorType) {
+                    IDPSSODescriptorType idpDescriptor = (IDPSSODescriptorType) roleDescriptor;
+                    prepareIdPDescriptor(entry, idpDescriptor);
+                }
+            }
 
             return md;
 
@@ -86,15 +103,22 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
 
     public MetadataEntry searchEntityDefinition(MetadataDefinition def, String entityId)
             throws CircleOfTrustManagerException {
+        return searchEntityDefinition(def, entityId, false);
+    }
+
+
+
+    public MetadataEntry searchEntityDefinition(MetadataDefinition def, String entityId, boolean strict)
+            throws CircleOfTrustManagerException {
         try {
 
-            Document doc = (Document) def.getDefinition();
+            Document doc = (Document) (strict ? def.getStrictDefinition() : def.getDefinition());
 
             String xpathExpr = "//"+SAMLR2_MD_LOCAL_NS+":EntityDescriptor[@entityID='"+entityId+"']";
             if (logger.isDebugEnabled())
                 logger.debug("Looking entity descriptor using xpath: " + xpathExpr);
 
-            String key = def.getId() + ":" + entityId + ":" + xpathExpr;
+            String key = def.getId() + ":" + entityId + ":" + xpathExpr + ":" + strict;
 
             // See if we have this cached
             MetadataEntry e = (MetadataEntry) cache.get(key);
@@ -399,6 +423,71 @@ public class SamlR2MetadataDefinitionIntrospector implements MetadataDefinitionI
             return str.substring(pos + 1);
         return str;
 
+    }
+
+
+    protected void prepareIdPDescriptor(MetadataEntry mdEntry, IDPSSODescriptorType mdIdP) {
+
+        // Remove services using non-normative protocols (i.e. local:)
+        // We assume that we're altering the actual list!
+        synchronized (mdIdP) {
+            removeNonNormativeEndpoints(mdIdP.getAssertionIDRequestService());
+            removeNonNormativeEndpoints(mdIdP.getSingleSignOnService());
+            removeNonNormativeEndpoints(mdIdP.getNameIDMappingService());
+            removeNonNormativeEndpoints(mdIdP.getManageNameIDService());
+            removeNonNormativeEndpoints(mdIdP.getSingleLogoutService());
+            removeNonNormativeIndexedEndpoints(mdIdP.getArtifactResolutionService());
+        }
+
+    }
+
+    protected void prepareSPDescriptor(MetadataEntry mdEntry, SPSSODescriptorType mdSP) {
+        // Remove services using non-normative protocols (i.e. local:)
+        // We assume that we're altering the actual list!
+        synchronized (mdSP) {
+            removeNonNormativeEndpoints(mdSP.getManageNameIDService());
+            removeNonNormativeEndpoints(mdSP.getSingleLogoutService());
+            removeNonNormativeIndexedEndpoints(mdSP.getAssertionConsumerService());
+            removeNonNormativeIndexedEndpoints(mdSP.getArtifactResolutionService());
+        }
+    }
+
+    protected void removeNonNormativeIndexedEndpoints(List<IndexedEndpointType> endpoints) {
+        List<IndexedEndpointType> validEdpoints = new ArrayList<IndexedEndpointType>();
+
+        for (IndexedEndpointType endpoint : endpoints) {
+            if (endpoint.getBinding() == null) {
+                continue;
+            }
+
+            SSOBinding b = SSOBinding.asEnum(endpoint.getBinding());
+            if (!b.isNormative())
+                continue;
+
+            validEdpoints.add(endpoint);
+        }
+
+        endpoints.clear();
+        endpoints.addAll(validEdpoints);
+    }
+
+    protected void removeNonNormativeEndpoints(List<EndpointType> endpoints) {
+        List<EndpointType> validEdpoints = new ArrayList<EndpointType>();
+
+        for (EndpointType endpoint : endpoints) {
+            if (endpoint.getBinding() == null) {
+                continue;
+            }
+
+            SSOBinding b = SSOBinding.asEnum(endpoint.getBinding());
+            if (!b.isNormative())
+                continue;
+
+            validEdpoints.add(endpoint);
+        }
+
+        endpoints.clear();
+        endpoints.addAll(validEdpoints);
     }
 
 

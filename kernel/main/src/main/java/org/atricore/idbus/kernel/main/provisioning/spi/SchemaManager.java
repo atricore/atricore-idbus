@@ -7,11 +7,8 @@ import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningExcepti
 import java.util.Collection;
 
 /**
- * @Deprecated now replaced by the new IDM module
- *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Deprecated
 public interface SchemaManager {
 
     String getSchemaName();

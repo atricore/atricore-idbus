@@ -85,10 +85,6 @@
         <bundle start-level="35">mvn:org.springframework/spring-jms/${spring.version}</bundle>
         <bundle start-level="35">mvn:org.springframework/spring-tx/${spring.version}</bundle>
     </feature>
-    <feature name="spring-security" version="${spring.version}">
-        <bundle start-level="35">mvn:org.springframework.security/spring-security-core/${spring.version}</bundle>
-        <bundle start-level="35">mvn:org.springframework.security/spring-security-web/${spring.version}</bundle>
-    </feature>
     <feature name="spring-dm" version="${spring.osgi.version}" resolver="(obr)">
         <feature version="[2.5.6,4)">spring</feature>
         <bundle dependency='true'>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.cglib/${cglib.bundle.version}</bundle>
@@ -167,7 +163,7 @@
         </config-->
         <bundle start-level="40">mvn:org.apache.mina/mina-core/${mina.version}</bundle>
         <bundle start-level="40">mvn:org.apache.sshd/sshd-core/${sshd.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karaf.version}</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.bundles/org.apache.karaf.shell.ssh-v2_2_3/${idbus.bundle.karaf-shell-v2_2_3.version}</bundle>
     </feature>
     <feature name="management" version="${karaf.version}">
         <bundle start-level="40">mvn:org.apache.karaf/org.apache.karaf.management/${karaf.version}</bundle>

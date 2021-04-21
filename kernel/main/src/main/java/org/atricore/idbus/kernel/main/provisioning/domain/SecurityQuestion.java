@@ -16,17 +16,6 @@ public class SecurityQuestion implements Serializable {
 
     private String defaultMessage;
 
-
-    public SecurityQuestion() {
-
-    }
-
-    public SecurityQuestion(String id, String messageKey, String defaultMessage) {
-        this.id = id;
-        this.messageKey = messageKey;
-        this.defaultMessage = defaultMessage;
-    }
-
     public String getId() {
         return id;
     }

@@ -6,7 +6,11 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class ConfirmResetPasswordRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -1739068098156498718L;
+
     private String transactionId;
+
+    private String code;
 
     private String newPassword;
 
@@ -24,5 +28,13 @@ public class ConfirmResetPasswordRequest extends AbstractProvisioningRequest {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

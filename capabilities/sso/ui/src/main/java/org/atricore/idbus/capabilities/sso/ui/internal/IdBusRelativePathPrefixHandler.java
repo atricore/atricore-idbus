@@ -24,7 +24,7 @@ import java.text.ParseException;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class IdBusRelativePathPrefixHandler extends AbstractMarkupFilter implements IComponentResolver {
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * Logging
@@ -54,8 +54,6 @@ public class IdBusRelativePathPrefixHandler extends AbstractMarkupFilter impleme
      * context-relative
      */
     public final Behavior IDBUS_RELATIVE_PATH_BEHAVIOR = new Behavior() {
-        
-        private static final long serialVersionUID = 1L;
         
         @Override
         public void onComponentTag(Component component, ComponentTag tag) {

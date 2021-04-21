@@ -90,6 +90,24 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <osgi:listener ref="osgi-session-event-manager" bind-method="register" unbind-method="unregister" />
     </osgi:list>
 
+
+    <!-- =================================================================== -->
+    <!-- SSO Session Manager Factory registry                                -->
+    <!-- =================================================================== -->
+    <bean id="ssoSessionManagerFactoryRegistry" class="org.atricore.idbus.kernel.main.session.SSOSessionManagerRegistry" />
+
+    <bean id="osgiSSOSessionManagerFactoryRegistry" class="org.atricore.idbus.kernel.main.session.OSGISessionManagerFactoryListener">
+        <constructor-arg ref="ssoSessionManagerFactoryRegistry" />
+    </bean>
+
+    <osgi:list id="ssoSessionManagerFactories" interface="org.atricore.idbus.kernel.main.session.SSOSessionManagerFactory"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiSSOSessionManagerFactoryRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
+    <osgi:service id="ssoSessionManagerFactorySvc" ref="ssoSessionManagerFactoryRegistry"
+                  interface="org.atricore.idbus.kernel.main.session.SSOSessionManagerRegistry"/>
+
     <!-- =================================================================== -->
     <!-- Mail Service with default configuration -->
     <!-- =================================================================== -->
@@ -97,15 +115,13 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <bean name="mailService" class="org.atricore.idbus.kernel.main.mail.MailServiceImpl">
         <property name="senders">
             <list>
-                <bean class="org.atricore.idbus.kernel.main.mail.MailSender" init-method="init">
+                <bean class="org.atricore.idbus.kernel.main.mail.MailSenderImpl" init-method="init">
                     <property name="name" value="default"/>
                     <property name="host" value="${mail.smtp.host}"/>
                     <property name="port" value="${mail.smtp.port}"/>
-                    <property name="auth" value="${mail.smtp.auth}"/>
-                    <property name="starttlsEnable" value="${mail.smtp.starttls.enable}"/>
-
                     <property name="username" value="${mail.username}"/>
                     <property name="password" value="${mail.password}"/>
+                    <property name="startTls" value="${mail.smtp.starttls.enable}"/>
                 </bean>
             </list>
         </property>
@@ -147,7 +163,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <bean id="mediationEngine" class="org.atricore.idbus.kernel.main.mediation.MediationEngineImpl">
         <property name="registry" ref="idsuRegistry"/>
     </bean>
-            
+
     <bean id="idsuRegistry" class="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistryImpl" >
         <property name="listeners">
             <set>
@@ -183,6 +199,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
         <!-- AQM Properties -->
+        <prop key="aqm.builder">aqm-memory</prop>
+        <!--prop key="aqm.builder">aqm-ehcache</prop-->
+
+        <!-- For ActiveMQ MQM (deprecated) -->
         <prop key="aqm.brokerName">aq1</prop>
         <prop key="aqm.host">localhost</prop>
         <prop key="aqm.bind">127.0.0.1</prop>
@@ -195,26 +215,30 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="aqm.receiveTimeout">30000</prop>
         <prop key="aqm.useCompression">false</prop>
 
-        <!-- For memroy AQM -->
+        <!-- For Memory MQM -->
         <prop key="aqm.monitorInterval">30</prop>
         <prop key="aqm.artifactTTL">30</prop>
 
+        <!-- For EHCache MQM -->
+
         <!-- EHCache properties -->
         <prop key="ehcache.config">file:${karaf.base}/etc/ehcache.xml</prop>
+
+        <!-- HTTP Properties -->
         <prop key="binding.http.ajax">false</prop>
         <prop key="binding.http.secureCookies">false</prop>
         <prop key="binding.http.followRedirects">true</prop>
+        <prop key="binding.http.processingUIenabled">true</prop>
         <prop key="binding.http.reuseHttpClient">false</prop>
         <prop key="binding.http.localTargetBaseUrl">http://localhost:8081</prop>
+        <prop key="binding.http.displayErrorDebugInfo">true</prop>
 
         <!-- Default Mail properties -->
         <prop key="mail.smtp.host">localhost</prop>
         <prop key="mail.smtp.port">25</prop>
-        <prop key="mail.smtp.auth">false</prop>
-        <prop key="mail.smtp.starttls.enable">false</prop>
-
         <prop key="mail.username">admin</prop>
         <prop key="mail.password">admin</prop>
+        <prop key="mail.smtp.starttls.enable">false</prop>
 
         <prop key="binding.josso.maxUnresolvedAssertions">100</prop>
 
@@ -226,11 +250,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <constructor-arg ref="kernelProps"/>
     </bean>
 
-    <osgi:service id="kernelConfigExporter" ref="kernelConfig" 
+    <osgi:service id="kernelConfigExporter" ref="kernelConfig"
                   interface="org.atricore.idbus.kernel.main.util.ConfigurationContext"/>
 
     <!-- placeholder configurer -->
 
 
 </beans>
-

@@ -47,9 +47,11 @@ public class OAuth2BindingFactory extends MediationBindingFactory implements App
             case OAUTH2_SOAP:
                 mb = new OAuth2SoapBinding(channel);
                 break;
-
             case OAUTH2_RESTFUL:
                 mb = new OAuth2RestfulBinding(channel);
+                break;
+            case OAUTH2_REDIRECT:
+                mb = new OAuth2HttpRedirectBinding(channel);
                 break;
 
             case SSO_ARTIFACT:

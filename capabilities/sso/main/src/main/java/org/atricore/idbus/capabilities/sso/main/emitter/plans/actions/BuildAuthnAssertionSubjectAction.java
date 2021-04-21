@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.sso.main.emitter.plans.SubjectNameIDBuilder;
+import org.atricore.idbus.capabilities.sso.main.idp.plans.actions.InitializeLogoutRequestAction;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.sso.support.core.util.DateUtils;
 import org.atricore.idbus.capabilities.sso.support.profiles.SubjectConfirmationMethod;
@@ -198,6 +199,11 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
     }
 
 
+    /**
+     * @see InitializeLogoutRequestAction#resolveNameIDPolicy()
+     * @param ctx
+     * @return
+     */
     protected NameIDPolicyType resolveNameIDPolicy(SamlR2SecurityTokenEmissionContext ctx) {
 
         // Take NameID policy from request
@@ -231,37 +237,4 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
         return nameIDPolicy;
     }
 
-    protected SubjectNameIDBuilder resolveNameIDBuiler(ExecutionContext executionContext, NameIDPolicyType nameIDPolicy) {
-
-        Boolean ignoreRequestedNameIDPolicy = (Boolean) executionContext.getContextInstance().getTransientVariable(VAR_IGNORE_REQUESTED_NAMEID_POLICY);
-
-        SubjectNameIDBuilder defaultNameIDBuilder = (SubjectNameIDBuilder) executionContext.getContextInstance().getTransientVariable(VAR_DEFAULT_NAMEID_BUILDER);
-        if (ignoreRequestedNameIDPolicy != null && ignoreRequestedNameIDPolicy) {
-            if (logger.isDebugEnabled())
-                logger.debug("Ignoring requested NameIDPolicy, using DefaultNameIDBuilder : " + defaultNameIDBuilder);
-            return defaultNameIDBuilder;
-        }
-
-        Collection<SubjectNameIDBuilder> nameIdBuilders =
-                (Collection<SubjectNameIDBuilder>) executionContext.getContextInstance().getTransientVariable(VAR_NAMEID_BUILDERS);
-
-        if (nameIdBuilders == null || nameIdBuilders.size() == 0)
-            throw new RuntimeException("No NameIDBuilders configured for plan!");
-
-        for (SubjectNameIDBuilder nameIDBuilder : nameIdBuilders) {
-
-            if (nameIDBuilder.supportsPolicy(nameIDPolicy)) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Using NameIDBuilder : " + nameIDBuilder);
-                return nameIDBuilder;
-
-            }
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Using DefaultNameIDBuilder : " + defaultNameIDBuilder);
-
-        return defaultNameIDBuilder;
-
-    }
 }

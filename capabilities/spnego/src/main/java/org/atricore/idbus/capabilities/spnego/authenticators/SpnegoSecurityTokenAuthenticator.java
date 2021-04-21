@@ -20,7 +20,7 @@ public class SpnegoSecurityTokenAuthenticator extends AbstractSecurityTokenAuthe
     public static final String TICKET_NS = "urn:org:atricore:idbus:kernel:main:authn:ticket";
 
     public SpnegoSecurityTokenAuthenticator() {
-        super();
+        super(SCHEME_NAME);
         setScheme(SCHEME_NAME);
     }
 

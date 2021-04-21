@@ -2,9 +2,10 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 
 import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.SelectionType;
+import oasis.names.tc.spml._2._0.atricore.UserSearchCriteriaType;
+import oasis.names.tc.spml._2._0.atricore.UserSearchRequestType;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
-import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
@@ -17,7 +18,7 @@ import javax.xml.namespace.QName;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "usrlookup", description = "SPML User SEARCH operation")
+@Command(scope = "spml", name = "usrsearch", description = "SPML User SEARCH operation")
 public class UserSearchCommand extends SpmlCommandSupport {
     
     @Option(name = "-q", aliases = "--query", description = "SPML User search query", required = false, multiValued = false)
@@ -29,7 +30,7 @@ public class UserSearchCommand extends SpmlCommandSupport {
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) {
-        SearchRequestType spmlRequest = new SearchRequestType();
+        UserSearchRequestType spmlRequest = new UserSearchRequestType();
         spmlRequest.setRequestID(uuidGenerator.generateId());
         spmlRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
@@ -44,6 +45,13 @@ public class UserSearchCommand extends SpmlCommandSupport {
 
         if (username != null)
             qry = "/users[userName='"+username+"']";
+
+        UserSearchCriteriaType userSearchCriteria = new UserSearchCriteriaType();
+        userSearchCriteria.setUserName(username);
+        userSearchCriteria.setExactMatch(true);
+        spmlRequest.setUserSearchCriteria(userSearchCriteria);
+        spmlRequest.setFromResult(0l);
+        spmlRequest.setResultCount(0l);
 
         spmlSelect.setPath(qry);
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");

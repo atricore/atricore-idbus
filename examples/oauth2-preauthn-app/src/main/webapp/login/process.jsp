@@ -1,9 +1,10 @@
-1<%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2Client" %>
+<%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2Client" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.client.OAuth2ClientException" %>
-<%@ page import="org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolver" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.common.OAuth2AccessToken" %>
+<%@ page import="org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolver" %>
 <%@ page import="org.atricore.idbus.capabilities.oauth2.rserver.AccessTokenResolverFactory" %>
-<%@ page import="java.util.Properties" %>
+<%@ page import="org.atricore.idbus.common.oauth._2_0.protocol.SSOPolicyEnforcementStatementType" %>
+<%@ page import="java.util.List" %>
 <%
 
     // Create oauth 2 client using properties file and initialize it
@@ -22,19 +23,40 @@
         String relayState = (String) session.getAttribute("relay_state");
 
         // This requests a token from the JOSSO server using the configured SOAP response endpoint
-        String accessToken = client.requestToken(request.getParameter("username"), request.getParameter("password"));
+
 
         // Resolve the token to get user details
-        OAuth2AccessToken at = tokenResolver.resolve(accessToken);
-        String userId = at.getUserId();
-        String email = at.getAttribute("email");
 
-        // Build the idpUrl based on the received token
+        if (relayState != null) {
+            String accessToken = client.requestToken(request.getParameter("username"), request.getParameter("password"));
 
-        String idpUrl = client.buildIdPPreAuthnResponseUrl(relayState, accessToken);
+            // Build the idpUrl based on the received token
+            OAuth2AccessToken at = tokenResolver.resolve(accessToken);
+            String userId = at.getUserId();
+            String email = at.getAttribute("email");
 
-        // Redirect the user to the received URL
-        response.sendRedirect(idpUrl);
+            String idpUrl = client.buildIdPPreAuthnResponseUrl(relayState, accessToken);
+
+            boolean rememberMe = Boolean.parseBoolean(request.getParameter("rememberMe"));
+            if (rememberMe)
+                idpUrl = idpUrl + "&remember_me=true";
+
+
+            session.removeAttribute("relay_state");
+
+            // Redirect the user to the received URL
+            response.sendRedirect(idpUrl);
+        } else {
+            String defaultSPAlias = "https://josso.atricore.com/IDBUS/IDA-1/SP-APP-1/SAML2/MD";
+            String idpUrl = client.buildIdPInitPreAuthnUrl(defaultSPAlias, request.getParameter("username"), request.getParameter("password"));
+
+            boolean rememberMe = Boolean.parseBoolean(request.getParameter("rememberMe"));
+            if (rememberMe)
+                idpUrl = idpUrl + "&remember_me=true";
+
+            // Redirect the user to the received URL
+            response.sendRedirect(idpUrl);
+        }
 
         return;
     } catch (OAuth2ClientException e) {
@@ -56,6 +78,17 @@
 </p>
 <p>
     Error Details:
+
+    <%
+        List<SSOPolicyEnforcementStatementType> ssoPolicyEnforcements = ((OAuth2ClientException) error).getSsoPolicyEnforcements();
+        if (ssoPolicyEnforcements != null && ssoPolicyEnforcements.size() > 0) {%>
+            <br/><br/>Policy Enforcements:<br/><br/>
+            <%for (SSOPolicyEnforcementStatementType stmt : ssoPolicyEnforcements) {%>
+                <%=stmt.getName()%>
+                <br/><br/>
+            <%}
+        }
+    %>
 
     <% // Look for the root cause of the problem
         Throwable cause = error.getCause();

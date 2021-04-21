@@ -29,20 +29,20 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.openid</groupId>
         <artifactId>openid</artifactId>
-        <version>1.5.0-SNAPSHOT</version>
+        <version>1.5.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.openid</groupId>
     <artifactId>org.atricore.idbus.capabilities.openid.ui</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : OpenID UI Component</name>
 
     <properties>
-        <idbus.cap.sso.version>1.5.0-SNAPSHOT</idbus.cap.sso.version>
-        <ops4j.paxwicket.version>2.1.0</ops4j.paxwicket.version>
+        <idbus.cap.sso.version>1.5.1-SNAPSHOT</idbus.cap.sso.version>
+        <ops4j.paxwicket.version>2.1.1</ops4j.paxwicket.version>
         <!--apache-wicket.version>1.4.19</apache-wicket.version-->
-        <apache-wicket.version>6.5.0</apache-wicket.version>
+        <apache-wicket.version>6.7.0</apache-wicket.version>
         <pax.web.version>0.7.2</pax.web.version>
     </properties>
 
@@ -451,8 +451,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>

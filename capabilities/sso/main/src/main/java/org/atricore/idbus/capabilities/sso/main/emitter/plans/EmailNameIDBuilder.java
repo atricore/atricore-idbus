@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.sso.main.emitter.plans;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.NameIDPolicyType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
@@ -14,9 +15,15 @@ import javax.security.auth.Subject;
  */
 public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
 
-    private static final Log logger = LogFactory.getLog(UnspecifiedNameIDBuiler.class);
+    private static final Log logger = LogFactory.getLog(EmailNameIDBuilder.class);
 
     private String[] emailPropNames = {"email", "mail", "mailAddress", "emailAddress"};
+
+    private String ssoUserProperty = null;
+
+    public boolean supportsPolicy(String nameIDPolicy) {
+        return nameIDPolicy.equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
+    }
 
     public boolean supportsPolicy(NameIDPolicyType nameIDPolicy) {
         return nameIDPolicy.getFormat().equalsIgnoreCase(NameIDFormat.EMAIL.getValue());
@@ -42,13 +49,31 @@ public class EmailNameIDBuilder extends AbstractSubjectNameIDBuilder {
     }
 
     protected String getEmail(SSOUser ssoUser, String[] emailPropNames) {
+
+        String email = null;
+        if (StringUtils.isNotBlank(ssoUserProperty)) {
+            email = getPropertyValue(ssoUser, ssoUserProperty);
+            logger.trace("Using email from property " + ssoUserProperty + ": " + email);
+            return email;
+        }
+
         for (int i = 0; i < emailPropNames.length; i++) {
             String emailPropName = emailPropNames[i];
-            String email = getPropertyValue(ssoUser, emailPropName);
-            if (email != null)
+            email = getPropertyValue(ssoUser, emailPropName);
+            if (email != null) {
+                logger.trace("Using email from default property " + emailPropName + ": " + email);
                 return email;
+            }
         }
 
         return null;
+    }
+
+    public String getSsoUserProperty() {
+        return ssoUserProperty;
+    }
+
+    public void setSsoUserProperty(String ssoUserProperty) {
+        this.ssoUserProperty = ssoUserProperty;
     }
 }

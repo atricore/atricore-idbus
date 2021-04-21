@@ -21,6 +21,7 @@
 
 package org.atricore.idbus.capabilities.sso.component.builtin.directives
 
+import oasis.names.tc.saml._2_0.protocol.RequestedAuthnContextType
 import org.atricore.idbus.capabilities.sso.dsl.core._
 import directives.BasicIdentityFlowDirectives
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage
@@ -78,7 +79,9 @@ trait ClaimDirectives extends Logging {
           val claimChannels = spChannel.getClaimProviders
 
           claimChannels.foreach { claimChannel =>
+            //log.trace("claimChannel:" + claimChannel.getName)
             claimChannel.getEndpoints.foreach { claimEndpoint =>
+              //log.trace("claimEndpoint:" + claimEndpoint.getName)
               if (claimEndpoint.getName == as.getCurrentClaimsEndpoint.getName) {
                 log.debug(
                   "Retrying claim endpoint " + claimEndpoint.getName + ". Already tried " +
@@ -107,10 +110,15 @@ trait ClaimDirectives extends Logging {
                     cc =>
                       cc.getEndpoints.filter{
                         ep =>
-                        // consider only unused artifact and local bindings
+
+                          //log.debug("Claims endpoint #" + ep.getName)
+
+                          // consider only unused artifact and local bindings
                           (ep.getBinding == SSOBinding.SSO_ARTIFACT.getValue ||
                             ep.getBinding == SSOBinding.SSO_LOCAL.getValue) &&
                             !as.getUsedClaimsEndpoints.contains(ep.getName)
+
+
                       }.filter {
                         ep =>
                             val authnCtxClass = AuthnCtxClass.asEnum(ep.getType)
@@ -122,6 +130,18 @@ trait ClaimDirectives extends Logging {
                               case _ =>
                                 true
                             }
+                      }.filter {
+                        ep =>
+
+                          val authnCtxClass = AuthnCtxClass.asEnum(ep.getType)
+
+                          // If AuthnContext was requested, match one of them.
+                          Option(authnRequest.getRequestedAuthnContext) match {
+                            case Some(requestedAuthnCtx) if (!requestedAuthnCtx.getAuthnContextClassRef.contains(authnCtxClass.getValue)) =>
+                              false
+                            case _ =>
+                              true
+                          }
                       }.filter {
                         ep =>
                           // if no authentication context has been requested fallback only to endpoints supporting

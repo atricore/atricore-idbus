@@ -5,6 +5,8 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class SetPasswordRequest extends AbstractProvisioningRequest {
 
+    private static final long serialVersionUID = -4739068098156498718L;
+
     private String userId;
 
     private String currentPassword;
