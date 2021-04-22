@@ -33,6 +33,7 @@
     <inceptionYear>2009</inceptionYear>
 
     <prerequisites>
+	    <!-- -->
         <maven>2.0.9</maven>
     </prerequisites>
 
