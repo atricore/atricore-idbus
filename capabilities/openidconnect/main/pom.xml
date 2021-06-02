@@ -28,18 +28,18 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.openidconnect</groupId>
         <artifactId>openidconnect</artifactId>
-        <version>1.5.1-SNAPSHOT</version>
+        <version>1.5.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.openidconnect</groupId>
     <artifactId>org.atricore.idbus.capabilities.openidconnect.main</artifactId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : OpenID Connect Main Component</name>
 
     <properties>
         <json-smart.version>1.3.1</json-smart.version>
-        <idbus.cap.sso.version>1.5.1-SNAPSHOT</idbus.cap.sso.version>
+        <idbus.cap.sso.version>1.5.2-SNAPSHOT</idbus.cap.sso.version>
     </properties>
 
     <dependencies>
