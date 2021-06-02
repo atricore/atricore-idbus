@@ -370,6 +370,7 @@ public class RegistrationPanel extends Panel {
 
         RegistrationModel registration = getRegisterModel();
 
+        /*
         UserSecurityQuestion[] secQuestions = null;
 
         // Q1
@@ -396,7 +397,6 @@ public class RegistrationPanel extends Panel {
         else
             q3.setQuestion(registration.getSecQuestion3());
 
-        /*
         // Q4
         UserSecurityQuestion q4 = new UserSecurityQuestion();
         q4.setAnswer(registration.getSecAnswer4());
@@ -417,7 +417,7 @@ public class RegistrationPanel extends Panel {
         ConfirmAddUserRequest req = new ConfirmAddUserRequest ();
         req.setUserPassword(registration.getNewPassword());
         //req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3, q4, q5});
-        req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3});
+        //req.setSecurityQuestions(new UserSecurityQuestion[] {q1, q2, q3});
 
         req.setTransactionId(transactionId);
 

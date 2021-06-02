@@ -145,7 +145,7 @@ public class EHCacheTransactionStore implements TransactionStore , InitializingB
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
-                Element e = cache.get(idOrCode);
+            Element e = cache.get(idOrCode);
             if (logger.isTraceEnabled())
                 logger.trace("Transaction ID or Code " + idOrCode + (e != null ? "" : " not") + " found in cache " + cacheName);
 

@@ -45,6 +45,7 @@ import org.atricore.idbus.capabilities.sso.ui.WebAppConfig;
 import org.atricore.idbus.capabilities.sso.ui.WebBranding;
 import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.SelfServicesLayout;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.SelfServicesPage;
 import org.atricore.idbus.capabilities.sso.ui.resources.AppResourceLocator;
 import org.atricore.idbus.capabilities.sso.ui.spi.ApplicationRegistry;
@@ -159,7 +160,7 @@ public class BasePage extends WebPage implements IHeaderContributor {
         addImage(app.getBranding(), AppResource.APP_PAGE_LOGO);
         addImage(app.getBranding(), AppResource.APP_CARD_LOGO);
 
-        if (this instanceof SelfServicesPage) {
+        if (this instanceof SelfServicesLayout) {
             /*
             <body class="has-clouds light-bg">
             <div class="wrapper p-0">

@@ -1,48 +1,52 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W5C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.3-strict.dtd">
 
 <body>
 <wicket:panel>
+    <div class="section-panel mb-3">
 
-    <h2><wicket:message key="app.section.subtitle"/></h2>
+        <header class="section-panel__header">
+            <h3><wicket:message key="app.section.subtitle"/></h3>
+        </header>
 
-    <div wicket:id="feedbackBox">
-        <span wicket:id="feedback"/>
+        <p class="mb-5"><wicket:message key="app.section.intro"/></p>
+
+        <div wicket:id="feedbackBox">
+            <span wicket:id="feedback"/>
+        </div>
+        <form method="post" class="form" wicket:id="registerForm">
+
+
+
+            <div class="form-input">
+                    <label for="password"><wicket:message key="claims.label.tmpPassword"/></label>
+                    <input wicket:id="password" id="password" type="password" class="gt-form-text" path="name" />
+            </div>
+
+
+            <div class="form-input">
+                <label for="newPassword"><wicket:message key="claims.label.newPassword"/></label>
+                <input wicket:id="newPassword" id="newPassword" name="newPassword" type="password" class="gt-form-text" path="newPassword" />
+            </div>
+            <!-- Strenght indicator -->
+            <figure class="pwForm__pw-meter mt-2 mb-3 ml-auto">
+                <div class="pwForm__pw-meter__bar" id="pwMeterBar"></div>
+                <div class="pwForm__pw-meter__message" id="pwMeterMessage" aria-live="assertive"></div>
+            </figure>
+
+            <div class="form-input">
+                <label for="retypedPassword"><wicket:message key="claims.label.retypedPassword"/></label>
+                <input wicket:id="retypedPassword" id="retypedPassword" type="password" class="gt-form-text" path="retypedPassword" />
+            </div>
+
+            <hr class="spacer">
+
+            <input class="btn btn--primary" type="submit" value="Submit" wicket:id="doRegister" id="doSave" />
+
+
+        </form>
     </div>
-
-    <p class="mb-5"><wicket:message key="app.section.intro"/></p>
-
-    <form wicket:id="pwdResetForm" class="form">
-
-        <hr class="spacer"/>
-
-        <div class="form-input mb-0">
-            <label for="newPassword"><wicket:message key="claims.label.newPassword"/></label>
-            <input wicket:id="newPassword" type="password" class="form-text" path="newPassword" id="newPassword"/>
-        </div>
-
-        <!-- Strenght indicator -->
-        <figure class="pwForm__pw-meter mt-2 mb-3 ml-auto">
-            <div class="pwForm__pw-meter__bar" id="pwMeterBar"></div>
-            <div class="pwForm__pw-meter__message" id="pwMeterMessage" aria-live="assertive"></div>
-        </figure>
-
-        <div class="form-input mb-0">
-            <label for="retypedPassword"><wicket:message key="claims.label.retypedPassword"/></label>
-            <input wicket:id="retypedPassword" type="password" class="form-text" path="retypedPassword" id="retypedPassword"/>
-        </div>
-
-        <hr class="spacer">
-
-        <input class="btn btn--primary" type="submit" value="Continue" wicket:id="doSave" id="doSave" />
-
-        <hr class="my-5"/>
-
-        <wicket:message key="claims.password.policy"/>
-
-    </form>
-
 
     <script>
 

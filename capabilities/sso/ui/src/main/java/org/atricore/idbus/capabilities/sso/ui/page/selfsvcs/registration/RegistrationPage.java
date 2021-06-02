@@ -6,12 +6,13 @@ import org.atricore.idbus.capabilities.sso.ui.internal.BaseWebApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOIdPApplication;
 import org.atricore.idbus.capabilities.sso.ui.internal.SSOWebSession;
 import org.atricore.idbus.capabilities.sso.ui.page.BasePage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.SelfServicesLayout;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
 
 /**
  *
  */
-public class RegistrationPage extends BasePage {
+public class RegistrationPage extends BasePage implements SelfServicesLayout {
 
     public RegistrationPage() throws Exception {
         this(null);

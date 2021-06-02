@@ -15,6 +15,9 @@ import org.atricore.idbus.capabilities.sso.ui.page.error.AccessDeniedPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.AppErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.IdBusErrorPage;
 import org.atricore.idbus.capabilities.sso.ui.page.error.SessionExpiredPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.RegistrationStartedPage;
+import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.registration.ReqRegistrationPage;
 import org.atricore.idbus.capabilities.sso.ui.page.warn.PolicyEnforcementWarningsPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.dashboard.DashboardPage;
 import org.atricore.idbus.capabilities.sso.ui.page.selfsvcs.profile.ProfilePage;
@@ -72,10 +75,10 @@ public class SSOIdPApplication extends BaseWebApplication {
         // TODO : We can also use AUTHZ component to restrict the pages when no SS is available.
         addPageMount("SS/HOME", DashboardPage.class);
         addPageMount("SS/PROFILE", ProfilePage.class);
-        //addPageMount("SS/REGISTER", ReqRegistrationPage.class);
-        //addPageMount("SS/REGISTERED", RegistrationStartedPage.class);
+        addPageMount("SS/REGISTER", ReqRegistrationPage.class);
+        addPageMount("SS/REGISTERED", RegistrationStartedPage.class);
 
-        //addPageMount("SS/CONFIRM", RegistrationPage.class);
+        addPageMount("SS/CONFIRM", RegistrationPage.class);
 
         addPageMount("SS/PWDCHANGE", PwdChangePage.class);
         //addPageMount("SS/SECQUESTIONCHNG", PwdChangePage.class);
