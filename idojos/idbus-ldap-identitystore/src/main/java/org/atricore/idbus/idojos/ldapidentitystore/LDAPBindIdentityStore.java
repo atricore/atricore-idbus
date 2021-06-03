@@ -204,6 +204,11 @@ public class LDAPBindIdentityStore extends LDAPIdentityStore implements Bindable
         ldapVendorErrorCodes.put(LDAPVendor.APACHE, apacheErrorCodes);
     }
 
+    @Override
+    public Credential[] loadCredentials(CredentialKey key, CredentialProvider cp) throws SSOIdentityException {
+        return super.loadCredentials(key, cp);
+    }
+
 // ----------------------------------------------------- CredentialStore Methods
 
     /**
