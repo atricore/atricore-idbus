@@ -23,6 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import jline.Terminal;
+
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
@@ -32,6 +34,7 @@ import org.apache.karaf.shell.console.jline.Console;
 import org.apache.sshd.ClientChannel;
 import org.apache.sshd.ClientSession;
 import org.apache.sshd.SshClient;
+import org.apache.sshd.agent.SshAgent;
 import org.apache.sshd.client.channel.ChannelShell;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.common.util.NoCloseInputStream;
@@ -83,20 +86,24 @@ public class SshAction
     @Override
     protected Object doExecute() throws Exception {
 
-        //
-        // TODO: Parse hostname for <username>@<hostname>
-        //
+        if (hostname.indexOf('@') >= 0) {
+            if (username == null) {
+                username = hostname.substring(0, hostname.indexOf('@'));
+            }
+            hostname = hostname.substring(hostname.indexOf('@') + 1, hostname.length());
+        }
 
         System.out.println("Connecting to host " + hostname + " on port " + port);
 
-        // If the username/password was not configured via cli, then prompt the user for the values
-        if (username == null || password == null) {
-            log.debug("Prompting user for credentials");
+        // If not specified, assume the current user name
+        if (username == null) {
+            username = (String) this.session.get("USER");
+        }
+        // If the username was not configured via cli, then prompt the user for the values
+        if (username == null) {
+            log.debug("Prompting user for login");
             if (username == null) {
                 username = readLine("Login: ");
-            }
-            if (password == null) {
-                password = readLine("Password: ");
             }
         }
 
@@ -104,6 +111,12 @@ public class SshAction
         SshClient client = (SshClient) container.getComponentInstance(sshClientId);
         log.debug("Created client: {}", client);
         client.start();
+
+        String agentSocket = null;
+        if (this.session.get(SshAgent.SSH_AUTHSOCKET_ENV_NAME) != null) {
+            agentSocket = this.session.get(SshAgent.SSH_AUTHSOCKET_ENV_NAME).toString();
+            client.getProperties().put(SshAgent.SSH_AUTHSOCKET_ENV_NAME,agentSocket);
+        }
 
         try {
             ConnectFuture future = client.connect(hostname, port);
@@ -116,10 +129,30 @@ public class SshAction
             try {
                 System.out.println("Connected");
 
-                sshSession.authPassword(username, password);
-                int ret = sshSession.waitFor(ClientSession.WAIT_AUTH | ClientSession.CLOSED | ClientSession.AUTHED, 0);
-                if ((ret & ClientSession.AUTHED) == 0) {
-                    System.err.println("Authentication failed");
+                boolean authed = false;
+                if (agentSocket != null) {
+                    sshSession.authAgent(username);
+                    int ret = sshSession.waitFor(ClientSession.WAIT_AUTH | ClientSession.CLOSED | ClientSession.AUTHED, 0);
+                    if ((ret & ClientSession.AUTHED) == 0) {
+                        System.err.println("Agent authentication failed, falling back to password authentication.");
+                    } else {
+                        authed = true;
+                    }
+                }
+                if (!authed) {
+                    log.debug("Prompting user for password");
+                    if (password == null) {
+                        password = readLine("Password: ");
+                    }
+                    sshSession.authPassword(username, password);
+                    int ret = sshSession.waitFor(ClientSession.WAIT_AUTH | ClientSession.CLOSED | ClientSession.AUTHED, 0);
+                    if ((ret & ClientSession.AUTHED) == 0) {
+                        System.err.println("Password authentication failed");
+                    } else {
+                        authed = true;
+                    }
+                }
+                if (!authed) {
                     return null;
                 }
 
@@ -140,14 +173,20 @@ public class SshAction
                 } else {
                     channel = sshSession.createChannel("shell");
                     channel.setIn(new NoCloseInputStream(System.in));
+                    ((ChannelShell) channel).setPtyColumns(getTermWidth());
                     ((ChannelShell) channel).setupSensibleDefaultPty();
+                    ((ChannelShell) channel).setAgentForwarding(true);
+                    Object ctype = session.get("LC_CTYPE");
+                    if (ctype != null) {
+                        ((ChannelShell) channel).setEnv("LC_CTYPE", ctype.toString());
+                    }
                 }
                 channel.setOut(new NoCloseOutputStream(System.out));
                 channel.setErr(new NoCloseOutputStream(System.err));
                 channel.open();
                 channel.waitFor(ClientChannel.CLOSED, 0);
             } finally {
-                session.put( Console.IGNORE_INTERRUPTS, oldIgnoreInterrupts );
+                session.put(Console.IGNORE_INTERRUPTS, oldIgnoreInterrupts);
                 sshSession.close(false);
             }
         } finally {
@@ -155,6 +194,11 @@ public class SshAction
         }
 
         return null;
+    }
+
+    private int getTermWidth() {
+        Terminal term = (Terminal) session.get(".jline.terminal");
+        return term != null ? term.getWidth() : 80;
     }
 
     public String readLine(String msg) throws IOException {

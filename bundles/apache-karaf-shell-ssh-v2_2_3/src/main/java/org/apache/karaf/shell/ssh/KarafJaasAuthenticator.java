@@ -38,6 +38,8 @@ import org.apache.sshd.server.session.ServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.karaf.jaas.modules.publickey.PublickeyCallback;
+
 public class KarafJaasAuthenticator implements PasswordAuthenticator, PublickeyAuthenticator {
 
     public static final Session.AttributeKey<Subject> SUBJECT_ATTRIBUTE_KEY = new Session.AttributeKey<Subject>();
@@ -108,10 +110,8 @@ public class KarafJaasAuthenticator implements PasswordAuthenticator, PublickeyA
     }
 
     @Override
-    public boolean authenticate(String username, PublicKey key, ServerSession session) {
-        // TODO : IMPLEMENTED IN KARAF 2.3, BUT NO IN 2.2 REQUIRES JAAS MODULE FOR PK, NOT PORTING IT NOW.
-        return false;
-        /*
+    public boolean authenticate(final String username, final PublicKey key, ServerSession session) {
+
         try {
             Subject subject = new Subject();
             LoginContext loginContext = new LoginContext(realm, subject, new CallbackHandler() {
@@ -129,7 +129,7 @@ public class KarafJaasAuthenticator implements PasswordAuthenticator, PublickeyA
             });
             loginContext.login();
             if (role != null && role.length() > 0) {
-                String clazz = "org.apache.karaf.jaas.boot.principal.RolePrincipal";
+                String clazz = "org.apache.karaf.jaas.modules.RolePrincipal";
                 String name = role;
                 int idx = role.indexOf(':');
                 if (idx > 0) {
@@ -154,6 +154,5 @@ public class KarafJaasAuthenticator implements PasswordAuthenticator, PublickeyA
             LOGGER.debug("User authentication failed with " + e.getMessage(), e);
             return false;
         }
-        */
     }
 }

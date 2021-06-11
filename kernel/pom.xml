@@ -739,6 +739,7 @@
                 <module>fragments</module>
                 <module>planning</module>
                 <module>main</module>
+                <module>jaas/modules</module>
                 <module>ha</module>
                 <module>web</module>
                 <module>authz</module>
@@ -755,6 +756,7 @@
                 <module>fragments</module>
                 <module>planning</module>
                 <module>main</module>
+                <module>jaas/modules</module>
                 <module>ha</module>
                 <module>web</module>
                 <module>authz</module>

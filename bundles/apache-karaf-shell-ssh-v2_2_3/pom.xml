@@ -74,6 +74,12 @@
             <artifactId>sshd-core</artifactId>
             <version>${sshd.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.jaas</groupId>
+            <artifactId>org.atricore.idbus.kernel.jaas.modules</artifactId>
+            <version>1.5.2-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
