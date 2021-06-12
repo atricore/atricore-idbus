@@ -49,6 +49,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.6.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -69,6 +74,7 @@
                             *
                         </Import-Package>
                         <Export-Package>
+                            org.apache.karaf.jaas.modules.jdbc; version=${karaf.version},
                             org.apache.karaf.jaas.modules.publickey; version=${karaf.version}
                         </Export-Package>
                         <Private-Package>

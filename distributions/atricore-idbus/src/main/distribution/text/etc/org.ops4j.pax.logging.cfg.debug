@@ -85,6 +85,9 @@ log4j.category.javax=INFO
 ## PAX/Jetty
 #log4j.category.org.ops4j.pax.web.service.jetty=TRACE
 
+## SSH
+#log4j.category.org.apache.karaf.shell.ssh=TRACE
+#log4j.category.org.apache.karaf.jaas=TRACE
 
 log4j.category.org.hibernate=WARN
 log4j.category.javax.management.modelmbean=INFO
