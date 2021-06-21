@@ -80,7 +80,10 @@ public class UserAddCommand extends SpmlCommandSupport {
 //<--- Security Set Password---->
     @Option(name = "-p", aliases = "--password", description = "User Password", required = false, multiValued = false)
     String userPassword;
-    byte[] userCertificate;
+
+    //<--- Security Set Password---->
+    @Option(name = "-c", aliases = "--cert", description = "User certificate", required = false, multiValued = false)
+    String userCertificate;
     Boolean automaticallyGeneratePassword;
     Boolean emailNewPasword;
 
@@ -414,11 +417,12 @@ public class UserAddCommand extends SpmlCommandSupport {
     }
 
     public byte[] getUserCertificate() {
-        return userCertificate;
+        return userCertificate != null ? userCertificate.getBytes() : null;
     }
 
     public void setUserCertificate(byte[] userCertificate) {
-        this.userCertificate = userCertificate;
+        if (userCertificate != null )
+            this.userCertificate = new String(userCertificate);
     }
 
     public Boolean getAutomaticallyGeneratePassword() {

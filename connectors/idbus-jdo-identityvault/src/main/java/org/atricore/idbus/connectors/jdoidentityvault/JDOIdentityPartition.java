@@ -1167,9 +1167,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
                 "accountExpirationDate",
                 "lastPasswordChangeDate",
                 "accountCreationDate",
-                "accountModificationDate"
-
+                "accountModificationDate",
+                "userCertificate"
         });
+
+        if (user.getUserCertificate() != null)
+            jdoUser.setUserCertificate(new String(user.getUserCertificate()));
 
         if (user.getLastPasswordChangeDate() != null)
             jdoUser.setLastPasswordChangeDate(new Date(user.getLastPasswordChangeDate()));
@@ -1301,12 +1304,15 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         BeanUtils.copyProperties(jdoUser, user, new String[]{"id",
                 "groups", "acls", "securityQuestions", "attrs", "lastAuthentication",
                 "passwordExpirationDate", "accountExpirationDate", "accountCreationDate", "accountModificationDate",
-                "lastPasswordChangeDate"});
+                "lastPasswordChangeDate", "userCertificate"});
 
         user.setId(jdoUser.getId() + "");
 
         if (!retrieveUserPassword)
             user.setUserPassword(null);
+
+        if (jdoUser.getUserCertificate() != null)
+            user.setUserCertificate(jdoUser.getUserCertificate().getBytes());
 
         if (jdoUser.getAccountExpirationDate() != null)
             user.setAccountExpirationDate(jdoUser.getAccountExpirationDate().getTime());

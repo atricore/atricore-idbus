@@ -104,7 +104,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         if (transactionId != null) {
             PendingTransaction t = transactionStore.retrieve(transactionId);
             long now = System.currentTimeMillis();
-            return t.getExpiresOn() < now;
+            return t != null && t.getExpiresOn() > now;
         }
 
         return false;
@@ -1371,6 +1371,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         Set<Long> usedIds = new HashSet<Long>();
         Set<String> usedAnswers = new HashSet<String>();
         Set<String> usedQuestions = new HashSet<String>();
+
+        if (secQuestions == null)
+            return;
 
         for (UserSecurityQuestion usq : secQuestions) {
 

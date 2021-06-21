@@ -4,6 +4,7 @@ import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 import java.util.List;
 
@@ -87,6 +88,10 @@ public class UserPrinter extends AbstractCmdPrinter {
         sb.append(getLabelString("E-Mail"));
         sb.append(getUserEmailString(spmlUser));
         sb.append("\n");
+
+        sb.append(getLabelString("Certificate"));
+        sb.append(getUserCertificateString(spmlUser));
+        sb.append("\n");
         
         sb.append(getLabelString("Groups"));
         sb.append(getUserGroupsString(spmlUser));
@@ -106,6 +111,11 @@ public class UserPrinter extends AbstractCmdPrinter {
     
     protected String getUserEmailString(UserType spmlUser) {
         return getLeftString(spmlUser.getEmail(), 18);
+    }
+
+    protected String getUserCertificateString(UserType smplUser) {
+        return smplUser.getUserCertificate() != null ?
+                new String(smplUser.getUserCertificate()) : "N/A";
     }
 
     protected String getUserGroupsString(UserType spmlUser) {

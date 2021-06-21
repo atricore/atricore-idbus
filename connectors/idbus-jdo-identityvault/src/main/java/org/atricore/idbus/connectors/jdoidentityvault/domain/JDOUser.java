@@ -71,7 +71,7 @@ public class JDOUser implements Serializable {
 
 //<--- Security Set Password---->
     private String userPassword;
-    private byte[] userCertificate;
+    private String userCertificate;
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
     private String salt;
@@ -490,11 +490,11 @@ public class JDOUser implements Serializable {
         this.salt = salt;
     }
 
-    public byte[] getUserCertificate() {
+    public String getUserCertificate() {
         return userCertificate;
     }
 
-    public void setUserCertificate(byte[] userCertificate) {
+    public void setUserCertificate(String userCertificate) {
         this.userCertificate = userCertificate;
     }
 

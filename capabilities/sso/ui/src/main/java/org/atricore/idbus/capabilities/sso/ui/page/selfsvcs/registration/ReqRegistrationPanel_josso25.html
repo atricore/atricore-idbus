@@ -14,31 +14,39 @@
         <span wicket:id="feedback"/>
     </div>
 
-    <form class="form" method="post" wicket:id="profileForm">
+    <form class="form" method="post" wicket:id="reqRegistrationForm">
 
         <div class="form-input">
             <label for="firstName"><wicket:message key="claims.label.firstName"/></label>
-            <input type="text" class="form-text" path="firstName" tabindex="10" name="firstName" id="firstName"  wicket:id="firstName"/>
+            <input wicket:id="firstName" id="firstName" name="firstName"  type="text" class="gt-form-text" path="firstName" />
         </div>
+
 
         <div class="form-input">
             <label for="lastName"><wicket:message key="claims.label.lastName"/></label>
-            <input type="text" class="form-text" path="lastName" tabindex="10" name="lastName" id="lastName"  wicket:id="lastName"/>
+            <input wicket:id="lastName" id="lastName" name="lastName" type="text" class="gt-form-text" path="lastName" />
         </div>
 
+                <!-- right column -->
         <div class="form-input">
             <label for="company"><wicket:message key="claims.label.company"/></label>
-            <input type="text" class="form-text" path="company" tabindex="10" name="company" id="company" wicket:id="company" />
+            <input wicket:id="company" id="company" name="company" type="text" class="gt-form-text" path="company" />
         </div>
 
         <div class="form-input">
             <label for="phone"><wicket:message key="claims.label.phone"/></label>
-            <input type="text" class="form-text" path="phone" tabindex="10" name="phone" id="phone" value="+555-5555" wicket:id="phone"/>
+            <input wicket:id="phone" id="phone" name="phone" type="text" class="gt-form-text" path="phone" />
+        </div>
+
+
+        <div class="form-input">
+            <label for="username"><wicket:message key="claims.label.email"/></label>
+            <input wicket:id="username" id="username" placeholder="myemail@example.com" name="username" type="email" class="gt-form-text" path="username" />
         </div>
 
         <hr class="spacer">
 
-        <input type="submit" value="Update" class="btn btn--primary mb-0" wicket:id="doSave" />
+        <input class="btn btn--primary mb-0" type="submit" value="Submit" wicket:id="doReqRegistration" />
 
     </form>
 

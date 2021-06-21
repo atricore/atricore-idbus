@@ -23,7 +23,7 @@ import java.util.*;
  * @author: sgonzalez@atriocore.com
  * @date: 3/5/13
  */
-public abstract class SelfServicesPage extends BasePage {
+public abstract class SelfServicesPage extends BasePage implements SelfServicesLayout {
 
     private static Log logger = LogFactory.getLog(SelfServicesPage.class);
 

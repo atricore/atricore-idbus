@@ -77,13 +77,14 @@ public class UserModifyCommand extends SpmlCommandSupport {
     Integer daysBeforeExpiration;
 
 //<--- Security Set Password---->
-    byte[] userCertificate;
+    @Option(name = "-c", aliases = "--cert", description = "User certificate", required = false, multiValued = false)
+    String userCertificate;
     Boolean automaticallyGeneratePassword;
     Boolean emailNewPasword;
 
 //<--- Groups Membership ---->
     @Option(name = "-g", aliases = "--group", description = "User group names", required = false, multiValued = true)
-    List<String> groupName = new ArrayList<String>();
+    List<String> groupName = null;
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
@@ -262,7 +263,7 @@ public class UserModifyCommand extends SpmlCommandSupport {
     }
 
     public byte[] getUserCertificate() {
-        return userCertificate;
+        return userCertificate != null ? userCertificate.getBytes() : null;
     }
 
     public Boolean getAutomaticallyGeneratePassword() {
@@ -272,4 +273,5 @@ public class UserModifyCommand extends SpmlCommandSupport {
     public Boolean getEmailNewPasword() {
         return emailNewPasword;
     }
+
 }
