@@ -203,7 +203,6 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
                 _policies.add(new InvalidUsernameAuthnPolicy(_knowCredentials));
                 return false;
             }
-
         }
 
         // Do not validate password if username does not match
