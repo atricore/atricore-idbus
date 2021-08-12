@@ -192,7 +192,7 @@
                 <column name="SALT" length="255" jdbc-type="VARCHAR"/>
             </field>
             <field name="userCertificate">
-                <column name="USERCERTIFICATE" jdbc-type="CLOB" length="10240" />
+                <column name="USERCERTIFICATE" jdbc-type="CLOB" sql-type="CLOB" length="10240" />
             </field>
             <field name="automaticallyGeneratePassword">
                 <column name="AUTOMATICALLYGENERATEPASSWORD" />

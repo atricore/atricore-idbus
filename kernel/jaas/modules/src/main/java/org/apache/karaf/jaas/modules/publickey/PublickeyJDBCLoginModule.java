@@ -113,7 +113,7 @@ public class PublickeyJDBCLoginModule extends AbstractKarafLoginModule {
             } else if (credentialsDatasource instanceof XADataSource) {
                 connection = ((XADataSource) credentialsDatasource).getXAConnection().getConnection();
             } else {
-                throw new LoginException("Unknow dataSource type " + credentialsDatasource.getClass());
+                throw new LoginException("Unknown dataSource type " + credentialsDatasource.getClass());
             }
 
             //Retrieve user credentials from database.
