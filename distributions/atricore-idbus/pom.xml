@@ -207,7 +207,7 @@
         <commons-lang.version>2.4_5</commons-lang.version>
         <commons-pool.version>1.5.4</commons-pool.version>
         <commons-vfs.version>1.0_1</commons-vfs.version>
-        <bcprov.version>1.52</bcprov.version>
+        <bcprov.version>1.67</bcprov.version>
         <bcpkix.version>1.52</bcpkix.version>
         <bcrypt.version>0.8.0</bcrypt.version>
         <cxf.version>2.2.2</cxf.version>
