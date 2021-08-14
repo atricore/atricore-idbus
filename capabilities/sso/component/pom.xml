@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.sso</groupId>
         <artifactId>sso</artifactId>
-        <version>1.5.2-SNAPSHOT</version>
+        <version>1.5.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.sso</groupId>
     <artifactId>org.atricore.idbus.capabilities.sso.component</artifactId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.5.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Atricore IDBus :: Capability : SSO Component POM</name>
 

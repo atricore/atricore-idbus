@@ -28,21 +28,21 @@
     <parent>
             <groupId>org.atricore.idbus</groupId>
             <artifactId>all</artifactId>
-            <version>1.5.2-SNAPSHOT</version>
+            <version>1.5.3-SNAPSHOT</version>
             <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.csca</groupId>
     <artifactId>org.atricore.idbus.capabilities.csca</artifactId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.5.3-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : Client-side Certificate Authentication (CSCA)</name>
 
     <properties>
-        <idbus.kernel.version>1.5.2-SNAPSHOT</idbus.kernel.version>
-        <idbus.sts.version>1.5.2-SNAPSHOT</idbus.sts.version>
-        <idbus.sso.version>1.5.2-SNAPSHOT</idbus.sso.version>
-        <idbus.bundle.ini4j-v0_5_1.version>1.5.2-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
+        <idbus.kernel.version>1.5.3-SNAPSHOT</idbus.kernel.version>
+        <idbus.sts.version>1.5.3-SNAPSHOT</idbus.sts.version>
+        <idbus.sso.version>1.5.3-SNAPSHOT</idbus.sso.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.5.3-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
         <karaf.version>2.2.3</karaf.version>
         <camel.version>1.6.1</camel.version>
         <bcprov.version>1.52</bcprov.version>

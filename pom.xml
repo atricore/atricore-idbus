@@ -28,7 +28,7 @@
     <artifactId>all</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.5.3-SNAPSHOT</version>
     <name>Atricore IDBus :: All : POM</name>
     <inceptionYear>2009</inceptionYear>
 
