@@ -11,6 +11,7 @@ import org.atricore.idbus.kernel.main.authn.scheme.UserNameCredential;
 import org.atricore.idbus.kernel.main.authn.util.UserUtil;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.store.SimpleUserKey;
+import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.UsernameTokenType;
@@ -30,9 +31,7 @@ import static org.atricore.idbus.capabilities.sts.main.authenticators.TwoFactorS
  */
 public class TOTPAuthenticator implements SecurityTokenAuthenticator, CredentialProvider {
 
-
     private static final Log logger = LogFactory.getLog(TOTPAuthenticator.class);
-
 
     /**
      * The name of the credential representing a user identifier.
@@ -189,9 +188,9 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
                         if (logger.isTraceEnabled())
                             logger.trace("Invalid code " + code + " for " + token.getUsername().getValue());
 
-                        PolicyEnforcementStatement[] policies = new PolicyEnforcementStatement[] { new InvalidOTPCodeAuthnStatement(code)};
+                        PolicyEnforcementStatement[] policies = new PolicyEnforcementStatement[]{new InvalidOTPCodeAuthnStatement(code)};
 
-                        throw new SecurityTokenAuthenticationFailure(getId(), policies , null); // TODO : Improve
+                        throw new SecurityTokenAuthenticationFailure(getId(), policies, null); // TODO : Improve
                     }
 
                     isValid = true;
@@ -224,7 +223,7 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
                 if (logger.isTraceEnabled())
                     logger.trace("Unauthenticated code " + code + " for " + token.getUsername().getValue() + ". OTPSecret not available");
 
-                throw new SecurityTokenAuthenticationFailure(getId(), "Code not received!");
+                throw new SecurityTokenAuthenticationFailure(getId(), "Invalid code");
             }
 
             if (principal == null) {
@@ -239,6 +238,9 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
             principals.add(principal);
 
             return subject;
+        } catch (NoSuchUserException e) {
+            logger.debug(e.getMessage(), e);
+            throw new SecurityTokenAuthenticationFailure(getId(), e);
         } catch (SSOIdentityException e) {
             logger.error(e.getMessage(), e);
             throw new SecurityTokenAuthenticationFailure(getId(), e);
@@ -279,9 +281,11 @@ public class TOTPAuthenticator implements SecurityTokenAuthenticator, Credential
 
         List<Credential> creds = new ArrayList<Credential>();
 
-        String value = UserUtil.getProperty(user, getSecretCredentialName());
-        if (value != null)
-            creds.add(newCredential(getSecretCredentialName(), value));
+        if (getSecretCredentialName() != null) {
+            String value = UserUtil.getProperty(user, getSecretCredentialName());
+            if (value != null)
+                creds.add(newCredential(getSecretCredentialName(), value));
+        }
 
         creds.add(newCredential(USERNAME_CREDENTIAL_NAME, user.getUserName()));
         creds.add(newCredential(USERID_CREDENTIAL_NAME, user.getUserName()));

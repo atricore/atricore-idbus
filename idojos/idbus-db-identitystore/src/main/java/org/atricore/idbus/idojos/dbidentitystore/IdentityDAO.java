@@ -392,7 +392,10 @@ public class IdentityDAO {
                 String cName = md.getColumnLabel(i);
                 String cValue = rs.getString(i);
                 Credential c = _cp.newCredential(cName, cValue);
-                creds.add(c);
+                if (c != null)
+                    creds.add(c);
+                else
+                    logger.warn("Unused credential result " + cName);
             }
 
             return (Credential[]) creds.toArray(new Credential[creds.size()]);
