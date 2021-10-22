@@ -56,6 +56,7 @@
             <extension base="samlp:AuthnRequestType">
                 <attribute name="SecurityToken" type="string" use="required"/>
                 <attribute name="RememberMe" type="boolean" use="optional"/>
+                <attribute name="PreferredResponseFormat" type="string" use="optional"/>
             </extension>
         </complexContent>
     </complexType>

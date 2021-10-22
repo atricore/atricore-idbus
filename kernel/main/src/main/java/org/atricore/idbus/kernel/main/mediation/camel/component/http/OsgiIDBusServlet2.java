@@ -311,6 +311,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
         // Store received headers and send them back to the browser
         List<Header> storedHeaders = new ArrayList<Header>(40);
         boolean followTargetUrl = true;
+        boolean useProcessingUi = processingUIenabled;
         byte[] buff = new byte[1024];
 
         // As long as we receive redirects that must be handled locally, we loop.
@@ -441,7 +442,7 @@ public class OsgiIDBusServlet2 extends CamelContinuationServlet implements IDBus
                             // Previously stored headers
                             prepareResponse(req, res, headers, storedHeaders);
 
-                            if (processingUIenabled && proxyRes.getStatusLine().getStatusCode() == 302) {
+                            if (useProcessingUi && proxyRes.getStatusLine().getStatusCode() == 302) {
                                 // When working with processing UI page, do NOT return 302, instead 200 and a custom location header: X-IdBusLocation ...
                                 res.setHeader(IDBusHttpConstants.HTTP_HEADER_IDBUS_LOCATION, targetUrl);
                                 res.setStatus(200);

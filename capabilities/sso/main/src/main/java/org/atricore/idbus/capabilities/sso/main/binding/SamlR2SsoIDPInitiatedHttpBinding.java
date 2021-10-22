@@ -85,8 +85,11 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
 
         String securityToken = state.getTransientVariable("atricore_security_token");
         IDPInitiatedAuthnRequestType idpInitReq = null;
+
         if (securityToken != null) {
+            // Create pre-authn idp initiated request using received token
             idpInitReq = new PreAuthenticatedIDPInitiatedAuthnRequestType();
+            idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
             ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setSecurityToken(securityToken);
             ((PreAuthenticatedIDPInitiatedAuthnRequestType)idpInitReq).setAuthnCtxClass(AuthnCtxClass.OAUTH2_PREAUTHN_CTX.getValue());
 
@@ -94,13 +97,24 @@ public class SamlR2SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBindi
             if (rememberMe != null) {
                 ((PreAuthenticatedIDPInitiatedAuthnRequestType) idpInitReq).setRememberMe(Boolean.parseBoolean(rememberMe));
             }
+
+
+            String preferredResponseFormat = state.getTransientVariable("atricore_response_format");
+            if (preferredResponseFormat != null) {
+                if (preferredResponseFormat.equals("REST")) {
+                    // Override previous response format
+                    idpInitReq.setPreferredResponseFormat(preferredResponseFormat);
+                } else {
+                    logger.error("Invalid atricore_response_format: " + preferredResponseFormat);
+                }
+            }
+
         } else {
             idpInitReq = new IDPInitiatedAuthnRequestType();
+            idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
         }
 
         idpInitReq.setID(uuidGenerator.generateId());
-        idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:2.0");
-
 
         // We can send several attributes within the request.
         String spAlias = state.getTransientVariable("atricore_sp_alias");
