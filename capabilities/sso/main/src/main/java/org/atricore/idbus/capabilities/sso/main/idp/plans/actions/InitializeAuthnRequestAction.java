@@ -71,10 +71,14 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         String securityToken = null;
         Boolean rememberMe = null;
         Boolean forceAuthn = false;
+        String responseFormat = null;
         if (ssoAuthnReq instanceof PreAuthenticatedIDPInitiatedAuthnRequestType) {
             PreAuthenticatedIDPInitiatedAuthnRequestType preAuthnReq = (PreAuthenticatedIDPInitiatedAuthnRequestType) ssoAuthnReq;
             securityToken = preAuthnReq.getSecurityToken();
             rememberMe = preAuthnReq.getRememberMe();
+            responseFormat = preAuthnReq.getPreferredResponseFormat();
+            if (responseFormat != null)
+                preAuthnReq.setPreferredResponseFormat(responseFormat);
 
             // TODO : check if token must be resolved
 
@@ -208,6 +212,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
         if (securityToken != null) {
             ((PreAuthenticatedAuthnRequestType) authn).setSecurityToken(securityToken);
             ((PreAuthenticatedAuthnRequestType) authn).setRememberMe(rememberMe);
+            ((PreAuthenticatedAuthnRequestType) authn).setPreferredResponseFormat(responseFormat);
         }
 
         // AttributeConsumingServiceIndex [optional]
@@ -403,6 +408,7 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
             String preferredSpAlias = mediator.getPreferredSpAlias();
             String spAlias = null;
             String spId = null;
+            String responseFormat = null;
             CircleOfTrustManager cotManager = spChannel.getFederatedProvider().getCotManager();
 
             if (ssoAuthnReq != null) {
@@ -424,7 +430,6 @@ public class InitializeAuthnRequestAction extends AbstractSSOAction {
                         }
                         break;
                     }
-
 
                 }
             }

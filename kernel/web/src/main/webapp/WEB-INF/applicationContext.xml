@@ -28,9 +28,31 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
         http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
         >
-
-    <bean name="internal-processing-policy" class="org.atricore.idbus.kernel.main.mediation.camel.component.http.DefaultInternalProcessingPolicy">
+    <bean name="default-processing-policy" class="org.atricore.idbus.kernel.main.mediation.camel.component.http.DefaultInternalProcessingPolicy">
         <property name="kernelConfig" ref="kernelConfig"/>
+    </bean>
+
+    <bean name="processingui-policy" class="org.atricore.idbus.kernel.main.mediation.camel.component.http.ProcessingUIPolicy">
+    </bean>
+
+
+    <!-- Policies used to check if internal processing (follow redirect) must be used -->
+    <bean name="internal-processing-policy" class="org.atricore.idbus.kernel.main.mediation.camel.component.http.AgreggatedProcessingPolicy">
+        <property name="policies">
+            <list>
+                <ref bean="default-processing-policy"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Policies used to check if UI processing (js) must be used -->
+    <bean name="ui-processing-policy" class="org.atricore.idbus.kernel.main.mediation.camel.component.http.AgreggatedProcessingPolicy">
+        <property name="policies">
+            <list>
+                <ref bean="default-processing-policy"/>
+                <ref bean="processingui-policy"/>
+            </list>
+        </property>
     </bean>
 
     <!--

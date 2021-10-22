@@ -107,7 +107,7 @@ public class AssertionConsumerProducer extends AbstractJossoProducer {
         if (response.getSessionIndex() == null) {
             // No session was found for automatic login, go back without artifact!
 
-            if (req == null || req.getPassive() ==null || !req.getPassive()) {
+            if (req == null || req.getPassive() == null || !req.getPassive()) {
                 // Error!
                 logger.error("No Session Index received but passive authentication was not requested!");
                 throw new JossoException("No Session Index received but passive authentication was not requested!");

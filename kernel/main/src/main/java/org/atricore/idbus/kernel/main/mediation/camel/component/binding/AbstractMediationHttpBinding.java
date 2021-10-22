@@ -438,6 +438,23 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
     }
 
     /**
+     * Content-Security-Policy: frame-ancestors <source>;
+     * Content-Security-Policy: frame-ancestors <source> <source>;
+     */
+    protected void handleCSPFrameAncestors(Exchange exchange, Set<String> allowedSources) {
+        Message httpOut = exchange.getOut();
+        Message httpIn = exchange.getIn();
+
+        String sourcesStr = "";
+        for (String allowedSource : allowedSources) {
+            sourcesStr += allowedSource + " ";
+        }
+
+        httpOut.getHeaders().put("Content-Security-Policy", "frame-ancestors " + sourcesStr + ";");
+
+    }
+
+    /**
      * This will add the necessary CORS headers to the HTTP response when CORS is requested.
      */
     protected void handleCrossOriginResourceSharing(Exchange exchange) {
@@ -454,6 +471,13 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         handleCrossOriginResourceSharing(exchange, allowedOrigins, null, null);
     }
 
+    /**
+     * Adds the necessary allow origin headers based on
+     * @param exchange
+     * @param allowedOrigins
+     * @param allowedMethods
+     * @param allowedHeaders
+     */
     protected void handleCrossOriginResourceSharing(Exchange exchange,
                                                     Set<String> allowedOrigins,
                                                     Set<String> allowedMethods,
@@ -527,6 +551,12 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
             }
         }
 
+    }
+
+    protected void handleCrossOriginResourceSharing(Exchange exchange, String allowedOrigin) {
+        // Allow Origin
+        Message httpOut = exchange.getOut();
+        httpOut.getHeaders().put("Access-Control-Allow-Origin", allowedOrigin);
     }
 
     // -------------------------------------------------------------

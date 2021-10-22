@@ -74,7 +74,7 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
     /**
      * This method matches those requests that were processed internally and produced an HTTP redirect (302)
-     * We need to compare if the target location received is actually an URL ot the IDBUS servler.
+     * We need to compare if the target location received is actually a URL at the IDBUS servler.
      *
      * If not, include/exclude configurations are used, same as:
      *
@@ -216,18 +216,6 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
         StringBuffer reqUrl = req.getRequestURL();
         String requestUrl = reqUrl.toString();
 
-        // Force includes/excludes
-        for (String includedUrl : includedUrls) {
-            if (requestUrl.length() >= includedUrl.length()) {
-                String prefix = requestUrl.substring(0, includedUrl.length());
-                if (prefix.equals(includedUrl)) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Following, Matching URL to [" + includedUrl + "]");
-                    return true;
-                }
-            }
-        }
-
         for (String excludedUrl : excludedUrls) {
             if (requestUrl.length() >= excludedUrl.length()) {
                 String prefix = requestUrl.substring(0, excludedUrl.length());
@@ -240,6 +228,17 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
             }
         }
 
+        // Force includes/excludes
+        for (String includedUrl : includedUrls) {
+            if (requestUrl.length() >= includedUrl.length()) {
+                String prefix = requestUrl.substring(0, includedUrl.length());
+                if (prefix.equals(includedUrl)) {
+                    if (logger.isTraceEnabled())
+                        logger.trace("Following, Matching URL to [" + includedUrl + "]");
+                    return true;
+                }
+            }
+        }
 
         return true;
 

@@ -1154,11 +1154,14 @@ public class SingleSignOnProducer extends SSOProducer {
                 return;
             }
 
-            if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
+            if (responseFormat != null && responseFormat.equals("REST")){
+                sendRestResponse(exchange, authnState.getReceivedRelayState(), saml2Response);
+            } else if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 sendSaml11Response(exchange, authnState.getReceivedRelayState(), saml11Response, ed);
             } else {
                 sendSaml2Response(exchange, authnState.getReceivedRelayState(), saml2Response, ed);
             }
+
 
         } catch (SecurityTokenAuthenticationFailure e) {
 
@@ -3186,13 +3189,23 @@ public class SingleSignOnProducer extends SSOProducer {
         return sendResponse(exchange, relayState, ssoResponse, destination);
     }
 
+    protected boolean sendRestResponse(CamelMediationExchange exchange,
+                                      String relayState,
+                                      ResponseType ssoResponse
+                                      ) throws SSOException {
+
+        // Get login page base URL (https://www.google.com)
+        EndpointDescriptor ed = new EndpointDescriptorImpl("saml2-rest", "ResponseType",
+                SSOBinding.SAMLR2_REST.getValue());
+        return sendResponse(exchange, relayState, ssoResponse, ed);
+    }
 
     protected boolean sendSaml2Response(CamelMediationExchange exchange,
                                         String relayState,
                                         ResponseType ssoResponse,
                                         EndpointDescriptor destination) throws SSOException {
         if (logger.isDebugEnabled())
-            logger.debug("Sending SAML 1.1 Response");
+            logger.debug("Sending SAML 2.0 Response");
 
         return sendResponse(exchange, relayState, ssoResponse, destination);
 

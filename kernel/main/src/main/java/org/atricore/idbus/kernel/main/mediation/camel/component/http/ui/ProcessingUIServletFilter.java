@@ -109,7 +109,7 @@ public class ProcessingUIServletFilter implements Filter {
                     (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
                             WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
 
-            internalProcessingPolicy = (InternalProcessingPolicy) wac.getBean("internal-processing-policy");
+            internalProcessingPolicy = (InternalProcessingPolicy) wac.getBean("ui-processing-policy");
         }
 
         if (!internalProcessingPolicy.match(hReq)) {

@@ -48,6 +48,9 @@ public enum SSOBinding {
     /** Non-normative, only useful between local providers, for perfomrance issues */
     SAMLR2_LOCAL("urn:oasis:names:tc:SAML:2.0:bindings:LOCAL", false, false),
 
+    /** Non-normative, only useful when combined with pre-authn */
+    SAMLR2_REST("urn:oasis:names:tc:SAML:2.0:bindings:REST", false, false),
+
     /** Non-normative, only useful to receive SAML 2 MD Requests */
     SAMLR2_MD("urn:oasis:names:tc:SAML:2.0:bindings:MD", true, false),
 
