@@ -89,7 +89,7 @@
         <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.16</log4j.version>
         <maven.version>2.0.9</maven.version>
-        <mina.version>2.0.7</mina.version>
+        <mina.version>2.1.5</mina.version>
 
         <osgi.version>4.2.0</osgi.version>
         <pax.exam.version>1.2.4</pax.exam.version>
