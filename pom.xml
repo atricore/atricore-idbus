@@ -39,6 +39,7 @@
         <module>bundles/josso-ws-v1_2</module>
         <module>bundles/apache-tiles-jsp-v2_0_6</module>
         <module>bundles/apache-tiles-jsp-v2_2_2</module>
+        <module>bundles/apache-karaf-shell-ssh-v2_2_3</module>
         <module>bundles/javax-jdo2-v2_3-eb</module>
         <module>bundles/javax-jdo2-v2_3-ec</module>
         <module>bundles/javax-jdo-v3_0</module>

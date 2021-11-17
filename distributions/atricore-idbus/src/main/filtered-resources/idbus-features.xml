@@ -405,7 +405,7 @@
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-jaxrs/${jackson.version}</bundle>
         <bundle start-level="34">mvn:org.codehaus.jackson/jackson-xc/${jackson.version}</bundle>
         <bundle start-level="34">mvn:org.ops4j.base/ops4j-base/${ops4j.base.version}</bundle>
-        <bundle start-level="35">mvn:org.bouncycastle/bcprov-jdk15on/${bcprov.version}</bundle>
+        <!--bundle start-level="35">mvn:org.bouncycastle/bcprov-jdk15on/${bcprov.version}</bundle-->
         <bundle start-level="35">mvn:net.minidev/json-smart/${json-smart.version}</bundle>
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-v1_9_2/${idbus.bundle.jasypt-v1_9_2.version}</bundle>
         <bundle start-level="35">mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.jasypt-spring31-v1_9_2/${idbus.bundle.jasypt-v1_9_2.version}</bundle>

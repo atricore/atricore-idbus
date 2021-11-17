@@ -103,6 +103,7 @@
         <module>common</module>
         <module>fragments</module>
         <module>planning</module>
+        <module>jaas/modules</module>
         <module>main</module>
         <module>ha</module>
         <module>web</module>
