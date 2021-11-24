@@ -24,6 +24,7 @@ package org.atricore.idbus.kernel.main.mediation.channel;
 import org.atricore.idbus.kernel.main.federation.AccountLinkEmitter;
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycle;
 import org.atricore.idbus.kernel.main.federation.IdentityMapper;
+import org.atricore.idbus.kernel.main.federation.MultiValuedAttrs;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
@@ -53,6 +54,8 @@ public interface FederationChannel extends StatefulChannel {
     AccountLinkLifecycle getAccountLinkLifecycle();
 
     AccountLinkEmitter getAccountLinkEmitter();
+
+    Set<MultiValuedAttrs> getMultiValuedAttrs();
 
     IdentityMapper getIdentityMapper();
 

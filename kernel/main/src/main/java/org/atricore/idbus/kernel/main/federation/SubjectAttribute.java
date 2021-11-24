@@ -22,6 +22,8 @@
 package org.atricore.idbus.kernel.main.federation;
 
 
+import java.util.Objects;
+
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
@@ -68,31 +70,16 @@ public class SubjectAttribute extends AbstractPrincipal {
 	}
 
     @Override
-    public boolean equals(Object another) {
-        if (!(another instanceof SubjectAttribute))
-            return false;
-
-        String anotherName = ((SubjectAttribute) another).getName();
-        String anotherValue = ((SubjectAttribute) another).getValue();
-
-        boolean equals = false;
-
-        if (getName() == null)
-            equals = anotherName == null;
-        else
-            equals = getName().equals(anotherName);
-
-        if (equals && getValue() == null) {
-            equals = anotherValue == null;
-        } else
-            equals = equals && getValue().equals(anotherValue);
-
-        return equals;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SubjectAttribute that = (SubjectAttribute) o;
+        return Objects.equals(name, that.name) && Objects.equals(value, that.value);
     }
 
     @Override
     public int hashCode() {
-        String str = getName() + ":" + getValue();
-        return str.hashCode(); 
+        return Objects.hash(super.hashCode(), name, value);
     }
 }

@@ -9,10 +9,7 @@ import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -33,20 +30,34 @@ public class OneToOneAttributeProfileMapper extends BaseAttributeProfileMapper {
         // This will add SSO User properties as attribute statements.
 
         if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
-
+            Map<String, AttributeType> at = new HashMap<>();
             for (SSONameValuePair property : ssoUser.getProperties()) {
-                AttributeType attrProp = new AttributeType();
 
                 // Only qualify property names if needed
-                attrProp.setName(property.getName());
+                String name = property.getName();
+
+                AttributeType attrProp = at.get(name);
+                if (attrProp == null) {
+                    attrProp = new AttributeType();
+                    attrProp.setName(name);
+                    at.put(name, attrProp);
+                    attrProps.add(attrProp);
+                }
                 if (property.getName().indexOf(':') >= 0) {
                     attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
                 } else {
                     attrProp.setNameFormat(AttributeNameFormat.BASIC.getValue());
                 }
 
-                attrProp.getAttributeValue().add(property.getValue());
-                attrProps.add(attrProp);
+                boolean found = false;
+                for (Object value : attrProp.getAttributeValue()) {
+                    if (value.equals(property.getValue())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    attrProp.getAttributeValue().add(property.getValue());
             }
         }
 

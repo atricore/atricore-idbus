@@ -13,9 +13,7 @@ import org.atricore.idbus.kernel.main.authn.SSORole;
 import org.atricore.idbus.kernel.main.authn.SSOUser;
 
 import javax.security.auth.Subject;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Profile mapper that will map ALL claims , one to one.
@@ -34,12 +32,28 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
         }
         SSOUser user = ssoUsers.iterator().next();
 
-        // Additional claims
+        Map<String, Set<String>> ps = new HashMap<>();
         Set<String> usedProps = new HashSet<String>();
+
+
         if (user.getProperties() != null) {
             for (SSONameValuePair property : user.getProperties()) {
-                usedProps.add(property.getName());
-                claimsSet.setClaim(property.getName(), property.getValue());
+                Set<String> values = ps.get(property.getName());
+                if (values == null) {
+                    values = new HashSet<>();
+                    ps.put(property.getName(), values);
+                }
+                values.add(property.getValue());
+            }
+        }
+
+        for (String name : ps.keySet()) {
+            usedProps.add(name);
+            Set<String> values = ps.get(name);
+            if (values.size() == 1) {
+                claimsSet.setClaim(name, values.iterator().next());
+            } else {
+                claimsSet.setClaim(name, values);
             }
         }
 
@@ -53,6 +67,8 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
 
         // Add proxy principals (principals received from a proxied provider), but only if we don't have such a principal yet.
         if (proxyPrincipals != null) {
+
+            Map<String, Set<String>> pps = new HashMap<>();
             for (AbstractPrincipalType principal : proxyPrincipals) {
                 if (principal instanceof SubjectAttributeType) {
                     SubjectAttributeType attr = (SubjectAttributeType) principal;
@@ -63,10 +79,14 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
                     }
 
                     String value = attr.getValue();
-                    if (!usedProps.contains(name)) {
-                        claimsSet.setClaim(name, value);
-                        usedProps.add(name);
+
+                    Set<String> values = pps.get(name);
+
+                    if (values == null) {
+                        values = new HashSet<>();
+                        pps.put(name, values);
                     }
+                    values.add(value);
                 } else if (principal instanceof SubjectRoleType) {
                     SubjectRoleType role = (SubjectRoleType) principal;
                     if (!usedRoles.contains(role.getName())) {
@@ -74,6 +94,20 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
                     }
                 }
             }
+
+            for (String name : pps.keySet()) {
+                if (!usedProps.contains(name)) {
+                    Set<String> values = pps.get(name);
+                    if (values.size() == 1) {
+                        claimsSet.setClaim(name, values.iterator().next());
+                    } else {
+                        claimsSet.setClaim(name, values);
+                    }
+                    usedProps.add(name);
+                }
+            }
+
+
         }
 
         JWTClaimsSet previousClaims = IDTokenEmitter.getPreviousIdTokenClaims(rstCtx);

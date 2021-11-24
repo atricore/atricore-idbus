@@ -37,7 +37,9 @@ import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 //import javax.persistence.PersistenceContext;
 import javax.security.auth.Subject;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**

@@ -9,11 +9,9 @@ import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.sso.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
+import org.w3._1999.xhtml.A;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by sgonzalez on 6/8/15.
@@ -43,23 +41,41 @@ public class JOSSOAttributeProfileMapper extends BaseAttributeProfileMapper {
         if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
 
             // TODO : We could group some properties as multi valued attributes like, privileges!
-            for (SSONameValuePair property : ssoUser.getProperties()) {
-                AttributeType attrProp = new AttributeType();
 
+            Map<String, AttributeType> at = new HashMap<>();
+            for (SSONameValuePair property : ssoUser.getProperties()) {
+
+                String name = null;
                 // Only qualify property names if needed
                 if (property.getName().indexOf(':') >= 0)
-                    attrProp.setName(property.getName());
+                    name = property.getName();
                 else
-                    attrProp.setName(SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + property.getName());
+                    name = SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + property.getName();
 
                 // Do not forward idpSsoSessions from other IDPs
                 if (property.getName().equals(SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + "idpSsoSession"))
                     continue;
 
-                attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
-                attrProp.getAttributeValue().add(property.getValue());
+                AttributeType attrProp = at.get(name);
+                if (attrProp == null) {
+                    attrProp = new AttributeType();
+                    attrProp.setName(name);
+                    at.put(name, attrProp);
+                    attrProps.add(attrProp);
+                    attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
+                }
 
-                attrProps.add(attrProp);
+                boolean found = false;
+                for (Object v : attrProp.getAttributeValue()) {
+                    if (v.equals(property.getValue())) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    attrProp.getAttributeValue().add(property.getValue());
+
             }
         }
 

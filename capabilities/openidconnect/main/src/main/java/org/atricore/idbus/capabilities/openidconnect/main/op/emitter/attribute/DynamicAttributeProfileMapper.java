@@ -87,15 +87,34 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
 
         // Additional claims
         Set<String> usedProps = new HashSet<String>();
+        Map<String, Set<String>> ps = new HashMap<>();
         if (ssoUser != null && ssoUser.getProperties() != null) {
             for (SSONameValuePair property : ssoUser.getProperties()) {
-                usedProps.add(property.getName());
-                veCtx.put(property.getName(), property.getValue());
+
+                Set<String> values = ps.get(property.getName());
+                if (values == null) {
+                    values = new HashSet<>();
+                    ps.put(property.getName(), values);
+                }
+                values.add(property.getValue());
+
+
+            }
+
+            for (String name : ps.keySet()) {
+
+                if (usedProps.contains(name))
+                    continue;
+
+                usedProps.add(name);
+                Set<String> values = ps.get(name);
+                Object value = values.size() == 1 ? values.iterator().next() : values;
+                veCtx.put(name, value);
 
                 // Map name, if null property must be ignored.
-                String name = mapName(property.getName());
-                if (name != null)
-                    claimsSet.setClaim(name, property.getValue());
+                String mappedName = mapName(name);
+                if (mappedName != null)
+                    claimsSet.setClaim(name, value);
 
             }
         }
@@ -110,6 +129,7 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
 
         // Add proxy principals (principals received from a proxied provider), but only if we don't have such a principal yet.
         if (proxyPrincipals != null) {
+            Map<String, Set<String>> pps = new HashMap<>();
             for (AbstractPrincipalType principal : proxyPrincipals) {
                 if (principal instanceof SubjectAttributeType) {
                     SubjectAttributeType attr = (SubjectAttributeType) principal;
@@ -126,20 +146,34 @@ public class DynamicAttributeProfileMapper implements OIDCAttributeProfileMapper
                     }
 
                     String value = attr.getValue();
-                    if (!usedProps.contains(name)) {
-                        usedProps.add(name);
-                        veCtx.put(name, value);
-
-                        String mappedName = mapName(name);
-                        if (mappedName != null)
-                            claimsSet.setClaim(mappedName, value);
+                    Set<String> values = pps.get(name);
+                    if (values == null) {
+                        values = new HashSet<>();
+                        pps.put(name, values);
                     }
+                    values.add(value);
+
+
                 } else if (principal instanceof SubjectRoleType) {
                     SubjectRoleType role = (SubjectRoleType) principal;
                     if (!usedRoles.contains(role.getName())) {
                         usedRoles.add(role.getName());
                     }
                 }
+            }
+
+            for (String name : pps.keySet()) {
+                Set<String> values = pps.get(name);
+                Object value = values.size() == 1 ? values.iterator().next() : values;
+                if (!usedProps.contains(name)) {
+                    usedProps.add(name);
+                    veCtx.put(name, value);
+                    String mappedName = mapName(name);
+                    if (mappedName != null) {
+                        claimsSet.setClaim(name, value);
+                    }
+                }
+
             }
         }
 

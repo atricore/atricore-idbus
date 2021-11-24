@@ -8,10 +8,7 @@ import org.atricore.idbus.capabilities.sso.support.core.AttributeNameFormat;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
 import org.atricore.idbus.kernel.main.authn.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * SAML 2.0 Basic attribute profile mapper
@@ -35,6 +32,7 @@ public class BasicAttributeProfileMapper extends BaseAttributeProfileMapper {
         attrPrincipal.getAttributeValue().add(ssoUser.getName());
 
         // This will add SSO User properties as attribute statements.
+        Map<String, AttributeType> at = new HashMap<>();
         if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
 
             // Keep attributes simple, if they are URIs, remove prefixes
@@ -47,13 +45,28 @@ public class BasicAttributeProfileMapper extends BaseAttributeProfileMapper {
                     name = property.getName().substring(idx + 1);
 
                 // Build Attribute:
-                AttributeType attrProp = new AttributeType();
-                attrProp.setName(name);
-                attrProp.setFriendlyName(attrProp.getName());
-                attrProp.setNameFormat(AttributeNameFormat.BASIC.getValue());
-                attrProp.getAttributeValue().add(property.getValue());
+                AttributeType attrProp = at.get(name);
+                if (attrProp == null) {
+                    attrProp = new AttributeType();
+                    attrProp.setName(name);
+                    attrProp.setFriendlyName(attrProp.getName());
+                    attrProp.setNameFormat(AttributeNameFormat.BASIC.getValue());
+                    at.put(name, attrProp);
+                    userAttrs.add(attrProp);
+                }
 
-                userAttrs.add(attrProp);
+                attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
+                boolean found =false;
+                for (Object value : attrProp.getAttributeValue()) {
+                    if (value.equals(property.getValue())) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    attrProp.getAttributeValue().add(property.getValue());
+
             }
         }
 

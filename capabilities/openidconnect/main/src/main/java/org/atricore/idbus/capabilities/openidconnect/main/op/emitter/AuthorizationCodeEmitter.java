@@ -102,10 +102,9 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
     protected String getSsoSessinId(SecurityTokenProcessingContext context) {
         Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
         String ssoSessionId = null;
-        List<AbstractPrincipalType> proxyPrincipals = null;
+        
         if (rstCtx instanceof SamlR2SecurityTokenEmissionContext) {
             SamlR2SecurityTokenEmissionContext samlr2Ctx = (SamlR2SecurityTokenEmissionContext) rstCtx;
-            proxyPrincipals = samlr2Ctx.getProxyPrincipals();
             ssoSessionId = samlr2Ctx.getSessionIndex();
         }
         return ssoSessionId;

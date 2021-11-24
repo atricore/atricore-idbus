@@ -249,7 +249,7 @@ public class AssertionConsumerProducer extends SSOProducer {
         // ------------------------------------------------------------------
         // Build IDP Subject from response
         // ------------------------------------------------------------------
-        Subject idpSubject = buildSubjectFromResponse(response);
+        Subject idpSubject = buildSubjectFromResponse(fChannel.getMultiValuedAttrs(), response);
 
         // This is a no longer valid sec. ctx. (optional, may not be available) Is the previous valid SecCtx
         SPSecurityContext lastSecCtx =
@@ -576,7 +576,7 @@ public class AssertionConsumerProducer extends SSOProducer {
 
     }
 
-    private Subject buildSubjectFromResponse(ResponseType response) {
+    private Subject buildSubjectFromResponse(Set<MultiValuedAttrs> mvAttrs, ResponseType response) {
 
         // Some attributes are IdP generated, and they don't depend on the actual mapping policy. (i.e. idpName, etc).
         Map<String, SubjectAttribute> subjectAttrs = new HashMap<String, SubjectAttribute>();
@@ -685,7 +685,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                                     }
 
                                     SubjectAttribute sAttr =
-                                            getNextSubjectAttr(subjectAttrs, name,
+                                            getNextSubjectAttr(mvAttrs, subjectAttrs, name,
                                                     (String) attributeValue
                                             );
 
@@ -702,7 +702,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                                     }
 
 
-                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name,
+                                    SubjectAttribute sAttr = getNextSubjectAttr(mvAttrs, subjectAttrs, name,
                                             (Integer) attributeValue);
                                     outSubject.getPrincipals().add(sAttr);
 
@@ -716,7 +716,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                 e.getTextContent());
                                     }
 
-                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name, e.getTextContent());
+                                    SubjectAttribute sAttr = getNextSubjectAttr(mvAttrs, subjectAttrs, name, e.getTextContent());
                                     if (sAttr != null)
                                         outSubject.getPrincipals().add(sAttr);
 
@@ -729,7 +729,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                                                 "null");
                                     }
 
-                                    SubjectAttribute sAttr = getNextSubjectAttr(subjectAttrs, name, "");
+                                    SubjectAttribute sAttr = getNextSubjectAttr(mvAttrs, subjectAttrs, name, "");
                                     if (sAttr != null)
                                         outSubject.getPrincipals().add(sAttr);
 
@@ -765,7 +765,7 @@ public class AssertionConsumerProducer extends SSOProducer {
                                 )
                         );
 
-                        SubjectAttribute authnCtxAttr = getNextSubjectAttr(subjectAttrs,
+                        SubjectAttribute authnCtxAttr = getNextSubjectAttr(mvAttrs, subjectAttrs,
                                 "urn:org:atricore:idbus:sso:sp:authnCtxClass",
                                 (String) authnContext.getValue());
 
@@ -923,8 +923,8 @@ public class AssertionConsumerProducer extends SSOProducer {
         }
 
         // Add IDP Information as subject attributes.
-        SubjectAttribute idpAliasAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
-        SubjectAttribute idpNameAttr = getNextSubjectAttr(subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
+        SubjectAttribute idpAliasAttr = getNextSubjectAttr(mvAttrs, subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpAlias", issuerAlias);
+        SubjectAttribute idpNameAttr = getNextSubjectAttr(mvAttrs, subjectAttrs, "urn:org:atricore:idbus:sso:sp:idpName", issuer.getName());
 
         outSubject.getPrincipals().add(idpNameAttr);
         outSubject.getPrincipals().add(idpAliasAttr);
@@ -936,19 +936,36 @@ public class AssertionConsumerProducer extends SSOProducer {
         return outSubject;
     }
 
-    protected SubjectAttribute getNextSubjectAttr(Map<String, SubjectAttribute> subjectAttrs, String name, Integer value) {
-        return getNextSubjectAttr(subjectAttrs, name, value != null ? value.toString() : "");
+    protected SubjectAttribute getNextSubjectAttr(Set<MultiValuedAttrs> mvAttrs, Map<String, SubjectAttribute> subjectAttrs, String name, Integer value) {
+        return getNextSubjectAttr(mvAttrs, subjectAttrs, name, value != null ? value.toString() : "");
     }
 
-    protected SubjectAttribute getNextSubjectAttr(Map<String, SubjectAttribute> subjectAttrs, String name, String value) {
+    protected SubjectAttribute getNextSubjectAttr(Set<MultiValuedAttrs> mvAttrs, Map<String, SubjectAttribute> subjectAttrs, String name, String value) {
+
+        if (mvAttrs == null) {
+            mvAttrs = new HashSet<>();
+            mvAttrs.add(MultiValuedAttrs.GROUPS);
+            mvAttrs.add(MultiValuedAttrs.USER_DEFINED);
+        }
+
+        // work-around
+        if (name.startsWith("org:atricore:idbus:sso:sp")) {
+            name = "urn:" + name;
+        }
 
         // Roles are multi-valued
-        boolean multiValued = false;
-        // TODO : This depends on the attribute profile, make it dynamic!
+        boolean multiValued = mvAttrs.contains(MultiValuedAttrs.USER_DEFINED);
         if (name.equals(DCEPACAttributeDefinition.GROUPS.getValue()) ||
                 name.equals("groups") ||
                 name.equals(DCEPACAttributeDefinition.GROUP.getValue())) {
-            multiValued = true;
+            multiValued = mvAttrs.contains(MultiValuedAttrs.GROUPS);
+
+        } else if (name.endsWith("idpAlias") ||
+                name.endsWith("idpName") ||
+                name.endsWith("authnCtxClass") ||
+                name.endsWith("federatedProvider") ||
+                name.endsWith("idpSession")) {
+            multiValued = mvAttrs.contains(MultiValuedAttrs.INTERNAL);
         }
 
         // Check if the name has been used
