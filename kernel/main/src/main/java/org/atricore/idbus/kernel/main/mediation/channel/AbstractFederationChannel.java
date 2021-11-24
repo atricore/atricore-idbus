@@ -24,16 +24,17 @@ package org.atricore.idbus.kernel.main.mediation.channel;
 import org.atricore.idbus.kernel.main.federation.AccountLinkEmitter;
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycle;
 import org.atricore.idbus.kernel.main.federation.IdentityMapper;
+import org.atricore.idbus.kernel.main.federation.MultiValuedAttrs;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -54,6 +55,7 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
 
     private transient AccountLinkLifecycle accountLinkLifecycle;
     private transient AccountLinkEmitter accountLinkEmitter;
+    private transient Set<MultiValuedAttrs> multiValuedAttrs;
     private transient IdentityMapper identityMapper;
 
     public String getServiceType() {
@@ -142,6 +144,20 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
 
     public void setTrustedProviders(Set<FederatedProvider> trustedProviders) {
         this.trustedProviders = trustedProviders;
+    }
+
+    public Set<MultiValuedAttrs> getMultiValuedAttrs() {
+        if (multiValuedAttrs == null) {
+            // Default setting
+            multiValuedAttrs = new HashSet<>();
+            multiValuedAttrs.add(MultiValuedAttrs.GROUPS);
+        }
+
+        return multiValuedAttrs;
+    }
+
+    public void setMultiValuedAttrs(Set<MultiValuedAttrs> multiValuedAttrs) {
+        this.multiValuedAttrs = multiValuedAttrs;
     }
 
     @Override

@@ -113,41 +113,60 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
         if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
 
             // Keep attributes simple, if they are URIs, remove prefixes
+            Map<String, AttributeType> at = new HashMap<>();
             for (SSONameValuePair property : ssoUser.getProperties()) {
 
                 veCtx.put(property.getName(), property.getValue());
 
                 AttributeMapping attributeMapping = getAttributeMapping(property.getName());
 
+                String name = null;
+                String format = null;
+                String friendlyName = null;
                 if (attributeMapping != null) {
-                    AttributeType attrProp = new AttributeType();
 
-                    attrProp.setName((attributeMapping.getReportedAttrName() != null &&
-                                     !attributeMapping.getReportedAttrName().equals("")) ?
-                            attributeMapping.getReportedAttrName() : property.getName());
+                    name = (attributeMapping.getReportedAttrName() != null &&
+                            !attributeMapping.getReportedAttrName().equals("")) ?
+                            attributeMapping.getReportedAttrName() : property.getName();
 
-                    attrProp.setFriendlyName(attrProp.getName());
+                    friendlyName = name;
+                    format = attributeMapping.getReportedAttrNameFormat();
 
-                    attrProp.setNameFormat(attributeMapping.getReportedAttrNameFormat());
-                    attrProp.getAttributeValue().add(property.getValue());
-
-                    userAttrs.add(attrProp);
 
                 } else if (includeNonMappedProperties) {
 
-                    AttributeType attrProp = new AttributeType();
+                    name = property.getName();
 
                     // Only qualify property names if needed
-                    attrProp.setName(property.getName());
                     if (property.getName().indexOf(':') >= 0) {
-                        attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
+                        format = AttributeNameFormat.URI.getValue();
                     } else {
-                        attrProp.setNameFormat(AttributeNameFormat.BASIC.getValue());
+                        format = AttributeNameFormat.BASIC.getValue();
                     }
 
-                    attrProp.getAttributeValue().add(property.getValue());
+                }
+
+                AttributeType attrProp = at.get(name);
+                if (attrProp == null) {
+                    attrProp = new AttributeType();
+                    attrProp.setName(name);
+                    attrProp.setNameFormat(format);
+                    attrProp.setFriendlyName(friendlyName);
+                    at.put(name, attrProp);
                     userAttrs.add(attrProp);
                 }
+
+                boolean found = false;
+                for (Object value : attrProp.getAttributeValue()) {
+                    if (value.equals(property.getValue())) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    attrProp.getAttributeValue().add(property.getValue());
+
 
             }
 

@@ -135,7 +135,7 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
             if (ctx.getProxyPrincipals() != null) {
 
                 // Proxied requests may provide additional information:
-                Map<String, SSONameValuePair> proxyProps = new HashMap<String, SSONameValuePair>();
+                Map<String, Set<String>> proxyProps = new HashMap<String, Set<String>>();
                 Map<String, SSORole> proxyRoles = new HashMap<String, SSORole>();
 
                 // Now check if the subject itself has additional information
@@ -147,7 +147,13 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
                         if (logger.isTraceEnabled())
                             logger.trace("Adding subject attribute from proxy response subject " + attr.getName() + ":" + attr.getValue());
 
-                        proxyProps.put(attr.getName(), new SSONameValuePair(attr.getName(), attr.getValue()));
+                        Set<String> values = proxyProps.get(attr.getName());
+                        if (values == null) {
+                            values = new HashSet<>();
+                            proxyProps.put(attr.getName(), values);
+                        }
+                        values.add(attr.getValue());
+
 
                     } else if (p instanceof SubjectRoleType) {
                         SubjectRoleType r = (SubjectRoleType) p;
@@ -165,15 +171,27 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSSOAssertio
 
                     for (int i = 0; i < ssoUser.getProperties().length; i++) {
                         SSONameValuePair prop = ssoUser.getProperties()[i];
-                        proxyProps.put(prop.getName(), prop);
+                        Set<String> values = proxyProps.get(prop.getName());
+                        if (values == null) {
+                            values = new HashSet<>();
+                            proxyProps.put(prop.getName(), values);
+                        }
+                        values.add(prop.getValue());
                     }
 
                     BaseUserImpl proxySsoUser = new BaseUserImpl(ssoUser.getName());
-                    proxySsoUser.setProperties(proxyProps.values().toArray(new SSONameValuePair[proxyProps.size()]));
+                    List<SSONameValuePair> p = new ArrayList<>();
+
+                    for (String name : proxyProps.keySet()) {
+                        Set<String> values = proxyProps.get(name);
+                        for (String value : values) {
+                            p.add(new SSONameValuePair(name, value));
+                        }
+                    }
+                    proxySsoUser.setProperties(p.toArray(new SSONameValuePair[p.size()]));
                     ssoUser = proxySsoUser;
 
                 }
-
 
                 if (proxyRoles.size() > 0) {
 

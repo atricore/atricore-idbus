@@ -143,6 +143,8 @@ import java.util.*;
 
 public class LDAPIdentityStore extends AbstractStore  {
 
+    public static final String MULTIVALUE_ATTRS_DISABLED = "org.atricore.idbus.idojos.ldapidentitystore.multivalueattrsdisabled";
+
     private static final Log logger = LogFactory.getLog(LDAPIdentityStore.class);
 
     /**
@@ -218,15 +220,19 @@ public class LDAPIdentityStore extends AbstractStore  {
             // Optionally find user properties.
             if (getUserPropertiesQueryString() != null) {
 
-                HashMap userPropertiesResultSet = selectUserProperties(((SimpleUserKey) key).getId());
+                if (System.getProperty(MULTIVALUE_ATTRS_DISABLED) != null) {
+                    HashMap userPropertiesResultSet = selectUserProperties(((SimpleUserKey) key).getId());
 
-                Iterator i = userPropertiesResultSet.keySet().iterator();
-                while (i.hasNext()) {
-                    String pName = (String) i.next();
-                    String pValue = (String) userPropertiesResultSet.get(pName);
-
-                    SSONameValuePair vp = new SSONameValuePair(pName, pValue);
-                    userProperties.add(vp);
+                    Iterator i = userPropertiesResultSet.keySet().iterator();
+                    while (i.hasNext()) {
+                        String pName = (String) i.next();
+                        String pValue = (String) userPropertiesResultSet.get(pName);
+                        SSONameValuePair vp = new SSONameValuePair(pName, pValue);
+                        userProperties.add(vp);
+                    }
+                } else {
+                    Collection<SSONameValuePair> nvps = selectUserAttributes(((SimpleUserKey) key).getId());
+                    userProperties.addAll(nvps);
                 }
 
             }
@@ -659,6 +665,93 @@ public class LDAPIdentityStore extends AbstractStore  {
      * @return the hash map containing user properties as name/value pairs.
      * @throws NamingException LDAP error obtaining user properties.
      */
+    protected Collection<SSONameValuePair> selectUserAttributes(String uid) throws NamingException {
+        List<SSONameValuePair> userPropertiesResultSet = new ArrayList<SSONameValuePair>();
+
+        InitialLdapContext ctx = createLdapInitialContext();
+
+        BasicAttributes matchAttrs = new BasicAttributes(true);
+
+        String principalUidAttrName = this.getPrincipalUidAttributeID();
+        String usersCtxDN = this.getUsersCtxDN();
+
+        matchAttrs.put(principalUidAttrName, uid);
+
+        String userPropertiesQueryString = getUserPropertiesQueryString();
+        HashMap userPropertiesQueryMap = parseQueryString(userPropertiesQueryString);
+
+        Iterator i = userPropertiesQueryMap.keySet().iterator();
+        List propertiesAttrList = new ArrayList();
+        while (i.hasNext()) {
+            String o = (String) i.next();
+            propertiesAttrList.add(o);
+        }
+
+        String[] propertiesAttr = (String[]) propertiesAttrList.toArray(
+                new String[propertiesAttrList.size()]
+        );
+
+        try {
+
+            // This gives more control over search behavior :
+            NamingEnumeration answer = ctx.search(usersCtxDN, "(&(" + principalUidAttrName + "=" + uid + "))", getSearchControls());
+
+            while (answer.hasMore()) {
+                SearchResult sr = (SearchResult) answer.next();
+                Attributes attrs = sr.getAttributes();
+
+                for (int j = 0; j < propertiesAttr.length; j++) {
+
+                    Attribute attribute = attrs.get(propertiesAttr[j]);
+
+                    if (attribute == null) {
+                        logger.warn("Invalid user property attribute '" + propertiesAttr[j] + "'");
+                        continue;
+                    }
+
+
+                    Object propertyObject = attrs.get(propertiesAttr[j]).get();
+
+                    if (propertyObject == null) {
+                        logger.warn("Found a 'null' value for user property '" + propertiesAttr[j] + "'");
+                        continue;
+                    }
+
+                    String propertyName = (String) userPropertiesQueryMap.get(propertiesAttr[j]);
+                    int sz = attribute.size();
+                    for (int k = 0 ; k < sz ; k++) {
+                        String v = attribute.get(k).toString();
+                        SSONameValuePair nvp = new SSONameValuePair(propertyName, v);
+                        userPropertiesResultSet.add(nvp);
+                        if (logger.isDebugEnabled())
+                            logger.debug("Found user property '" + propertyName + "' with value '" + v + "'");
+                    }
+
+
+                }
+
+            }
+        } catch (NamingException e) {
+            if (logger.isDebugEnabled())
+                logger.debug("Failed to locate user", e);
+        } finally {
+            // Close the context to release the connection
+            ctx.close();
+        }
+
+        return userPropertiesResultSet;
+    }
+
+
+    /**
+     * Obtain the properties for the user associated with the given uid using the
+     * configured user properties query string.
+     *
+     * @param uid the user id of the user for whom its user properties are required.
+     * @return the hash map containing user properties as name/value pairs.
+     * @throws NamingException LDAP error obtaining user properties.
+     */
+    @Deprecated
     protected HashMap selectUserProperties(String uid) throws NamingException {
         HashMap userPropertiesResultSet = new HashMap();
 
@@ -701,6 +794,11 @@ public class LDAPIdentityStore extends AbstractStore  {
                     if (attribute == null) {
                         logger.warn("Invalid user property attribute '" + propertiesAttr[j] + "'");
                         continue;
+                    }
+
+                    int sz = attribute.size();
+                    for (int k = 0 ; k < sz ; k++) {
+                        String v = attribute.get(k).toString();
                     }
 
                     Object propertyObject = attrs.get(propertiesAttr[j]).get();
