@@ -146,26 +146,30 @@ public class DynamicAttributeProfileMapper extends BaseAttributeProfileMapper {
 
                 }
 
-                AttributeType attrProp = at.get(name);
-                if (attrProp == null) {
-                    attrProp = new AttributeType();
-                    attrProp.setName(name);
-                    attrProp.setNameFormat(format);
-                    attrProp.setFriendlyName(friendlyName);
-                    at.put(name, attrProp);
-                    userAttrs.add(attrProp);
-                }
+                // This attribute was mapped
+                if (name != null) {
 
-                boolean found = false;
-                for (Object value : attrProp.getAttributeValue()) {
-                    if (value.equals(property.getValue())) {
-                        found = true;
-                        break;
+                    AttributeType attrProp = at.get(name);
+                    if (attrProp == null) {
+                        attrProp = new AttributeType();
+                        attrProp.setName(name);
+                        attrProp.setNameFormat(format);
+                        attrProp.setFriendlyName(friendlyName);
+                        at.put(name, attrProp);
+                        userAttrs.add(attrProp);
                     }
-                }
 
-                if (!found)
-                    attrProp.getAttributeValue().add(property.getValue());
+                    boolean found = false;
+                    for (Object value : attrProp.getAttributeValue()) {
+                        if (value.equals(property.getValue())) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                        attrProp.getAttributeValue().add(property.getValue());
+                }
 
 
             }
