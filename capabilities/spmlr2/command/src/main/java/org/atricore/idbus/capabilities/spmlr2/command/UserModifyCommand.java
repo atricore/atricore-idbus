@@ -20,8 +20,11 @@ import java.util.List;
 @Command(scope = "spml", name = "usrmodify", description = "SPML User MODIFY operation")
 public class UserModifyCommand extends SpmlCommandSupport {
 
-    @Option(name = "-i", aliases = "--id", description = "User ID", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--id", description = "User ID", required = false, multiValued = false)
     Long id;
+
+    @Option(name = "-u", aliases = "--username", description = "Username", required = false, multiValued = false)
+    String username;
 
     //<--- General Information ---->
     @Option(name = "-n", aliases = "--name", description = "User first name ", required = false, multiValued = false)
@@ -88,11 +91,22 @@ public class UserModifyCommand extends SpmlCommandSupport {
 
     @Override
     protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
+
+
+        PSOType psoUser = null;
+        if (username != null) {
+            psoUser = lookupUser(pspChannel, username);
+        } else if (id != null) {
+            psoUser = lookupUser(pspChannel, id);
+        } else {
+            throw new IllegalArgumentException("Either id or username must be provided");
+        }
+
         ModifyRequestType spmlRequest = new ModifyRequestType();
         spmlRequest.setRequestID(uuidGenerator.generateId());
         spmlRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
-        PSOType psoUser = lookupUser(pspChannel, id);
+
         UserType spmlUser = (UserType) psoUser.getData();
 
         // Note: use Spring's BeanUtils (instead of Apache's) because null Boolean values will be set to null and not false

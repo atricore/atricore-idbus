@@ -37,14 +37,14 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
-    @Argument(index = 0, name = "idauId", description = "The id if the identity appliance", required = true)
-    String idauId;
+    @Argument(index = 0, name = "idauId", description = "The id if the identity appliance", required = false, valueToShowInHelp = "idau-default")
+    String idauId = "idau-default";
 
-    @Argument(index = 1, name = "pspId", description = "The id if the Provisioning Service Provider", required = true)
-    String pspId;
+    @Argument(index = 1, name = "pspId", description = "The id if the Provisioning Service Provider", required = false, valueToShowInHelp = "psp-default")
+    String pspId = "psp-default";
 
-    @Argument(index = 2, name = "targetId", description = "Provisioning Service Target id", required = false)
-    String targetId;
+    @Argument(index = 2, name = "targetId", description = "Provisioning Service Target id", required = false, valueToShowInHelp = "pst-default")
+    String targetId = "pst-default";
 
     @Option(name = "-v", aliases = "--verbose", description = "Verbose command", required = false, multiValued = false)
     boolean verbose = false;
@@ -263,6 +263,51 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
         LookupResponseType spmlResponse = (LookupResponseType) mediator.sendMessage(spmlRequest, ed, pspChannel);
 
         return spmlResponse.getPso();
+
+    }
+
+
+    protected PSOType lookupUser(PsPChannel pspChannel, String userName) throws IdentityMediationException {
+        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
+        EndpointDescriptor ed = resolvePsPEndpoint(pspChannel, SpmlR2Binding.SPMLR2_LOCAL);
+
+        SearchRequestType spmlRequest = new SearchRequestType();
+        spmlRequest.setRequestID(uuidGenerator.generateId());
+        spmlRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+
+        SearchQueryType spmlQry  = new SearchQueryType();
+        spmlQry.setScope(ScopeType.ONE_LEVEL);
+        spmlQry.setTargetID(targetId);
+
+        spmlRequest.setQuery(spmlQry);
+
+        SelectionType spmlSelect = new SelectionType();
+        spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
+
+        String qry = "/users[userName='"+userName+"']";
+
+        spmlSelect.setPath(qry);
+        spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+
+        JAXBElement jaxbSelect= new JAXBElement(
+                new QName( SPMLR2Constants.SPML_NS, "select"),
+                spmlSelect.getClass(),
+                spmlSelect
+        );
+
+        spmlQry.getAny().add(jaxbSelect);
+
+        SearchResponseType spmlResponse = (SearchResponseType) mediator.sendMessage(spmlRequest, ed, pspChannel);
+
+        List<PSOType> psoUsers = spmlResponse.getPso();
+
+        if (psoUsers.size() > 1)
+            throw new IdentityMediationException("Too many users found for name " + userName);
+
+        if (psoUsers.size() < 1)
+            throw new IdentityMediationException("User not found for '" + userName + "'");
+
+        return psoUsers.get(0);
 
     }
     
