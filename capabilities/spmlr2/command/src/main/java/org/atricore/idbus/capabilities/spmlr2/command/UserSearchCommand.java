@@ -24,7 +24,7 @@ public class UserSearchCommand extends SpmlCommandSupport {
     @Option(name = "-q", aliases = "--query", description = "SPML User search query", required = false, multiValued = false)
     String qry;
 
-    @Option(name = "-n", aliases = "--name", description = "SPML Username", required = false, multiValued = false)
+    @Option(name = "-u", aliases = "--username", description = "SPML Username", required = false, multiValued = false)
     String username;
 
 
