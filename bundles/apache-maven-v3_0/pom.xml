@@ -252,6 +252,12 @@
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-reflect</artifactId>
             <version>3.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

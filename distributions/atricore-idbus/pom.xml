@@ -776,11 +776,11 @@
             <artifactId>jetty-servlets</artifactId>
             <version>${jetty.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>${log4j.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>org.sonatype.jline</groupId>
             <artifactId>jline</artifactId>
@@ -1576,7 +1576,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>lang-tag</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
 
         <dependency>
@@ -2532,6 +2532,12 @@
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.xmlsec</artifactId>
             <version>${xmlsec.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.ws.security</groupId>
