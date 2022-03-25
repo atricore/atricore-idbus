@@ -95,14 +95,13 @@
 </div>
 
 <!-- footer -->
-<div class="gt-footer"><div class="gt-footer-inner">
-    <p>Copyright &copy; 2007 - 2020 Atricore, Inc. - <a href="http://www.atricore.com" target="_blank">www.atricore.com</a></p>
+<div class="gt-footer">
+    <div class="gt-footer-inner">
+        <p>Copyright &copy; 2007 - 2020 Atricore, Inc. - <a href="http://www.atricore.com" target="_blank">www.atricore.com</a></p>
+    </div>
 </div>
 <!-- /footer -->
 
-<% if (iFrameEndpoint != null) { %>
-<iframe id="op-iframe" src="<%=iFrameEndpoint.toString()%>" style="display: none;" >OP CheckSession iFrame</iframe>
-<% } %>
 <iframe src="<%=request.getContextPath()%>/authzcode/chk-session-iframe.jsp" style="display: none;">RP CheckSession iFrame</iframe>
 
 </body>
