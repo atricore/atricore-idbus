@@ -5,7 +5,7 @@
     <feature name="atricore" version="${version}">
         <feature version="${version}">atricore-support</feature>
         <feature version="${version}">atricore-branding</feature>
-        <feature version="${karaf.version}">webconsole</feature>
+        <!--feature version="${karaf.version}">webconsole</feature-->
         <feature version="${version}">atricore-idbus</feature>
         <feature version="${version}">atricore-connectors</feature>
         <feature version="${version}">atricore-idojos</feature>
