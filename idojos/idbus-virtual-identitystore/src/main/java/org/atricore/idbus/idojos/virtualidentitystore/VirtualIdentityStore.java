@@ -141,8 +141,8 @@ public class VirtualIdentityStore extends AbstractStore {
             } catch (NoSuchUserException e) {
                 logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
-                logger.warn("Error find roles from embedded identity source", t);
-                                
+                // Ignore all errors
+                logger.debug("Error find roles from embedded identity source", t);
             }
 
         }
