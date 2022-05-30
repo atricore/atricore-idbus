@@ -348,6 +348,9 @@ public class UsernamePasswordAuthScheme extends AbstractAuthenticationScheme {
      */
     protected MessageDigest getDigest() throws SSOAuthenticationException {
 
+        if (_hashAlgorithm == null)
+            return null;
+
         if (_hashAlgorithm.equalsIgnoreCase("BCRYPT"))
             return null;
 

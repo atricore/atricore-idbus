@@ -184,25 +184,28 @@ public class PasswordUtil {
 
             byte[] hash;
             // Hash algorithm is optional
-            if (hashAlgorithm != null)
+            if (hashAlgorithm != null) {
+
                 hash = digest.digest(passBytes);
-            else
-                hash = passBytes;
+                // At this point, hashEncoding is required.
+                if ("BASE64".equalsIgnoreCase(hashEncoding)) {
+                    passwordHash = CipherUtil.encodeBase64(hash);
 
-            // At this point, hashEncoding is required.
-            if ("BASE64".equalsIgnoreCase(hashEncoding)) {
-                passwordHash = CipherUtil.encodeBase64(hash);
+                } else if ("HEX".equalsIgnoreCase(hashEncoding)) {
+                    passwordHash = CipherUtil.encodeBase16(hash);
 
-            } else if ("HEX".equalsIgnoreCase(hashEncoding)) {
-                passwordHash = CipherUtil.encodeBase16(hash);
+                } else if (hashEncoding == null) {
+                    logger.error("You must specify a hashEncoding when using hashAlgorithm");
 
-            } else if (hashEncoding == null) {
-                logger.error("You must specify a hashEncoding when using hashAlgorithm");
+                } else {
+                    logger.error("Unsupported hash encoding format " + hashEncoding);
 
+                }
             } else {
-                logger.error("Unsupported hash encoding format " + hashEncoding);
-
+                // No hashing at this point, return password as is
+                passwordHash = password;
             }
+
 
         } catch (Exception e) {
             logger.error("Password hash calculation failed : \n" + e.getMessage(), e);
