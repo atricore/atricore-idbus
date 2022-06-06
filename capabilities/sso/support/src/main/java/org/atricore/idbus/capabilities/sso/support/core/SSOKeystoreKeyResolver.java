@@ -137,7 +137,7 @@ public class SSOKeystoreKeyResolver extends SSOKeyResolverImpl {
 
             }
 
-            if (certificateAlias != null && !certificate.equals("")) {
+            if (certificateAlias != null && !certificateAlias.equals("")) {
                 certificate = keystore.getCertificate(certificateAlias);
                 publicKey = certificate.getPublicKey();
             }
