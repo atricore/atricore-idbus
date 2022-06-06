@@ -126,7 +126,18 @@ public class SSOKeystoreKeyResolver extends SSOKeyResolverImpl {
             //load the keystore
             keystore.load(is, keystorePass.toCharArray());
 
-            if (certificateAlias != null) {
+            if (certificateAlias == null || "".equals(certificateAlias)) {
+                if (keystore.size() == 1) {
+                    certificateAlias = keystore.aliases().nextElement();
+                    privateKeyAlias = certificateAlias;
+
+                } else {
+                    throw new SSOKeyResolverException("No alias configured, and keystore has multiple entries");
+                }
+
+            }
+
+            if (certificateAlias != null && !certificate.equals("")) {
                 certificate = keystore.getCertificate(certificateAlias);
                 publicKey = certificate.getPublicKey();
             }

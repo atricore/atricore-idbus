@@ -21,6 +21,10 @@
 
 package org.atricore.idbus.kernel.main.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -30,10 +34,22 @@ import java.util.Properties;
 
 public class ConfigurationContextImpl implements ConfigurationContext {
 
+    public static final Log logger = LogFactory.getLog(ConfigurationContextImpl.class);
+
     private Properties properties;
 
     public ConfigurationContextImpl(Properties properties) {
         this.properties = properties;
+        Map<String, String> env = System.getenv();
+
+        for (String key : properties.stringPropertyNames()) {
+            String envKey = toEnvVar(key);
+            String envValue = env.get(envKey);
+            if (envValue != null ) {
+                properties.put(key, envValue);
+                logger.info("Overriding kernel config [" + key + "] with environment value from [" + envKey + "]");
+            }
+        }
     }
 
     public String getProperty(String key) {
@@ -46,6 +62,10 @@ public class ConfigurationContextImpl implements ConfigurationContext {
 
     public Properties getProperties() {
         return properties;
+    }
+
+    protected String toEnvVar(String name) {
+        return "JOSSO_" + name.toUpperCase().replace('.', '_');
     }
 
 }

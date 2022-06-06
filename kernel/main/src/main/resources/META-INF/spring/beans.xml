@@ -197,6 +197,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- Configuration Admin entry                                           -->
     <!-- =================================================================== -->
 
+
     <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
         <!-- AQM Properties -->
         <prop key="aqm.builder">aqm-memory</prop>
