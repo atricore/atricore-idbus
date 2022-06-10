@@ -168,3 +168,15 @@ org.atricore.idbus.log.mode=DEBUG
 # wire log
 ### ---------------------------------------------
 # log4j.category.<appliance-realm>.wire=TRACE, wire
+
+
+
+#log4j.appender.cxf=org.apache.log4j.RollingFileAppender
+#log4j.appender.cxf.layout=org.apache.log4j.PatternLayout
+#log4j.appender.cxf.layout.ConversionPattern=%d{ISO8601} | %-5.5p | %-16.16t | %-32.32c{1} | %-128.128C %4L | %m%n
+#log4j.appender.cxf.file=${karaf.base}/data/log/cxf.log
+#log4j.appender.cxf.append=false
+#log4j.appender.cxf.maxFileSize=128MB
+#log4j.appender.cxf.maxBackupIndex=9
+
+#log4j.category.org.apache.cxf=TRACE, cxf
