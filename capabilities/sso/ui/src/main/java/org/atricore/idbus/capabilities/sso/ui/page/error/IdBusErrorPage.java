@@ -124,6 +124,12 @@ public class IdBusErrorPage extends BasePage {
                 add(new Label("status", getString("urn:org:atricore:idbus:samlr2:status:InternalError", null, "")));
             }
 
+        } else {
+            add(new Label("status", "N/A"));
+            add(new Label("secStatus", ""));
+            add(new Label("details", "No error information found (check binding error config)"));
+
+            fillCausesList(new CausesModel(null));
         }
 
     }
