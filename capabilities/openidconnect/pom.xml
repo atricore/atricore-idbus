@@ -45,7 +45,7 @@
 
     <properties>
 
-        <google-oauth-client.version>1.17.0-rc</google-oauth-client.version>
+        <google-oauth-client.version>1.33.3</google-oauth-client.version>
         <google-api-services-oauth2.version>v2-rev87-1.17.0-rc</google-api-services-oauth2.version>
         <google-http-client.version>1.17.0-rc</google-http-client.version>
         <google-http-client-jackson.version>1.17.0-rc</google-http-client-jackson.version>
