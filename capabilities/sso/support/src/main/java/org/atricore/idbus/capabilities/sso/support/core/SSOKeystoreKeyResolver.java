@@ -143,7 +143,9 @@ public class SSOKeystoreKeyResolver extends SSOKeyResolverImpl {
             }
 
             if (privateKeyAlias != null)
-                privateKey = (PrivateKey) keystore.getKey(privateKeyAlias, privateKeyPass != null ? privateKeyPass.toCharArray() : null);
+                privateKey = (PrivateKey) keystore.getKey(privateKeyAlias, privateKeyPass != null && !"".equals(privateKeyPass) ?
+                        privateKeyPass.toCharArray() :
+                        keystorePass.toCharArray());
 
             initiated = true;
         } catch (Exception e) {
