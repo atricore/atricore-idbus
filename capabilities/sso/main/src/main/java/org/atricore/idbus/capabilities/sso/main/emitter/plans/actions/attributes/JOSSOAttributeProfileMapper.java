@@ -67,7 +67,7 @@ public class JOSSOAttributeProfileMapper extends BaseAttributeProfileMapper {
 
                 boolean found = false;
                 for (Object v : attrProp.getAttributeValue()) {
-                    if (v.equals(property.getValue())) {
+                    if (v != null && v.equals(property.getValue())) {
                         found = true;
                         break;
                     }
