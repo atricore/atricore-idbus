@@ -29,13 +29,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.5.3-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.idojos</groupId>
     <artifactId>org.atricore.idbus.idojos.impersonateusrauthscheme</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: IDOJO : Impersonate Usr Authentication Scheme</name>
 

@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
         <artifactId>idconfirmation</artifactId>
-        <version>1.5.3-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.idconfirmation</groupId>
     <artifactId>org.atricore.idbus.capabilities.idconfirmation.component</artifactId>
-    <version>1.5.3-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Atricore IDBus :: Capability : Identity Confirmation Component POM</name>
 
