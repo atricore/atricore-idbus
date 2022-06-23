@@ -110,6 +110,7 @@ log4j.category.org.atricore.idbus.kernel.planning=INFO
 #log4j.category.org.atricore.idbus.applications=TRACE
 #log4j.category.org.atricore.idbus.idojos=TRACE
 
+log4j.category.com.atricore.idbus.console.lifecycle.main.transform=INFO
 log4j.category.com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker=INFO
 log4j.category.org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl=INFO
 log4j.category.org.atricore.idbus.kernel.main.session.service.SessionMonitor=INFO
