@@ -192,7 +192,7 @@
         <apache.directory.version>1.5.7</apache.directory.version>
         <bcel.version>5.2_2</bcel.version>
         <bouncycastle.version>1.39.0</bouncycastle.version>
-        <camel.version>1.6.1</camel.version>
+        <camel.version>2.24.0</camel.version>
         <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <commons-codec.version>1.10</commons-codec.version>
         <commons-compress.version>1.1</commons-compress.version>
