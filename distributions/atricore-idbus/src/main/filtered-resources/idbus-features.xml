@@ -172,7 +172,7 @@
     <feature name="atricore-oauth2" version="${version}">
 
         <bundle>mvn:joda-time/joda-time/2.9</bundle>
-        <bundle>mvn:com.nimbusds/lang-tag/1.6</bundle>
+        <bundle>mvn:com.nimbusds/lang-tag/1.7</bundle>
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.nimbus-jose-jwt-v7_4/${idbus.bundle.nimbus-jose-jwt-v7_4.version}</bundle>
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.oauth2-oidc-sdk-v6_13/${idbus.bundle.oauth2-oidc-sdk-v6_13.version}</bundle>
 
