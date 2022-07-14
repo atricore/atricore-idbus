@@ -2,6 +2,7 @@ package org.atricore.idbus.capabilities.sso.main.idp.producers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.sso.main.NoEndpointException;
 import org.atricore.idbus.capabilities.sso.main.SSOException;
 import org.atricore.idbus.capabilities.sso.main.common.producers.SSOProducer;
 import org.atricore.idbus.capabilities.sso.main.idp.IdPSecurityContext;
@@ -125,7 +126,9 @@ public class SessionHeartBeatProducer extends SSOProducer {
                         } else {
                             response.setValid(true);
                         }
-
+                    } catch (NoEndpointException e) {
+                        logger.warn(e.getMessage());
+                        response.setValid(true);
                     } catch (Exception e) {
                         // Consider this a valid session, we already have a valid local context
                         logger.error("Cannot proxy session heart-beat request : " + e.getMessage(), e);
@@ -195,6 +198,9 @@ public class SessionHeartBeatProducer extends SSOProducer {
             }
 
             EndpointDescriptor ed = resolveAccessSSOSessionEndpoint(channel, spBindingChannel);
+            if (ed == null) {
+                throw new NoEndpointException("Session heart-beat for " + spBindingChannel.getName());
+            }
             if (logger.isTraceEnabled())
                 logger.trace("Using SP Session Heart-Beat endpoint " + ed + " for partner " + spBindingChannel.getProvider().getName());
 
