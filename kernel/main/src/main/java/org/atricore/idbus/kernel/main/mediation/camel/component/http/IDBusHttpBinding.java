@@ -209,7 +209,11 @@ public class IDBusHttpBinding extends DefaultHttpBinding {
         Message httpOut = exchange.getOut();
         Message httpIn = exchange.getIn();
 
-        String origin = (String) httpIn.getHeader("Origin");
+        String origin = (String) httpIn.getHeader("origin");
+        if (origin == null)
+            origin = (String) httpIn.getHeader("Origin");
+        if (origin == null)
+            origin = (String) httpIn.getHeader("ORIGIN");
 
         if (origin != null && httpOut.getHeader("Access-Control-Allow-Origin") == null) {
 
