@@ -117,6 +117,7 @@ log4j.category.org.atricore.idbus.kernel.main.session.service.SSOSessionManagerI
 log4j.category.org.atricore.idbus.kernel.main.session.service.SessionMonitor=INFO
 log4j.category.org.atricore.idbus.kernel.main.databinding.JAXBUtils=INFO
 log4j.category.org.atricore.idbus.kernel.main.authn=TRACE
+log4j.category.org.atricore.idbus.idojos.ehcachesessionstore=INFO
 
 # Special category to log Flex client/server messages
 log4j.category.com.atricore.idbus.console.web.eventlog=INFO
