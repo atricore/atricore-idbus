@@ -1,6 +1,7 @@
 package org.atricore.idbus.kernel.main.authn;
 
 import javax.xml.namespace.QName;
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;

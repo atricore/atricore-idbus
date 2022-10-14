@@ -3528,14 +3528,19 @@ public class SingleSignOnProducer extends SSOProducer {
             for (PolicyEnforcementStatement policy : e.getSsoPolicyEnforcements()) {
                 d += p + policy.getQName().getNamespaceURI() + ":" + policy.getQName().getLocalPart();
                 p = ",";
+                policy.getValues();
             }
 
-            return new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
+            IdentityMediationFault f = new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     StatusCode.AUTHZ_FAILED.getValue(),
                     d,
                     e.getMessage(),
                     null
             );
+
+            f.setPolicies(e.getSsoPolicyEnforcements());
+
+            return f;
 
         } else {
 

@@ -101,7 +101,7 @@ public class SubjectNameID extends AbstractPrincipal {
 
     @Override
     public boolean equals(Object another) {
-        if (!(another instanceof SubjectAttribute))
+        if (!(another instanceof SubjectNameID))
             return false;
 
         String anotherName = ((SubjectNameID) another).getName();

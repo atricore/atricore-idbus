@@ -41,6 +41,7 @@ import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.atricore.idbus.kernel.auditing.core.AuditingServer;
+import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.BinarySecurityTokenType;
 import org.oasis_open.docs.wss._2004._01.oasis_200401_wss_wssecurity_secext_1_0.PasswordString;
@@ -666,12 +667,21 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
                 if (logger.isTraceEnabled())
                     logger.trace("Resolving SSOUser [" + username + "] [STS: " + this.getName() + "]");
 
-                startMilis = System.currentTimeMillis();
-                ssoUser = idMgr.findUser(username);
-                endMilis = System.currentTimeMillis();
+                try {
+                    startMilis = System.currentTimeMillis();
+                    ssoUser = idMgr.findUser(username);
 
-                if (logger.isTraceEnabled())
-                    logger.trace("findUser "  + username + " [MILIS] " + (endMilis - startMilis));
+                } catch (NoSuchUserException e) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Cannot resolve user for " + username + ". Ignoring");
+                    return subject;
+
+                } finally {
+                    endMilis = System.currentTimeMillis();
+                    if (logger.isTraceEnabled())
+                        logger.trace("findUser "  + username + " [MILIS] " + (endMilis - startMilis));
+                }
+
 
                 startMilis = System.currentTimeMillis();
                 ssoRoles = idMgr.findRolesByUsername(username);

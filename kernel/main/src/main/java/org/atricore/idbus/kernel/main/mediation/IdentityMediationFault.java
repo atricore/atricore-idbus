@@ -21,6 +21,12 @@
 
 package org.atricore.idbus.kernel.main.mediation;
 
+import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
+
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
@@ -31,6 +37,9 @@ public class IdentityMediationFault extends IdentityMediationException {
     private String secFaultCode;
     private String statusDetails;
     private String errorDetails;
+
+    // List of policy enforcment statements
+    private Set<PolicyEnforcementStatement> policies;
 
     private Throwable fault;
 
@@ -68,5 +77,13 @@ public class IdentityMediationFault extends IdentityMediationException {
 
     public String getErrorDetails() {
         return errorDetails;
+    }
+
+    public Set<PolicyEnforcementStatement> getPolicies() {
+        return policies;
+    }
+
+    public void setPolicies(Set<PolicyEnforcementStatement> policies) {
+        this.policies = policies;
     }
 }

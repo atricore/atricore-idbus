@@ -27,10 +27,19 @@ public class LocalSubjectIdentityMapper implements IdentityMapper {
         }
 
         // Get some "special" attributes from remote subject:
+        SubjectNameID sid = null;
+        for (Principal p : localSubject.getPrincipals()) {
+            if (p instanceof SubjectNameID) {
+                sid = (SubjectNameID) p;
+            }
+        }
 
         for (Principal p : remoteSubject.getPrincipals()) {
-            if (p instanceof SubjectNameID)
-                continue;
+            if (p instanceof SubjectNameID) {
+                if (sid != null)
+                    continue;
+                localSubject.getPrincipals().add(p);
+            }
 
             if (logger.isTraceEnabled())
                 logger.trace("Merging IDP principal " + p);

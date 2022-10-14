@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.capabilities.sso.support.federation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.IdentityMapper;
 import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
@@ -39,6 +41,7 @@ import java.util.Set;
  */
 public class OneToOneIdentityMapper implements IdentityMapper {
 
+    private static final Log logger = LogFactory.getLog(OneToOneIdentityMapper.class);
 
     public Subject map(Subject remoteSubject, Subject localSubject, Set<Principal> additionalPrincipals) {
         return map(remoteSubject, localSubject);
@@ -50,16 +53,24 @@ public class OneToOneIdentityMapper implements IdentityMapper {
         Set<Principal> merged = new HashSet<Principal>();
 
         Set<SubjectNameID> subjectNameID = localSubject.getPrincipals(SubjectNameID.class);
-        // federated subject is identified using local account name identifier
-        for (SubjectNameID sc : subjectNameID) {
-            merged.add(sc);
+
+        if (subjectNameID.size() > 0) {
+            if (logger.isDebugEnabled())
+                logger.debug("Using local subject name id: " + subjectNameID);
+            // federated subject is identified using local account name identifier
+            merged.addAll(subjectNameID);
+        } else {
+
+            subjectNameID = idpSubject.getPrincipals(SubjectNameID.class);
+            if (logger.isDebugEnabled())
+                logger.debug("Using remote subject name id: " + subjectNameID);
+            // federated subject is identified using local account name identifier
+            merged.addAll(subjectNameID);
         }
 
         // Use local roles
         Set<SubjectRole> localRoles = localSubject.getPrincipals(SubjectRole.class);
-        for (SubjectRole localRole : localRoles) {
-            merged.add(localRole);
-        }
+        merged.addAll(localRoles);
 
         // federated subject entitlements are the ones conveyed in the idp subject with
         // an extra tag
