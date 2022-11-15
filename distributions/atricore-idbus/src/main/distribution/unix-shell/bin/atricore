@@ -20,7 +20,7 @@
 
 DIRNAME=`dirname $0`
 PROGNAME=`basename $0`
-IDBUS_CLEANUP="true"
+#IDBUS_CLEANUP="true"
 
 #
 # Check/Set up some easily accessible MIN/MAX params for JVM mem usage

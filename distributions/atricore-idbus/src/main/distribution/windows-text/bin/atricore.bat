@@ -218,7 +218,7 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     rem Clean up state from previous runs
     rmdir /S /Q %KARAF_BASE%\data\activemq-idbus 2> nul
     rmdir /S /Q %KARAF_BASE%\data\tmp\ 2> nul
-    rmdir /S /Q %KARAF_BASE%\data\ehcache\ 2> nul
+    REM remove to clear cache every time:  rmdir /S /Q %KARAF_BASE%\data\ehcache\ 2> nul
     rmdir /S /Q %KARAF_BASE%\data\cache\ 2> nul
     mkdir %KARAF_BASE%\data\tmp\ 2> nul
 
