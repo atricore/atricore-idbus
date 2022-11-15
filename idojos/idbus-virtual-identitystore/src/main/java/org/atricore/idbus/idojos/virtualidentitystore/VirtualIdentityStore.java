@@ -142,7 +142,7 @@ public class VirtualIdentityStore extends AbstractStore {
                 logger.debug(e.getMessage(), e);
             } catch (Throwable t) {
                 // Ignore all errors
-                logger.debug("Error find roles from embedded identity source", t);
+                logger.trace("Error find roles from embedded identity source", t);
             }
 
         }
