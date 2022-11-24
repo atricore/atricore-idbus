@@ -31,7 +31,7 @@
     jaxb:extensionBindingPrefixes="xjc"
     jaxb:version="2.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.josso.org/schema/www.w3.org/2001/xml.xsd">
+    xsi:schemaLocation="http://www.w3.org/2001/XMLSchema https://iam.tf/schema/www.w3.org/2001/xml.xsd">
 
     <xs:annotation>
         <xs:appinfo>

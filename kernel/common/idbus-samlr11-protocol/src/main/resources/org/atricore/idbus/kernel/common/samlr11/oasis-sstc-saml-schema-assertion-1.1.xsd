@@ -9,7 +9,7 @@ elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.1
 >
 
 
-	<import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.josso.org/schema/www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd"/>
+	<import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="https://iam.tf/schema/www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd"/>
 	<annotation>
 		<documentation>
                 Document identifier: oasis-sstc-saml-schema-assertion-1.1
