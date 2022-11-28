@@ -95,7 +95,7 @@ public class EmailAccountLinkEmitter extends AbstractAccountLinkEmitter {
                 if (logger.isDebugEnabled())
                     logger.debug("Found email as attribute ["+email+"]");
 
-                if (stripEmailDomain)
+                if (stripEmailDomain && email.indexOf("@") > 0)
                     return newBuilder(subject,
                             email.substring(0, email.indexOf("@")),
                             NameIDFormat.UNSPECIFIED.getValue(),
