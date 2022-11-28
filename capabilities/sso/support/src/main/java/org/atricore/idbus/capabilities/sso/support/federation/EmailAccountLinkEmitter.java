@@ -119,7 +119,10 @@ public class EmailAccountLinkEmitter extends AbstractAccountLinkEmitter {
             if (logger.isDebugEnabled())
                 logger.debug("Found email as subject id ["+email+"]");
 
-            return newBuilder(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue(), ctx).build();
+            if (stripEmailDomain && email.indexOf("@") > 0)
+                return newBuilder(subject, email.substring(0, email.indexOf("@")), NameIDFormat.UNSPECIFIED.getValue(), ctx).build();
+            else
+                return newBuilder(subject, email, NameIDFormat.UNSPECIFIED.getValue(), ctx).build();
         }
 
         /*
