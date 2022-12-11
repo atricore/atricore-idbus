@@ -1,0 +1,22 @@
+{
+  "name": "josso-react-example",
+  "version": "1.0.0",
+  "license": "MI",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-oidc-context": "^2.2.0",
+    "scheduler": "^0.23.0"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.8.4",
+    "parcel": "^2.5.0",
+    "process": "^0.11.10",
+    "typescript": "^4.2.4"
+  }
+}
