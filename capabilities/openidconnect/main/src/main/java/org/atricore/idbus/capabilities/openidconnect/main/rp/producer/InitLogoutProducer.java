@@ -108,8 +108,7 @@ public class InitLogoutProducer extends AbstractOpenIDProducer {
 
         URI postLogoutURI = logoutRequest.getPostLogoutRedirectionURI();
         if (postLogoutURI != null) {
-
-            // POST LOGOUT URI
+            // POST LOGOUT URI, this is optinal
             if (metadata.getPostLogoutRedirectionURIs() != null &&
                     metadata.getPostLogoutRedirectionURIs().size() > 0) {
 
