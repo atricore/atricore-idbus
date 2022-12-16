@@ -95,26 +95,30 @@ public class InitLogoutProducer extends AbstractOpenIDProducer {
             idTokenStr = authnCtx.getIdTokenStr();
         }
 
+        // TODO : ID Token HINT : compare received value with stored value!
         JWT receivedIdToken = logoutRequest.getIDTokenHint();
         String receivedIdTokenStr = receivedIdToken != null ? receivedIdToken.getParsedString() : null;
 
-        // TODO : ID Token HINT : compare received value with stored value!
-        // TODO : Get session from tokens ?!
+        if (receivedIdTokenStr != null && idTokenStr != null) {
+            // Compare
+            if (!idTokenStr.equals(receivedIdTokenStr)) {
+                logger.warn("Token hint does not patch stored token. State: " + logoutRequest.getState());
+            }
+        }
 
         URI postLogoutURI = logoutRequest.getPostLogoutRedirectionURI();
+        if (postLogoutURI != null) {
 
-        if (postLogoutURI == null)
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            // POST LOGOUT URI
+            if (metadata.getPostLogoutRedirectionURIs() != null &&
+                    metadata.getPostLogoutRedirectionURIs().size() > 0) {
 
-        // POST LOGOUT URI
-        if (metadata.getPostLogoutRedirectionURIs() != null &&
-                metadata.getPostLogoutRedirectionURIs().size() > 0) {
+                if (!validateURI(metadata.getPostLogoutRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI()))
+                    throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
 
-            if (!validateURI(metadata.getPostLogoutRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI()))
+            } else if (!validateURI(metadata.getRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI())) {
                 throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
-
-        } else if (!validateURI(metadata.getRedirectionURIs(), logoutRequest.getPostLogoutRedirectionURI())) {
-            throw new OpenIDConnectProviderException(OAuth2Error.INVALID_REQUEST_URI, "post_logout_redirect_uri is invalid");
+            }
         }
     }
 
