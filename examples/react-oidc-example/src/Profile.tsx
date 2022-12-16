@@ -1,11 +1,7 @@
 import { AuthContextProps, useAuth } from "react-oidc-context";
 
 import * as React from 'react';
-import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import List from '@mui/material/List';
-import ListSubheader from '@mui/material/ListSubheader';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Table from '@mui/material/Table';
@@ -15,7 +11,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import PeopleIcon from '@mui/icons-material/Person2';
 import AttrIcon from '@mui/icons-material/Label';
 import EmailIcon from '@mui/icons-material/Email';
 import GroupIcon from '@mui/icons-material/Group';
@@ -31,7 +26,7 @@ function SSOClaims(auth: AuthContextProps) {
     }
 
     // reduce the profile object to a list of key-value pairs
-    let claims = Object.keys(p).filter((key)=> key != 'dn').sort().map((key) => {
+    let claims = Object.keys(p).filter((key)=> key !== 'dn').sort().map((key) => {
         return (
             <TableRow
               key={key + '-row'}
@@ -103,9 +98,6 @@ export default function SSOProfile() {
         return <div>Oops... {auth.error.message}</div>;
 
     } else if (auth.isAuthenticated) {
-        let username = auth.user?.profile.sub;
-
-
         return (
 
             <TableContainer component={Paper}>
