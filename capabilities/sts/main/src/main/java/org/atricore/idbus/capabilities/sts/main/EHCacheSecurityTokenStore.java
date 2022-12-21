@@ -6,11 +6,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import net.sf.ehcache.*;
+import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+
+import java.util.Map;
 
 /**
  * Created by sgonzalez.
@@ -34,6 +37,10 @@ public class EHCacheSecurityTokenStore implements
     // 1 hour (3600 secs)
     private int defaultTimteToLive = 60 * 60;
 
+    private int loadRetryCount = 0;
+
+    private long loadRetryDelay = 500;
+
     private ApplicationContext applicationContext;
 
     @Override
@@ -49,6 +56,14 @@ public class EHCacheSecurityTokenStore implements
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    public int getLoadRetryCount() {
+        return loadRetryCount;
+    }
+
+    public void setLoadRetryCount(int loadRetryCount) {
+        this.loadRetryCount = loadRetryCount;
     }
 
     @Override
@@ -79,12 +94,37 @@ public class EHCacheSecurityTokenStore implements
             }
 
             cache.getCacheEventNotificationService().registerListener(new CacheListener());
+
+
+            Map<String, ConfigurationContext> ctxs = applicationContext.getBeansOfType(ConfigurationContext.class);
+
+            if (ctxs.size() == 1) {
+                ConfigurationContext ctx = ctxs.values().iterator().next();
+
+                // Use configuration from session store
+                String loadRetryCountStr = ctx.getProperty("sessionstore.loadRetryCount");
+                String loadRetryDelayStr = ctx.getProperty("sessionstore.loadRetryDelay");
+
+                if (loadRetryCountStr != null) {
+                    loadRetryCount = Integer.parseInt(loadRetryCountStr);
+                    logger.trace("Load retry count       " + loadRetryCount);
+                }
+
+                if (loadRetryDelayStr != null) {
+                    loadRetryDelay = Long.parseLong(loadRetryDelayStr);
+                    logger.trace("Load retry delay       " + loadRetryDelay);
+                }
+            }
+
+
             if (logger.isTraceEnabled()) {
 
                 logger.trace("Initialized EHCache Token Store using cache : " + cache);
                 logger.trace("Cache Bootstrap loader " + cache.getBootstrapCacheLoader());
                 logger.trace("Cache Bootstrap loader " + cache.getBootstrapCacheLoader());
                 logger.trace("Cache Event Notification service " + cache.getCacheEventNotificationService());
+                logger.trace("Store retry count: " + loadRetryCount);
+                logger.trace("Store retry delay: " + loadRetryDelay);
             }
 
             logger.info("Initialized EHCache Token Store using cache " + cacheName + ". Size: " + cache.getSize());
@@ -112,6 +152,19 @@ public class EHCacheSecurityTokenStore implements
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
 
             Element e = cache.get(tokenId);
+            if (e == null) {
+                int retry = 0;
+                while (e == null && retry < loadRetryCount) {
+                    // Wait and try again, maybe state is on the road :)
+                    if (logger.isTraceEnabled())
+                        logger.trace("Cache miss, wait for " + loadRetryDelay + " ms");
+
+                    try { Thread.sleep(loadRetryDelay); } catch (InterruptedException ie ) { /* Ignore this */ }
+                    e = cache.get(tokenId);
+                    retry ++;
+                }
+            }
+
             if (e == null) {
                 if (logger.isDebugEnabled())
                     logger.debug("No token found with id ["+tokenId+"]");
