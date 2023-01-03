@@ -6,11 +6,13 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.camel.component.http.MediationLocationsRegistry;
 import org.atricore.idbus.kernel.main.mediation.channel.AbstractFederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.springframework.context.ApplicationContext;
 import org.springframework.osgi.context.BundleContextAware;
 
@@ -28,6 +30,9 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
 
     private static final Log logger = LogFactory.getLog(OsgiIdentityMediationUnit.class);
 
+
+    private MediationLocationsRegistry registry;
+
     private BundleContext bundleContext;
 
     public void setBundleContext(BundleContext bundleContext) {
@@ -44,6 +49,10 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
         IdentityMediationUnitContainer container = null;
 
         try {
+
+            if (registry == null) {
+                registry = lookupMediationLocationRegistry();
+            }
 
             // We need this code to run here, triggered by spring, so that
             // the identity appliance unit classloader is used ...
@@ -126,6 +135,9 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
 
                     if (fedChannel.getEndpoints() != null) {
 
+                        if (registry != null)
+                            registry.register(fedChannel.getLocation());
+
                         for (IdentityMediationEndpoint identityMediationEndpoint : fedChannel.getEndpoints()) {
 
                             // Endpoints MUST have unique, not null names!
@@ -200,4 +212,22 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
             c.stop();
         }
     }
+
+    protected MediationLocationsRegistry lookupMediationLocationRegistry() {
+        try {
+            // Create a service reference
+            ServiceReference ref = bundleContext.getServiceReference(MediationLocationsRegistry.class.getName());
+            // Get the service from the service reference
+            if (ref == null) {
+                logger.warn("Mediation location registry not available (Ref)");
+                return null;
+            }
+            return (MediationLocationsRegistry) bundleContext.getService(ref);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+
 }

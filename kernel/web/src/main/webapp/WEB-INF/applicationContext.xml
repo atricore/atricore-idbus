@@ -77,4 +77,8 @@
                     cardinality="1..1"
                     timeout="60"/>
 
+    <osgi:service id="urlRegistrySvc"
+                  interface="org.atricore.idbus.kernel.main.mediation.camel.component.http.MediationLocationsRegistry"
+                  ref="default-processing-policy"/>
+
 </beans>

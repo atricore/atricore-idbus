@@ -5,6 +5,8 @@ package org.atricore.idbus.kernel.main.mediation.camel.component.http;
  */
 public interface IDBusHttpConstants {
 
+    public static final String IDBUS_CONTEXT = "/IDBUS/";
+
     public static final String HTTP_HEADER_IDBUS_REMOTE_ADDRESS = "X-IdBusRemoteAddress";
 
     public static final String HTTP_HEADER_IDBUS_REMOTE_HOST = "X-IdBusRemoteHost";

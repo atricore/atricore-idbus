@@ -9,21 +9,22 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import static org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants.IDBUS_CONTEXT;
 
 /**
  * This policy will match
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy, InitializingBean {
+public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy, InitializingBean, MediationLocationsRegistry {
 
     private static final Log logger = LogFactory.getLog(DefaultInternalProcessingPolicy .class);
 
     private ConfigurationContext kernelConfig;
 
-    private List<String> excludedUrls = new ArrayList<String>();
+    private Set<String> excludedUrls = new HashSet<String>();
 
-    private List<String> includedUrls = new ArrayList<String>();
+    private Set<String> includedUrls = new HashSet<String>();
 
     private Map<String, Set<String>> aliases = new HashMap<String, Set<String>>();
 
@@ -69,6 +70,33 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
             }
         }
 
+    }
+
+    @Override
+    public void register(String location) {
+        // Location should be a URL, we assume IDBUS is used
+        String url = stripAfterIDBUS(location);
+        includedUrls.add(url);
+    }
+
+    @Override
+    public void unregister(String location) {
+        // Location should be a URL, we assume IDBUS is used
+        String url = stripAfterIDBUS(location);
+        includedUrls.remove(url);
+    }
+
+    public String stripAfterIDBUS(String input) {
+        // Find the index of the first occurrence of "/IDBUS/" in the input string
+        int index = input.indexOf(IDBUS_CONTEXT);
+
+        // If "/IDBUS/" was not found in the input string, return the input string as is
+        if (index == -1) {
+            return input;
+        }
+
+        // Return a new string with everything after the first occurrence of "/IDBUS/" removed, including "/IDBUS/"
+        return input.substring(0, index + IDBUS_CONTEXT.length());
     }
 
 
@@ -244,19 +272,20 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
 
     }
 
-    public List<String> getExcludedUrls() {
+
+    public Set<String> getExcludedUrls() {
         return excludedUrls;
     }
 
-    public void setExcludedUrls(List<String> excludedUrls) {
+    public void setExcludedUrls(Set<String> excludedUrls) {
         this.excludedUrls = excludedUrls;
     }
 
-    public List<String> getIncludedUrls() {
+    public Set<String> getIncludedUrls() {
         return includedUrls;
     }
 
-    public void setIncludedUrls(List<String> includedUrls) {
+    public void setIncludedUrls(Set<String> includedUrls) {
         this.includedUrls = includedUrls;
     }
 
@@ -267,4 +296,6 @@ public class DefaultInternalProcessingPolicy implements InternalProcessingPolicy
     public void setKernelConfig(ConfigurationContext kernelConfig) {
         this.kernelConfig = kernelConfig;
     }
+
+
 }
