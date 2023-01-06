@@ -1,7 +1,5 @@
 package org.atricore.idbus.capabilities.openidconnect.main.op.emitter;
 
-import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -13,7 +11,6 @@ import com.nimbusds.openid.connect.sdk.OIDCScopeValue;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
 import net.minidev.json.JSONArray;
-import oasis.names.tc.saml._2_0.idbus.ExtAttributeListType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectConstants;
@@ -28,7 +25,8 @@ import org.atricore.idbus.kernel.planning.IdentityArtifact;
 
 import javax.security.auth.Subject;
 import java.util.Date;
-import java.util.UUID;
+import java.util.Map;
+
 
 public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
 
@@ -40,6 +38,8 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
     private Scope scope = new Scope();
 
     private SSOKeyResolver signer;
+
+    private boolean includeIdTokenClaims = false;
 
     public JWTAccessTokenEmitter() {
         scope.add(OIDCScopeValue.OPENID);
@@ -113,13 +113,6 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
 
                 // Get JWE/JWS options/algorithms from client MD or OP Default settings
                 JWSAlgorithm jwsAlgorithm = client.getOIDCMetadata().getIDTokenJWSAlg();
-                JWEAlgorithm jweAlgorithm = client.getOIDCMetadata().getIDTokenJWEAlg();
-                EncryptionMethod encMethod = client.getOIDCMetadata().getIDTokenJWEEnc();
-
-                ExtAttributeListType samlExtAttrs = resolveAuthnReqExtAttrs(rstCtx);
-
-                // TODO : Create JWT Token
-
 
                 // iss : issuer
                 Issuer iss = new Issuer(opMetadata.getIssuer());
@@ -134,11 +127,22 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
                 // JTI
                 String jti = uuidGenerator.generateId();
 
+                JWT previousIdToken = getPreviousIdToken(rstCtx);
+                JWTClaimsSet previousClaims = getPreviousIdTokenClaims(previousIdToken);
+
                 // Claims
-                JWTClaimsSet claimSet = new JWTClaimsSet.Builder().
+                JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder().
                         issuer(iss.getValue()).
                         expirationTime(exp).
-                        claim("aud", audList).
+                        claim("aud", audList);
+
+                if (includeIdTokenClaims && previousClaims != null) {
+                    for (Map.Entry<String, Object> entry : previousClaims.getClaims().entrySet()) {
+                        builder.claim(entry.getKey(), entry.getValue());
+                    }
+                }
+
+                JWTClaimsSet claimSet = builder.
                         jwtID(jti).
                         build();
 
@@ -188,5 +192,13 @@ public class JWTAccessTokenEmitter extends OIDCTokenEmitter {
 
     public void setTimeToLive(long timeToLive) {
         this.timeToLive = timeToLive;
+    }
+
+    public boolean isIncludeIdTokenClaims() {
+        return includeIdTokenClaims;
+    }
+
+    public void setIncludeIdTokenClaims(boolean includeIdTokenClaims) {
+        this.includeIdTokenClaims = includeIdTokenClaims;
     }
 }
