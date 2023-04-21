@@ -979,6 +979,8 @@ public class SingleSignOnProducer extends SSOProducer {
             // and emit a SAML 2.0 Assertion
             // ----------------------------------------------------------------------------------------
 
+            // TODO : Verify claims, check if more claims are required to complete the authentication! (MFA)
+
             securityTokenEmissionCtx = emitAssertionFromClaims(exchange,
                     securityTokenEmissionCtx,
                     claimsResponse.getClaimSet(),
@@ -1039,7 +1041,7 @@ public class SingleSignOnProducer extends SSOProducer {
 
                     // generate our own claims
                     idConfRequest.getClaims().add(new UserClaimImpl("", "sourceIpAddress", state.getTransientVariable("RemoteAddress")));
-                    idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "gbrigand@gmail.com"));
+                    //idConfRequest.getClaims().add(new UserClaimImpl("", "emailAddress", "gbrigand@gmail.com"));
 
                     // --------------------------------------------------------------------
                     // Submit identity confirmation request
