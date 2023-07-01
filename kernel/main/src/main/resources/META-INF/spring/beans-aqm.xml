@@ -67,7 +67,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <constructor-arg index="0" ref="kernelConfig"/>
         <property name="artifactGenerator">
             <bean class="org.atricore.idbus.kernel.main.mediation.ArtifactGeneratorImpl">
-                <property name="node" value="${idbus.node}"/>
+                <property name="node" value="${JOSSO_IDBUS_NODE:${idbus.node}}"/>
             </bean>
         </property>
         <property name="jmsProviderDestinationName" value="idbus-aqm"/>
