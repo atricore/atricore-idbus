@@ -1,5 +1,6 @@
 package org.atricore.idbus.bundles.ehcache.distribution;
 
+
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.distribution.CachePeer;
@@ -8,6 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 
 /**
  * Created by sgonzalez on 12/26/15.
@@ -98,7 +102,14 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
     public final synchronized List listRemoteCachePeers(Ehcache cache) throws CacheException {
         List remoteCachePeers = new ArrayList();
 
-        for (Iterator iterator = remoteHosts.iterator() ; iterator.hasNext() ; ) {
+        // Check if remoteHost is actually an expression
+        Set<String> rh = remoteHosts;
+        if (remoteHosts.size() == 1) {
+            rh = new HashSet<String>();
+            rh.add(resolveExpression(remoteHosts.iterator().next()));
+        }
+
+        for (Iterator iterator = rh.iterator() ; iterator.hasNext() ; ) {
             String remoteHost = (String) iterator.next();
             String rmiUrl = "//" + remoteHost + "/" + cache.getName();
 
@@ -151,6 +162,17 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
         return rmiUrl.substring(rmiUrl.lastIndexOf('/') + 1);
     }
 
+    private String resolveExpression(String input) {
+        if (input.startsWith("${") && input.endsWith("}")) {
+            String expression = input.substring(2, input.length() - 1);
+            String resolvedValue = System.getProperty(expression);
+            if (resolvedValue == null) {
+                resolvedValue = System.getenv(expression);
+            }
+            return resolvedValue != null ? resolvedValue : input;
+        }
+        return input;
+    }
 
 
 }
