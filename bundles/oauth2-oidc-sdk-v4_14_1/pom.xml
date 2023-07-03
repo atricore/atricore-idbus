@@ -29,21 +29,21 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.6.1-SNAPSHOT</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.oauth2-oidc-sdk-v4_14_1</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Nimbus OAuth 2.0 SDK v${oauth2-oidc-sdk.vesrion} OSGi</name>
 
     <properties>
         <oauth2-oidc-sdk.vesrion>4.14.1</oauth2-oidc-sdk.vesrion>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <nimbus-jose-jwt.version>1.6.0-SNAPSHOT</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>1.6.1-SNAPSHOT</nimbus-jose-jwt.version>
 
         <commons-codec.version>1.10</commons-codec.version>
     </properties>

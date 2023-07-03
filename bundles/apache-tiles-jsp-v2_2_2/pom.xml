@@ -29,14 +29,14 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.6.1-SNAPSHOT</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Apache Tiles JSP 2.2.2 OSGi</name>
 

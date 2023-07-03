@@ -55,7 +55,7 @@ class AuthorizationConfigurationImpl extends AuthorizationConfiguration {
     precompiler.targetDirectory = authzPolicyHome
     precompiler.classpath = System.getProperty("karaf.home") +
       "/system/org/scala-lang/scala-library/2.9.1/scala-library-2.9.1.jar:" +
-      System.getProperty("karaf.home") + "/system/org/atricore/idbus/kernel/authz/org.atricore.idbus.kernel.authz.core/1.6.0-SNAPSHOT/org.atricore.idbus.kernel.authz.core-1.6.0-SNAPSHOT.jar"
+      System.getProperty("karaf.home") + "/system/org/atricore/idbus/kernel/authz/org.atricore.idbus.kernel.authz.core/1.6.1-SNAPSHOT/org.atricore.idbus.kernel.authz.core-1.6.1-SNAPSHOT.jar"
 
     precompiler.execute
   }
@@ -70,7 +70,7 @@ class AuthorizationConfigurationImpl extends AuthorizationConfiguration {
 
     authzEngine.classpath = System.getProperty("karaf.home") +
       "/system/org/scala-lang/scala-library/2.9.1/scala-library-2.9.1.jar:" +
-      System.getProperty("karaf.home") + "/system/org/atricore/idbus/kernel/authz/org.atricore.idbus.kernel.authz.core/1.6.0-SNAPSHOT/org.atricore.idbus.kernel.authz.core-1.6.0-SNAPSHOT.jar"
+      System.getProperty("karaf.home") + "/system/org/atricore/idbus/kernel/authz/org.atricore.idbus.kernel.authz.core/1.6.1-SNAPSHOT/org.atricore.idbus.kernel.authz.core-1.6.1-SNAPSHOT.jar"
 
     authzEngine.combinedClassPath = true
     authzEngine.classLoader = Thread.currentThread.getContextClassLoader
