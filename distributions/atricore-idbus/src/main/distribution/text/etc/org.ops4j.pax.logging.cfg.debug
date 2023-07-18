@@ -76,7 +76,7 @@ log4j.category.javax=INFO
 
 ## EHCache
 #log4j.category.net.sf.ehcache=TRACE
-log4j.org.atricore.idbus.idojos.ehcachesessionstore=INFO
+log4j.category.org.atricore.idbus.idojos.ehcachesessionstore=INFO
 
 ## WADI
 #log4j.category.org.codehaus.wadi=TRACE
