@@ -140,7 +140,7 @@ public class TokenProducer extends AbstractOpenIDProducer {
 
             // ----------------------------------------------
             // This will generate an AccessToken AND a new RefreshToken
-            // Since RTs can be used once, we need to get the new one.
+            // Since RTs can be used once, we need to get a new one.
             // Emitting an AT will also emit an IDT in the same transaction
             // ----------------------------------------------
             RefreshTokenGrant rtg = new RefreshTokenGrant(rt);

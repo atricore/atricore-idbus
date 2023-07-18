@@ -25,49 +25,49 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
     @Override
     public IDTokenClaimsSet toAttributes(Object rstCtx, Subject subject, List<AbstractPrincipalType> proxyPrincipals, IDTokenClaimsSet claimsSet) {
 
-        Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
-        if (ssoUsers == null || ssoUsers.size() < 1) {
-            logger.error("Can't build ID Token for SimplePrincipal.  Try attaching an ID vault to your IDP/VP");
-            return null;
-        }
-        SSOUser user = ssoUsers.iterator().next();
-
+        // List of properties and its values, merged from SSOuser and proxy principals
         Map<String, Set<String>> ps = new HashMap<>();
+
+        // List of property names already used.
         Set<String> usedProps = new HashSet<String>();
-
-
-        if (user.getProperties() != null) {
-            for (SSONameValuePair property : user.getProperties()) {
-                Set<String> values = ps.get(property.getName());
-                if (values == null) {
-                    values = new HashSet<>();
-                    ps.put(property.getName(), values);
-                }
-                values.add(property.getValue());
-            }
-        }
-
-        for (String name : ps.keySet()) {
-            usedProps.add(name);
-            Set<String> values = ps.get(name);
-            if (values.size() == 1) {
-                claimsSet.setClaim(name, values.iterator().next());
-            } else {
-                claimsSet.setClaim(name, values);
-            }
-        }
-
-        // Groups
-        Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
         Set<String> usedRoles = new HashSet<String>();
 
-        for (SSORole ssoRole : ssoRoles) {
-            usedRoles.add(ssoRole.getName());
+        // Get SSOUser claims
+        Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
+        if (ssoUsers != null && ssoUsers.size() > 1) {
+            SSOUser user = ssoUsers.iterator().next();
+            if (user.getProperties() != null) {
+                for (SSONameValuePair property : user.getProperties()) {
+                    Set<String> values = ps.get(property.getName());
+                    if (values == null) {
+                        values = new HashSet<>();
+                        ps.put(property.getName(), values);
+                    }
+                    values.add(property.getValue());
+                }
+            }
+
+            // Process properties with multiple values
+            for (String name : ps.keySet()) {
+                usedProps.add(name);
+                Set<String> values = ps.get(name);
+                if (values.size() == 1) {
+                    claimsSet.setClaim(name, values.iterator().next());
+                } else {
+                    claimsSet.setClaim(name, values);
+                }
+            }
+
+            // Groups
+            Set<SSORole> ssoRoles = subject.getPrincipals(SSORole.class);
+
+            for (SSORole ssoRole : ssoRoles) {
+                usedRoles.add(ssoRole.getName());
+            }
         }
 
         // Add proxy principals (principals received from a proxied provider), but only if we don't have such a principal yet.
         if (proxyPrincipals != null) {
-
             Map<String, Set<String>> pps = new HashMap<>();
             for (AbstractPrincipalType principal : proxyPrincipals) {
                 if (principal instanceof SubjectAttributeType) {
@@ -79,9 +79,7 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
                     }
 
                     String value = attr.getValue();
-
                     Set<String> values = pps.get(name);
-
                     if (values == null) {
                         values = new HashSet<>();
                         pps.put(name, values);
@@ -106,8 +104,6 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
                     usedProps.add(name);
                 }
             }
-
-
         }
 
         JWTClaimsSet previousClaims = IDTokenEmitter.getPreviousIdTokenClaims(rstCtx);
