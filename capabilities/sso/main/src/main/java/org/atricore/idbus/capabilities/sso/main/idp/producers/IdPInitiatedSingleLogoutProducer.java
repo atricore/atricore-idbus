@@ -102,7 +102,7 @@ public class IdPInitiatedSingleLogoutProducer extends SSOProducer {
 
                 if (secCtx != null && secCtx.getSessionIndex() != null) {
                     Set<SSOUser> ssoUsers = secCtx.getSubject().getPrincipals(SSOUser.class);
-                    if (ssoUsers.size() > 1) {
+                    if (ssoUsers.size() >= 1) {
                         SSOUser user = ssoUsers.iterator().next();
                         NameIDType subjectNameID = new NameIDType();
                         subjectNameID.setFormat(NameIDFormat.UNSPECIFIED.getValue());

@@ -34,7 +34,7 @@ public class OneToOneAttributeProfileMapper implements  OIDCAttributeProfileMapp
 
         // Get SSOUser claims
         Set<SSOUser> ssoUsers = subject.getPrincipals(SSOUser.class);
-        if (ssoUsers != null && ssoUsers.size() > 1) {
+        if (ssoUsers != null && ssoUsers.size() >= 1) {
             SSOUser user = ssoUsers.iterator().next();
             if (user.getProperties() != null) {
                 for (SSONameValuePair property : user.getProperties()) {
