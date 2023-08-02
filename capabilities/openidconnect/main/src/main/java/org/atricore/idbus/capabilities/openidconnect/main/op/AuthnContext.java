@@ -2,14 +2,8 @@ package org.atricore.idbus.capabilities.openidconnect.main.op;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import com.nimbusds.oauth2.sdk.ParseException;
-import com.nimbusds.oauth2.sdk.SerializeException;
-import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
-import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
-import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
@@ -17,8 +11,6 @@ import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
