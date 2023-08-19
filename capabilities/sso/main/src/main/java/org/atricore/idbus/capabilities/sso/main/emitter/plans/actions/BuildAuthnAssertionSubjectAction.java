@@ -220,7 +220,7 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSSOAssertionAction
             // TODO : Consider SAML R2 Metadata, it can also specify the required Name ID policy as <md:NameIDFormat> in SSO Descriptor!
         }
 
-        if (nameIDPolicy == null) {
+        if (nameIDPolicy == null || nameIDPolicy.getFormat() == null) {
 
             if (logger.isDebugEnabled())
                 logger.debug("Using default NameIDPolicy");
