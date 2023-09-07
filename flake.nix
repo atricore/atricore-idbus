@@ -33,6 +33,7 @@
         default = pkgs.mkShell {
           packages = with pkgs; [ jdk maven ];
           shellHook = ''
+            echo "Atricore IDBus: Java dev env ("${pkgs.jdk.name}" / ${pkgs.maven.name})"
             export JAVA_HOME="${pkgs.jdk}/lib/openjdk"
             export MAVEN_HOME="${pkgs.maven}"
             export MAVEN_OPTS="-Dmaven.test.skip=true -Xmx2048m"
