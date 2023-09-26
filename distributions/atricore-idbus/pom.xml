@@ -54,7 +54,7 @@
         <commons-lang.bundle.version>2.4_5</commons-lang.bundle.version>
         <commons-lang3.version>3.3.2</commons-lang3.version>
         <jasypt.bundle.version>1.7_3</jasypt.bundle.version>
-        <jetty.version>7.4.5.v20110725</jetty.version> <!-- We actually do not use it -->
+        <jetty.version>9.4.51.v20230217</jetty.version> <!-- We actually do not use it -->
         <junit.bundle.version>4.7_3</junit.bundle.version>
         <geronimo.activation.version>1.1</geronimo.activation.version>
         <geronimo.jms-spec.version>1.1.1</geronimo.jms-spec.version>
