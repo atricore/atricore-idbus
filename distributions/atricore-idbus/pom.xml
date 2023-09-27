@@ -249,7 +249,7 @@
         <woodstox.stax2api.version>3.0.1</woodstox.stax2api.version>
         <woodstox.version>4.0.5</woodstox.version>
         <wsdl4j.version>1.6.2_2</wsdl4j.version>
-        <wss4j.version>1.5.8</wss4j.version>
+        <wss4j.version>1.6.17</wss4j.version>
         <xalan.version>2.7.1_2</xalan.version>
         <xbean.version>3.7</xbean.version>
         <xerces.version>2.9.1_3</xerces.version>
