@@ -50,7 +50,7 @@
         <apache.jasper.version>5.5.9</apache.jasper.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
         <camel.version>1.6.1</camel.version>
-        <commons-beanutils.version>1.8.0</commons-beanutils.version>
+        <commons-beanutils.version>1.9.2</commons-beanutils.version>
         <commons-el.version>1.0</commons-el.version>
         <commons-lang.version>2.0</commons-lang.version>
         <commons-logging.version>1.1.1</commons-logging.version>
