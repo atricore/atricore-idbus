@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.6.1-SNAPSHOT</version>
+        <version>1.6.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.oath</groupId>
     <artifactId>oath</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.2-SNAPSHOT</version>
     <name>Atricore IDBus :: Capability : OATH POM</name>
     <packaging>pom</packaging>
 
@@ -45,8 +45,8 @@
     <properties>
         <commons-logging.version>1.1.1</commons-logging.version>
         <commons-codec.version>1.10</commons-codec.version>
-        <idbus.kernel.version>1.6.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.cap.sts.version>1.6.1-SNAPSHOT</idbus.cap.sts.version>
+        <idbus.kernel.version>1.6.2-SNAPSHOT</idbus.kernel.version>
+        <idbus.cap.sts.version>1.6.2-SNAPSHOT</idbus.cap.sts.version>
     </properties>
 
     <dependencyManagement>

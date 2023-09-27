@@ -24,14 +24,14 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.6.1-SNAPSHOT</version>
+        <version>1.6.2-SNAPSHOT</version>
 
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.apache.karaf.shell.ssh-v2_2_3</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Apache Karaf :: Shell :: SSH</name>
     <description>This bundle provides SSH support to the Karaf console.</description>
@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.jaas</groupId>
             <artifactId>org.atricore.idbus.kernel.jaas.modules</artifactId>
-            <version>1.6.1-SNAPSHOT</version>
+            <version>1.6.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

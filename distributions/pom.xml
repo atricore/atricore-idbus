@@ -28,13 +28,13 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.6.1-SNAPSHOT</version>
+        <version>1.6.2-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus</groupId>
     <artifactId>distributions</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.2-SNAPSHOT</version>
     <name>Atricore :: Distributions</name>
 
     <repositories>

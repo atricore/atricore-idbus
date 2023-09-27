@@ -28,21 +28,21 @@
     <parent>
             <groupId>org.atricore.idbus</groupId>
             <artifactId>all</artifactId>
-            <version>1.6.1-SNAPSHOT</version>
+            <version>1.6.2-SNAPSHOT</version>
             <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>org.atricore.idbus.capabilities.spnego</groupId>
     <artifactId>org.atricore.idbus.capabilities.spnego</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Capability : SPNEGO</name>
 
     <properties>
-        <idbus.kernel.version>1.6.1-SNAPSHOT</idbus.kernel.version>
-        <idbus.samlr2.version>1.6.1-SNAPSHOT</idbus.samlr2.version>
-        <idbus.sts.version>1.6.1-SNAPSHOT</idbus.sts.version>
-        <idbus.bundle.ini4j-v0_5_1.version>1.6.1-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
+        <idbus.kernel.version>1.6.2-SNAPSHOT</idbus.kernel.version>
+        <idbus.samlr2.version>1.6.2-SNAPSHOT</idbus.samlr2.version>
+        <idbus.sts.version>1.6.2-SNAPSHOT</idbus.sts.version>
+        <idbus.bundle.ini4j-v0_5_1.version>1.6.2-SNAPSHOT</idbus.bundle.ini4j-v0_5_1.version>
         <karaf.version>2.2.3</karaf.version>
         <camel.version>1.6.1</camel.version>
         <!--<spring.version>3.1.0.RELEASE</spring.version>-->
