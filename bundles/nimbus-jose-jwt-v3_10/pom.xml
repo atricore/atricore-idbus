@@ -41,7 +41,7 @@
     <name>Atricore IDBus :: Bundle : Nimbus JOSE / JWT v${nimbus-jose-jwt.version} OSGi</name>
 
     <properties>
-        <nimbus-jose-jwt.version>3.10</nimbus-jose-jwt.version>
+        <nimbus-jose-jwt.version>7.9</nimbus-jose-jwt.version>
         <jcip-annotations.version>1.0</jcip-annotations.version>
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
