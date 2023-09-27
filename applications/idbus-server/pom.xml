@@ -91,7 +91,7 @@
         <!--<spring.osgi.version>1.2.0</spring.osgi.version>-->
         <velocity.version>1.6.2</velocity.version>
         <xbean.version>3.7</xbean.version>
-        <xalan.version>2.7.1</xalan.version>
+        <xalan.version>2.7.2</xalan.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>
 
     </properties>
