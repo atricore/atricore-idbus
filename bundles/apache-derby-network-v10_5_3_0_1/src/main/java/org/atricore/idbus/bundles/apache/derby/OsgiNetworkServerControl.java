@@ -42,6 +42,12 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
         logger.info("Starting Apache Derby OSGi Network server control ... ");
         running = true;
 
+        String pwd = System.getenv("IDBUS_DB_PASSWORD");
+        if (pwd == null) {
+            pwd = "admin";
+        }
+        System.setProperty("derby.user.atricore", pwd);
+
         for (NetworkServerDescriptor sd : serverDescriptors) {
             NetworkServer server = servers.get(sd.getPort() + "");
             if (server == null) {

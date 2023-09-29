@@ -49,7 +49,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
     private static final String PLEXUS_CLASSWORLD_NAME = "plexus.core";
 
     // Make this more flexible ?
-    private static final String DEPLOY_FOLDER = System.getProperty("karaf.home") + "/system";
+    private static final String DEPLOY_FOLDER = System.getProperty("karaf.base") + "/system";
 
     private URL[] plexusLauncherClasspath;
     private URL[] plexusClasspath;
@@ -129,7 +129,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
     protected void initialize() {
 
         if (workingDirectory == null) {
-            workingDirectory = System.getProperty("karaf.home");
+            workingDirectory = System.getProperty("karaf.data");
         }
 
         if (logger.isTraceEnabled())
@@ -144,7 +144,7 @@ public class MavenEmbeddedRuntime implements MavenRuntime {
             System.setProperty("maven.home", new File(mavenHome).getAbsolutePath());
         }
         if (logger.isTraceEnabled())
-            logger.trace("Maven home " + workingDirectory);
+            logger.trace("Maven home " + mavenHome);
 
         initClasspath(findMavenEmbedderBundle());
 

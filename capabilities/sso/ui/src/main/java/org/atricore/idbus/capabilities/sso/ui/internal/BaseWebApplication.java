@@ -444,7 +444,7 @@ public abstract class BaseWebApplication extends WebApplication implements WebBr
             {
                 WebAppConfig appConfig = getAppConfig();
 
-                String exteranlResourcesPath = System.getProperty("karaf.home") + File.separator + "data" + File.separator + "branding";
+                String exteranlResourcesPath = System.getProperty("karaf.data") + File.separator + "branding";
 
                 if (branding.getExternalResourcesPath() != null)
                     exteranlResourcesPath = branding.getExternalResourcesPath();

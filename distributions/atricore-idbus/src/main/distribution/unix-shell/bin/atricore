@@ -296,6 +296,10 @@ setupDefaults() {
     ##
     # Uncomment to enable YourKit profiling
     # DEFAULT_JAVA_DEBUG_OPTS="-agentlib:yjpagent -Dorg.osgi.framework.bootdelegation=com.yourkit.*,sun.*,com.sun.*"
+
+    if [ -z "x$JOSSO_DB_USER" = "x" ]; then
+      JOSSO_DB_USER = "admin"
+    fi
 }
 
 
@@ -308,21 +312,20 @@ cleanUp() {
 }
 
 cleanUpAll() {
-    rm -rf $KARAF_BASE/data/activemq-idbus
-    rm -rf $KARAF_BASE/data/tmp/
-    mkdir -p $KARAF_BASE/data/tmp
+    rm -rf $KARAF_DATA/tmp/
+    mkdir -p $KARAF_DATA/tmp
     warn "Clearing OSGi plug-ins cache ..." 
     # Clear persistent state
-    rm -rf $KARAF_BASE/data/ehcache
+    rm -rf $KARAF_DATA/ehcache
     # Clear bundles cache
-    rm -rf $KARAF_BASE/data/cache
+    rm -rf $KARAF_DATA/cache
     
 }
 
 cleanUpFast() {
-    rm -rf $KARAF_BASE/data/activemq-idbus
-    rm -rf $KARAF_BASE/data/tmp
-    mkdir -p $KARAF_BASE/data/tmp
+    rm -rf $KARAF_DATA/activemq-idbus
+    rm -rf $KARAF_DATA/tmp
+    mkdir -p $KARAF_DATA/tmp
     warn "Keeping OSGi plug-ins cache ..." 
 }
 
@@ -399,7 +402,7 @@ run() {
     fi
     cd $KARAF_BASE
     exec $JAVA $JAVA_OPTS \
-      -Djava.io.tmpdir="${KARAF_BASE}/data/tmp" \
+      -Djava.io.tmpdir="${KARAF_DATA}/tmp" \
       -Djava.endorsed.dirs="${JAVA_HOME}/jre/lib/endorsed:${JAVA_HOME}/lib/endorsed:${KARAF_HOME}/lib/endorsed" \
       -Djava.ext.dirs="${JAVA_HOME}/jre/lib/ext:${JAVA_HOME}/lib/ext:${KARAF_HOME}/lib/ext" \
       -Dkaraf.instances="${KARAF_HOME}/instances" \

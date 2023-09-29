@@ -12,7 +12,7 @@ import org.atricore.idbus.kernel.authz.config.{AuthorizationConfiguration, Polic
 class AuthorizationConfigurationImpl extends AuthorizationConfiguration {
   private[this] val log: Log = LogFactory.getLog(this.getClass)
   private lazy val authzPolicyHome = {
-    val ph = new File(System.getProperty("karaf.home") + "/data/work/authz");
+    val ph = new File(System.getProperty("karaf.data") + "/work/authz");
     if (!ph.exists()) ph.mkdirs()
     ph
   }
