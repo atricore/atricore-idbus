@@ -117,7 +117,8 @@ run() {
     if [ ! -d "$KARAF_DATA/log" ]; then
         mkdir -p "$KARAF_DATA/log"
     fi
-    exec "$KARAF_HOME"/bin/atricore server "$@" >> "$KARAF_DATA/atricore.out" 2>&1 &
+    #exec "$KARAF_HOME"/bin/atricore server "$@" >> "$KARAF_DATA/atricore.out" 2>&1 &
+    exec "$KARAF_HOME"/bin/atricore server "$@" &
 }
 
 main() {
