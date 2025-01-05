@@ -809,7 +809,7 @@ public class XmlUtils {
     }
 
     /**
-     * Verifh that IDs do not have an XPath expression that the digital signature tool may try to resolve.
+     * Verif that IDs do not have an XPath expression that the digital signature tool may try to resolve.
      *
      * @param ID
      * @throws Exception
