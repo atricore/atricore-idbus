@@ -37,7 +37,6 @@
             export JAVA_HOME="${pkgs.jdk}/lib/openjdk"
             export MAVEN_HOME="${pkgs.maven}"
             export MAVEN_OPTS="-Dmaven.test.skip=true -Xmx2048m"
-            export MAVEN_REPO_LOCAL=/wa/mvn/.m2
           '';
         };
       });
