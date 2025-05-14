@@ -20,13 +20,11 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.BeanUtils;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

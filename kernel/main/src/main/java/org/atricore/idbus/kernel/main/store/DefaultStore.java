@@ -1,10 +1,8 @@
 package org.atricore.idbus.kernel.main.store;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.*;
-import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordCredentialProvider;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
@@ -14,8 +12,6 @@ import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

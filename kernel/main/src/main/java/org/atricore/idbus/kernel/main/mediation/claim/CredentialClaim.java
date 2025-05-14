@@ -21,8 +21,6 @@
 
 package org.atricore.idbus.kernel.main.mediation.claim;
 
-import java.io.Serializable;
-
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>

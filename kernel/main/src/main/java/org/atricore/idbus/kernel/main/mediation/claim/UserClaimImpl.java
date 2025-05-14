@@ -1,7 +1,5 @@
 package org.atricore.idbus.kernel.main.mediation.claim;
 
-import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
-
 /**
  */
 public class UserClaimImpl implements UserClaim {

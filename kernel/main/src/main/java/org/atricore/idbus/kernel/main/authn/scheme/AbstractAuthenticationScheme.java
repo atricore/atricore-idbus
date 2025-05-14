@@ -30,7 +30,6 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStore;
 import org.atricore.idbus.kernel.main.store.identity.CredentialStoreKeyAdapter;
-import org.xmlsoap.schemas.ws._2004._09.policy.Policy;
 
 import javax.security.auth.Subject;
 import java.security.Principal;

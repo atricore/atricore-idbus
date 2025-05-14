@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+
 import static org.atricore.idbus.kernel.main.mediation.camel.component.http.IDBusHttpConstants.IDBUS_CONTEXT;
 
 /**

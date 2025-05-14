@@ -25,7 +25,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateManager;
 import org.osgi.framework.BundleContext;
 
 import java.util.Set;

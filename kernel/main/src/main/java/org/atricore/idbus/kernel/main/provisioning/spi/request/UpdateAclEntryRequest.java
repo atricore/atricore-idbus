@@ -22,7 +22,6 @@
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
 import org.atricore.idbus.kernel.main.provisioning.domain.AclEntry;
-import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
 
 public class UpdateAclEntryRequest extends AbstractProvisioningRequest {
 

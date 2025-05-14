@@ -31,7 +31,6 @@ import org.atricore.idbus.kernel.main.session.service.SSOSessionStats;
 import org.atricore.idbus.kernel.main.store.session.SessionStore;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * SSO Session Manager Business interface.

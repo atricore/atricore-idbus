@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.Credential;
 import org.atricore.idbus.kernel.main.authn.CredentialProvider;
-import org.atricore.idbus.kernel.main.authn.SSOUser;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 import java.util.ArrayList;

@@ -1,10 +1,8 @@
 package org.atricore.idbus.kernel.main.mediation.provider;
 
-import org.atricore.idbus.kernel.main.mediation.channel.AbstractFederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

@@ -21,7 +21,6 @@
 
 package org.atricore.idbus.kernel.main.mediation.binding;
 
-import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.channel.StatefulChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 

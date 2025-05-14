@@ -31,7 +31,7 @@
     {
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
-          packages = with pkgs; [ jdk maven ];
+          packages = with pkgs; [ jdk maven gcc ];
           shellHook = ''
             echo "Atricore IDBus: Java dev env ("${pkgs.jdk.name}" / ${pkgs.maven.name})"
             export JAVA_HOME="${pkgs.jdk}/lib/openjdk"

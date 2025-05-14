@@ -1,8 +1,5 @@
 package org.atricore.idbus.kernel.main.authn;
 
-import javax.xml.namespace.QName;
-import java.util.Set;
-
 /**
  *
  */

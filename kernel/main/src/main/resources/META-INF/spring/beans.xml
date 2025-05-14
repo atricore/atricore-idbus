@@ -131,31 +131,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                   interface="org.atricore.idbus.kernel.main.mail.MailService"/>
 
     <!-- =================================================================== -->
-    <!-- Atricore IDBus JMS Broker definition -->
-    <!-- =================================================================== -->
-
-    <!--
-    <bean name="aqmBroker" class="org.apache.activemq.xbean.XBeanBrokerService">
-        <property name="brokerName" value="${aqm.brokerName}"/>
-        <property name="dataDirectory" value="data/activemq-idbus"/>
-        <property name="deleteAllMessagesOnStartup" value="true"/>
-        <property name="useJmx" value="false"/>
-
-        <property name="transportConnectors">
-            <list>
-
-                <bean class="org.apache.activemq.broker.TransportComail.smtp.hostnnector">
-                    <property name="uri" value="${aqm.transportUri}"/>
-                </bean>
-
-            </list>
-        </property>
-
-    </bean>
-    -->
-
-
-    <!-- =================================================================== -->
     <!-- Mediation Engine setup                                              -->
     <!-- =================================================================== -->
 

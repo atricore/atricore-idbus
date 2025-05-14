@@ -21,16 +21,12 @@
 
 package org.atricore.idbus.kernel.main.mediation;
 
-import javax.jms.ConnectionFactory;
-
 /**
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Rev: 1359 $ $Date: 2009-07-19 13:57:57 -0300 (Sun, 19 Jul 2009) $
  */
 public interface MessageQueueManager  {
 
-
-    public ConnectionFactory getConnectionFactory() ;
 
     public String getJmsProviderDestinationName() ;
 

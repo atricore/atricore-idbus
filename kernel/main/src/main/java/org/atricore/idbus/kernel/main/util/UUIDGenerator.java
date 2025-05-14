@@ -24,7 +24,6 @@ package org.atricore.idbus.kernel.main.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.nio.ByteBuffer;
 import java.util.Random;
 
 /**

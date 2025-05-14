@@ -3,8 +3,6 @@ package org.atricore.idbus.kernel.main.mediation;
 
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 
-import java.util.Properties;
-
 /**
  * Created by sgonzalez.
  */

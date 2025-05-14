@@ -22,16 +22,12 @@
 package org.atricore.idbus.kernel.main.authn.scheme;
 
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.authn.exceptions.SSOAuthenticationException;
-import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
-import org.atricore.idbus.kernel.main.authn.util.Crypt;
 import org.atricore.idbus.kernel.main.authn.util.PasswordUtil;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;

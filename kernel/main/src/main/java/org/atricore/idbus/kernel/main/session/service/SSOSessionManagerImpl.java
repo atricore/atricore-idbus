@@ -33,13 +33,10 @@ import org.atricore.idbus.kernel.main.session.exceptions.TooManyOpenSessionsExce
 import org.atricore.idbus.kernel.main.store.session.SessionStore;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 import org.atricore.idbus.kernel.main.util.IDBusConfigurationConstants;
-import org.atricore.idbus.kernel.monitoring.core.MonitoringServer;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.*;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @org.apache.xbean.XBean element="session-manager"

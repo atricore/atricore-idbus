@@ -23,7 +23,6 @@ package org.atricore.idbus.kernel.main.mediation.camel;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.builder.ErrorHandlerBuilder;
 import org.apache.camel.component.cxf.transport.CamelTransportFactory;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.JndiRegistry;

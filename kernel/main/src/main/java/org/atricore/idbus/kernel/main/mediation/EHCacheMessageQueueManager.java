@@ -8,8 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import javax.jms.ConnectionFactory;
-
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
@@ -38,11 +36,6 @@ public class EHCacheMessageQueueManager implements MessageQueueManager, Initiali
     @Override
     public void afterPropertiesSet() throws Exception {
         init();
-    }
-
-    @Override
-    public ConnectionFactory getConnectionFactory() {
-        throw new UnsupportedOperationException("Not implemented!");
     }
 
     @Override

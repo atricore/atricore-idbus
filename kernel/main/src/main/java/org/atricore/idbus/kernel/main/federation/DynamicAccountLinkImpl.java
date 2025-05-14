@@ -22,8 +22,8 @@
 package org.atricore.idbus.kernel.main.federation;
 
 import javax.security.auth.Subject;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DynamicAccountLinkImpl extends AbstractAccountLink implements DynamicAccountLink {
 

@@ -2,9 +2,6 @@ package org.atricore.idbus.kernel.main.mediation.select;
 
 import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.EntitySelectorProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
-
-import java.nio.channels.spi.SelectorProvider;
 
 /**
  */

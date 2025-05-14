@@ -23,8 +23,6 @@ package org.atricore.idbus.kernel.main.mediation.confirmation;
 
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.Claim;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimSet;
-import org.atricore.idbus.kernel.main.mediation.claim.UserClaim;
 
 import java.io.Serializable;
 import java.util.Collection;

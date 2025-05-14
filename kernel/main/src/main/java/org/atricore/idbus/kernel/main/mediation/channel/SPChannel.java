@@ -22,8 +22,6 @@
 package org.atricore.idbus.kernel.main.mediation.channel;
 
 import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;
 import org.xmlsoap.schemas.ws._2005._02.trust.wsdl.SecurityTokenService;

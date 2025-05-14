@@ -1,7 +1,7 @@
 package org.atricore.idbus.kernel.main.store.identity;
 
-import org.atricore.idbus.kernel.main.authn.SSOPasswordPolicyEnforcement;
 import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
+import org.atricore.idbus.kernel.main.authn.SSOPasswordPolicyEnforcement;
 
 import java.util.List;
 

@@ -26,20 +26,11 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.BaseRole;
 import org.atricore.idbus.kernel.main.authn.BaseUser;
 import org.atricore.idbus.kernel.main.authn.SSONameValuePair;
-import org.atricore.idbus.kernel.main.store.SimpleUserKey;
 import org.atricore.idbus.kernel.main.store.UserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
-//import org.springframework.stereotype.Repository;
-//import org.springframework.transaction.annotation.Transactional;
 
-//import javax.persistence.EntityManager;
-//import javax.persistence.PersistenceContext;
 import javax.security.auth.Subject;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**

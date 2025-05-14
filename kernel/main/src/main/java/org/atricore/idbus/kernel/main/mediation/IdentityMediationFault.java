@@ -23,8 +23,6 @@ package org.atricore.idbus.kernel.main.mediation;
 
 import org.atricore.idbus.kernel.main.authn.PolicyEnforcementStatement;
 
-import java.io.Serializable;
-import java.util.Map;
 import java.util.Set;
 
 /**

@@ -24,7 +24,6 @@ package org.atricore.idbus.kernel.main.mediation.provider;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.confirmation.IdentityConfirmationChannel;
-import org.atricore.idbus.kernel.main.mediation.select.SelectorChannel;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateManager;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;

@@ -21,9 +21,6 @@
 
 package org.atricore.idbus.kernel.main.federation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>

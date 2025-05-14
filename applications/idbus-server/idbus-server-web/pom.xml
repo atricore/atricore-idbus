@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.atricore.idbus.applications.server</groupId>
         <artifactId>server</artifactId>
-        <version>1.6.2-SNAPSHOT</version>
+        <version>1.6.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.applications.server</groupId>
@@ -224,7 +224,6 @@
                             org.apache.taglibs.standard.tag.rt.core,
                             org.apache.taglibs.standard.tag.common.core,
                             org.apache.taglibs.standard.tag.common.fmt,
-                            org.apache.activemq,
                             org.xml.sax;resolution:=optional,
                             org.xml.sax.helpers,
                             org.w3c.dom;resolution:=optional

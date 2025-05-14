@@ -3,11 +3,9 @@ package org.atricore.idbus.kernel.main.mediation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.IdGenerator;
-import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import javax.jms.ConnectionFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +29,6 @@ public class MemoryMessageQueueManager implements MessageQueueManager, Disposabl
     private Thread monitorThread;
 
     private Map<String, Message> msgs = new HashMap<String, Message>();
-
-    public ConnectionFactory getConnectionFactory() {
-        return null;
-    }
 
     public String getJmsProviderDestinationName() {
         return null;

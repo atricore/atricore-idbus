@@ -22,7 +22,6 @@
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
 import org.atricore.idbus.kernel.main.provisioning.domain.AclEntry;
-import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 
 /**
  * Created by IntelliJ IDEA.

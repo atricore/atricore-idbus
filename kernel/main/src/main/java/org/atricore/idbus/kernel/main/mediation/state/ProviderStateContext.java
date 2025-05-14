@@ -2,7 +2,6 @@ package org.atricore.idbus.kernel.main.mediation.state;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
 
 import java.util.Collection;

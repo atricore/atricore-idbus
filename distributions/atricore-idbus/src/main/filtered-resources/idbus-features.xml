@@ -44,11 +44,11 @@
     </feature>
 
     <feature name="atricore-auditing-core" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.6.2-SNAPSHOT</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.core/1.6.3-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-auditing-builtin" version="${version}">
-        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.6.2-SNAPSHOT</bundle>
+        <bundle start-level="40">mvn:org.atricore.idbus.kernel.auditing/org.atricore.idbus.kernel.auditing.builtin/1.6.3-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-ha" version="${version}">
@@ -75,7 +75,7 @@
         <feature version="${version}">web</feature>
         <feature version="${cxf.version}">cxf</feature>
         <feature version="${version}">persistence</feature>
-        <feature version="${activemq.version}">activemq</feature>
+
         <feature version="${camel.version}">camel</feature>
         <feature version="${ehcache.version}">ehcache</feature>
         <feature version="${scalate.version}">scalate</feature>
@@ -135,11 +135,11 @@
         <bundle>mvn:org.atricore.idbus.capabilities.sso/org.atricore.idbus.capabilities.sso.ui/${idbus.cap.sso.version}</bundle>
     </feature>
 
-    <feature name="atricore-idconfirmation" version="1.6.2-SNAPSHOT">
+    <feature name="atricore-idconfirmation" version="1.6.3-SNAPSHOT">
         <feature version="${scala.version}">scala</feature>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.main/1.6.2-SNAPSHOT</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.ui/1.6.2-SNAPSHOT</bundle>
-        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.component.builtin/1.6.2-SNAPSHOT</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.main/1.6.3-SNAPSHOT</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.ui/1.6.3-SNAPSHOT</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.idconfirmation/org.atricore.idbus.capabilities.idconfirmation.component.builtin/1.6.3-SNAPSHOT</bundle>
     </feature>
 
     <feature name="atricore-spml2" version="${version}">
@@ -294,17 +294,6 @@
         <bundle start-level="40">mvn:org.ops4j.pax.wicket/org.ops4j.pax.wicket.service/${pax.wicket.service.version}</bundle>
     </feature>
 
-    <feature name="activemq" version="${activemq.version}">
-        <feature version="${version}">connector</feature>
-        <bundle start-level="40">mvn:org.apache.geronimo.specs/geronimo-j2ee-management_1.1_spec/${geronimo.j2ee.management.version}</bundle>
-        <bundle start-level="40">mvn:commons-pool/commons-pool/${commons-pool.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.xbean/xbean-spring/${xbean.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.activemq/kahadb/${activemq.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.activemq/activemq-core/${activemq.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.activemq/activemq-ra/${activemq.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.activemq/activemq-console/${activemq.version}</bundle>
-        <bundle start-level="40">mvn:org.apache.activemq/activemq-pool/${activemq.version}</bundle>
-    </feature>
 
     <feature name="cxf" version="${cxf.version}">
         <bundle start-level="40">mvn:org.apache.cxf/cxf-bundle/${cxf.version}</bundle>
@@ -340,7 +329,9 @@
         <bundle start-level="40">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimo.jms.version}</bundle>
         <bundle start-level="40">mvn:org.apache.geronimo.specs/geronimo-servlet_2.5_spec/${geronimo.servlet.version}</bundle>
         <bundle start-level="40">mvn:org.springframework/spring-tx/${spring.version}</bundle>
-        <!--bundle>mvn:org.jencks/jencks/${jencks.version}</bundle-->
+        <bundle start-level="40">mvn:org.apache.geronimo.specs/geronimo-j2ee-management_1.1_spec/${geronimo.j2ee.management.version}</bundle>
+        <bundle start-level="40">mvn:commons-pool/commons-pool/${commons-pool.version}</bundle>
+        <bundle start-level="40">mvn:org.apache.xbean/xbean-spring/${xbean.version}</bundle>
     </feature>
 
     <feature name="transaction" version="${version}">

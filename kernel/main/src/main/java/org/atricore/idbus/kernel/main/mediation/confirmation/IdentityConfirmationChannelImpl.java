@@ -21,9 +21,6 @@
 
 package org.atricore.idbus.kernel.main.mediation.confirmation;
 
-import org.atricore.idbus.kernel.main.mediation.provider.IdentityConfirmationProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.StatefulProvider;
-
 /**
  * Channel implementation of identity confirmation providers.
  *

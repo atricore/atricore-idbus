@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.atricore.idbus.kernel</groupId>
         <artifactId>kernel</artifactId>
-        <version>1.6.2-SNAPSHOT</version>
+        <version>1.6.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel</groupId>
@@ -307,18 +307,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.camel</groupId>
-                    <artifactId>camel-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <scope>provided</scope>
@@ -406,12 +394,6 @@
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
-                            org.apache.activemq; version="${activemq.version}",
-                            org.apache.activemq.xbean; version="${activemq.version}",
-                            org.apache.activemq.broker; version="${activemq.version}",
-                            org.apache.activemq.jndi; version="${activemq.version}",
-                            org.apache.activemq.kaha.impl.data; version="${activemq.version}",
-                            org.apache.activemq.kaha.impl.index; version="${activemq.version}",
                             org.apache.camel.util.jndi,
                             META-INF.cxf,
                             org.apache.cxf,

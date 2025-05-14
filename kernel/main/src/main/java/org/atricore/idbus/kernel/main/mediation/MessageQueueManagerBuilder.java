@@ -4,8 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.ConfigurationContext;
 
-import java.util.Properties;
-
 /**
  * Created by sgonzalez.
  */

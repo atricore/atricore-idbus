@@ -77,7 +77,6 @@ log4j.category.javax=INFO
 # IDBus Infrastructure
 #log4j.category.org.springframework.osgi=TRACE
 #log4j.category.org.apache.camel=TRACE
-#log4j.category.org.apache.activemq=TRACE
 #log4j.category.org.apache.cxf=TRACE
 
 ## EHCache
