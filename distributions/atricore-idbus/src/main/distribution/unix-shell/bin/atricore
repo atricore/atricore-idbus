@@ -314,19 +314,18 @@ cleanUp() {
 cleanUpAll() {
     rm -rf $KARAF_DATA/tmp/
     mkdir -p $KARAF_DATA/tmp
-    warn "Clearing OSGi plug-ins cache ..." 
+    warn "Clearing OSGi plug-ins cache ..."
     # Clear persistent state
     rm -rf $KARAF_DATA/ehcache
     # Clear bundles cache
     rm -rf $KARAF_DATA/cache
-    
+
 }
 
 cleanUpFast() {
-    rm -rf $KARAF_DATA/activemq-idbus
     rm -rf $KARAF_DATA/tmp
     mkdir -p $KARAF_DATA/tmp
-    warn "Keeping OSGi plug-ins cache ..." 
+    warn "Keeping OSGi plug-ins cache ..."
 }
 
 

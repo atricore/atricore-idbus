@@ -180,7 +180,7 @@ if "%KARAF_DEBUG%" == "" goto :KARAF_DEBUG_END
 if "%IDBUS_MONITORING%" == "" goto :IDBUS_MONITORING_END
     rem Use the defaults if IDBUS_MOINTORING_OPTS was not set
     if "%IDBUS_MONITORING_OPTS%" == "" set IDBUS_MONITORING_OPTS=%DEFAULT_IDBUS_MONITORING_OPTS%
-    
+
     set "JAVA_OPTS=%IDBUS_MONITORING_OPTS% %JAVA_OPTS%"
     call :warn Enabling IDBus Monitoring options: %IDBUS_MONITORING_OPTS%
 :IDBUS_MONITORING_END
@@ -216,7 +216,6 @@ if "%KARAF_PROFILER%" == "" goto :RUN
 :RUN
 
     rem Clean up state from previous runs
-    rmdir /S /Q %KARAF_BASE%\data\activemq-idbus 2> nul
     rmdir /S /Q %KARAF_BASE%\data\tmp\ 2> nul
     REM remove to clear cache every time:  rmdir /S /Q %KARAF_BASE%\data\ehcache\ 2> nul
     rmdir /S /Q %KARAF_BASE%\data\cache\ 2> nul
@@ -278,4 +277,3 @@ endlocal
 if not "%PAUSE%" == "" pause
 
 :END_NO_PAUSE
-
