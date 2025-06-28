@@ -487,6 +487,16 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         String origin = (String) httpIn.getHeader("Origin");
 
+        // Work-around for lower case header name
+        if (origin == null) {
+            Set<String> hs = httpIn.getHeaders().keySet();
+            for (String h : hs) {
+                if (h.equalsIgnoreCase("origin")) {
+                    origin = (String) httpIn.getHeader(h);
+                }
+            }
+        }
+
         if (origin != null) {
 
             // External application is requesting cross origin support:
