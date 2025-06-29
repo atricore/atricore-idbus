@@ -68,12 +68,12 @@ public class RefreshTokenEmitter extends OIDCTokenEmitter {
                         WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE,
                         rt);
 
-                // Set token expiration
-                st.setExpiresOn(System.currentTimeMillis() + (timeToLive * 1000L));
+                // Set token expiration, epoc
+                st.setExpiresOn((System.currentTimeMillis() / 1000L) + timeToLive);
                 st.setIsAuthenticationGrant(true);
                 if (ssoUser != null)
                     st.setNameIdentifier(ssoUser.getName());
-
+                if (logger.isDebugEnabled()) logger.debug("Refresh token expires on : " + st.getExpiresOn());
                 Object rstCtx = context.getProperty(WSTConstants.RST_CTX);
                 if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
                     // We're issuing an access token for OpenID, and not in the context of another protocol

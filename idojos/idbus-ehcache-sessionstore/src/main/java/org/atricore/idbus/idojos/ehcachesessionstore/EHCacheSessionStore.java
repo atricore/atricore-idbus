@@ -339,9 +339,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             // Make sure that the cache element expires after the session, so that when this condition is triggered the session
             // will be stale and therefore ready to be disposed.
             s.setTimeToIdle(session.getMaxInactiveInterval() + 60);
-            // Let's put a limit - 12 hs - to the life of the cache element so that in case it's not explicitly removed, the
-            // the cache manager will.
-            s.setTimeToLive(12 * 60 * 60);
+            s.setTimeToLive(session.getMaxInactiveInterval() + 120);
 
             // Update user sessions table
             // Concurrency should be low, a user normally does not have that many sessions
@@ -349,9 +347,7 @@ public class EHCacheSessionStore extends AbstractSessionStore implements
             if (u == null) {
                 // Concurrent HashMap backing a Set
                 Set<String> sessions = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
-                u = new Element(session.getUsername(), sessions);
-                u.setTimeToIdle(s.getTimeToIdle());
-                u.setTimeToLive(s.getTimeToLive());
+                u = new Element(session.getUsername(), sessions, s.getTimeToIdle(), s.getTimeToLive());
             }
 
             Set<String> sessions = (Set<String>) u.getObjectValue();

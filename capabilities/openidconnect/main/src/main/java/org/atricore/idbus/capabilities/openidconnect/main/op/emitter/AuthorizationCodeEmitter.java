@@ -67,7 +67,7 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
 
         AuthorizationGrant authzGrant = new AuthorizationGrant(grantId, getSsoSessinId(context), subject, nonce,
                 codeChallenge, codeChallengeMethod,
-                System.currentTimeMillis() + timeToLive * 1000L);
+                System.currentTimeMillis() + timeToLive);
 
         SecurityTokenImpl st = new SecurityTokenImpl(grantId,
                 WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE,

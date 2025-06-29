@@ -117,6 +117,7 @@
 
     <feature name="atricore-sts" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.sts/org.atricore.idbus.capabilities.sts.main/${idbus.cap.sts.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.sts/org.atricore.idbus.capabilities.sts.management/${idbus.cap.sts.version}</bundle>
     </feature>
 
     <feature name="atricore-josso" version="${version}">

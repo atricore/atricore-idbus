@@ -166,8 +166,8 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         // Just a temporary work-around.
         at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.UNKNOWN.toString(), "UNKNOWN"));
 
-        // Set token expiration, in millis
-        long expiresIn = tokenValiditySecs * 1000L;
+        // Set token expiration, in SECONDS
+        long expiresIn = tokenValiditySecs;
 
         // Roles
         if (!rememberMeTokenEmitter) {
@@ -243,17 +243,17 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
             // Change validity if this is a remember me token emitter
 
             // Mark the token as used for remember-me.
-            expiresIn = 1000L * 60L * rememberMeTokenValidityMins;
+            expiresIn = 60L * rememberMeTokenValidityMins;
             at.getClaims().add(new OAuth2Claim(OAuth2ClaimType.ATTRIBUTE.name(), Constants.REMEMBERME_NS, "TRUE"));
         }
 
         if (logger.isDebugEnabled())
-            logger.debug("Token expires in millis " + expiresIn);
+            logger.debug("Token expires in SECS " + expiresIn);
 
         // Create some random information, to make every token unique!
         at.setTimeStamp(System.currentTimeMillis());
         at.setRnd(randomGenerator.nextInt());
-        at.setExpiresOn(at.getTimeStamp() + expiresIn);
+        at.setExpiresOn( (at.getTimeStamp() / 1000L) + expiresIn);
 
         // Set SSO Session ID
         if (ssoSessionId != null) {

@@ -2,6 +2,8 @@ package org.atricore.idbus.capabilities.sts.main;
 
 import org.atricore.idbus.kernel.main.authn.SecurityToken;
 
+import java.util.Collection;
+
 /**
  * Store MUST remove tokens upon expiration
  *
@@ -19,5 +21,6 @@ public interface TokenStore {
 
     boolean remove(String tokenId);
 
+    Collection<String> getTokens();
 
 }

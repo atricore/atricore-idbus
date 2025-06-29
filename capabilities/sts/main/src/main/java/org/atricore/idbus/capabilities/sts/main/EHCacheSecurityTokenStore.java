@@ -13,6 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -172,7 +173,7 @@ public class EHCacheSecurityTokenStore implements
             }
             SecurityToken st = (SecurityToken) e.getObjectValue();
 
-            if (st.getExpiresOn() < System.currentTimeMillis()) {
+            if (st.getExpiresOn() < (System.currentTimeMillis()/1000L)) {
                 logger.debug("Token found, but has expired: " + st.getId());
                 return null;
             }
@@ -189,21 +190,20 @@ public class EHCacheSecurityTokenStore implements
         ClassLoader orig = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
-            int timeToLive = (int) (token.getExpiresOn() - System.currentTimeMillis());
+            // Expires On is epoc time (seconds)
+            int timeToLive = (int) (token.getExpiresOn() - (System.currentTimeMillis()/1000L));
             if (timeToLive <= 0 ) {
                 logger.warn("Time to live not provided in token, defaulting to " + defaultTimteToLive);
                 timeToLive = defaultTimteToLive;
             }
-
-            Element e = new Element(token.getId(), token);
-            e.setTimeToLive(timeToLive);
-            e.setTimeToIdle(timeToLive);
+            if (logger.isDebugEnabled()) logger.debug("Storing token " + token.getId() + " in cache [" + cache.getName() + "] with TTL/TTI: " + timeToLive);
+            Element e = new Element(token.getId(), token, timeToLive, timeToLive);
             e.setEternal(false);
 
             cache.put(e);
 
             if (logger.isDebugEnabled())
-                logger.debug("Stored token  id [" + token.getId() + "] TTL: " + timeToLive);
+                logger.debug("Stored token  id [" + token.getId() + "] TTL (secs): " + timeToLive);
 
         } finally {
             Thread.currentThread().setContextClassLoader(orig);
@@ -227,6 +227,16 @@ public class EHCacheSecurityTokenStore implements
             Thread.currentThread().setContextClassLoader(orig);
         }
 
+    }
+
+    public Collection<String> getTokens() {
+        ClassLoader orig = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(applicationContext.getClassLoader());
+            return cache.getKeys();
+        } finally {
+            Thread.currentThread().setContextClassLoader(orig);
+        }
     }
 
     public String getCacheName() {

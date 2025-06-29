@@ -57,7 +57,7 @@ public class RefreshTokenGrantAuthenticationScheme extends AbstractAuthenticatio
             return false;
         }
 
-        if (securityToken.getExpiresOn() < System.currentTimeMillis()) {
+        if (securityToken.getExpiresOn() < (System.currentTimeMillis() / 1000L)) {
             logger.trace ("Expired refresh token : " + receivedToken.getValue());
             return false;
         }
