@@ -203,7 +203,7 @@ public class EHCacheProviderStateManagerImpl implements ProviderStateManager,
                 return;
             }
 
-            synchronized(s) {
+            synchronized(state.getMutex()) {
 
                 String key = ctx.getProvider().getName() + ":PK:" + state.getId();
                 Element element = new Element(key, state);
