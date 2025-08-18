@@ -8,6 +8,8 @@ import net.sf.ehcache.distribution.RMICacheManagerPeerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -21,6 +23,8 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
     private static final Logger LOG = LoggerFactory.getLogger(DynamicRMICacheManagerPeerProvider.class.getName());
 
     protected Set<String> remoteHosts = new HashSet<String>();
+
+    protected int port = 40001;
 
     /**
      * Empty constructor.
@@ -105,9 +109,31 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
         // Check if remoteHost is actually an expression
         Set<String> rh = remoteHosts;
         if (remoteHosts.size() == 1) {
-            rh = new HashSet<String>();
-            rh.add(resolveExpression(remoteHosts.iterator().next()));
-        }
+
+            // exclude the current node from the list of nodes
+            String currentHost = System.getenv("JOSSO_HOST");
+            if (currentHost == null) {
+                try {
+                    currentHost = InetAddress.getLocalHost().getHostName();
+                } catch (UnknownHostException e) {
+                    LOG.error(e.getMessage(), e);
+                };
+            } else {
+                try {
+                    InetAddress localhost = InetAddress.getLocalHost();
+                    currentHost = localhost.getHostName();
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            // TODO make port dynamic : getCacheManager().getConfiguration()
+            currentHost += ":" + port;
+
+            LOG.info("Excluding local host from list of peers: " + currentHost);
+
+            Set<String> allHosts = new HashSet<String>(resolveExpression(remoteHosts.iterator().next()));
+            allHosts.remove(currentHost);
+            rh = allHosts;        }
 
         for (Iterator iterator = rh.iterator() ; iterator.hasNext() ; ) {
             String remoteHost = (String) iterator.next();
@@ -162,16 +188,24 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
         return rmiUrl.substring(rmiUrl.lastIndexOf('/') + 1);
     }
 
-    private String resolveExpression(String input) {
+    private Collection<String> resolveExpression(String input) {
+        ArrayList<String> result = new ArrayList<String>();
         if (input.startsWith("${") && input.endsWith("}")) {
             String expression = input.substring(2, input.length() - 1);
             String resolvedValue = System.getProperty(expression);
             if (resolvedValue == null) {
                 resolvedValue = System.getenv(expression);
             }
-            return resolvedValue != null ? resolvedValue : input;
+            String value =  resolvedValue != null ? resolvedValue : input;
+            String[] tokens = value.split(",");
+            for (String token : tokens) {
+                String trimmedToken = token.trim();
+                if (!trimmedToken.isEmpty()) { // Optional: skip empty tokens
+                    result.add(trimmedToken);
+                }
+            }
         }
-        return input;
+        return result;
     }
 
 
