@@ -142,6 +142,7 @@ public class DynamicRMICacheManagerPeerProvider extends RMICacheManagerPeerProvi
             CachePeer cachePeer = null;
             try {
                 cachePeer = lookupRemoteCachePeer(rmiUrl);
+                LOG.info("Adding remote peer: " + rmiUrl);
                 remoteCachePeers.add(cachePeer);
             } catch (Exception e) {
                     LOG.warn("Looking up rmiUrl " + rmiUrl + " through exception " + e.getMessage()
