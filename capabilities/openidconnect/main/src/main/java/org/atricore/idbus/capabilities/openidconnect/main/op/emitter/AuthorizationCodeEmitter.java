@@ -31,7 +31,7 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
 
     private static final UUIDGenerator uuidGenerator = new UUIDGenerator(true);
 
-    // Default to 10 minutes (in seconds)
+    // Default to 10 minutes (in secs)
     private long timeToLive = 60L * 10L;
 
     @Override
@@ -67,7 +67,7 @@ public class AuthorizationCodeEmitter extends AbstractSecurityTokenEmitter {
 
         AuthorizationGrant authzGrant = new AuthorizationGrant(grantId, getSsoSessinId(context), subject, nonce,
                 codeChallenge, codeChallengeMethod,
-                System.currentTimeMillis() + timeToLive);
+                System.currentTimeMillis() + (timeToLive * 1000L));
 
         SecurityTokenImpl st = new SecurityTokenImpl(grantId,
                 WSTConstants.WST_OIDC_AUTHZ_CODE_TYPE,
