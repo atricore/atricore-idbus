@@ -63,7 +63,6 @@ public class RefreshTokenEmitter extends OIDCTokenEmitter {
                     ssoUser = ssoUsers.iterator().next();
                 }
 
-
                 SecurityTokenImpl<RefreshToken> st = new SecurityTokenImpl<RefreshToken>(rt.getValue(),
                         WSTConstants.WST_OIDC_REFRESH_TOKEN_TYPE,
                         rt);
@@ -78,11 +77,8 @@ public class RefreshTokenEmitter extends OIDCTokenEmitter {
                 if (rstCtx instanceof OpenIDConnectSecurityTokenEmissionContext) {
                     // We're issuing an access token for OpenID, and not in the context of another protocol
                     OpenIDConnectSecurityTokenEmissionContext oidcCtx = (OpenIDConnectSecurityTokenEmissionContext) rstCtx;
-
-
                     oidcCtx.setRefreshToken(rt);
                     oidcCtx.setSubject(subject);
-
                 } else {
                     // We're issuing a refresh token in the context of another protocol, probably SAML
                 }

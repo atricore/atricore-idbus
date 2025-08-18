@@ -32,8 +32,11 @@ import org.atricore.idbus.capabilities.openidconnect.main.op.*;
 import org.atricore.idbus.capabilities.openidconnect.main.rp.OpenIDConnectBPMediator;
 import org.atricore.idbus.capabilities.sso.support.core.SSOKeyResolverException;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
+import org.atricore.idbus.capabilities.sts.main.TokenStore;
 import org.atricore.idbus.capabilities.sts.main.WSTConstants;
+import org.atricore.idbus.capabilities.sts.main.WSTSecurityTokenService;
 import org.atricore.idbus.kernel.main.authn.Constants;
+import org.atricore.idbus.kernel.main.authn.SecurityToken;
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -708,12 +711,26 @@ public class TokenProducer extends AbstractOpenIDProducer {
                     throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
                 }
 
+                // State may be new, if authnCtx is not found, we need to load it from TokenStore
                 AuthnContext authnCtx = (AuthnContext) state.getLocalVariable(authnCtxId(rt));
 
                 if (authnCtx == null || authnCtx.getRefreshToken() == null) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("Failed client authentication, previous refresh_token ");
-                    throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
+
+                    SPChannel ch = (SPChannel) this.channel;
+                    WSTSecurityTokenService svc = (WSTSecurityTokenService) ch.getSecurityTokenService();
+                    TokenStore store = svc.getTokenStore();
+                    SecurityToken<RefreshToken> oldRt = store.retrieve(rt.getValue());
+
+                    if (oldRt != null) {
+                        authnCtx = new AuthnContext();
+                        authnCtx.setRefreshToken(oldRt.getContent());
+                        state.setLocalVariable(OpenIDConnectConstants.AUTHN_CTX_KEY, authnCtx);
+                    } else {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Failed client authentication, previous refresh_token ");
+                        throw new OpenIDConnectProviderException(OAuth2Error.UNAUTHORIZED_CLIENT, "no_refresh_token");
+                    }
                 }
 
                 if (!rt.getValue().equals(authnCtx.getRefreshToken().getValue())) {
