@@ -1493,6 +1493,17 @@
             <version>${idbus.cap.sts.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sts</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sts.management</artifactId>
+            <version>${idbus.cap.sts.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sts</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sts.management</artifactId>
+            <version>${idbus.cap.sts.version}</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.connectors</groupId>
