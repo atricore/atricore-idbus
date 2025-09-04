@@ -5,3 +5,6 @@ target/
 .DS_Store
 .git.cache
 .direnv
+.settings
+.project
+.classpath
