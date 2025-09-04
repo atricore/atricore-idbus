@@ -413,7 +413,6 @@
                             org.apache.cxf.wsdl11,
                             org.springframework.beans.factory.config,
                             net.sf.ehcache,
-                            org.atricore.idbus.bundles.ehcache.distribution.jms,
                             *
                         </Import-Package>
                         <!--Embed-Dependency>mysql-connector-java</Embed-Dependency-->
