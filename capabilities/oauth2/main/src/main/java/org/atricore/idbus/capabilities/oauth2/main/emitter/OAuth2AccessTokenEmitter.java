@@ -112,8 +112,8 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
                     oauthToken,
                     tokenValue);
 
-            // Set token expiration
-            st.setExpiresOn(token.getExpiresOn());
+            // Set token expiration, convert SECS to MILLIS
+            st.setExpiresOn(token.getExpiresOn() * 1000L);
 
             logger.debug("Created new security token [" + uuid + "] with content " + (oauthToken.getClass().getSimpleName()));
 
