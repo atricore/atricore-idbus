@@ -63,7 +63,7 @@ public class OAuth2AuthenticationScheme extends AbstractAuthenticationScheme {
 
             // Check token expiration:
             long expiresOn = this.oauth2AccessToken.getExpiresOn();
-            if (expiresOn < System.currentTimeMillis()) {
+            if (expiresOn < (System.currentTimeMillis()/1000L)) {
                 logger.debug("Authentication failed: token expired " + new java.util.Date(expiresOn));
                 throw new AuthenticationFailureException("Authentication failed: token expired " + new java.util.Date(expiresOn));
             }

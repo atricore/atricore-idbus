@@ -74,7 +74,7 @@ public class AtricoreIDAccessTokenEmitter extends AbstractSecurityTokenEmitter {
             oauthToken.setAccessToken(tokenValue);
 
             // Ten minutes, make configurable!
-            oauthToken.setExpiresIn(1000L * 60L * 10L);
+            oauthToken.setExpiresIn(60L * 10L);
 
             // Create a security token using the OUT artifact content.
             SecurityToken st = new SecurityTokenImpl(uuid, oauthToken);
