@@ -31,6 +31,8 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private static final Log logger = LogFactory.getLog(OpenIDConnectProxyMediator.class);
 
+    private boolean loadMetadata;
+
     private JacksonFactory jacksonFactory;
 
     private HttpTransport httpTransport;
@@ -206,6 +208,18 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
                 binding.getValue(),
                 location,
                 responseLocation);
+    }
+
+    /**
+     * Load provider metadata
+     * @return
+     */
+    public boolean isLoadMetadata() {
+        return loadMetadata;
+    }
+
+    public void setLoadMetadata(boolean loadMetadata) {
+        this.loadMetadata = loadMetadata;
     }
 
     public JacksonFactory getJacksonFactory() {

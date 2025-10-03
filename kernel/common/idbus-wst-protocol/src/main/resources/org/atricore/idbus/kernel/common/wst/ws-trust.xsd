@@ -29,16 +29,16 @@
            targetNamespace='http://schemas.xmlsoap.org/ws/2005/02/trust'
            elementFormDefault='qualified'
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://www.w3.org/2001/XMLSchema https://iam.tf/schema/www.w3.org/2001/xml.xsd">
+           xsi:schemaLocation="http://www.w3.org/2001/XMLSchema https://docs.atricore.com/schema/www.w3.org/2001/xml.xsd">
 
     <xs:import namespace='http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
-               schemaLocation='https://iam.tf/schema/docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'/>
+               schemaLocation='https://docs.atricore.com/schema/docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'/>
     <xs:import namespace='http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd'
-               schemaLocation='https://iam.tf/schema/docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd'/>
+               schemaLocation='https://docs.atricore.com/schema/docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd'/>
     <xs:import namespace='http://schemas.xmlsoap.org/ws/2004/09/policy'
-               schemaLocation='https://iam.tf/schema/schemas.xmlsoap.org/ws/2004/09/policy/ws-policy.xsd'/>
+               schemaLocation='https://docs.atricore.com/schema/schemas.xmlsoap.org/ws/2004/09/policy/ws-policy.xsd'/>
     <xs:import namespace='http://schemas.xmlsoap.org/ws/2004/08/addressing'
-               schemaLocation='https://iam.tf/schema/schemas.xmlsoap.org/ws/2004/08/addressing/addressing.xsd'/>
+               schemaLocation='https://docs.atricore.com/schema/schemas.xmlsoap.org/ws/2004/08/addressing/addressing.xsd'/>
 
     <!-- WS-Trust Section 5.1 -->
     <xs:element name='RequestSecurityToken' type='wst:RequestSecurityTokenType'/>
