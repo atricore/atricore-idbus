@@ -1,16 +1,16 @@
 package org.atricore.idbus.capabilities.openidconnect.main.proxy.producers;
 
-import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.*;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.oauth2.sdk.*;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
-import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.auth.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
@@ -27,10 +27,8 @@ import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectEx
 import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.OpenIDConnectProxyMediator;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.producers.mapping.OpenIdSubjectMapper;
-import org.atricore.idbus.capabilities.openidconnect.main.proxy.producers.mapping.OpenIdSubjectMapperFactory;
-import org.atricore.idbus.capabilities.sso.support.auth.AuthnCtxClass;
-import org.atricore.idbus.capabilities.sso.support.core.NameIDFormat;
-import org.atricore.idbus.common.sso._1_0.protocol.*;
+import org.atricore.idbus.common.sso._1_0.protocol.SPAuthnResponseType;
+import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedAuthnRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SubjectType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -43,20 +41,12 @@ import sun.security.provider.X509Factory;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
-import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -149,50 +139,52 @@ public class ProxyRPAuthzTokenConsumerProducer extends AbstractAuthzTokenConsume
             Secret secret = new Secret(mediator.getClientSecret());
             SecretKey secretKey = SecretKeyDerivation.deriveSecretKey(secret, 256);
 
-            // -------------------------------------------------
-            // Support RSA keys:
-            // Load IDP RSA Public key from a DER file
-            String publicKeyContent = mediator.getServerKey();
-
-            // Build signature verifier
-            JWSVerifier verifier = null;
-            if (publicKeyContent != null) {
-                byte[] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, "").getBytes());
-
-                CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                Certificate cert = cf.generateCertificate(new ByteArrayInputStream(publicKeyContentBytes));
-                PublicKey pubKey = cert.getPublicKey();
-                verifier = new RSASSAVerifier((RSAPublicKey) pubKey);
-             } else {
-                // EC (ES256,etc. ) Signature check
-                // JWSVerifier verifier = new ECDSAVerifier(publicKey);
-                // HMAC
-                verifier = new MACVerifier(secretKey);
-            }
-
-            // Load IDP RSA Public key from a pub key file
-            /*
-            String publicKeyContent = "MIIDBTCCAe2gAwIBAgIQQiR8gZNKuYpH6cP+KIE5ijANBgkqhkiG9w0BAQsFADAtMSswKQYDVQQDEyJhY2NvdW50cy5hY2Nlc3Njb250cm9sLndpbmRvd3MubmV0MB4XDTIwMDgyODAwMDAwMFoXDTI1MDgyODAwMDAwMFowLTErMCkGA1UEAxMiYWNjb3VudHMuYWNjZXNzY29udHJvbC53aW5kb3dzLm5ldDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMkymupuRhTpZc+6CBxQpL0SaAb+8CzLiiDyx2xRoecjojvKN2pKKjIX9cejMSDRoWaOnZCK4VZVX1iYRCWT1WkHb8r1ZpSGa7oXG89zxjKjwG46tiamwdZjJ7Mhh8fqLz9ApucY/LICPMJuu6d56LKs6hb4OpjylTvsNUAa+bHg1NgMFNg0fPCxdr9N2Y4J+Jhrz3VDl4oU0KDZX/pyRXblzA8kYGWm50dh5WB4WoB8MtW3lltVrRGj8/IgTf9GxpBsO9OWgwVByZHU7ctZs7AmUbq/59Ipql7vSM6EsoquXdMiq0QOcZAPitwzHkTKrmeULz0/RHnuBGXxS/e8wX0CAwEAAaMhMB8wHQYDVR0OBBYEFGcWXwaqmO25Blh2kHHAFrM/AS2CMA0GCSqGSIb3DQEBCwUAA4IBAQDFnKQ98CBnvVd4OhZP0KpaKbyDv93PGukE1ifWilFlWhvDde2mMv/ysBCWAR8AGSb1pAW/ZaJlMvqSN/+dXihcHzLEfKbCPw4/Mf2ikq4gqigt5t6hcTOSxL8wpe8OKkbNCMcU0cGpX5NJoqhJBt9SjoD3VPq7qRmDHX4h4nniKUMI7awI94iGtX/vlHnAMU4+8y6sfRQDGiCIWPSyypIWfEA6/O+SsEQ7vZ/b4mXlghUmxL+o2emsCI1e9PORvm5yc9Y/htN3Ju0x6ElHnih7MJT6/YUMISuyob9/mbw8Vf49M7H2t3AE5QIYcjqTwWJcwMlq5i9XfW2QLGH7K5i8";
-            byte [] publicKeyContentBytes = Base64.decodeBase64(publicKeyContent.replaceAll("-----BEGIN PUBLIC KEY-----", "").replaceAll("-----END PUBLIC KEY-----", "").getBytes());
-
-            X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(publicKeyContentBytes);
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            PublicKey pubKey = kf.generatePublic(keySpecX509);
-            */
-
             URI tokenEndpoint = new URI(mediator.getAuthzTokenServiceLocation());
 
-            // TODO : Support other client authentication types
             ClientAuthentication clientAuth = null;
+            ClientID clientId = new ClientID(mediator.getClientId());
 
             // -------------------------------------------------
-            // Build  client authentication (client_secret_basic)
-            {
-                ClientID clientId = new ClientID(mediator.getClientId());
+            // Build client authentication based on provider metadata
+            // -------------------------------------------------
+            if (mediator.getMetadata() != null) {
+                List<ClientAuthenticationMethod> supportedMethods =
+                        mediator.getMetadata().getTokenEndpointAuthMethods();
+
+                if (supportedMethods != null && !supportedMethods.isEmpty()) {
+                    logger.debug("Provider supports auth methods: " + supportedMethods);
+
+                    // Try to use the first supported method that we can handle
+                    ClientAuthenticationMethod selectedMethod = null;
+                    for (ClientAuthenticationMethod method : supportedMethods) {
+                        if (method.equals(ClientAuthenticationMethod.CLIENT_SECRET_POST) ||
+                                method.equals(ClientAuthenticationMethod.CLIENT_SECRET_BASIC) ||
+                                method.equals(ClientAuthenticationMethod.NONE)) {
+                            selectedMethod = method;
+                            break;
+                        }
+                    }
+
+                    if (selectedMethod != null) {
+                        clientAuth = createClientAuthentication(clientId, secret, selectedMethod);
+                        logger.info("Using token endpoint auth method: " + selectedMethod);
+                    } else {
+                        logger.warn("No compatible auth method found in metadata, defaulting to client_secret_basic");
+                        clientAuth = new ClientSecretBasic(clientId, secret);
+                    }
+                } else {
+                    logger.warn("Metadata present but no auth methods specified, defaulting to client_secret_basic");
+                    clientAuth = new ClientSecretBasic(clientId, secret);
+                }
+            } else {
+                // No metadata available, use default
+                logger.debug("No metadata available, using default client_secret_basic");
                 clientAuth = new ClientSecretBasic(clientId, secret);
             }
+
             // -------------------------------------------------
             // Build Token request
+            // -------------------------------------------------
             AuthorizationCode code = response.getAuthorizationCode();
             EndpointDescriptor ed = resolveAuthnResponseEndpoint();
             URI redirectUri = new URI(ed.getLocation());
@@ -203,16 +195,25 @@ public class ProxyRPAuthzTokenConsumerProducer extends AbstractAuthzTokenConsume
             // Scopes
             Scope scope = Scope.parse(mediator.getScopes());
 
+            logger.debug("Token request - Endpoint: " + tokenEndpoint);
+            logger.debug("Token request - Redirect URI: " + redirectUri);
+            logger.debug("Token request - Auth method: " +
+                    (clientAuth != null ? clientAuth.getMethod() : "none"));
+
             TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, authzGrant, scope);
 
             HTTPResponse httpTokenResponse = tokenRequest.toHTTPRequest().send();
+
+            logger.debug("Token response - Status: " + httpTokenResponse.getStatusCode());
+            logger.debug("Token response - Content-Type: " + httpTokenResponse.getContentType());
+
             JSONObject jsonObject = httpTokenResponse.getContentAsJSONObject();
 
             if (httpTokenResponse.getStatusCode() != HTTPResponse.SC_OK) {
                 // We got an error response...
                 TokenErrorResponse errorResponse = TokenErrorResponse.parse(jsonObject);
                 String errMsg = toErrorString(errorResponse.getErrorObject());
-                logger.debug(errMsg);
+                logger.error("Token endpoint error: " + errMsg);
                 throw new OpenIDConnectException(errMsg);
 
             } else {
@@ -222,32 +223,214 @@ public class ProxyRPAuthzTokenConsumerProducer extends AbstractAuthzTokenConsume
 
                 JWTClaimsSet claims = null;
 
-                // Get the access token, the server may also return a refresh token
+                // Get the tokens from response
                 AccessToken accessToken = successResponse.getOIDCTokens().getAccessToken();
                 RefreshToken refreshToken = successResponse.getOIDCTokens().getRefreshToken();
                 BearerAccessToken bearerAccessToken = successResponse.getOIDCTokens().getBearerAccessToken();
                 JWT idToken = successResponse.getOIDCTokens().getIDToken();
 
-                String nonceStr = (String) idToken.getJWTClaimsSet().getClaim("nonce");
+                // -------------------------------------------------
+                // Verify ID Token signature
+                // -------------------------------------------------
+                SignedJWT signedIdToken = (SignedJWT) idToken;
+                JWSVerifier verifier = createVerifier(signedIdToken, mediator);
+
+                if (!signedIdToken.verify(verifier)) {
+                    throw new OpenIDConnectException("ID Token signature verification failed");
+                }
+
+                logger.debug("ID Token signature verified successfully");
+
+                // Get claims from verified token
+                claims = signedIdToken.getJWTClaimsSet();
+
+                // -------------------------------------------------
+                // Verify nonce
+                // -------------------------------------------------
+                String nonceStr = (String) claims.getClaim("nonce");
                 if (nonce != null) {
                     if (nonceStr == null || !nonce.getValue().equals(nonceStr)) {
                         throw new OpenIDConnectException("Invalid NONCE : " + nonceStr);
                     }
                 }
 
-                SignedJWT signedIdToken = (SignedJWT) idToken;
+                // -------------------------------------------------
+                // Verify standard claims
+                // -------------------------------------------------
 
-                // Verify signature
-                signedIdToken.verify(verifier);
-                claims = signedIdToken.getJWTClaimsSet();
+                // Check expiration
+                if (claims.getExpirationTime() != null &&
+                        claims.getExpirationTime().before(new Date())) {
+                    throw new OpenIDConnectException("ID Token has expired");
+                }
+
+                // Check issuer
+                String expectedIssuer = mediator.getIssuer();
+                if (expectedIssuer != null && !expectedIssuer.equals(claims.getIssuer())) {
+                    throw new OpenIDConnectException("Invalid issuer. Expected: " + expectedIssuer +
+                            ", Got: " + claims.getIssuer());
+                }
+
+                // Check audience (should contain client ID)
+                List<String> audience = claims.getAudience();
+                if (audience == null || !audience.contains(mediator.getClientId())) {
+                    throw new OpenIDConnectException("Invalid audience. Client ID not found in token audience");
+                }
+
+                // Check issued at time (token shouldn't be from the future)
+                if (claims.getIssueTime() != null &&
+                        claims.getIssueTime().after(new Date(System.currentTimeMillis() + 60000))) {
+                    throw new OpenIDConnectException("ID Token issued in the future");
+                }
+
+                logger.debug("All ID Token validations passed");
 
                 return successResponse;
-
             }
 
+        } catch (OpenIDConnectException e) {
+            throw e;
         } catch (Exception e) {
             throw new OpenIDConnectException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Creates a ClientAuthentication based on the specified method
+     */
+    private ClientAuthentication createClientAuthentication(
+            ClientID clientId,
+            Secret secret,
+            ClientAuthenticationMethod method) {
+
+        if (method == null) {
+            logger.warn("Auth method is null, defaulting to client_secret_basic");
+            return new ClientSecretBasic(clientId, secret);
+        }
+
+        if (method.equals(ClientAuthenticationMethod.CLIENT_SECRET_POST)) {
+            logger.debug("Creating ClientSecretPost authentication");
+            return new ClientSecretPost(clientId, secret);
+        } else if (method.equals(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)) {
+            logger.debug("Creating ClientSecretBasic authentication");
+            return new ClientSecretBasic(clientId, secret);
+        } else if (method.equals(ClientAuthenticationMethod.NONE)) {
+            logger.debug("Using no client authentication (public client)");
+            return null;
+        } else if (method.equals(ClientAuthenticationMethod.CLIENT_SECRET_JWT)) {
+            throw new UnsupportedOperationException(
+                    "client_secret_jwt authentication method is not yet implemented");
+        } else if (method.equals(ClientAuthenticationMethod.PRIVATE_KEY_JWT)) {
+            throw new UnsupportedOperationException(
+                    "private_key_jwt authentication method is not yet implemented");
+        } else {
+            logger.warn("Unknown auth method: " + method + ", defaulting to client_secret_basic");
+            return new ClientSecretBasic(clientId, secret);
+        }
+    }
+
+    /**
+     * Creates a JWS verifier based on available key material
+     */
+    private JWSVerifier createVerifier(SignedJWT signedJWT, OpenIDConnectProxyMediator mediator)
+            throws Exception {
+
+        String kid = signedJWT.getHeader().getKeyID();
+        JWSAlgorithm algorithm = signedJWT.getHeader().getAlgorithm();
+
+        logger.debug("Creating verifier for kid: " + kid + ", algorithm: " + algorithm);
+
+        // -------------------------------------------------
+        // Priority 1: Use JWK Set if available (modern approach)
+        // -------------------------------------------------
+        if (mediator.getJwkSet() != null) {
+            JWKSet jwkSet = mediator.getJwkSet();
+
+            // Try to find key by kid
+            JWK jwk = null;
+            if (kid != null) {
+                jwk = jwkSet.getKeyByKeyId(kid);
+                if (jwk == null) {
+                    logger.warn("No key found with kid: " + kid + ", will try all keys");
+                }
+            }
+
+            // If no kid or key not found, try all keys
+            if (jwk == null) {
+                logger.debug("Attempting to verify with all available keys");
+                for (JWK candidateKey : jwkSet.getKeys()) {
+                    try {
+                        JWSVerifier candidateVerifier = createVerifierFromJWK(candidateKey, algorithm);
+                        if (signedJWT.verify(candidateVerifier)) {
+                            logger.debug("Successfully verified with key: " + candidateKey.getKeyID());
+                            return candidateVerifier;
+                        }
+                    } catch (Exception e) {
+                        logger.trace("Failed to verify with key " + candidateKey.getKeyID(), e);
+                    }
+                }
+                throw new OpenIDConnectException("Unable to verify signature with any key from JWK Set");
+            }
+
+            // Create verifier from found JWK
+            return createVerifierFromJWK(jwk, algorithm);
+        }
+
+        // -------------------------------------------------
+        // Priority 2: Use legacy server key (X.509 certificate)
+        // -------------------------------------------------
+        String publicKeyContent = mediator.getServerKey();
+        if (publicKeyContent != null && !publicKeyContent.trim().isEmpty()) {
+            logger.debug("Using legacy X.509 certificate for verification");
+
+            byte[] publicKeyContentBytes = Base64.decodeBase64(
+                    publicKeyContent
+                            .replaceAll(X509Factory.BEGIN_CERT, "")
+                            .replaceAll(X509Factory.END_CERT, "")
+                            .trim()
+                            .getBytes()
+            );
+
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            Certificate cert = cf.generateCertificate(new ByteArrayInputStream(publicKeyContentBytes));
+            PublicKey pubKey = cert.getPublicKey();
+
+            return new RSASSAVerifier((RSAPublicKey) pubKey);
+        }
+
+        // -------------------------------------------------
+        // Priority 3: Use HMAC with client secret (symmetric signature)
+        // -------------------------------------------------
+        if (algorithm.getName().startsWith("HS")) {
+            logger.debug("Using HMAC verification with client secret");
+            Secret secret = new Secret(mediator.getClientSecret());
+            SecretKey secretKey = SecretKeyDerivation.deriveSecretKey(secret, 256);
+            return new MACVerifier(secretKey);
+        }
+
+        throw new OpenIDConnectException(
+                "No suitable key material found for signature verification. " +
+                        "Configure either JWK Set URI, server certificate, or use HMAC algorithm."
+        );
+    }
+
+    /**
+     * Creates a JWS verifier from a JWK based on the key type
+     */
+    private JWSVerifier createVerifierFromJWK(JWK jwk, JWSAlgorithm algorithm) throws Exception {
+
+        if (jwk instanceof RSAKey) {
+            return new RSASSAVerifier((RSAKey) jwk);
+        } else if (jwk instanceof ECKey) {
+            return new ECDSAVerifier((ECKey) jwk);
+        } else if (jwk instanceof OctetSequenceKey) {
+            return new MACVerifier((OctetSequenceKey) jwk);
+        }
+
+        throw new OpenIDConnectException(
+                "Unsupported JWK key type: " + jwk.getKeyType() +
+                        " for key ID: " + jwk.getKeyID()
+        );
     }
 
     protected void validateRequest(OpenIDConnectProxyMediator mediator, AuthenticationResponse authnResp) {

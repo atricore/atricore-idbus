@@ -4,13 +4,19 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.jackson.JacksonFactory;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.oauth2.sdk.ParseException;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderConfigurationRequest;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.openidconnect.main.common.binding.OpenIDConnectBinding;
 import org.atricore.idbus.capabilities.openidconnect.main.common.AbstractOpenIDConnectMediator;
 import org.atricore.idbus.capabilities.openidconnect.main.common.OpenIDConnectException;
-import org.atricore.idbus.capabilities.openidconnect.main.proxy.producers.mapping.OpenIdSubjectMapper;
 import org.atricore.idbus.capabilities.openidconnect.main.proxy.producers.mapping.OpenIdSubjectMapperFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -20,6 +26,10 @@ import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -31,7 +41,11 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     private static final Log logger = LogFactory.getLog(OpenIDConnectProxyMediator.class);
 
-    private boolean loadMetadata;
+    private String issuer;
+
+    // Loaded during startup
+    private OIDCProviderMetadata metadata;
+    private JWKSet jwkSet;
 
     private JacksonFactory jacksonFactory;
 
@@ -74,6 +88,50 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
         super.start();
         jacksonFactory = new JacksonFactory();
         httpTransport = new ApacheHttpTransport();
+        if (isLoadMetadata()) {
+            // Override all values with the metadata based on issuer:
+            if (issuer == null || "".equals(issuer)) {
+                throw new IdentityMediationException("Invalid configuration for OIDC Mediator, no issuer");
+            }
+
+            try {
+                Issuer opIssuer = new Issuer(new URI(issuer));
+                OIDCProviderConfigurationRequest request = new OIDCProviderConfigurationRequest(opIssuer);
+                HTTPRequest httpRequest = request.toHTTPRequest();
+                // httpRequest.setSSLSocketFactory(tlsHelper.getTrustAllSocketFactory());
+                // httpRequest.setHostnameVerifier(tlsHelper.getTrustAllHostnameVerifier());
+                HTTPResponse httpResponse = httpRequest.send();
+
+                if (!httpResponse.indicatesSuccess()) {
+                    logger.error("Metadata load error for " + issuer + ". HTTP status:" + httpResponse.getStatusCode());
+                    logger.debug(httpResponse.getContent());
+                    throw new IdentityMediationException("Metadata load error for " + issuer + ". HTTP status:" + httpResponse.getStatusCode());
+                }
+                logger.debug("Metadata configuration received for issuer " + issuer);
+                logger.trace(httpResponse.getContent());
+                this.metadata = OIDCProviderMetadata.parse(httpResponse.getContentAsJSONObject());
+                this.authzTokenServiceLocation = this.metadata.getTokenEndpointURI().toString();
+                this.requestTokenServiceLocation = this.metadata.getTokenEndpointURI().toString();
+                this.accessTokenServiceLocation = this.metadata.getAuthorizationEndpointURI().toString();
+
+                if (this.metadata.getJWKSetURI() != null) {
+                    logger.debug("Retrieving JWK Set from: " + this.metadata.getJWKSetURI());
+
+                    URL jwksUrl = this.metadata.getJWKSetURI().toURL();
+                    JWKSet jwkSet = JWKSet.load(jwksUrl);
+
+                    logger.debug("JWK Set retrieved successfully with " + jwkSet.getKeys().size() + " keys");
+                    logger.trace("JWK Set: " + jwkSet.toString());
+
+                    this.jwkSet = jwkSet;
+
+                }
+                // TODO : validate that the metadata supports our OIDC requirements
+
+            } catch (URISyntaxException | IOException | ParseException | java.text.ParseException e) {
+                throw new IdentityMediationException("Error loading OIDC metadata for " + issuer + ". " + e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -215,11 +273,15 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
      * @return
      */
     public boolean isLoadMetadata() {
-        return loadMetadata;
+        return issuer != null && (authzTokenServiceLocation == null || requestTokenServiceLocation == null);
     }
 
-    public void setLoadMetadata(boolean loadMetadata) {
-        this.loadMetadata = loadMetadata;
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
     }
 
     public JacksonFactory getJacksonFactory() {
@@ -352,5 +414,21 @@ public class OpenIDConnectProxyMediator extends AbstractOpenIDConnectMediator  {
 
     public void setServerKey(String serverKey) {
         this.serverKey = serverKey;
+    }
+
+    public JWKSet getJwkSet() {
+        return jwkSet;
+    }
+
+    public void setJwkSet(JWKSet jwkSet) {
+        this.jwkSet = jwkSet;
+    }
+
+    public OIDCProviderMetadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(OIDCProviderMetadata metadata) {
+        this.metadata = metadata;
     }
 }
