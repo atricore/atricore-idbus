@@ -53,4 +53,11 @@ public class SSOServiceImpl implements SSORequestPortType {
         LOG.info("Executing operation spInitiatedAuthnRequest");
         throw new UnsupportedOperationException("This service is not meant to be invoked");
     }
+
+    public SPAuthnResponseType idpReselectedRequest(IDPReselectedRequest body) {
+        LOG.info("Executing operation idpReselectedRequest");
+        throw new UnsupportedOperationException("This service is not meant to be invoked");
+    }
+
+
 }

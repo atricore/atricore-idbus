@@ -180,9 +180,10 @@ public class SingleSignOnProducer extends SSOProducer {
                 // New IDP Initiated Single Sign-On
                 metric += "doProcessIDPInitiatedSSO";
                 doProcessIDPInitiatedSSO(exchange, (IDPInitiatedAuthnRequestType) content);
-
+            } else if (content instanceof IDPReselectedRequest ) {
+                metric += "doProcessIDPReselect";
+                doProcessIDPReselect(exchange, (IDPReselectedRequest) content);
             } else if (content instanceof SecTokenAuthnRequestType) {
-
                 // New Assert Identity with Basic authentication
                 metric += "doProcessAssertIdentityWithBasicAuth";
                 doProcessAssertIdentityWithBasicAuth(exchange, (SecTokenAuthnRequestType) content);
@@ -239,6 +240,59 @@ public class SingleSignOnProducer extends SSOProducer {
             long e = System.currentTimeMillis();
             mServer.recordResponseTimeMetric(metric, e - s);
         }
+    }
+
+    /**
+     * We are in the middle of an authentication process, the user is most likely redirected to the
+     * login form, and wants to switch IdPS (i.e. Goolge, etc.)
+     *
+     * @param exchange
+     * @param idpReselectedReq
+     * @throws SSOException
+     */
+    protected void doProcessIDPReselect(CamelMediationExchange exchange, IDPReselectedRequest idpReselectedReq) throws SSOException {
+        // TODO !!
+        // We already know the SP, we need to restart an authentication using a different IDP
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+
+        MediationState mediationState = in.getMessage().getState();
+
+        String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
+        IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
+
+        SPChannel spChannel = (SPChannel) channel;
+        Channel proxyChannel = spChannel.getProxy();
+        EndpointDescriptor proxyEndpoint = resolveSPInitiatedSSOProxyEndpointDescriptor(exchange, proxyChannel);
+
+        logger.debug("Proxying SP-Initiated SSO Request to " + proxyChannel.getLocation() +
+                proxyEndpoint.getLocation());
+
+        AuthenticationState authnState = (AuthenticationState) mediationState.getLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state");
+        if (authnState == null) {
+            // You can't access this endpoint without an ongoing SSO process.
+            throw new SSOException("You can't access this empoint without an on-going SSO process");
+        }
+
+        AuthnRequestType authnRequest = authnState.getAuthnRequest();
+        String relayState = authnState.getReceivedRelayState();
+        String idpAlias = idpReselectedReq.getIdpAlias();
+
+        // TODO: Rebuild sp initiated authnRequest with new IDP.Get requested IDP and clear the variable
+        SPInitiatedAuthnRequestType authnProxyRequest = buildAuthnProxyRequest(authnRequest, idpAlias);
+        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:requestedidp");
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:sso:protocol:SPInitiatedAuthnRequest", authnProxyRequest);
+
+// proxyEndpoit = http://localhost:8081/IDBUS/IDA-1/VP-1-IDP-PROXY-BINDING-CHANNEL/SSO/SPINITPXY/ARTIFACT
+        out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
+                authnProxyRequest,
+                "AuthnProxyRequest",
+                relayState,
+                proxyEndpoint,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+        return;
     }
 
 

@@ -86,6 +86,9 @@ public class SSOIDPComponent extends DefaultComponent {
             case IdPSelectorCallbackService:
                 endpoint = new IdPSelectorCallbackEndpoint(uri, this, parameters);
                 break;
+            case IdPReselectedService:
+                endpoint = new SingleSignOnEndpoint(uri, this, parameters);
+                break;
             case MetadataService:
                 endpoint = new MetadataEndpoint(uri, this, parameters);
                 break;

@@ -49,6 +49,10 @@
         <part name="body" element="ssop:IDPInitiatedLogoutRequest"/>
     </message>
 
+    <message name="IDPReselectedRequestMessage">
+        <part name="body" element="ssop:IDPReselectedRequest"/>
+    </message>
+
     <message name="AssertIdentityWithSimpleAuthenticationRequestMessage">
         <part name="body" element="ssop:AssertIdentityWithSimpleAuthenticationRequest"/>
     </message>
@@ -121,7 +125,15 @@
                          message="tns:SSOResponseMessage"/>
         </operation>
 
-        
+        <operation name="IDPReselectedRequest">
+            <input name="IDPReselectedRequestInput"
+                   message="tns:IDPReselectedRequestMessage"/>
+            <output name="IDPReselectedRequestOutput"
+                    message="tns:SSOResponseMessage"/>
+        </operation>
+
+
+
         <operation name="AssertIdentityWithSimpleAuthenticationRequest">
             <input name="AssertIdentityWithSimpleAuthenticationRequestInput"
                         message="tns:AssertIdentityWithSimpleAuthenticationRequestMessage"/>

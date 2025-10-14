@@ -82,6 +82,9 @@ public enum SSOBinding {
     SSO_IDP_INITIATED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http", true, false),
 
     /** URI for SAML 2.0 IdP initiated bindings */
+    SSO_IDP_RESELECTED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Reselected-SSO-http", true, false),
+
+    /** URI for SAML 2.0 IdP initiated bindings */
     SSO_PREAUTHN("urn:org:atricore:idbus:sso:bindings:HTTP-PreAuthn", true, false),
 
     /** URI for SSO JSON Bindings */

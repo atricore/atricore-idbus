@@ -118,6 +118,9 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             case SSO_IDP_INITIATED_SSO_HTTP_SAML11:
                 mb = new SamlR11SsoIDPInitiatedHttpBinding(channel);
                 break;
+            case SSO_IDP_RESELECTED_SSO_HTTP_SAML2:
+                mb = new SsoIDPReselectedHttpBinding(channel);
+                break;
             case SSO_LOCAL:
                 mb = new SsoLocalBinding(channel);
                 break;

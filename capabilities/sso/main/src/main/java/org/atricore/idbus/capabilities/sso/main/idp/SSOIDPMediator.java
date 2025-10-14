@@ -96,6 +96,7 @@ public class SSOIDPMediator extends AbstractSSOMediator {
                         case SSO_JSON_FRONT_CHANNEL:
                         case SSO_IDP_INITIATED_SSO_HTTP_SAML2:
                         case SSO_IDP_INITIATED_SSO_HTTP_SAML11:
+                        case SSO_IDP_RESELECTED_SSO_HTTP_SAML2:
 
                             // HTTP Bindings are handled with Camel
 

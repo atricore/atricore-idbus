@@ -57,6 +57,15 @@
         </complexContent>
     </complexType>
 
+    <element name="IDPReselectedRequest" type="ssop:IDPReselectedRequest"/>
+    <complexType name="IDPReselectedRequest">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="IdpAlias" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
 
     <!--
     <element name="SPInitiatedAuthnRequest" type="ssop:SPInitiatedAuthnRequestType"/>

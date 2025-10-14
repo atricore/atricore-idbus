@@ -86,6 +86,8 @@ public enum SSOService {
 
     IdPSelectorCallbackService(SSOMetadataConstants.IdPSelectorCallbackService_QNAME),
 
+    IdPReselectedService(SSOMetadataConstants.IdPReselectedService_QNAME),
+
     SPSelectorService(SSOMetadataConstants.SPSelectorService_QNAME);
 
     private QName qname;
