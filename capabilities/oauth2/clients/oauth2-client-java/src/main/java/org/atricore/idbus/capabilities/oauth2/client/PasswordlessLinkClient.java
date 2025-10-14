@@ -4,6 +4,7 @@ import org.atricore.idbus.common.oauth._2_0.protocol.SendPasswordlessLinkRequest
 import org.atricore.idbus.common.oauth._2_0.protocol.SendPasswordlessLinkResponseType;
 import org.atricore.idbus.common.oauth._2_0.protocol.TemplatePropertyType;
 
+import java.util.Enumeration;
 import java.util.Properties;
 
 public class PasswordlessLinkClient extends AbstractWSClient {
@@ -27,8 +28,9 @@ public class PasswordlessLinkClient extends AbstractWSClient {
         req.setTargetSP(targetSP);
 
         if (templateProperties != null) {
-            while (templateProperties.propertyNames().hasMoreElements()) {
-                String name = (String) templateProperties.propertyNames().nextElement();
+            Enumeration<?> e = templateProperties.propertyNames();
+            while (e.hasMoreElements()) {
+                String name = (String) e.nextElement();
                 String value = templateProperties.getProperty(name);
 
                 TemplatePropertyType prop = new TemplatePropertyType();
