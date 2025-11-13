@@ -66,6 +66,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
+                <version>3.4.6</version>
                 <executions>
                     <execution>
                         <goals>
@@ -130,7 +131,7 @@
         <repository>
             <id>typesaferepo</id>
             <name>typesafe repo</name>
-            <url>http://repo.typesafe.com/typesafe/releases/</url>
+            <url>https://repo.typesafe.com/typesafe/releases/</url>
             <layout>default</layout>
         </repository>
         <repository>
@@ -157,7 +158,7 @@
         <pluginRepository>
             <id>typesaferepo</id>
             <name>typesafe repo</name>
-            <url>http://repo.typesafe.com/typesafe/releases/</url>
+            <url>https://repo.typesafe.com/typesafe/releases/</url>
             <layout>default</layout>
         </pluginRepository>
     </pluginRepositories>
