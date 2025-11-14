@@ -48,6 +48,7 @@
         <idbus.kernel.version>1.7.0-SNAPSHOT</idbus.kernel.version>
         <idbus.sts.version>1.7.0-SNAPSHOT</idbus.sts.version>
         <idbus.bundle.ehcache-v2_8_1.version>1.7.0-SNAPSHOT</idbus.bundle.ehcache-v2_8_1.version>
+        <idbus.bundle.redis-v3_10.version>1.7.0-SNAPSHOT</idbus.bundle.redis-v3_10.version>
 
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
@@ -122,6 +123,12 @@
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
                 <version>${idbus.bundle.ehcache-v2_8_1.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.redis-client-v3_10</artifactId>
+                <version>${idbus.bundle.redis-v3_10.version}</version>
             </dependency>
 
             <dependency>

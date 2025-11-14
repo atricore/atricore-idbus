@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009-2024, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--
+        Redis Client Factory Configuration Example
+        
+        This is a sample Spring configuration for the Redis client factory.
+        Copy this to your application's Spring context and adjust values as needed.
+    -->
+
+    <!-- Redis Client Factory -->
+    <bean id="redisClientFactory" 
+          class="org.atricore.idbus.bundles.redis.SpringRedisClientFactoryImpl">
+        
+        <!-- Redis Server Configuration -->
+        <property name="host" value="${redis.host:localhost}"/>
+        <property name="port" value="${redis.port:6379}"/>
+        <property name="password" value="${redis.password:}"/>
+        <property name="database" value="${redis.database:0}"/>
+        
+        <!-- Timeout Configuration (milliseconds) -->
+        <property name="connectionTimeout" value="${redis.connectionTimeout:2000}"/>
+        <property name="socketTimeout" value="${redis.socketTimeout:2000}"/>
+        
+        <!-- Connection Pool Configuration -->
+        <property name="maxTotal" value="${redis.pool.maxTotal:50}"/>
+        <property name="maxIdle" value="${redis.pool.maxIdle:10}"/>
+        <property name="minIdle" value="${redis.pool.minIdle:2}"/>
+        <property name="testOnBorrow" value="${redis.pool.testOnBorrow:true}"/>
+        <property name="testOnReturn" value="${redis.pool.testOnReturn:false}"/>
+        <property name="testWhileIdle" value="${redis.pool.testWhileIdle:true}"/>
+    </bean>
+
+    <!-- Java Serializer for Redis -->
+    <bean id="redisSerializer" 
+          class="org.atricore.idbus.bundles.redis.serialization.JavaRedisSerializer"/>
+
+</beans>

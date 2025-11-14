@@ -47,6 +47,7 @@
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.7.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
         <!--idbus.bundle.ehcache-v2_1_0.version>1.7.0-SNAPSHOT</idbus.bundle.ehcache-v2_1_0.version-->
         <idbus.bundle.ehcache-v2_8_1.version>1.7.0-SNAPSHOT</idbus.bundle.ehcache-v2_8_1.version>
+        <idbus.bundle.redis-v3_10.version>1.7.0-SNAPSHOT</idbus.bundle.redis-v3_10.version>
         <idbus.bundle.pax-web-jetty-v0_7_2.version>1.7.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
         <idbus.bundle.wadi-v2_1_2.version>1.7.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
         <idbus.bundle.javax-jdo-v3_0.version>1.7.0-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
@@ -157,6 +158,12 @@
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.ehcache-v2_8_1</artifactId>
                 <version>${idbus.bundle.ehcache-v2_8_1.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.redis-client-v3_10</artifactId>
+                <version>${idbus.bundle.redis-v3_10.version}</version>
             </dependency>
 
             <dependency>
