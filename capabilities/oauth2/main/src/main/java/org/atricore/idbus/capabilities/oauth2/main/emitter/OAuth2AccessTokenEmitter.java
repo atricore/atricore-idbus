@@ -44,6 +44,8 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     private boolean rememberMeTokenEmitter = false;
 
+    private boolean includeClaims = true;
+
     @Override
     public boolean isTargetedEmitter(SecurityTokenProcessingContext context, Object requestToken, String tokenType) {
         return context.getProperty(WSTConstants.SUBJECT_PROP) != null &&
@@ -171,7 +173,7 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
         long expiresIn = tokenValiditySecs;
 
         // Roles
-        if (!rememberMeTokenEmitter) {
+        if (!rememberMeTokenEmitter && this.includeClaims) {
 
             // Add all user information if this is not a remember-me token emitter
 
@@ -313,6 +315,18 @@ public class OAuth2AccessTokenEmitter extends AbstractSecurityTokenEmitter {
 
     public void setRememberMeTokenEmitter(boolean rememberMeTokenEmitter) {
         this.rememberMeTokenEmitter = rememberMeTokenEmitter;
+    }
+
+    public boolean isIncludeClaims() {
+        return includeClaims;
+    }
+
+    public boolean getIncludeClaims() {
+        return includeClaims;
+    }
+
+    public void setIncludeClaims(boolean includeClaims) {
+        this.includeClaims = includeClaims;
     }
 
     protected boolean rememberMeAttributePresent(Object requestToken) {
