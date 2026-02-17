@@ -79,6 +79,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <osgi:service id="cacheManagerFactoryExporter" ref="cacheManagerFactory"
                   interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>
 
+    <!-- =================================================================== -->
+    <!-- REDIS Setup -->
+    <!-- =================================================================== -->
+
+
+
     <bean factory-method="getInstance" class="org.atricore.idbus.kernel.main.session.SSOSessionEventManager" name="session-event-manager"/>
 
     <bean id="osgi-session-event-manager" class="org.atricore.idbus.kernel.main.session.OsgiSSOSessionEventListenerRegistry">
