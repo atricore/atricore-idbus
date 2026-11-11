@@ -20,10 +20,14 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<!DOCTYPE catalog
-PUBLIC "-//OASIS/DTD Entity Resolution XML Catalog V1.0//EN"
-"http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
-
+<!--
+  No DOCTYPE on purpose: the JDK catalog resolver would fetch the OASIS DTD from
+  www.oasis-open.org at build time (the JDK ships no local copy). That URL now
+  redirects http -> https, which HttpURLConnection does not follow, so the parse
+  fails and the resolver falls back to a text-catalog reader that crashes with
+  ArrayIndexOutOfBoundsException. The DTD is not needed: the catalog reader is
+  selected by the namespace below.
+  -->
 <catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <rewriteURI rewritePrefix="./xml.schema" uriStartString="http://www.w3.org/2001/xml.xsd"/>
 </catalog>
